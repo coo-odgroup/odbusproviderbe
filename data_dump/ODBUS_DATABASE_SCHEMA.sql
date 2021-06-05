@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 04, 2021 at 05:00 PM
+-- Generation Time: Jun 05, 2021 at 04:37 PM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.14
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `odbusbackend`
+-- Database: `t1`
 --
 
 -- --------------------------------------------------------
@@ -29,12 +29,12 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `amenities` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `icon` blob,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reason` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reason` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -49,7 +49,7 @@ CREATE TABLE `appdownload` (
   `mobileno` bigint UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -61,17 +61,17 @@ CREATE TABLE `appdownload` (
 
 CREATE TABLE `appversion` (
   `id` int NOT NULL,
-  `info` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `info` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `mandatory` int NOT NULL DEFAULT '1' COMMENT '0-not mandatory 1- manadatory',
   `version` int NOT NULL,
-  `new_version_names` mediumtext COLLATE utf8mb4_unicode_ci,
-  `new_version_codes` mediumtext COLLATE utf8mb4_unicode_ci,
+  `new_version_names` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `new_version_codes` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `allowed_days` int DEFAULT NULL,
-  `has_issues` varchar(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'N',
+  `has_issues` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'N',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -87,7 +87,7 @@ CREATE TABLE `boarding_droping` (
   `boarding_point` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -259,10 +259,10 @@ CREATE TABLE `bus_cancelled_date` (
 
 CREATE TABLE `bus_class` (
   `id` int NOT NULL,
-  `class_name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `class_name` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL
+  `created_by` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -275,8 +275,8 @@ CREATE TABLE `bus_closing_hours` (
   `id` int NOT NULL,
   `bus_id` int NOT NULL,
   `city_id` int NOT NULL,
-  `dep_time` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `closing_hours` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dep_time` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `closing_hours` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int NOT NULL DEFAULT '1',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
@@ -292,12 +292,12 @@ CREATE TABLE `bus_contacts` (
   `id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `type` int NOT NULL COMMENT '0-operator 1-manager 2-conductor',
-  `phone` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `booking_sms_send` int NOT NULL DEFAULT '0' COMMENT '0-dontsend 1-send',
   `cancel_sms_send` int NOT NULL DEFAULT '0' COMMENT '0-dontsend 1-send',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -316,7 +316,7 @@ CREATE TABLE `bus_extra_fare` (
   `sleeper_fare` int NOT NULL COMMENT 'extra 70rs.. added to all sleapers',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -333,7 +333,7 @@ CREATE TABLE `bus_gallery` (
   `alt_tag` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -347,20 +347,20 @@ CREATE TABLE `bus_operator` (
   `id` int NOT NULL,
   `email_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operator_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_number` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `organisation_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci,
-  `additional_email` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `additional_contact` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_account_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_ifsc` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_account_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `operator_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contact_number` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `organisation_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `location_name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `additional_email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `additional_contact` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_account_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_ifsc` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_account_number` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Bus Operators';
 
@@ -388,7 +388,7 @@ CREATE TABLE `bus_safety` (
   `safety_id` int NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL
+  `created_by` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -457,10 +457,10 @@ CREATE TABLE `bus_seats_extra` (
   `journey_dt` date NOT NULL,
   `type` int UNSIGNED NOT NULL COMMENT '1 - Block, 2 - Open',
   `seat_type` int UNSIGNED NOT NULL COMMENT '0-seater 1-sleeper',
-  `seat_number` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `seat_number` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -472,10 +472,10 @@ CREATE TABLE `bus_seats_extra` (
 
 CREATE TABLE `bus_seat_layout` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -503,11 +503,11 @@ CREATE TABLE `bus_sitting` (
 CREATE TABLE `bus_slots` (
   `id` int UNSIGNED NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` int NOT NULL DEFAULT '0' COMMENT '0- ODBUS    1- conductor ',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -536,7 +536,7 @@ CREATE TABLE `bus_stoppage_additional_fare` (
   `additional_fare` double(8,2) UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -555,7 +555,7 @@ CREATE TABLE `bus_stoppage_timing` (
   `stoppage_time` time NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Admin',
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Admin',
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -568,10 +568,10 @@ CREATE TABLE `bus_stoppage_timing` (
 CREATE TABLE `bus_type` (
   `id` int UNSIGNED NOT NULL,
   `type` int NOT NULL DEFAULT '0',
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -586,7 +586,7 @@ CREATE TABLE `cancellationslabs` (
   `api_id` int DEFAULT NULL,
   `rule_name` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `duration` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `deduction` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deduction` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -624,7 +624,7 @@ CREATE TABLE `city_closing_extended` (
   `closing_hours` int UNSIGNED DEFAULT NULL COMMENT 'Time in minutes',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -636,9 +636,9 @@ CREATE TABLE `city_closing_extended` (
 
 CREATE TABLE `coupon` (
   `id` int UNSIGNED NOT NULL,
-  `coupon_title` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `coupon_code` varchar(25) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` enum('Percent','CutOff') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `coupon_title` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `coupon_code` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` enum('Percent','CutOff') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `amount` double(8,2) DEFAULT NULL COMMENT 'in % or in cash',
   `max_discount_price` double(8,2) DEFAULT NULL COMMENT 'incase of % deduction',
   `min_tran_amount` double(8,2) DEFAULT NULL,
@@ -647,11 +647,11 @@ CREATE TABLE `coupon` (
   `category` int DEFAULT NULL COMMENT '0-booking date 1-journey date',
   `from_date` datetime DEFAULT NULL,
   `to_date` datetime DEFAULT NULL,
-  `short_desc` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `full_desc` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `short_desc` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `full_desc` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -667,7 +667,7 @@ CREATE TABLE `coupon_assigned_bus` (
   `coupon_id` int UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -679,13 +679,13 @@ CREATE TABLE `coupon_assigned_bus` (
 
 CREATE TABLE `customer_query` (
   `id` int NOT NULL,
-  `email` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `query_typ` enum('RESERVATION','CONTACT') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `data` mediumtext COLLATE utf8mb4_unicode_ci COMMENT 'json_data',
+  `email` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `query_typ` enum('RESERVATION','CONTACT') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `data` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'json_data',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -697,10 +697,10 @@ CREATE TABLE `customer_query` (
 
 CREATE TABLE `customer_query_category` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -713,10 +713,10 @@ CREATE TABLE `customer_query_category` (
 CREATE TABLE `customer_query_category_issues` (
   `id` int UNSIGNED NOT NULL,
   `customer_query_category_id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -730,17 +730,17 @@ CREATE TABLE `custom_pages` (
   `id` int NOT NULL,
   `origin` int DEFAULT '0' COMMENT '0-odbus 1-rpboa 2-janardana ',
   `type` int DEFAULT '0' COMMENT '0-custom pages  1-route pages 2-news',
-  `source_id` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'only for route pages',
-  `destination_id` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'only for route pages',
-  `name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `url` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `content` mediumtext COLLATE utf8mb4_unicode_ci,
-  `meta_title` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keyword` varchar(600) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_descriptiom` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `source_id` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'only for route pages',
+  `destination_id` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'only for route pages',
+  `name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `url` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `content` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `meta_title` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keyword` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_descriptiom` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -754,8 +754,8 @@ CREATE TABLE `extended_bus_closing_hours` (
   `id` int NOT NULL,
   `bus_id` int NOT NULL,
   `city_id` int NOT NULL,
-  `dep_time` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `closing_hours` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dep_time` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `closing_hours` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int NOT NULL DEFAULT '1',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
@@ -769,11 +769,11 @@ CREATE TABLE `extended_bus_closing_hours` (
 
 CREATE TABLE `location` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `synonym` mediumtext COLLATE utf8mb4_unicode_ci,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `synonym` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -787,10 +787,10 @@ CREATE TABLE `locationcode` (
   `id` int UNSIGNED NOT NULL,
   `location_id` int UNSIGNED NOT NULL,
   `type` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '0-Odbus 1- red bus 2-dolphin 3-bus india',
-  `providerid` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `providerid` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -823,22 +823,22 @@ CREATE TABLE `owner_fare` (
 
 CREATE TABLE `pre_booking` (
   `id` int UNSIGNED NOT NULL,
-  `transaction_id` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_id` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `j_day` int NOT NULL DEFAULT '0' COMMENT 'journey day | 0-same day 1-nxt day',
   `journey_dt` date NOT NULL,
-  `bus_info` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'json data',
-  `customer_info` mediumtext COLLATE utf8mb4_unicode_ci COMMENT 'json data',
+  `bus_info` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'json data',
+  `customer_info` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'json data',
   `total_fare` double(8,2) UNSIGNED NOT NULL,
   `is_coupon` int NOT NULL DEFAULT '0' COMMENT '0-no 1-yes',
-  `coupon_code` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `coupon_code` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `coupon_discount` decimal(9,2) DEFAULT NULL,
   `discounted_fare` decimal(9,2) DEFAULT NULL,
-  `customer_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `customer_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -853,11 +853,11 @@ CREATE TABLE `pre_booking_detail` (
   `pre_booking_id` int UNSIGNED NOT NULL,
   `journey_date` date NOT NULL,
   `j_day` int NOT NULL DEFAULT '0' COMMENT 'journey day | 0-same day 1-nxt day',
-  `bus_id` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `seat_name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bus_id` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `seat_name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -869,10 +869,10 @@ CREATE TABLE `pre_booking_detail` (
 
 CREATE TABLE `reason` (
   `id` int NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -884,19 +884,19 @@ CREATE TABLE `reason` (
 
 CREATE TABLE `review` (
   `id` int UNSIGNED NOT NULL,
-  `pnr` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pnr` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `customer_id` int NOT NULL,
-  `reference_key` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'link for email',
-  `rating_overall` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `rating_comfort` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `rating_clean` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `rating_behavior` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `rating_timing` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `comments` varchar(2500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reference_key` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'link for email',
+  `rating_overall` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
+  `rating_comfort` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
+  `rating_clean` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
+  `rating_behavior` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
+  `rating_timing` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
+  `comments` varchar(2500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -908,11 +908,11 @@ CREATE TABLE `review` (
 
 CREATE TABLE `safety` (
   `id` int NOT NULL,
-  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `icon` mediumblob,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -932,7 +932,7 @@ CREATE TABLE `seats` (
   `colNumber` int NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` int NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -951,19 +951,19 @@ CREATE TABLE `site_master` (
   `service_charge` int UNSIGNED NOT NULL,
   `per_trasaction` double(8,2) UNSIGNED NOT NULL,
   `max_seat_booked` int UNSIGNED NOT NULL,
-  `support_email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `booking_email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `request_email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `other_email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_no1` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_no2` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_no3` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_no4` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `facebook_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `twitter_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `linkedin_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `instagram_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `googleplus_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `support_email` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `booking_email` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `request_email` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `other_email` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contact_no1` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contact_no2` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contact_no3` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contact_no4` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `facebook_url` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `twitter_url` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `linkedin_url` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `instagram_url` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `googleplus_url` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `min_fare_amt` int NOT NULL,
   `earned_pts` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -976,16 +976,16 @@ CREATE TABLE `site_master` (
 
 CREATE TABLE `slider` (
   `id` int UNSIGNED NOT NULL,
-  `occassion` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `occassion` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `category` int DEFAULT NULL COMMENT '0-main slider 1-adv-slider1 2-adv-slider 2, 3-adv-slider-3',
-  `url` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `slider_img` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `alt_tag` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slider_img` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alt_tag` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `start_date` datetime NOT NULL,
   `end_date` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1018,10 +1018,10 @@ CREATE TABLE `special_fare` (
 
 CREATE TABLE `ticket_cancelation` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1034,12 +1034,12 @@ CREATE TABLE `ticket_cancelation` (
 CREATE TABLE `ticket_cancelation_rule` (
   `id` int UNSIGNED NOT NULL,
   `ticket_cancelation_id` int UNSIGNED NOT NULL,
-  `hour_lag_start` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `hour_lag_end` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `cancelation_percentage` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hour_lag_start` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hour_lag_end` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cancelation_percentage` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1064,7 +1064,7 @@ CREATE TABLE `ticket_price` (
   `j_day` int NOT NULL DEFAULT '0' COMMENT '0-same day 1- next day so on.. ',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1076,25 +1076,25 @@ CREATE TABLE `ticket_price` (
 
 CREATE TABLE `user` (
   `id` int NOT NULL,
-  `user_pin` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `first_name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `middle_name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `last_name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `thumbnail` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `org_name` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` varchar(600) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `alternate_phone` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'additional phone',
-  `alternate_email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'additional email',
-  `password` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_pin` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `first_name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `middle_name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `thumbnail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `location` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `org_name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `alternate_phone` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'additional phone',
+  `alternate_email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'additional email',
+  `password` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_role` int DEFAULT NULL,
-  `rand_key` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rand_key` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_login` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1107,13 +1107,13 @@ CREATE TABLE `user` (
 CREATE TABLE `user_bank_details` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
-  `banking_name` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_name` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ifsc_code` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `account_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `banking_name` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bank_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ifsc_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `account_number` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
