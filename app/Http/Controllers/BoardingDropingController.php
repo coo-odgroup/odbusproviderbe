@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\BoardingDroping;
+use App\Models\Location;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Config;
+use App\Traits\ApiResponser;
+use App\Services\BoardingDropingService;
+use Exception;
+use InvalidArgumentException;
+use App\AppValidator\BoardingDropingValidator;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
+
+class BoardingDropingController extends Controller
+{
+    use ApiResponser;
+    protected $boardingDropingService;
+    protected $boardingDropingValidator;
+    
+    public function __construct(BoardingDropingService $boardingDropingService,BoardingDropingValidator $boardingDropingValidator)
+    {
+        $this->boardingDropingService = $boardingDropingService;
+        $this->boardingDropingValidator = $boardingDropingValidator;
+    }
+
+    public function getAllBoardingDroping() {
+
+        $boardingdroping = $this->boardingDropingService->getAll();
+        return $this->successResponse($boardingdroping,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    }
+
+    public function createBoardingDroping(Request $request) {
+        $data = $request->only([
+          'location_id', 
+          'boarding_point',
+          'created_by', 
+        ]);
+        $boardingdropingValidation = $this->boardingDropingValidator->validate($data);
+      
+        if ($boardingdropingValidation->fails()) {
+          $errors = $boardingdropingValidation->errors();
+          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }
+
+        try {
+          $response = $this->boardingDropingService->savePostData($data);
+          return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED); 
+        } catch (Exception $e) {
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }  
+    } 
+
+    public function updateBoardingDroping(Request $request, $id) {
+        $data = $request->only([
+            'location_id',
+            'boarding_point', 
+           // 'dropping_point',
+            'created_by'
+        ]);
+       
+        $boardingdropingValidation = $this->boardingDropingValidator->validate($data);
+
+        if ($boardingdropingValidation->fails()) {
+            $errors = $boardingdropingValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+          }
+        try {
+          $response = $this->boardingDropingService->updatePost($data, $id);
+          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+    }
+
+    public function deleteBoardingDroping ($id) {
+      try {
+        $response = $this->boardingDropingService->deleteById($id);
+        return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+      } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }
+    }
+
+    public function getBoardingDroping($id) {
+        try {
+      $boardingDropingID = $this->boardingDropingService->getById($id);
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+          }
+          return $this->successResponse($boardingDropingID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);    
+	     
+        }
+
+        public function getBoardingDropingbyLoacationId($id) {
+          try {
+        $boardingDropingID = $this->boardingDropingService->getByLocationId($id);
+          }
+          catch (Exception $e) {
+              return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+            }
+            return $this->successResponse($boardingDropingID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);    
+         
+          }
+        ////data table//////
+    public function getBoardingDropingDT(Request $request) {      
+        
+        $boardingDroping = $this->boardingDropingService->getBoardingDropingDT($request);
+        return $this->successResponse($boardingDroping,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }
+      public function createBoarding(Request $request) 
+      {      
+        $data = $request->only([
+          'location_id', 
+          'name',
+          'type',
+          'created_by',
+        ]);
+        $boardingdropingValidation = $this->boardingDropingValidator->validate($data);
+      
+      if ($boardingdropingValidation->fails()) {
+          $errors = $boardingdropingValidation->errors();
+          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        try {
+          $this->boardingDropingService->createBordingDroping($data);
+      } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+      }
+      return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED); 
+    } 
+
+
+    public function changeStatus ($id) {
+    
+      try{
+        $response = $this->boardingDropingService->changeStatus($id);
+        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }
+    }
+}

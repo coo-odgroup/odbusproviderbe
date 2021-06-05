@@ -1,0 +1,246 @@
+<?php
+namespace App\Repositories;
+use App\Models\Bus;
+use App\Models\BusSchedule;
+use App\Models\BusScheduleDate;
+use App\Models\BusType;
+use App\Models\BusSitting;
+use App\Models\BusStoppage;
+use App\Models\BusAmenities;
+use App\Models\Amenities;
+use App\Models\User;
+use App\Models\BoardingDroping;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use DB;
+class BusRepository
+{
+    protected $bus;
+    public function __construct(Bus $bus,BusSchedule $busSchedule, BusType $busType, BusSitting $busSitting,
+     BusStoppage $busStoppage, BusAmenities $busAmenities, Amenities $amenities,
+      BoardingDroping $boardingDroping, User $user,BusScheduleDate $busScheduleDate)
+    {
+        $this->bus = $bus;
+        $this->busSchedule = $busSchedule;
+        $this->busType = $busType;
+        $this->busSitting = $busSitting;
+        $this->busStoppage = $busStoppage;
+        $this->busAmenities = $busAmenities;
+        $this->amenities = $amenities;
+        $this->boardingDroping = $boardingDroping;
+        $this->user = $user;
+        $this->busScheduleDate = $busScheduleDate;
+    }
+    public function getAll()
+    {
+        return $this->bus->orderBy('name','ASC')->get(); 
+    }
+    public function getById($id)
+    {
+        return $this->bus ->where('id', $id)->get();
+    }
+    public function updatesequence($data, $id)
+    {
+        $bus = $this->bus->find($id);
+        $bus->sequence = $data['sequence'];
+        $bus->update();
+        return $bus;
+    }
+    public function getModel($data,Bus $bus)
+    {       
+        $bus->user_id = $data['user_id'];
+        $bus->name = $data['name'];
+        $bus->bus_operator_id = $data['bus_operator_id'];
+        $bus->via = $data['via'];
+        $bus->bus_number = $data['bus_number'];
+        $bus->bus_description = $data['bus_description'];
+        $bus->bus_type_id = $data['bus_type_id'];
+        $bus->bus_sitting_id = $data['bus_sitting_id'];
+        $bus->bus_seat_layout_id = $data['bus_seat_layout_id'];
+        $bus->running_cycle = "0";        
+        $bus->has_return_bus ="0";        
+        $bus->cancelation_points = $data['cancelation_points'];      
+        $bus->cancellationslabs_id = $data['cancellationslabs_id'];    
+        $bus->created_by = $data['created_by'];       
+        return $bus;
+    }
+    public function save($data)
+    {
+        $bus = new $this->bus;
+        $bus = $this->getModel($data,$bus);
+        $bus->save();
+        
+        $amentiesModel=[];
+        $amenities=$data['amenities'];
+        foreach($amenities as $amenitiyId)
+        {
+            $busAmenity=new BusAmenities();
+            $busAmenity->bus_id=$bus->id;
+            $busAmenity->amenities_id=$amenitiyId;
+            $busAmenity->created_by =$data['created_by'];
+            $busAmenity->status='1';
+            $amentiesModel[]=$busAmenity;
+        }
+        $bus->busAmenities()->saveMany($amentiesModel);
+        return $bus->id;
+    }
+    public function update($data, $id)
+    {  
+        $bus = $this->bus->find($id);
+        $bus = $this->getModel($data,$bus);
+        $bus->update();
+
+        $amenitiesRecord=$this->busAmenities->where('bus_id',$id);
+        $amenitiesRecord->delete();
+        
+        $amentiesModel=[];
+        $amenities=$data['amenities'];
+        foreach($amenities as $amenitiyId)
+        {
+            $busAmenity=new BusAmenities();
+            $busAmenity->bus_id=$bus->id;
+            $busAmenity->amenities_id=$amenitiyId;
+            $busAmenity->created_by =$data['created_by'];
+            $busAmenity->status='1';
+            $amentiesModel[]=$busAmenity;
+        }
+        $bus->busAmenities()->saveMany($amentiesModel);
+
+
+        return $bus;
+    }    
+    public function delete($id)
+    {
+        $bus = $this->bus->find($id);
+        $bus->status = 2;
+        $bus->update();
+        return $bus;
+    }
+    
+    public function getAllBusDT( $request)
+    {
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length");
+        if(!is_numeric($rowperpage))
+        {
+            $rowperpage=Config::get('constants.ALL_RECORDS');
+        }
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+        $columnIndex = $columnIndex_arr[0]['column'];
+        $columnName = $columnName_arr[$columnIndex]['data'];
+        $columnSortOrder = $order_arr[0]['dir'];
+        $searchValue = $search_arr['value'];
+
+        $totalRecords = $this->bus->where('status','!=','2')->count();
+        $totalRecordswithFilter = $this->bus->where('name', 'like', '%' .$searchValue . '%')->where('status','!=','2')->count();
+
+        $records = $this->bus->orderBy($columnName,$columnSortOrder)
+            ->where('name', 'like', '%' .$searchValue . '%')
+            ->where('status','!=','2')
+            ->skip($start)
+            ->take($rowperpage)
+            ->get();
+
+        $data_arr = array();
+        foreach($records as $record)
+        {
+            $data_arr[]=$record->toArray();
+        }
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordswithFilter,
+            "aaData" => $data_arr
+        ); 
+        return $response;
+        
+    }
+    public function changeStatus($id)
+    {
+        $post = $this->bus->find($id);
+        if($post->status==0){
+            $post->status = 1;
+        }elseif($post->status==1){
+            $post->status = 0;
+        }
+        $post->update();
+        return $post;
+    }
+    public function getBusbyBuschedule($busId)
+    {
+        $busWithBusSchedules =  $this->bus->with('busSchedule') 
+        ->where('id', $busId)
+        ->get('id');
+        $busData = array();
+        foreach($busWithBusSchedules as $busWithBusSchedule){
+            $busSchedules = $busWithBusSchedule->busSchedule;
+            foreach($busSchedules as $bSchedule)
+            {
+                $journeyDate = $bSchedule->journey_date; 
+                $busData[] = array(
+                    "cancelled_date" =>$journeyDate
+                ); 
+            }
+        }
+        return $busData;
+    } 
+    public function getBusScheduleEntryDates($busId)
+    {
+        $busWithEntryDates = $this->bus->with('busSchedule.busScheduleDate') 
+        ->where('id', $busId)
+        ->get('id');
+        $busData = array();
+        foreach($busWithEntryDates as $busWithEntryDate){
+            $dateRecord = $busWithEntryDate->busSchedule->busScheduleDate;
+            foreach($dateRecord as $dateRec)
+            {
+                $entryDate = $dateRec->entry_date; 
+                $busData[] = array(
+                    "entry_date"=>date('j M Y ',strtotime($entryDate)),
+                ); 
+            }
+        }
+        return $busData;
+    }
+    public function getBusScheduleEntryDatesFilter($data)
+    {
+        $searchByBus = $data['busLists'];
+        $search = $data['year']."-".$data['month'];
+        $busData = array();
+        foreach($searchByBus as $busList){
+            $busWithEntryDates = $this->bus
+            ->where('bus.id' , $busList)->with(['busSchedule.busScheduleDate' => function($query) use ($search){
+            $query->where('entry_date', 'like', '%'.$search. '%');
+            }])
+            ->get();
+            foreach($busWithEntryDates as $busWithEntryDate){
+                $busName = $busWithEntryDate->name; 
+                $busName = $busName." [ ".$busWithEntryDate->bus_number." ] ";
+                $dateRecord = $busWithEntryDate->busSchedule->busScheduleDate;
+                $entryDates = array();
+                foreach($dateRecord as $dateRec) 
+                {     
+                    $bus_id = $dateRec->bus_id;              
+                    $entryDate = $dateRec->entry_date; 
+                    $entryDates[] = array(
+                                          "busId" =>$bus_id,
+                                          "entry_date"=>date('j M Y ',strtotime($entryDate)),
+                                         );  
+                }
+                $busData[] = array(
+                    "bus_id"=>$busList,
+                    "busName"=>$busName,
+                    "entryDates"=>$entryDates   
+                );              
+            }
+
+        }
+        return ["busDatas" => $busData];
+    }
+}

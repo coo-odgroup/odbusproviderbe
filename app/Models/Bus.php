@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\BusSeats;
+use App\Models\BusAmenities;
+use App\Models\BusSafety;
+// use App\Models\Amenities;
+use App\Models\CityClosing;
+use App\Models\BusContacts;
+use App\Models\BusStoppage;
+use App\Models\Review;
+use App\Models\BusSchedule;
+use App\Models\BusOperator;
+use App\Models\BusCancelled;
+
+
+//bus_seats  bus_amenities city_closing bus_contacts bus_stoppage bus_stoppage_timing
+class Bus extends Model
+{
+    use HasFactory; 
+    protected $table = 'bus';
+    protected $fillable = [ 
+        'bus_operator_id','user_id', 'name','via','bus_number','bus_description','bus_type_id','bus_sitting_id','amenities_id','cancellationslabs_id','bus_seat_layout_id','running_cycle','popularity','admin_notes','has_return_bus', 'return_bus_id','cancelation_points','created_by',
+    ];
+    public function busAmenities()
+    {
+        return $this->hasMany(BusAmenities::class);        
+    } 
+    public function busSafety()
+    {
+        return $this->hasMany(BusSafety::class);        
+    } 
+    public function review()
+    {        
+        return $this->hasMany(Review::class);        
+    } 
+    public function busSchedule()
+    {        
+        return $this->hasOne(busSchedule::class);        
+    } 
+    public function busCancelled()
+    {        
+        return $this->hasOne(BusCancelled::class);        
+    } 
+    public function busstoppage()
+    {        
+        return $this->hasMany(BusStoppage::class);        
+    }  
+    public function busSeats()
+    {        
+        return $this->hasMany(BusSeats::class);        
+    }     
+    public function busOperator()
+    {
+    	return $this->belongsTo(BusOperator::class);
+    }
+    public function specialFare()
+    {
+    	return $this->belongsToMany(SpecialFare::class);       
+    }
+    public function BusSitting()
+    {
+    	return $this->belongsTo(BusSitting::class);
+    }
+    public function BusType()
+    {
+    	return $this->belongsTo(BusType::class);
+    }
+    public function BusSeatLayout()
+    {
+    	return $this->belongsTo(BusSeatLayout::class);
+    }
+    public function ownerfare()
+    {
+    	return $this->belongsToMany(OwnerFare::class);
+    }
+
+}

@@ -1,0 +1,127 @@
+Get Locations:
+This program returns name of Locations,based on the search query:
+
+Algorithm GetLocations(search_query) 
+Input: 
+	search_query, Minimum 3 letters 
+Output: 
+	location name, 
+	providerid for ODBUS, 
+	providerid for Redbus or others. 
+
+	if the search_query length is grater than 3
+		Wildcard Search from name & synonym
+		Get providerid  from locationcode
+	   
+		return location name,  providerid for ODBUS, Redbus or others. 
+
+	else
+     	print 'Provide 3 charecters or more'
+
+
+
+--------------------------------------------------------------------------------------
+Algorithm Listing_Page_Informations(source_id,destination_id,journey_date) 
+Input: 
+	source_id      (id from location table)
+	destination_id (id from location table)
+	journey_date
+Output: 
+	Bus Types 
+	Bus Sitiing Types
+	Operators of that route (**operator is the user associated with bus table.)
+	Amanities 
+	boarding point (association to source_id)
+	dropping point (association to destination_id)
+
+
+---------------------------------------------------------------------------------------
+Algorithm Bus_Listing(source_id,destination_id,journey_date) 
+Mandatory Input: 
+	source_id      (id from location table)
+	destination_id (id from location table)
+	journey_date  
+Optional Input: 
+    BusType_id
+    BusSittingType_id
+    Operator (user_id)
+
+
+Output (*****////******get bus list from bus bus_schedule for the journey date and get its info from bus table):
+	
+	busId & other bus info 
+	Bus Type
+	Seating Type
+
+	popularity
+	seatLayoutId
+	ticketCancelationRule & its id	
+	travelTime (difference between boarding time and dropping time. can be get from bus_stoppage table)
+	minimumPrice 
+		[!!!!!!!!!!!!INFO: !!!!!!!!
+			Price of seats can be available from these 3 tables: 
+				bus_stoppage                 (base_fare) 
+				bus_stoppage_additional_fare (seat specific base price )
+				bus_extra_fare               (for a date add-on fare will be there which will be added to base fare...U may get multiple columns.)
+		]
+	total seat count
+		[!!!!!!!!!!!!INFO: !!!!!!!!
+			Total seats can be available from these 2 tables: 
+			bus_seats       (  seats where category = 0 i.e odbus  AND duration must be less than current-time-journey time   )
+			bus_seats_extra 
+				[!!!!!!!!!!!!INFO: !!!!!!!!
+					journey_dt should match
+					if type = 1 ie blocked then will be removed
+					if type = 2 ie open then will be added
+				]  
+			**pre_tranansaction_detail   (BLOCKED SEATS  -- will be removed)
+			**Final_tranansaction_detail  (BOOKED SEATS : All seats which are not cancelled ---  will be removed)
+		]
+	
+	cityDepartureTime  (bus_stoppage)
+	cityClosingHour     ( Compare these 2 tables : city_closing   city_closing_extended  )
+	Destination Arrival time  (bus_stoppage)
+
+	
+	 
+	Boarding point and its time
+	Dropping points and its time
+
+	amnity list with icon and name
+	//Coupon informations
+	review counts & review ( from review table where status  is 1)
+
+	
+	****After ROUTE TIME EXTEND  if user can request for a bus?  || 
+	****This part we are not taking into consideration as of now.
+---------------------------------------------------------------------------------------
+Algorithm bus_gallery(bus_id)
+
+Input: 
+	bus_id   (bus_id from bus table)
+
+Output: 
+	image   ( image path )
+	img_tag ( image name )
+---------------------------------------------------------------------------------------
+Algorithm review(bus_id)
+
+Input:
+	bus_id ( bus_id )
+
+Output:
+	Name
+	Comments		 ( Top 10 )
+	Comment Date     ( DateTime )
+---------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
