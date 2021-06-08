@@ -11,7 +11,7 @@ class Seats extends Model
     use HasFactory;
     protected $table = 'seats';
     //public $timestamps = false;
-    protected $fillable = ['bus_seat_layout_id','seatType', 'seatText','rowNumber','colNumber','berthType'];
+    protected $fillable = ['bus_seat_layout_id','seat_class_id', 'berthType','seatText','rowNumber','colNumber'];
     public function BusSeatLayout()
     {
     	return $this->belongsTo(BusSeatLayout::class);

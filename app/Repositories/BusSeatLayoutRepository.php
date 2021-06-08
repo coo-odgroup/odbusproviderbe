@@ -116,6 +116,7 @@ class BusSeatLayoutRepository
         $sLayoutContent=json_decode($data['layout_data'],true);
         $seatRecords = [];
         foreach ($sLayoutContent as $ind_records) {
+            $ind_records['seat_class_id']=$ind_records['seatType'];
             $seatRecords[] =new Seats($ind_records);
         }
         $busSeatLayout->seats()->saveMany($seatRecords);
