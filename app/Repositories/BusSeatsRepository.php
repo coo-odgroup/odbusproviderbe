@@ -41,11 +41,12 @@ class BusSeatsRepository
     }
     public function getModel(BusSeats $busseats,$data,$berthData)
     {
+        Log::info($data);
         $busseats->bus_id = $data['bus_id'];
-        $busseats->berth_type=$berthData['berthType'];
+       // $busseats->berth_type=$berthData['berthType'];
         $busseats->category = $data['category'];
-        $busseats->seat_type = $berthData['seatType'];
-        $busseats->seat_number = $berthData['seatText'];
+        $busseats->seats_id = $berthData['seatId'];
+        //Find Value for Seat ID
         $busseats->ticket_price_id = $data['ticket_price_id'];
         $busseats->duration = $data['duration'];
         $busseats->created_by = "Admin";
