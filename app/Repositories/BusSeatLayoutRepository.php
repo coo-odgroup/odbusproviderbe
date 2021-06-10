@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\BusSeatLayout;
 use App\Models\Bus;
+use App\Models\BusSeats;
 use App\Models\Seats;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -14,17 +15,19 @@ class BusSeatLayoutRepository
      */
     protected $busSeatLayout;
     protected $Seats;
+    protected $busSeats;
 
     /**
      * BusSeatLayoutRepository constructor.
      *
      * @param BusSeatLayout $busSeatLayout
      */
-    public function __construct(BusSeatLayout $busSeatLayout, Bus $bus, Seats $Seats)
+    public function __construct(BusSeatLayout $busSeatLayout, Bus $bus, Seats $Seats, BusSeats $busSeats)
     {
         $this->busSeatLayout = $busSeatLayout;
         $this->bus = $bus;
         $this->Seats = $Seats;
+        $this->busSeats= $busSeats;
     }
 
     /**
@@ -59,29 +62,31 @@ class BusSeatLayoutRepository
     {
         $seatData=[];
 
-        $seatData['layoutData']=$this->busSeatLayout->where('id', $id)->get();
-
-        $lowerBerth=$this->Seats
-        ->distinct('rowNumber')
-        ->where('bus_seat_layout_id', $id)
-        ->where('berthType', '1')
-        ->orderBy('rowNumber')
+        $lowerBerth=$this->Seats->with('BusSeats')
+        ->where('bus_seat_layout_id',$id)
+        ->where('berthType',1)
         ->get();
-       
+
         foreach($lowerBerth as $key=>$rows)
         {
-            $row_data=$this->Seats->where('rowNumber',$rows->rowNumber)->where('berthType', '1')->where('bus_seat_layout_id', $id)->orderBy('colNumber')->get();
+            $row_data=$this->Seats
+            ->where('rowNumber',$rows->rowNumber)
+            ->where('berthType', '1')
+            ->where('bus_seat_layout_id', $id)
+            ->orderBy('colNumber')->get();
             $seatData['lowerBerth'][$rows->rowNumber]=$row_data;
         }
-        $upperBerth=$this->Seats
-        ->distinct('rowNumber')
-        ->where('bus_seat_layout_id', $id)
-        ->where('berthType', '2')
-        ->orderBy('rowNumber')
+
+        $upperBerth=$this->Seats->with('BusSeats')
+        ->where('bus_seat_layout_id',$id)
+        ->where('berthType',2)
         ->get();
         foreach($upperBerth as $key=>$rows)
         {
-            $row_data=$this->Seats->where('rowNumber',$rows->rowNumber)->where('berthType', '2')->where('bus_seat_layout_id', $id)->orderBy('colNumber')->get();
+            $row_data=$this->Seats->where('rowNumber',$rows->rowNumber)
+            ->where('berthType', '2')
+            ->where('bus_seat_layout_id', $id)
+            ->orderBy('colNumber')->get();
             $seatData['upperBerth'][$rows->rowNumber]=$row_data;
         }
         return $seatData;

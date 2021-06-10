@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\BusSeatLayout;
-
+use App\Models\BusSeats;
 class Seats extends Model
 {
     use HasFactory;
@@ -15,6 +15,10 @@ class Seats extends Model
     public function BusSeatLayout()
     {
     	return $this->belongsTo(BusSeatLayout::class);
+    }
+    public function BusSeats()
+    {
+        return $this->hasMany(BusSeats::class);
     }
     protected $hidden = [
         'created_at',
