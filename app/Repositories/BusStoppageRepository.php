@@ -31,14 +31,23 @@ class BusStoppageRepository
    
     public function getModel(BusStoppage $busStoppage,$data)
     {
+        $dt0=date('Y-m-d')." ".$data['dep_time'];
+        $dt1=date('Y-m-d')." ".$data['arr_time'];
+
+        $start_journey_day=$data['start_j_days']-1;
+        $end_journey_day=$data['j_day']-1;
+
+        $day0 = date('Y-m-d H:i:s',strtotime('+'.$start_journey_day.' days',strtotime($dt0))); //DEP TIME
+        $day1 = date('Y-m-d H:i:s',strtotime('+'.$start_journey_day.' days',strtotime($dt1))); //ARR TIME
+
         $busStoppage->bus_id = $data['bus_id'];
         $busStoppage->user_id = $data['user_id'];
         $busStoppage->source_id = $data['source_id'];
         $busStoppage->destination_id = $data['destination_id'];
         $busStoppage->base_seat_fare = $data['base_seat_fare'];
         $busStoppage->base_sleeper_fare = $data['base_sleeper_fare'];
-        $busStoppage->dep_time = $data['dep_time'];
-        $busStoppage->arr_time = $data['arr_time'];
+        $busStoppage->dep_time = $day0;
+        $busStoppage->arr_time = $day1;
         $busStoppage->j_day = $data['j_day'];
         $busStoppage->start_j_days = $data['start_j_days'];
         $busStoppage->created_by = "Admin";
