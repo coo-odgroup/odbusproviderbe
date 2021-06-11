@@ -38,7 +38,7 @@ class BusStoppageRepository
         $end_journey_day=$data['j_day']-1;
 
         $day0 = date('Y-m-d H:i:s',strtotime('+'.$start_journey_day.' days',strtotime($dt0))); //DEP TIME
-        $day1 = date('Y-m-d H:i:s',strtotime('+'.$start_journey_day.' days',strtotime($dt1))); //ARR TIME
+        $day1 = date('Y-m-d H:i:s',strtotime('+'.$end_journey_day.' days',strtotime($dt1))); //ARR TIME
 
         $busStoppage->bus_id = $data['bus_id'];
         $busStoppage->user_id = $data['user_id'];
