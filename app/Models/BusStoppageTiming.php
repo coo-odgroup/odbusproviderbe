@@ -12,7 +12,7 @@ class BusStoppageTiming extends Model
 {
     use HasFactory;
     protected $table = 'bus_stoppage_timing';
-    protected $fillable = ['bus_id','location_id','stoppage_name','stoppage_time','created_by','boarding_dropping_id'];
+    protected $fillable = ['bus_id','location_id','stoppage_name','stoppage_time','created_by','boarding_droping_id'];
     public function busStoppage()
     {
     	return $this->belongsTo(BusStoppage::class);

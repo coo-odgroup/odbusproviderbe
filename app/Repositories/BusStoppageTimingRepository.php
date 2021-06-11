@@ -43,7 +43,7 @@ class busStoppageTimingRepository
     {
         $busstoppageTiming->bus_id = $data['bus_id'];
         $busstoppageTiming->stoppage_name = $data['stoppage_name'];
-        $busstoppageTiming->boarding_dropping_id = $data['boarding_dropping_id'];
+        $busstoppageTiming->boarding_droping_id = $data['boarding_droping_id'];
         $busstoppageTiming->stoppage_time = $data['stoppage_time'];
         $busstoppageTiming->created_by = "Admin";
         $busstoppageTiming->location_id = $data['location_id'];

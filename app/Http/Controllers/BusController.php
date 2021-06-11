@@ -328,7 +328,7 @@ class BusController extends Controller
                     }
                     $depature_time=$destinations['sourceTime'];
                     $timing_grp['stoppage_name']=$destinations['sourceLocation'];
-                    $timing_grp['boarding_dropping_id']=$destinations['boarding_dropping_id'];
+                    $timing_grp['boarding_droping_id']=$destinations['boarding_droping_id'];
                     $timing_grp['stoppage_time']=$destinations['sourceTime'];
                     try {
                         $this->BusStoppageTimingService->savePostData($timing_grp);
