@@ -5,11 +5,10 @@ namespace App\Services;
 use App\Models\BusGallery;
 use App\Repositories\BusGalleryRepository;
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
-
+use Illuminate\Support\Facades\Config;
 class BusGalleryService
 {
     /**
@@ -35,20 +34,11 @@ class BusGalleryService
      */
     public function deleteById($id)
     {
-        DB::beginTransaction();
-
         try {
             $post = $this->busGalleryRepository->delete($id);
-
         } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
-
-            throw new InvalidArgumentException('Unable to delete post data');
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
-
-        DB::commit();
-
         return $post;
 
     }
@@ -87,22 +77,12 @@ class BusGalleryService
      */
     public function updatePost($data, $id)
     {
-        
-
-        DB::beginTransaction();
-
         try {
             $post = $this->busGalleryRepository->update($data, $id);
 
         } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
-
-            throw new InvalidArgumentException('Unable to update post data');
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-
-        DB::commit();
-
         return $post;
 
     }
@@ -116,11 +96,7 @@ class BusGalleryService
      */
     public function savePostData($data)
     {
-        
-
         $result = $this->busGalleryRepository->save($data);
-
         return $result;
     }
-
 }

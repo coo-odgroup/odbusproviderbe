@@ -58,28 +58,21 @@ class BusGalleryRepository
      * @param $data
      * @return BusGallery
      */
+    public function getModel($data, BusGallery $busGallery)
+    {
+        $busGallery->bus_id = $data['bus_id'];
+        $busGallery->image = $data['icon'];
+        $busGallery->created_by = $data['created_by'];
+        return $busGallery;
+    }
+
     public function save($data)
     {
-        $uploadFolder = 'busGallery';
-        $image = $data->file('image');
-        $image_uploaded_path = $image->store($uploadFolder, 'public');
-        $uploadedImageResponse = array(
-            "image_name" => basename($image_uploaded_path),
-            "image_url" => Storage::disk('public')->url($image_uploaded_path),
-            "mime" => $image->getClientMimeType()
-        );
 
-
-        $busGallery = new $this->busGallery; 
-        
-        $busGallery->bus_id = $data["bus_id"];
-        $busGallery->alt_tag = $data["alt_tag"];
-        $busGallery->created_by = "Admin";
-        $busGallery->image=$uploadedImageResponse['image_url'];
-
+        $busGallery = new $this->busGallery;
+        $busGallery=$this->getModel($data,$busGallery);
         $busGallery->save();
-
-        return $busGallery->fresh();
+        return $busGallery;
     }
 
     /**
@@ -112,7 +105,6 @@ class BusGalleryRepository
         $post = $this->busGallery->find($id);
         $post->status = 2;
         $post->update();
-
         return $post;
     }
 

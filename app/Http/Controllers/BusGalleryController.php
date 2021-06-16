@@ -6,29 +6,33 @@ use Illuminate\Http\Request;
 use App\Models\BusGallery;
 use App\Services\BusGalleryService;
 use Illuminate\Support\Facades\Validator;
+use App\AppValidator\BusGalleryValidator;
 use InvalidArgumentException;
-use Storage;
+use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\Config;
+use Symfony\Component\HttpFoundation\Response;
 
 use Exception;
 
 class BusGalleryController extends Controller
 {
-
+    use ApiResponser;
 
     /**
      * @var busGalleryService
      */
     protected $busGalleryService;
-
+    protected $busGalleryValidator;
     /**
      * PostController Constructor
      *
      * @param BusGalleryService $busGalleryService
      *
      */
-    public function __construct(BusGalleryService $busGalleryService)
+    public function __construct(BusGalleryService $busGalleryService, BusGalleryValidator $busGalleryValidator)
     {
         $this->busGalleryService = $busGalleryService;
+        $this->busGalleryValidator = $busGalleryValidator;
     }
     public function getAllBusGallery() {
         $busGallery = $this->busGalleryService->getAll();;
@@ -38,45 +42,26 @@ class BusGalleryController extends Controller
         return response($output, 200);
     }
 
-    public function uploadImage(Request $request)
+    public function addBusGallery(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'image' => 'required|image:jpeg,png,jpg,gif,svg|max:2048'
-        ]);
-        if ($validator->fails()) {
-            // return sendCustomResponse($validator->messages()->first(),  'error', 500);
-            $errors = $validator->errors();
-            return $errors->toJson();
+
+        $data = $request->only([
+            'bus_id',
+            'icon',
+            'created_by',
+          ]);
+          $busGalleryValidation = $this->busGalleryValidator->validate($data);
+          if ($busGalleryValidation->fails()) {
+            $errors = $busGalleryValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+          }
+          try {
+            $response = $this->busGalleryService->savePostData($data);
+            return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
         }
-        // $uploadFolder = 'busGallery';
-        // $image = $request->file('image');
-        // $image_uploaded_path = $image->store($uploadFolder, 'public');
-        // $uploadedImageResponse = array(
-        //     "image_name" => basename($image_uploaded_path),
-        //     "image_url" => Storage::disk('public')->url($image_uploaded_path),
-        //     "mime" => $image->getClientMimeType()
-        // );
-
-
-        // $busGallery = new BusGallery; 
-        
-        // $busGallery->bus_id = $request->bus_id;
-        // $busGallery->alt_tag = $request->alt_tag;
-        // $busGallery->created_by = "Admin";
-        // $busGallery->image=$uploadedImageResponse['image_url'];
-
-        // $busGallery->save();
-        $this->busGalleryService->savePostData($request);
-        return response()->json([
-            "status"=> 1,
-            "message" => "New Bus Gallery added Successfully"
-        ], 201);
-
-
-
-
-
-        // return sendCustomResponse('File Uploaded Successfully', 'success',   200, $uploadedImageResponse);
+        catch(Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }	
     }
 
     public function deleteBusGallery ($id) {

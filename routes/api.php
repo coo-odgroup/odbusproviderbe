@@ -149,7 +149,7 @@ Route::put('/customerQuery/{id}', [CustomerQueryController::class, 'updateCustom
 Route::delete('/customerQuery/{id}', [CustomerQueryController::class, 'deleteCustomerQuery']);
 Route::get('/customerQuery/{id}', [CustomerQueryController::class, 'getCustomerQuery']);
 
-Route::post('/busGallery', [BusGalleryController::class, 'uploadImage']);
+Route::post('/busGallery', [BusGalleryController::class, 'addBusGallery']);
 Route::get('/busGallery', [BusGalleryController::class, 'getAllBusGallery']);
 Route::delete('/busGallery/{id}', [BusGalleryController::class, 'deleteBusGallery']);
 Route::get('/busGallery/{id}', [BusGalleryController::class, 'getBusGallery']);
