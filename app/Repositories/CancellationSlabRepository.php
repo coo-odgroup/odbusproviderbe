@@ -3,18 +3,21 @@
 namespace App\Repositories;
 
 use App\Models\CancellationSlab;
+use App\Models\CancellationSlabInfo;
 use Illuminate\Support\Collection;
-
+use Illuminate\Support\Facades\Log;
 class CancellationSlabRepository
 {
     protected $cancellationSlab;
-    public function __construct(CancellationSlab $cancellationSlab)
+    protected $cancellationSlabInfo;
+    public function __construct(CancellationSlab $cancellationSlab, CancellationSlabInfo $cancellationSlabInfo)
     {
         $this->cancellationSlab = $cancellationSlab;
+        $this->cancellationSlabInfo = $cancellationSlabInfo;
     }
     public function getAll($request)
     {
-        return $this->cancellationSlab->get();
+        return $this->cancellationSlab->with('SlabInfo') ->get();
     }
     public function getCancellationSlabDT($request)
     {
@@ -35,11 +38,12 @@ class CancellationSlabRepository
         $columnSortOrder = $order_arr[0]['dir']; // asc or desc
         $searchValue = $search_arr['value']; // Search value
         $totalRecords = $this->cancellationSlab->where('status','!=','2')->count();
-        $totalRecordswithFilter = $this->cancellationSlab
+        $totalRecordswithFilter = $this->cancellationSlab->with('SlabInfo') 
         ->where('rule_name', 'like', "%" .$searchValue . "%")
         ->where('status','!=','2')
         ->count();
-        $records = $this->cancellationSlab->orderBy($columnName,$columnSortOrder)
+        $records = $this->cancellationSlab->with('SlabInfo') 
+            ->orderBy($columnName,$columnSortOrder)
             ->where('rule_name', "like", "%" .$searchValue . "%")
             ->where('status','!=','2')
             ->skip($start)
@@ -68,7 +72,8 @@ class CancellationSlabRepository
      */
     public function getById($id)
     {
-        return $this->cancellationSlab
+        //->SlabInfo()
+        return $this->cancellationSlab->with('SlabInfo') 
             ->where('id', $id)
             ->get();
     }
@@ -77,8 +82,8 @@ class CancellationSlabRepository
     {
         $cSlab->api_id = $data['api_id'];
         $cSlab->rule_name = $data['rule_name'];
-        $cSlab->duration = $data['duration'];
-        $cSlab->deduction = $data['deduction'];
+        //$cSlab->duration = $data['duration'];
+        //$cSlab->deduction = $data['deduction'];
         $cSlab->status =0;
         return $cSlab;
     }
@@ -93,6 +98,21 @@ class CancellationSlabRepository
         $cSlab = new $this->cancellationSlab;
         $cSlab=$this->getModel($data,$cSlab);
         $cSlab->save();
+
+
+        $cSlabDetails=[];
+        $slabs=$data['slabs'];
+        foreach($slabs as $slab_data)
+        {
+            $cSlabInfo=new CancellationSlabInfo();
+            $cSlabInfo->duration=$slab_data['duration'];
+            $cSlabInfo->deduction=$slab_data['deduction'];
+            $cSlabInfo->status='1';
+            $cSlabDetails[]=$cSlabInfo;
+        }
+        $cSlab->SlabInfo()->saveMany($cSlabDetails);
+
+
         return $cSlab;
     }
 
@@ -107,6 +127,23 @@ class CancellationSlabRepository
         $cSlab = $this->cancellationSlab->findOrFail($id);
         $cSlab=$this->getModel($data,$cSlab);
         $cSlab->update();
+
+        $cancellationSlabInforecord=$this->cancellationSlabInfo->where('cancellation_slab_id',$id);
+        $cancellationSlabInforecord->delete();
+
+        $cSlabDetails=[];
+        $slabs=$data['slabs'];
+        foreach($slabs as $slab_data)
+        {
+            $cSlabInfo=new CancellationSlabInfo();
+            $cSlabInfo->duration=$slab_data['duration'];
+            $cSlabInfo->deduction=$slab_data['deduction'];
+            $cSlabInfo->status='1';
+            $cSlabDetails[]=$cSlabInfo;
+        }
+        $cSlab->SlabInfo()->saveMany($cSlabDetails);
+
+
         return $cSlab;
     }
 

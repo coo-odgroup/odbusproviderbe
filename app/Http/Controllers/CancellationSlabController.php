@@ -11,7 +11,7 @@ use Exception;
 use InvalidArgumentException;
 use App\AppValidator\CancellationSlabValidator;
 use Symfony\Component\HttpFoundation\Response;
-
+use Illuminate\Support\Facades\Log;
 class CancellationSlabController extends Controller
 {
     use ApiResponser;
@@ -56,14 +56,17 @@ class CancellationSlabController extends Controller
     
     public function createCancellationSlab(Request $request) {
       $data = $request->only([
-          'api_id', 'rule_name', 'duration', 'deduction','added_on','status'
+          'api_id', 'rule_name','slabs'
       ]);
+      
       $cSlabValidate = $this->CancellationSlabValidator->validate($data);
+      
       if ($cSlabValidate->fails()) {
           $errors = $cSlabValidate->errors();
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }
       try {
+       
         $response = $this->cancellationSlabService->savePostData($data);
           return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
       }
@@ -73,7 +76,7 @@ class CancellationSlabController extends Controller
   }
   public function updateCancellationSlab(Request $request, $id) {
     $data = $request->only([
-      'api_id', 'rule_name', 'duration', 'deduction','added_on','status' 
+      'api_id', 'rule_name', 'slabs'
     ]);
     $cSlabValidate = $this->CancellationSlabValidator->validate($data);
     if ($cSlabValidate->fails()) {
