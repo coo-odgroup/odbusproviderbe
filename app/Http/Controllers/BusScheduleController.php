@@ -98,5 +98,5 @@ class BusScheduleController extends Controller
         return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
       }    
 	     
-
+/////////////
 }
