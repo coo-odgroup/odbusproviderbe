@@ -126,15 +126,15 @@ class BusTypeRepository
 
         $data_arr = array();
         $typename = array(
-            "0" => "AC",
-            "1" => "NON AC"
+            "1" => "AC",
+            "2" => "NON AC"
         );
         foreach($records as $key=>$record)
         {
             $data_arr[]=$record->toArray();
             $data_arr[$key]['created_at']=date('j M Y h:i a',strtotime($record->created_at));
             $data_arr[$key]['updated_at']=date('j M Y h:i a',strtotime($record->updated_at));
-            $data_arr[$key]['type']=$typename[$record->type];
+            $data_arr[$key]['type']=$typename[$record->bus_class_id];
             
         }    
         

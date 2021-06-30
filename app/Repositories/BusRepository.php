@@ -9,6 +9,7 @@ use App\Models\BusStoppage;
 use App\Models\BusAmenities;
 use App\Models\Amenities;
 use App\Models\User;
+use App\Models\cancelationSlab;
 use App\Models\BoardingDroping;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -38,7 +39,9 @@ class BusRepository
     }
     public function getById($id)
     {
-        return $this->bus ->where('id', $id)->get();
+        return $this->bus
+        ->with('cancelationSlab')
+        ->where('id', $id)->get();
     }
     public function updatesequence($data, $id)
     {

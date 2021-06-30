@@ -121,7 +121,7 @@ Route::get('/appdownload/{id}', [AppDownloadController::class, 'getAppDownload']
 Route::get('/BusSeatLayoutRecord/{id}', [BusSeatLayoutController::class, 'getSeatLayoutRecord']);
 Route::post('/BusSeatLayout', [BusSeatLayoutController::class, 'save']);
 Route::get('/BusSeatLayout', [BusSeatLayoutController::class, 'getAll']);
-Route::put('/BusSeatLayout/{id}', [BusSeatLayoutController::class, 'update']);
+Route::put('BusSeatLayout/{id}', [BusSeatLayoutController::class, 'update']);
 Route::delete('/BusSeatLayout/{id}', [BusSeatLayoutController::class, 'deleteById']);
 Route::get('/BusSeatLayout/{id}', [BusSeatLayoutController::class, 'getById']);
 Route::get('/getSeatLayout/{bus_id}', [BusSeatLayoutController::class, 'getSeatLayoutByBusId']);

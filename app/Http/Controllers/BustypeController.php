@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use Exception;
 use App\AppValidator\BusTypeValidator;
 use Symfony\Component\HttpFoundation\Response;
-
+use Illuminate\Support\Facades\Log;
 class BusTypeController extends Controller
 {
    
@@ -36,12 +36,10 @@ class BusTypeController extends Controller
     }
 
     public function createBusType(Request $request) {
-        
       $data = $request->only([
         'type',
-        'name',
+        'name'
       ]);
-      
       $busTypeValidation = $this->busTypeValidator->validate($data);
       
       if ($busTypeValidation->fails()) {

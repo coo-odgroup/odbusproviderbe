@@ -12,7 +12,7 @@ class BusType extends Model
     protected $table = 'bus_type';
     // public $timestamps = false;
     protected $fillable = [
-        'type','name', 
+        'name'
     ];
 
     public function Bus()

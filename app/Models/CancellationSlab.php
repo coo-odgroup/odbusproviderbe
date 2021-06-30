@@ -3,6 +3,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CancellationSlabInfo;
+use App\Models\Bus;
 class CancellationSlab extends Model
 {
     use HasFactory;
@@ -14,6 +15,10 @@ class CancellationSlab extends Model
     public function SlabInfo()
     {
         return $this->hasMany(CancellationSlabInfo::class);        
+    }
+    public function Bus()
+    {
+    	return $this->hasOne(Bus::class);
     }
 
 }

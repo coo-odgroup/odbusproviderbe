@@ -15,6 +15,7 @@ use App\Models\Review;
 use App\Models\BusSchedule;
 use App\Models\BusOperator;
 use App\Models\BusCancelled;
+use App\Models\CancellationSlab;
 
 
 //bus_seats  bus_amenities city_closing bus_contacts bus_stoppage bus_stoppage_timing
@@ -76,6 +77,10 @@ class Bus extends Model
     public function ownerfare()
     {
     	return $this->belongsToMany(OwnerFare::class);
+    }
+    public function cancelationSlab()
+    {        
+        return $this->belongsTo(CancellationSlab::class);        
     }
 
 }
