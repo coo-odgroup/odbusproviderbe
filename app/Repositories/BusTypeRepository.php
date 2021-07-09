@@ -28,8 +28,8 @@ class BusTypeRepository
     }
     public function getModel($data, BusType $busType)
     {
-        $busType->type = $data['Type'];
-        $busType->name = $data['Name'];    
+        $busType->bus_class_id = $data['type'];
+        $busType->name = $data['name'];    
         $busType->created_by = "Admin";
         $busType->status = 0;
         return $busType;
@@ -41,6 +41,7 @@ class BusTypeRepository
     }
     public function save($data)
     {
+       
         $busType = new $this->busType;
         $busType=$this->getModel($data,$busType);
         $busType->save();
