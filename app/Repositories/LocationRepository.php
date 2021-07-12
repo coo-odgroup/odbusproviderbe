@@ -22,7 +22,7 @@ class LocationRepository
     }
     public function getAll()
     {
-        return $this->location::with('locationcode')->orderBy('name','ASC')->get();
+        return $this->location::with('locationcode')->orderBy('name','ASC')->where('status','1')->get();
     }
     public function getById($id)
     {

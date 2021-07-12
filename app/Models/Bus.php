@@ -16,6 +16,7 @@ use App\Models\BusSchedule;
 use App\Models\BusOperator;
 use App\Models\BusCancelled;
 use App\Models\CancellationSlab;
+use App\Models\TicketPrice;
 
 
 //bus_seats  bus_amenities city_closing bus_contacts bus_stoppage bus_stoppage_timing
@@ -30,6 +31,12 @@ class Bus extends Model
     {
         return $this->hasMany(BusAmenities::class);        
     } 
+
+    public function ticketPrice()
+    {
+        return $this->hasMany(TicketPrice::class);        
+    } 
+
     public function busSafety()
     {
         return $this->hasMany(BusSafety::class);        
@@ -40,7 +47,7 @@ class Bus extends Model
     } 
     public function busSchedule()
     {        
-        return $this->hasOne(busSchedule::class);        
+        return $this->hasMany(BusSchedule::class);        
     } 
     public function busCancelled()
     {        

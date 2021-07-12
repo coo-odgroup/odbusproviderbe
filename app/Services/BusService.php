@@ -30,6 +30,16 @@ class BusService
     {
         return $this->busRepository->getAll();
     }
+    public function getByOperaor($id)
+    {
+        return $this->busRepository->getByOperaor($id);
+    }
+
+    public function getLocationBus($source_id,$destination_id)
+    {
+        return $this->busRepository->getLocationBus($source_id,$destination_id);
+    }
+
     public function getById($id)
     {
         return $this->busRepository->getById($id);

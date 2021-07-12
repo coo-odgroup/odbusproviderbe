@@ -37,12 +37,32 @@ class BusRepository
     {
         return $this->bus->orderBy('name','ASC')->get(); 
     }
+    public function getByOperaor($id)
+    {
+        return $this->bus
+        ->where('bus_operator_id',$id)
+        ->where('status','1')
+        ->get(); 
+    }
+    
     public function getById($id)
     {
         return $this->bus
         ->with('cancelationSlab')
         ->where('id', $id)->get();
     }
+
+    public function getLocationBus($source_id,$destination_id)
+    {
+        return $this->bus
+        ->whereHas('ticketPrice', function ($query) use ($source_id,$destination_id){
+            $query->where('source_id', 'like', '%' .$source_id . '%')->where('destination_id', 'like', '%' .$destination_id . '%');               
+        })
+        //->where('source_id', $source_id)
+        //->where('destination_id', $destination_id)
+        ->get();
+    }
+
     public function updatesequence($data, $id)
     {
         $bus = $this->bus->find($id);

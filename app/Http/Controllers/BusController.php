@@ -62,6 +62,17 @@ class BusController extends Controller
         $buses = $this->busService->getAll();
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
     }
+    public function getByOperaor($id) {
+        $buses = $this->busService->getByOperaor($id);
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+    }
+
+    public function getLocationBus($source_id,$destination_id)
+    {
+        $buses = $this->busService->getLocationBus($source_id,$destination_id);
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+    }
+    
       //USED WITH auth:api..
     public function createBuses(Request $request) {
         $data = $request->only([
