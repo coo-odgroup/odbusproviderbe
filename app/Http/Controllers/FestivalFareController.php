@@ -7,50 +7,52 @@ use App\Models\BusOwnerFare;
 use App\Models\Bus;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
-use App\Services\BusOwnerFareService;
+use App\Services\FestivalFareService;
 use App\Traits\ApiResponser;
 use Exception;
 use InvalidArgumentException;
-use App\AppValidator\BusOwnerFareValidator;
+use App\AppValidator\FestivalFareValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 
-class BusOwnerFareController extends Controller
+class FestivalFareController extends Controller
 {
     use ApiResponser;
-    protected $BusOwnerFareService;
-    protected $BusOwnerFareValidator;
+    protected $festivalFareService;
+    protected $festivalFareValidator;
     
-    public function __construct(BusOwnerFareService $busOwnerFareService, BusOwnerFareValidator $busOwnerFareValidator)
+    public function __construct(FestivalFareService $festivalFareService, FestivalFareValidator $festivalFareValidator)
     {
-        $this->busOwnerFareService = $busOwnerFareService;
-        $this->busOwnerFareValidator = $busOwnerFareValidator;
+        $this->festivalFareService = $festivalFareService;
+        $this->festivalFareValidator = $festivalFareValidator;
     }
 
-    public function getAllBusOwnerFare() {
+    public function getAllFestivalFare() {
 
-        $busOwnerFare = $this->busOwnerFareService->getAll();
+        $busOwnerFare = $this->festivalFareService->getAll();
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-    public function getBusOwnerFareDT(Request $request) {      
+    public function getFestivalFareDT(Request $request) {      
 
-        $busOwnerFare = $this->busOwnerFareService->dataTable($request);
+        $busOwnerFare = $this->festivalFareService->dataTable($request);
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
 
-      public function createBusOwnerFare(Request $request) {
+      public function createFestivalFare(Request $request) {
+
         $data = $request->only([
         
           'date','seater_price','sleeper_price','reason','created_by','operator_id','bus_id' 
         ]);
-        $busOwnerFareValidation = $this->busOwnerFareValidator->validate($data);
+
+        $busOwnerFareValidation = $this->festivalFareValidator->validate($data);
         if ($busOwnerFareValidation->fails()) {
             $errors = $busOwnerFareValidation->errors();
             
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
           }
         try {
-           $this->busOwnerFareService->savePostData($request);
+           $this->festivalFareService->savePostData($request);
 
         } catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -59,10 +61,10 @@ class BusOwnerFareController extends Controller
     } 
 
 
-    public function updateBusOwnerFare(Request $request, $id) {
+    public function updateFestivalFare(Request $request, $id) {
       $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by',
       ]);
-        $busOwnerFareValidation = $this->busOwnerFareValidator->validate($data);
+        $busOwnerFareValidation = $this->festivalFareValidator->validate($data);
         if ($busOwnerFareValidation->fails()) {
             $errors = $busOwnerFareValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
@@ -70,7 +72,7 @@ class BusOwnerFareController extends Controller
         try {
           $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by','bus_id',
           ]);
-          $this->busOwnerFareService->updatePost($data, $id);
+          $this->festivalFareService->updatePost($data, $id);
           return $this->successResponse($data, Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
 
         } catch (Exception $e) {
@@ -78,9 +80,9 @@ class BusOwnerFareController extends Controller
         }
     }
 
-    public function deleteBusOwnerFare($id) {
+    public function deleteFestivalFare($id) {
         try {
-            $this->busOwnerFareService->deleteById($id);
+            $this->festivalFareService->deleteById($id);
           }
           catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -88,9 +90,9 @@ class BusOwnerFareController extends Controller
           return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
     }
 
-    public function getBusOwnerFare($id) {
+    public function getFestivalFare($id) {
         try {
-            $busOwnerFareID= $this->busOwnerFareService->getById($id);
+            $busOwnerFareID= $this->festivalFareService->getById($id);
           }
           catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -99,7 +101,7 @@ class BusOwnerFareController extends Controller
     }      
     public function changeStatus($id) {
         try{
-          $this->busOwnerFareService->changeStatus($id);
+          $this->festivalFareService->changeStatus($id);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

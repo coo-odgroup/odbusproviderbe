@@ -233,29 +233,39 @@ class BusRepository
     }
     public function getBusScheduleEntryDatesFilter($data)
     {
+
         $searchByBus = $data['busLists'];
         $search = $data['year']."-".$data['month'];
         $busData = array();
         foreach($searchByBus as $busList){
             $busWithEntryDates = $this->bus
-            ->where('bus.id' , $busList)->with(['busSchedule.busScheduleDate' => function($query) use ($search){
+            ->where('bus.id' , $busList)
+            ->with(['busSchedule.busScheduleDate' => function($query) use ($search){
             $query->where('entry_date', 'like', '%'.$search. '%');
             }])
             ->get();
             foreach($busWithEntryDates as $busWithEntryDate){
                 $busName = $busWithEntryDate->name; 
                 $busName = $busName." [ ".$busWithEntryDate->bus_number." ] ";
-                $dateRecord = $busWithEntryDate->busSchedule->busScheduleDate;
+                $dateRecord = $busWithEntryDate->busSchedule;
+                
+
                 $entryDates = array();
-                foreach($dateRecord as $dateRec) 
-                {     
-                    $bus_id = $dateRec->bus_id;              
-                    $entryDate = $dateRec->entry_date; 
-                    $entryDates[] = array(
-                                          "busId" =>$bus_id,
-                                          "entry_date"=>date('j M Y ',strtotime($entryDate)),
-                                         );  
+               
+                foreach($dateRecord as $items)
+                {
+                     foreach($items->busScheduleDate as $dateRec) 
+                    {     
+                        $bus_id = $dateRec->bus_id;              
+                        $entryDate = $dateRec->entry_date; 
+                        $entryDates[] = array(
+                                              "busId" =>$bus_id,
+                                              "entry_date"=>date('j M Y ',strtotime($entryDate)),
+                                             );  
+                    }
                 }
+
+               
                 $busData[] = array(
                     "bus_id"=>$busList,
                     "busName"=>$busName,

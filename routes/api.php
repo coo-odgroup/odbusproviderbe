@@ -50,6 +50,7 @@ use App\Http\Controllers\BusClosingHoursController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BusSpecialFareController;
 use App\Http\Controllers\BusOwnerFareController;
+use App\Http\Controllers\FestivalFareController;
 use App\Http\Controllers\ListingController;
 
 
@@ -232,13 +233,17 @@ Route::post('/cqc', [CustomerQueryCategoryController::class, 'createCustomerQuer
 Route::get('/cqc/{id}', [CustomerQueryCategoryController::class, 'getCustomerQueryCategorybyID']);
 
 
+
 Route::get('/bus', [BusController::class, 'getAll']);
+Route::get('/locationBus/{source_id}/{destination_id}', [BusController::class, 'getLocationBus']);
+
 Route::post('/bus', [BusController::class, 'save']);
 Route::put('/bus/{id}', [BusController::class, 'update']);
 Route::put('/busContactInfo/{id}', [BusController::class, 'busContactInfo']);
 
 Route::delete('/bus/{id}', [BusController::class, 'deleteById']);
 Route::get('/bus/{id}', [BusController::class, 'getById']);
+Route::get('/operatorBus/{id}', [BusController::class, 'getByOperaor']);
 Route::get('/getBusListing', [BusController::class, 'getAllBusListing']);
 Route::get('/getValidateBookingData', [BusController::class, 'validateBookingData']);
 Route::post('/busDT', [BusController::class, 'getBusDT']);
@@ -428,8 +433,19 @@ Route::put('/busOwnerFare/{id}', [BusOwnerFareController::class, 'updateBusOwner
 Route::delete('/busOwnerFare/{id}', [BusOwnerFareController::class, 'deleteBusOwnerFare']);
 Route::get('/busOwnerFare/{id}', [BusOwnerFareController::class, 'getBusOwnerFare']);
 Route::post('/busOwnerFareDT', [BusOwnerFareController::class, 'getBusOwnerFareDT']);
-Route::put('/changeStatusBusOwnerFare/{id}', [BusOwnerFareController::class, 'changeStatus']);
+Route::put('/changeStatusbusOwnerFare/{id}', [BusOwnerFareController::class, 'changeStatus']);
 //Route::get('/relations/{id}', [BusOwnerFareController::class, 'getPivotData']);
+
+
+Route::get('/festivalFare', [FestivalFareController::class, 'getAllFestivalFare']);
+Route::post('/festivalFare', [FestivalFareController::class, 'createFestivalFare']);
+Route::put('/festivalFare/{id}', [FestivalFareController::class, 'updateFestivalFare']);
+Route::delete('/festivalFare/{id}', [FestivalFareController::class, 'deleteFestivalFare']);
+Route::get('/festivalFare/{id}', [FestivalFareController::class, 'getFestivalFare']);
+Route::post('/festivalFareDT', [FestivalFareController::class, 'getFestivalFareDT']);
+Route::put('/changeStatusfestivalFare/{id}', [FestivalFareController::class, 'changeStatus']);
+
+
 
 
 Route::get('/listing', [ListingController::class, 'getAllListing']);

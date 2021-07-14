@@ -19,6 +19,7 @@ use App\Models\CancellationSlab;
 use App\Models\TicketPrice;
 
 
+
 //bus_seats  bus_amenities city_closing bus_contacts bus_stoppage bus_stoppage_timing
 class Bus extends Model
 {
@@ -69,6 +70,12 @@ class Bus extends Model
     {
     	return $this->belongsToMany(SpecialFare::class);       
     }
+
+    public function festivalFare()
+    {
+        return $this->belongsToMany(FestivalFare::class);       
+    }
+
     public function BusSitting()
     {
     	return $this->belongsTo(BusSitting::class);

@@ -179,27 +179,32 @@ class BusCancelledRepository
      *///////
     public function update($data, $id)
     {
-
-        $this->busCancelled = $this->busCancelled->find($id);
+        Log::info($data);
+            $buses = $data['buses'];
+            foreach ($buses as $bus)         
+            { 
+                $this->busCancelled = $this->busCancelled->find($id);
         
-            $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
-            $this->busCancelled->cancelled_by = $data['cancelled_by'];
-            $this->busCancelled->status = 0;
-            $this->busCancelled->reason = $data['reason'];
-            $this->busCancelled->bus_id = $data['bus_id'];
-            $this->busCancelled->update();
-            $this->busCancelledDate->where('bus_cancelled_id',$id)->delete();
-            $busCanceledDateModels = [];
-            foreach ($data['dateLists'] as $busDateLists)   
-            {
+                $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
+                $this->busCancelled->cancelled_by = $data['cancelled_by'];
+                $this->busCancelled->status = 0;
+                $this->busCancelled->reason = $data['reason'];
+                $this->busCancelled->bus_id = $bus['bus_id'];
+                $this->busCancelled->update();
+                $this->busCancelledDate->where('bus_cancelled_id',$id)->delete();
+                $busCanceledDateModels = [];
+                foreach ($bus['dateLists'] as $busDateLists)   
+                {
                     if($busDateLists['datechecked'])
                     {
                         $busCanceledDate = new BusCancelledDate();
                         $busCanceledDate->cancelled_date = date('Y-m-d',strtotime($busDateLists['entryDates'])) ;
                         $busCanceledDateModels[] =  $busCanceledDate;
                     }
+                }
+                $this->busCancelled->busCancelledDate()->saveMany($busCanceledDateModels);
             }
-            $this->busCancelled->busCancelledDate()->saveMany($busCanceledDateModels);
+        
         
             return $buses;
 
@@ -225,9 +230,10 @@ class BusCancelledRepository
     public function changeStatus($id)
     {
         $buscancel = $this->busCancelled->find($id);
+        // Log::info($buscancel);exit;
         if($buscancel->status==0){
             $buscancel->status = 1;
-        }elseif($post->status==1){
+        }elseif($busCancelled->status==1){
             $buscancel->status = 0;
         }
         $buscancel->update();

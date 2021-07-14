@@ -281,7 +281,7 @@ class ArticleController extends Controller
         $locationModels = [];
          //TOD Latter,Write Enhanced Query
         foreach ($data['locationcode'] as $lCode) {
-        $locationModels[] = new Locationcode($lCode);
+            $locationModels[] = new Locationcode($lCode);
         }
         $this->location->locationcode()->saveMany($locationModels);
         return $data['locationcode'];      

@@ -14,6 +14,8 @@ use InvalidArgumentException;
 use App\AppValidator\CancelBusValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+
+
 class BusCancelledController extends Controller
 {
     use ApiResponser;
@@ -54,7 +56,7 @@ class BusCancelledController extends Controller
         }  
     } 
     public function updateBusCancelled(Request $request, $id) {
-        $data = $request->only(['bus_id','bus_operator_id','cancelled_date','reason','cancelled_by','dateLists','month','year' 
+        $data = $request->only(['bus_id','bus_operator_id','cancelled_date','reason','cancelled_by','dateLists','month','year' ,'buses'
         ]);
 
         $busCancelledValidation = $this->cancelBusValidator->validate($data);
@@ -63,6 +65,7 @@ class BusCancelledController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         try {
+          Log::info("Done");
             $response = $this->busCancelledService->updatePost($data, $id);
             return $this->successResponse( $response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
 

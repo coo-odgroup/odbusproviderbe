@@ -145,15 +145,21 @@ class BusOperatorRepository
     } 
     public function getBusbyOperator($operatorId)
     {
+
         $operatorWithBuses =  $this->busOperators->with('bus.busstoppage')
+     
          ->where('id', $operatorId)
          
          ->get('id');
+
+        // Log::info($operatorWithBuses);
+
          $busData = array();
          foreach($operatorWithBuses as $operatorWithBus){
              $buses = $operatorWithBus->bus;
             foreach($buses as $bus)
             {
+                if($bus->status!='1')continue;
                 $bStoppages = $bus->busstoppage;
                 foreach($bStoppages as $bStoppage){
                     $sourceId = $bStoppage->source_id;

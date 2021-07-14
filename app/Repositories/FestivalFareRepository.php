@@ -2,21 +2,21 @@
 
 namespace App\Repositories;
 use App\Models\Bus;
-use App\Models\OwnerFare;
-use App\Models\BusOwnerFare;
+use App\Models\FestivalFare;
+use App\Models\BusFestivalFare;
 use Illuminate\Support\Facades\Log;
 
-class BusOwnerFareRepository
+class FestivalFareRepository
 {
-    protected $ownerFare;
-    protected $busOwnerFare;
+    protected $festivalFare;
+    protected $busFestivalFare;
     protected $bus;
     
-    public function __construct(BusOwnerFare $busOwnerFare,Bus $bus,OwnerFare $ownerFare)
+    public function __construct(BusFestivalFare $busFestivalFare,Bus $bus,FestivalFare $festivalFare)
     {
-        $this->busOwnerFare = $busOwnerFare;
+        $this->busFestivalFare = $busFestivalFare;
         $this->bus = $bus;
-        $this->ownerFare = $ownerFare;
+        $this->festivalFare = $festivalFare;
     }
     /**
      * Get Bus Secial Fare List
@@ -26,7 +26,7 @@ class BusOwnerFareRepository
      */
     public function getAll()
     {
-        return $this->ownerFare->whereNotIn('status', [2])->get();
+        return $this->festivalFare->whereNotIn('status', [2])->get();
     }
     
     public function getDatatable($request)
@@ -51,15 +51,15 @@ class BusOwnerFareRepository
 
         // Total records
       
-        $totalRecords=$this->ownerFare->whereHas('bus')->whereNotIn('status', [2])->count();
+        $totalRecords=$this->festivalFare->whereHas('bus')->whereNotIn('status', [2])->count();
 
 
-        $totalRecordswithFilter=$this->ownerFare->with('bus')  
+        $totalRecordswithFilter=$this->festivalFare->with('bus')  
         ->whereHas('bus', function ($query) use ($searchValue){
                $query->where('name', 'like', '%' .$searchValue . '%');               
            })->whereNotIn('status', [2])->count();
 
-           $records =  $this->ownerFare->with('bus')
+           $records =  $this->festivalFare->with('bus')
            ->orderBy($columnName,$columnSortOrder)   
            ->whereHas('bus', function ($query) use ($searchValue){
                   $query->where('name', 'like', '%' .$searchValue . '%');               
@@ -100,21 +100,21 @@ class BusOwnerFareRepository
      */
     public function getById($id)
     {
-        return $this->ownerFare->with('bus')->where('id', $id)->get();
+        return $this->festivalFare->with('bus')->where('id', $id)->get();
     }
 
-    public function getModel($data, OwnerFare $ownerFare)
+    public function getModel($data, FestivalFare $festivalFare)
     {
-        $ownerFare->bus_operator_id = $data['bus_operator_id'];
-        $ownerFare->source_id = $data['source_id'];
-        $ownerFare->destination_id = $data['destination_id'];
-        $ownerFare->date = $data['date'];
-        $ownerFare->seater_price = $data['seater_price'];
-        $ownerFare->sleeper_price = $data['sleeper_price'];
-        $ownerFare->reason = $data['reason'];
-        $ownerFare->created_by = $data['created_by'];
-        $ownerFare->status = 0;
-        return $ownerFare;
+        $festivalFare->bus_operator_id = $data['bus_operator_id'];
+        $festivalFare->source_id = $data['source_id'];
+        $festivalFare->destination_id = $data['destination_id'];
+        $festivalFare->date = $data['date'];
+        $festivalFare->seater_price = $data['seater_price'];
+        $festivalFare->sleeper_price = $data['sleeper_price'];
+        $festivalFare->reason = $data['reason'];
+        $festivalFare->created_by = $data['created_by'];
+        $festivalFare->status = 0;
+        return $festivalFare;
     }
 
     /**
@@ -125,47 +125,47 @@ class BusOwnerFareRepository
      */
     public function save($data)
     {
-        $ownerFare = new $this->ownerFare;
-        $ownerFare=$this->getModel($data,$ownerFare);
-        $ownerFare->save();
+
+        $festivalFare = new $this->festivalFare;
+        $festivalFare=$this->getModel($data,$festivalFare);
+        $festivalFare->save();
+
         $bus_id = $this->bus::find($data['bus_id']);
-        $ownerFare->bus()->attach($data['bus_id']);
-        return $ownerFare;
+        $festivalFare->bus()->attach($data['bus_id']);
+        return $festivalFare;
     }
     /**
      * Update Bus Owner fare
      *
      * @param $data
-     * @return busOwnerFare
+     * @return busfestivalFare
      */
     public function update($data, $id)
     {
-        // Log::info('update');
-        // Log::info($data);
-        $ownerFare = $this->ownerFare->find($id);
-        $ownerFare=$this->getModel($data,$ownerFare);
-        $ownerFare->update();
+        $festivalFare = $this->festivalFare->find($id);
+        $festivalFare=$this->getModel($data,$festivalFare);
+        $festivalFare->update();
         $bus_id = $this->bus::find($data['bus_id']);
-        $ownerFare->bus()->sync($data['bus_id']);
-        return $ownerFare;
+        $festivalFare->bus()->sync($data['bus_id']);
+        return $festivalFare;
     }
     /**
      * Delete Bus Owner Fare
      *
      * @param $data
-     * @return busownerFare
+     * @return busfestivalFare
     */
     public function delete($id)
     {
-        $busownerFare = $this->ownerFare->find($id);
-        $busownerFare->status = 2;
-        $busownerFare->update();
-        $busownerFare->bus()->detach();
-        return $busownerFare;
+        $busfestivalFare = $this->festivalFare->find($id);
+        $busfestivalFare->status = 2;
+        $busfestivalFare->update();
+        $busfestivalFare->bus()->detach();
+        return $busfestivalFare;
     }
     public function changeStatus($id)
     {
-        $post = $this->ownerFare->find($id);
+        $post = $this->festivalFare->find($id);
         if($post->status==0){
             $post->status = 1;
         }elseif($post->status==1){
