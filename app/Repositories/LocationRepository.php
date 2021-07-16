@@ -2,6 +2,8 @@
 namespace App\Repositories;
 use App\Models\Location;
 use App\Models\Locationcode;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 class LocationRepository
 {
     /**
@@ -64,9 +66,8 @@ class LocationRepository
         $rowperpage = $request->get("length"); // Rows display per page
         if(!is_numeric($rowperpage))
         {
-          $rowperpage=Config::get('constants.ALL_RECORDS');
+            $rowperpage=Config::get('constants.ALL_RECORDS');
         }
-
         $columnIndex_arr = $request->get('order');
         $columnName_arr = $request->get('columns');
         $order_arr = $request->get('order');
