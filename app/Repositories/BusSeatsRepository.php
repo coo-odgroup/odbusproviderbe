@@ -27,7 +27,7 @@ class BusSeatsRepository
     {
        // $result['busSeats']=$this->busSeats->where('bus_id',$busId)->orderBy('source_id','ASC')->get();//busSeats
        // $result['stoppageInfo']=$this->busStoppage->where('bus_id', $busId)->get();
-       return $this->ticketPrice->with('getBusSeats')->where('bus_id',$busId)->get();
+       return $this->ticketPrice->with('getBusSeats.seats')->where('bus_id',$busId)->get();
     }
     public function getByBusId($busId)
     {

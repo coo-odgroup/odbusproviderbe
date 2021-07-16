@@ -23,6 +23,7 @@ class BoardingDropingRepository
             $q->whereNotIn('status',[2]);  
         }])
         ->select('id','name','status','created_at','updated_at','created_by')
+        ->where('status',"!=",'2')
         ->get();
         //return $this->boardingDroping->whereNotIn('status', [2])->get();
     }
