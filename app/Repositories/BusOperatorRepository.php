@@ -108,7 +108,51 @@ class BusOperatorRepository
         $busOperators->created_by = $data['created_by'];
         return $busOperators;
     }
+    public function getOperatorEmail($data)
+    {
+        $email_id=$data['emailid'];
+        $id=$data['operator_id'];
+        if($id=="")
+        {
 
+           $result= $this->busOperators->where('email_id','=',$email_id)->get();
+           return count($result);    
+        }
+        else
+        {
+            $result= $this->busOperators
+            ->where('email_id','=',$email_id)
+            ->where('id','!=',$id)
+            ->get();    
+            return count($result);   
+        }
+        return $return;
+        
+
+    }
+
+    public function getOperatorPhone($data)
+    {
+        $contact_number=$data['contact_number'];
+        $id=$data['operator_id'];
+        if($id=="")
+        {
+
+           $result= $this->busOperators->where('contact_number','=',$contact_number)->get();
+           return count($result);    
+        }
+        else
+        {
+            $result= $this->busOperators
+            ->where('contact_number','=',$contact_number)
+            ->where('id','!=',$id)
+            ->get();    
+            return count($result);   
+        }
+        return $return;
+        
+
+    }
     public function save($data)
     {
         $busOperators = new $this->busOperators;

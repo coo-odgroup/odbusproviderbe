@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 
 class BusOperatorService
@@ -44,6 +45,27 @@ class BusOperatorService
         return $busOperator;
     }
 
+    public function getOperatorEmail($request)
+    {
+        try {
+            $busOperator = $this->busOperatorRepository->getOperatorEmail($request);
+
+        } catch (Exception $e) {
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+        }
+        return $busOperator;
+    }
+
+    public function getOperatorPhone($request)
+    {
+        try {
+            $busOperator = $this->busOperatorRepository->getOperatorPhone($request);
+
+        } catch (Exception $e) {
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+        }
+        return $busOperator;
+    }
     /**
      * Get all Data.
     

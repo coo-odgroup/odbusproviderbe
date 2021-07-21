@@ -417,6 +417,8 @@ Route::delete('/busoperator/{id}', [BusOperatorController::class, 'deleteBusOper
 Route::get('/busoperator/{id}', [BusOperatorController::class, 'getBusOperator']);
 Route::put('/changeStatusBusOperator/{id}', [BusOperatorController::class, 'changeStatus']);
 Route::get('/getBusbyOperator/{id}', [BusOperatorController::class, 'getBusbyOperator']);
+Route::post('/getOperatorEmail', [BusOperatorController::class, 'getOperatorEmail']);
+Route::post('/getOperatorPhone', [BusOperatorController::class, 'getOperatorPhone']);
 
 Route::get('/busSpecialFare', [BusSpecialFareController::class, 'getAllBusSpecialFare']);
 Route::post('/busSpecialFare', [BusSpecialFareController::class, 'createBusSpecialFare']);

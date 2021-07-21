@@ -43,7 +43,27 @@ class BusOperatorController extends Controller
         $prod = $this->busOperatorService->getAll();;
         return $this->successResponse($prod,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    public function getOperatorEmail(Request $request)
+    {
+        try {
+            $result=$this->busOperatorService->getOperatorEmail($request);
+            return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        }
+        catch(Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+    }
 
+    public function getOperatorPhone(Request $request)
+    {
+        try {
+            $result=$this->busOperatorService->getOperatorPhone($request);
+            return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        }
+        catch(Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+    }
     public function createBusOperator(Request $request) {
         $data = $request->only([
           'email_id',
