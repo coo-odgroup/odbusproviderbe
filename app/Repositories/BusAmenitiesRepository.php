@@ -24,7 +24,7 @@ class BusAmenitiesRepository
     
     public function getById($id)
     {
-        return $this->busAmenities ->where('bus_id', $id)->get();
+        return $this->busAmenities->where('bus_id', $id)->get();
     }
     public function save($data)
     {

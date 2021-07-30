@@ -80,6 +80,10 @@ class SafetyService
     {
         return $this->safetyRepository->getById($id);
     }
+    public function getByBusId($id)
+    {
+        return $this->safetyRepository->getByBusId($id);
+    }
     /**
      * Update  data
      * Store to DB if there are no errors.

@@ -13,7 +13,7 @@ class BusSafety extends Model
     // protected $fillable = [
     //     'name'
     // ];
-    protected $appends = ['Disabled'];
+    //protected $appends = ['Disabled'];
     
 
 }

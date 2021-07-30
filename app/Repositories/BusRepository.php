@@ -163,18 +163,18 @@ class BusRepository
         $totalRecords = $this->bus->where('status','!=','2')->count();
         $totalRecordswithFilter = $this->bus->where('name', 'like', '%' .$searchValue . '%')->where('status','!=','2')->count();
 
-        $records = $this->bus->orderBy($columnName,$columnSortOrder)
+        $records = 
+            $this->bus
+            ->with('busAmenities')
+            ->orderBy($columnName,$columnSortOrder)
             ->where('name', 'like', '%' .$searchValue . '%')
             ->where('status','!=','2')
             ->skip($start)
             ->take($rowperpage)
             ->get();
 
-        $data_arr = array();
-        foreach($records as $record)
-        {
-            $data_arr[]=$record->toArray();
-        }
+        $data_arr = $records->toArray();
+        
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,

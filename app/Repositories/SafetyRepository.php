@@ -2,13 +2,16 @@
 
 namespace App\Repositories;
 use App\Models\Safety;
+use App\Models\BusSafety;
 use Illuminate\Support\Facades\Log;
 class SafetyRepository 
 {
     protected $safety;
-    public function __construct(Safety $safety)
+    protected $busSafety;
+    public function __construct(Safety $safety,BusSafety $busSafety)
     {
         $this->safety = $safety;
+        $this->busSafety =$busSafety;
     }
     public function getAll()
     {
@@ -69,6 +72,12 @@ class SafetyRepository
     {
         return $this->safety
             ->where('id', $id)
+            ->get();
+    }
+    public function getByBusId($id)
+    {
+        return $this->busSafety
+            ->where('bus_id', $id)
             ->get();
     }
     public function getModel($data, Safety $safety)

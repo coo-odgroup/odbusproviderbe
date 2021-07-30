@@ -37,6 +37,16 @@ class SafetyController extends Controller
       $result = $this->safetyService->getAll();;
       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    public function getByBusId($id)
+    {
+      try{
+        $result= $this->safetyService->getByBusId($id);
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }
+      return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
+    }
     public function getSafetyDT(Request $request)
     {
       $result = $this->safetyService->dataTable($request);

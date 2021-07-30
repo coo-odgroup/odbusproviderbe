@@ -31,8 +31,8 @@ class BusStoppageRepository
    
     public function getModel(BusStoppage $busStoppage,$data)
     {
-        $dt0=date('Y-m-d')." ".$data['dep_time'];
-        $dt1=date('Y-m-d')." ".$data['arr_time'];
+        $dt0=date('Y-m-d')." ".$data['arr_time'];
+        $dt1=date('Y-m-d')." ".$data['dep_time'];
 
         $start_journey_day=$data['start_j_days']-1;
         $end_journey_day=$data['j_day']-1;
