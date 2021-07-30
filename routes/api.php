@@ -72,7 +72,7 @@ Route::middleware('auth:api')->group( function () {
 
     //Route::get('me', 'AuthController@me')->middleware('log.route');
     
-
+Route::post('/seatsBus',[BusController::class,'seatsBus']);
 // Route::get('/user/getAllUser', [UserController::class, 'getAllUser']);
 Route::get('/user', [UserController::class, 'getAllUser'])->middleware('log.route');
 Route::post('/user', [UserController::class, 'createUser'])->middleware('log.route');
