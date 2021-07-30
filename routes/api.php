@@ -30,6 +30,11 @@ use App\Http\Controllers\CityClosingController;
 use App\Http\Controllers\CityClosingExtendedController;
 use App\Http\Controllers\BusOperatorController;
 
+
+use App\Http\Controllers\SeatOpenController;
+use App\Http\Controllers\SeatBlockController;
+
+
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\AppVersionController;
 use App\Http\Controllers\SiteMasterController;
@@ -83,6 +88,24 @@ Route::delete('/BusSitting/{id}', [BusSittingController::class, 'deleteBusSittin
 Route::get('/BusSitting/{id}', [BusSittingController::class, 'getBusSitting']);
 Route::post('/BusSittingDT', [BusSittingController::class, 'getBusSittingDT']);
 Route::put('/changeStatusBusSitting/{id}', [BusSittingController::class, 'changeStatus']);
+
+///SEATOPEN///
+
+Route::get('/seatopen',[SeatOpenController::class,'getAllseatopen']);
+Route::post('/seatopen',[SeatOpenController::class,'addseatopen']);
+Route::put('/seatopen/{id}',[SeatOpenController::class,'updateseatopen']);
+Route::delete('/seatopen/{id}', [SeatOpenController::class, 'deleteseatopen']);
+Route::post('/getseatopenDT', [SeatOpenController::class, 'getseatopenDT']);
+Route::put('/changeseatopenStatus/{id}', [SeatOpenController::class, 'changeStatus']);
+
+////////////SEAT BLOCK//////
+Route::get('/seatblock',[SeatBlockController::class,'getAllseatblock']);
+Route::post('/seatblock',[SeatBlockController::class,'addseatblock']);
+Route::put('/seatblock/{id}',[SeatBlockController::class,'updateseatblock']);
+Route::delete('/seatblock/{id}', [SeatBlockController::class, 'deleteseatblock']);
+Route::post('/getseatblockDT', [SeatBlockController::class, 'getseatblockDT']);
+Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeStatus']);
+
 
 
 Route::post('/BusType', [BusTypeController::class, 'createBusType']);

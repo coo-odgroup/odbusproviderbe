@@ -6,6 +6,7 @@ use App\Models\Bus;
 use App\Models\BusSeats;
 use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 /*Priyadarshi to Review*/
 class BusSeatsRepository
 {
@@ -41,7 +42,7 @@ class BusSeatsRepository
     }
     public function getModel(BusSeats $busseats,$data,$berthData)
     {
-        Log::info($data);
+        
         $busseats->bus_id = $data['bus_id'];
        // $busseats->berth_type=$berthData['berthType'];
         $busseats->category = $data['category'];
@@ -187,6 +188,7 @@ class BusSeatsRepository
     }
     public function update($data, $id)
     {
+        Log::info($data);
         $layoutArray=$data['bus_seat_layout_data'];
         foreach($layoutArray as $sLayoutData)
         {
