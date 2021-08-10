@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 03, 2021 at 02:40 PM
--- Server version: 8.0.22
+-- Generation Time: Aug 10, 2021 at 11:36 AM
+-- Server version: 8.0.25
 -- PHP Version: 7.4.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `odbusbackend`
+-- Database: `neoflixi_odbusbackend_new`
 --
 
 -- --------------------------------------------------------
@@ -29,14 +29,14 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `amenities` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
   `icon` blob,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reason` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(50) DEFAULT NULL,
+  `reason` varchar(250) DEFAULT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -49,9 +49,9 @@ CREATE TABLE `appdownload` (
   `mobileno` bigint UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -61,19 +61,19 @@ CREATE TABLE `appdownload` (
 
 CREATE TABLE `appversion` (
   `id` int NOT NULL,
-  `info` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `info` varchar(250) DEFAULT NULL,
+  `name` varchar(120) NOT NULL,
   `mandatory` int NOT NULL DEFAULT '1' COMMENT '0-not mandatory 1- manadatory',
   `version` int NOT NULL,
-  `new_version_names` mediumtext COLLATE utf8mb4_unicode_ci,
-  `new_version_codes` mediumtext COLLATE utf8mb4_unicode_ci,
+  `new_version_names` mediumtext,
+  `new_version_codes` mediumtext,
   `allowed_days` int DEFAULT NULL,
-  `has_issues` varchar(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'N',
+  `has_issues` varchar(1) NOT NULL DEFAULT 'N',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -84,12 +84,12 @@ CREATE TABLE `appversion` (
 CREATE TABLE `boarding_droping` (
   `id` int NOT NULL,
   `location_id` int UNSIGNED NOT NULL,
-  `boarding_point` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `boarding_point` text NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -99,52 +99,26 @@ CREATE TABLE `boarding_droping` (
 
 CREATE TABLE `booking` (
   `id` int UNSIGNED NOT NULL,
-  `transaction_id` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pnr` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `booking_customer_id` int NOT NULL COMMENT 'Customers ID',
-  `bus_operator_id` int NOT NULL COMMENT 'Operator Id',
+  `transaction_id` varchar(200) NOT NULL,
+  `pnr` varchar(100) NOT NULL,
+  `users_id` int NOT NULL COMMENT 'Users ID',
   `bus_id` int UNSIGNED NOT NULL,
   `source_id` int UNSIGNED NOT NULL,
   `destination_id` int UNSIGNED NOT NULL,
-  `j_day` int NOT NULL DEFAULT '0' COMMENT 'journey day | 0-same day 1-nxt day',
+  `j_day` int NOT NULL DEFAULT '1' COMMENT 'journey day | 1-same day 2-nxt day so on',
   `journey_dt` date NOT NULL,
-  `boardingPoint_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `droppingPoint_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `boarding_time` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `dropping_time` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `total_fare` double(8,2) UNSIGNED NOT NULL,
-  `ownr_fare` double(8,2) DEFAULT NULL,
-  `is_coupon` int NOT NULL DEFAULT '0' COMMENT '0-no 1-yes',
-  `coupon_code` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `coupon_discount` decimal(9,2) DEFAULT NULL,
-  `discounted_fare` decimal(9,2) DEFAULT NULL,
-  `origin` enum('ODBUS','RPBOA','GRANDBUS','JANARDANBUS','KHAMBESWARI','MOBUS') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `app_type` set('WEB','MOB','ANDROID','CLNTWEB','CLNTMOB','ASSNWEB','ASSNMOB','CONDUCTOR','AGENT','MANAGER','OPERATOR') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `typ_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Type of Users booking Ticket',
+  `boarding_point` varchar(50) NOT NULL,
+  `dropping_point` varchar(50) NOT NULL,
+  `boarding_time` varchar(120) DEFAULT NULL,
+  `dropping_time` varchar(120) NOT NULL,
+  `origin` enum('ODBUS','RPBOA','GRANDBUS','JANARDANBUS','KHAMBESWARI','MOBUS') DEFAULT NULL,
+  `app_type` set('WEB','MOB','ANDROID','CLNTWEB','CLNTMOB','ASSNWEB','ASSNMOB','CONDUCTOR','AGENT','MANAGER','OPERATOR') NOT NULL,
+  `typ_id` varchar(50) NOT NULL COMMENT 'Type of Users booking Ticket',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `booking_customer`
---
-
-CREATE TABLE `booking_customer` (
-  `id` int NOT NULL,
-  `first_name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `last_name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `age` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -155,19 +129,17 @@ CREATE TABLE `booking_customer` (
 CREATE TABLE `booking_detail` (
   `id` int NOT NULL,
   `booking_id` int UNSIGNED NOT NULL,
-  `pnr` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `jrny_dt` date NOT NULL,
-  `j_day` int NOT NULL DEFAULT '0' COMMENT 'journey day | 0-same day 1-nxt day journey day | 0-same day 1-nxt day',
-  `bus_id` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `seat_no` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `passenger_name` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `passenger_gender` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `passenger_age` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `seat_no` varchar(80) NOT NULL,
+  `passenger_name` varchar(250) NOT NULL,
+  `passenger_gender` varchar(120) NOT NULL,
+  `passenger_age` varchar(80) NOT NULL,
+  `total_fare` double NOT NULL,
+  `owner_fare` double NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -179,26 +151,27 @@ CREATE TABLE `bus` (
   `id` int UNSIGNED NOT NULL,
   `user_id` int NOT NULL,
   `bus_operator_id` int NOT NULL DEFAULT '1',
-  `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `via` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bus_number` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bus_description` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(200) NOT NULL,
+  `via` varchar(200) NOT NULL,
+  `bus_number` varchar(50) NOT NULL,
+  `bus_description` varchar(250) DEFAULT NULL,
   `bus_type_id` int UNSIGNED NOT NULL,
   `bus_sitting_id` int UNSIGNED NOT NULL,
   `bus_seat_layout_id` int UNSIGNED NOT NULL,
-  `cancellationslabs_id` int NOT NULL DEFAULT '2',
+  `cancellationslabs_id` int NOT NULL,
   `running_cycle` int UNSIGNED NOT NULL,
   `popularity` int UNSIGNED DEFAULT NULL COMMENT 'Higher the number higher will be posotioning in buslist',
-  `admin_notes` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `admin_notes` mediumtext,
   `has_return_bus` int NOT NULL COMMENT '0-no 1-yes',
   `return_bus_id` int DEFAULT NULL,
-  `cancelation_points` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `cancelation_points` mediumtext,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0',
-  `sequence` int NOT NULL DEFAULT '1000'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `sequence` int NOT NULL DEFAULT '1000',
+  `max_seat_book` int NOT NULL DEFAULT '6'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -212,9 +185,9 @@ CREATE TABLE `bus_amenities` (
   `amenities_id` int UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(50) DEFAULT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -231,7 +204,7 @@ CREATE TABLE `bus_cancelled` (
   `reason` varchar(200) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `cancelled_by` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `cancelled_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -245,11 +218,11 @@ CREATE TABLE `bus_cancelled_date` (
   `id` int UNSIGNED NOT NULL,
   `bus_cancelled_id` int UNSIGNED NOT NULL,
   `cancelled_date` date NOT NULL,
-  `created_by` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(200) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -259,11 +232,11 @@ CREATE TABLE `bus_cancelled_date` (
 
 CREATE TABLE `bus_class` (
   `id` int NOT NULL,
-  `class_name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `class_name` varchar(250) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_by` varchar(250) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -275,12 +248,12 @@ CREATE TABLE `bus_closing_hours` (
   `id` int NOT NULL,
   `bus_id` int NOT NULL,
   `city_id` int NOT NULL,
-  `dep_time` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `closing_hours` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dep_time` varchar(250) NOT NULL,
+  `closing_hours` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '1',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -292,14 +265,14 @@ CREATE TABLE `bus_contacts` (
   `id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `type` int NOT NULL COMMENT '0-operator 1-manager 2-conductor',
-  `phone` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(100) NOT NULL,
   `booking_sms_send` int NOT NULL DEFAULT '0' COMMENT '0-dontsend 1-send',
   `cancel_sms_send` int NOT NULL DEFAULT '0' COMMENT '0-dontsend 1-send',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -316,9 +289,21 @@ CREATE TABLE `bus_extra_fare` (
   `sleeper_fare` int NOT NULL COMMENT 'extra 70rs.. added to all sleapers',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bus_festival_fare`
+--
+
+CREATE TABLE `bus_festival_fare` (
+  `id` int NOT NULL,
+  `bus_id` int UNSIGNED NOT NULL,
+  `festival_fare_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -330,12 +315,12 @@ CREATE TABLE `bus_gallery` (
   `id` int UNSIGNED NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `image` mediumblob NOT NULL,
-  `alt_tag` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `alt_tag` varchar(250) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -345,24 +330,24 @@ CREATE TABLE `bus_gallery` (
 
 CREATE TABLE `bus_operator` (
   `id` int NOT NULL,
-  `email_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operator_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_number` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `organisation_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci,
-  `additional_email` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `additional_contact` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_account_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_ifsc` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_account_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email_id` varchar(50) NOT NULL,
+  `password` varchar(20) NOT NULL,
+  `operator_name` varchar(50) NOT NULL,
+  `contact_number` varchar(15) NOT NULL,
+  `organisation_name` varchar(50) NOT NULL,
+  `location_name` varchar(150) NOT NULL,
+  `address` text,
+  `additional_email` varchar(50) DEFAULT NULL,
+  `additional_contact` varchar(15) DEFAULT NULL,
+  `bank_account_name` varchar(50) DEFAULT NULL,
+  `bank_name` varchar(50) DEFAULT NULL,
+  `bank_ifsc` varchar(50) DEFAULT NULL,
+  `bank_account_number` varchar(50) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Bus Operators';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Bus Operators';
 
 -- --------------------------------------------------------
 
@@ -374,7 +359,7 @@ CREATE TABLE `bus_owner_fare` (
   `id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `owner_fare_id` int UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -386,10 +371,10 @@ CREATE TABLE `bus_safety` (
   `id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `safety_id` int NOT NULL,
-  `created_date` datetime NOT NULL,
-  `updated_date` tinyint NOT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -402,9 +387,9 @@ CREATE TABLE `bus_schedule` (
   `bus_id` int UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Admin',
+  `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -416,11 +401,11 @@ CREATE TABLE `bus_schedule_date` (
   `id` int UNSIGNED NOT NULL,
   `bus_schedule_id` int UNSIGNED NOT NULL,
   `entry_date` date NOT NULL,
-  `created_by` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(200) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `status` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -432,18 +417,16 @@ CREATE TABLE `bus_seats` (
   `id` int UNSIGNED NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `ticket_price_id` int UNSIGNED NOT NULL,
+  `seats_id` int NOT NULL,
   `category` int UNSIGNED NOT NULL COMMENT '0-odbus 1-conductor',
-  `seat_type` int UNSIGNED NOT NULL COMMENT '1-seater 2-sleeper  3-vertical Sleeper',
-  `berth_type` int NOT NULL DEFAULT '1' COMMENT '1 - Lower Berth \r\n2- Upper Berth',
   `bookStatus` int NOT NULL DEFAULT '0' COMMENT '0=Not Booked,\r\n1= Booked,\r\n2=Reserved',
-  `seat_number` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `duration` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT 'if grater than 0 its additional seats/ sleepers in minutes THE  gap after which full seats will be given to odbus',
+  `duration` varchar(10) NOT NULL DEFAULT '0' COMMENT 'if grater than 0 its additional seats/ sleepers in minutes THE  gap after which full seats will be given to odbus',
   `new_fare` double(8,2) NOT NULL DEFAULT '0.00',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -457,12 +440,12 @@ CREATE TABLE `bus_seats_extra` (
   `journey_dt` date NOT NULL,
   `type` int UNSIGNED NOT NULL COMMENT '1 - Block, 2 - Open',
   `seat_type` int UNSIGNED NOT NULL COMMENT '0-seater 1-sleeper',
-  `seat_number` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `seat_number` varchar(10) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -472,12 +455,12 @@ CREATE TABLE `bus_seats_extra` (
 
 CREATE TABLE `bus_seat_layout` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -487,12 +470,12 @@ CREATE TABLE `bus_seat_layout` (
 
 CREATE TABLE `bus_sitting` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -503,13 +486,13 @@ CREATE TABLE `bus_sitting` (
 CREATE TABLE `bus_slots` (
   `id` int UNSIGNED NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) NOT NULL,
   `type` int NOT NULL DEFAULT '0' COMMENT '0- ODBUS    1- conductor ',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -521,7 +504,7 @@ CREATE TABLE `bus_special_fare` (
   `id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `special_fare_id` int UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -536,9 +519,9 @@ CREATE TABLE `bus_stoppage_additional_fare` (
   `additional_fare` double(8,2) UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -550,13 +533,14 @@ CREATE TABLE `bus_stoppage_timing` (
   `id` int UNSIGNED NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `location_id` int UNSIGNED NOT NULL,
-  `stoppage_name` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `boarding_droping_id` int NOT NULL,
+  `stoppage_name` varchar(250) DEFAULT NULL,
   `stoppage_time` time NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Admin',
+  `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -566,13 +550,13 @@ CREATE TABLE `bus_stoppage_timing` (
 
 CREATE TABLE `bus_type` (
   `id` int UNSIGNED NOT NULL,
-  `type` int NOT NULL DEFAULT '0',
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bus_class_id` int NOT NULL DEFAULT '0',
+  `name` varchar(50) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -583,14 +567,29 @@ CREATE TABLE `bus_type` (
 CREATE TABLE `cancellationslabs` (
   `id` int NOT NULL,
   `api_id` int DEFAULT NULL,
-  `rule_name` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `duration` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `deduction` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rule_name` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `created_by` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_by` varchar(250) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cancellationslabs_info`
+--
+
+CREATE TABLE `cancellationslabs_info` (
+  `id` int NOT NULL,
+  `cancellation_slab_id` int NOT NULL,
+  `duration` varchar(250) NOT NULL,
+  `deduction` varchar(250) NOT NULL,
+  `status` int NOT NULL DEFAULT '1',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `created_by` varchar(250) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -605,9 +604,9 @@ CREATE TABLE `city_closing` (
   `closing_hours` int UNSIGNED DEFAULT NULL COMMENT 'Time in minutes',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Admin',
+  `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -623,9 +622,9 @@ CREATE TABLE `city_closing_extended` (
   `closing_hours` int UNSIGNED DEFAULT NULL COMMENT 'Time in minutes',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -635,9 +634,9 @@ CREATE TABLE `city_closing_extended` (
 
 CREATE TABLE `coupon` (
   `id` int UNSIGNED NOT NULL,
-  `coupon_title` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `coupon_code` varchar(25) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` enum('Percent','CutOff') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `coupon_title` varchar(254) DEFAULT NULL,
+  `coupon_code` varchar(25) DEFAULT NULL,
+  `type` enum('Percent','CutOff') NOT NULL,
   `amount` double(8,2) DEFAULT NULL COMMENT 'in % or in cash',
   `max_discount_price` double(8,2) DEFAULT NULL COMMENT 'incase of % deduction',
   `min_tran_amount` double(8,2) DEFAULT NULL,
@@ -646,13 +645,13 @@ CREATE TABLE `coupon` (
   `category` int DEFAULT NULL COMMENT '0-booking date 1-journey date',
   `from_date` datetime DEFAULT NULL,
   `to_date` datetime DEFAULT NULL,
-  `short_desc` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `full_desc` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `short_desc` varchar(200) NOT NULL,
+  `full_desc` mediumtext NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -666,9 +665,41 @@ CREATE TABLE `coupon_assigned_bus` (
   `coupon_id` int UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `credentials`
+--
+
+CREATE TABLE `credentials` (
+  `id` int UNSIGNED NOT NULL,
+  `sms_textlocal_key` varchar(254) NOT NULL,
+  `mail_username` varchar(254) NOT NULL,
+  `mail_password` varchar(254) NOT NULL,
+  `razorpay_key` varchar(256) NOT NULL,
+  `razorpay_secret` varchar(256) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer_payment`
+--
+
+CREATE TABLE `customer_payment` (
+  `id` int NOT NULL,
+  `name` varchar(254) DEFAULT NULL,
+  `amount` double(8,2) DEFAULT '0.00',
+  `order_id` varchar(200) DEFAULT NULL,
+  `razorpay_id` varchar(200) DEFAULT NULL,
+  `payment_done` int NOT NULL DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -678,15 +709,15 @@ CREATE TABLE `coupon_assigned_bus` (
 
 CREATE TABLE `customer_query` (
   `id` int NOT NULL,
-  `email` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `query_typ` enum('RESERVATION','CONTACT') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `data` mediumtext COLLATE utf8mb4_unicode_ci COMMENT 'json_data',
+  `email` varchar(120) DEFAULT NULL,
+  `phone` varchar(120) DEFAULT NULL,
+  `query_typ` enum('RESERVATION','CONTACT') DEFAULT NULL,
+  `data` mediumtext COMMENT 'json_data',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -696,12 +727,12 @@ CREATE TABLE `customer_query` (
 
 CREATE TABLE `customer_query_category` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -712,12 +743,12 @@ CREATE TABLE `customer_query_category` (
 CREATE TABLE `customer_query_category_issues` (
   `id` int UNSIGNED NOT NULL,
   `customer_query_category_id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -729,19 +760,19 @@ CREATE TABLE `custom_pages` (
   `id` int NOT NULL,
   `origin` int DEFAULT '0' COMMENT '0-odbus 1-rpboa 2-janardana ',
   `type` int DEFAULT '0' COMMENT '0-custom pages  1-route pages 2-news',
-  `source_id` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'only for route pages',
-  `destination_id` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'only for route pages',
-  `name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `url` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `content` mediumtext COLLATE utf8mb4_unicode_ci,
-  `meta_title` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keyword` varchar(600) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_descriptiom` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `source_id` varchar(120) NOT NULL COMMENT 'only for route pages',
+  `destination_id` varchar(120) NOT NULL COMMENT 'only for route pages',
+  `name` varchar(120) DEFAULT NULL,
+  `url` varchar(120) DEFAULT NULL,
+  `content` mediumtext,
+  `meta_title` varchar(120) DEFAULT NULL,
+  `meta_keyword` varchar(600) DEFAULT NULL,
+  `meta_descriptiom` varchar(500) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -753,12 +784,50 @@ CREATE TABLE `extended_bus_closing_hours` (
   `id` int NOT NULL,
   `bus_id` int NOT NULL,
   `city_id` int NOT NULL,
-  `dep_time` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `closing_hours` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dep_time` varchar(250) NOT NULL,
+  `closing_hours` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '1',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `festival_fare`
+--
+
+CREATE TABLE `festival_fare` (
+  `id` int NOT NULL,
+  `bus_operator_id` int DEFAULT NULL,
+  `source_id` int DEFAULT NULL,
+  `destination_id` int DEFAULT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `seater_price` double NOT NULL,
+  `sleeper_price` double NOT NULL,
+  `reason` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `status` int NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `gateway_information`
+--
+
+CREATE TABLE `gateway_information` (
+  `id` int NOT NULL,
+  `sender` varchar(120) NOT NULL,
+  `channel_type` int DEFAULT NULL COMMENT 'channel | 0-sms 1-email',
+  `service_provider` varchar(50) DEFAULT NULL,
+  `contents` varchar(250) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -768,13 +837,13 @@ CREATE TABLE `extended_bus_closing_hours` (
 
 CREATE TABLE `location` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `synonym` mediumtext COLLATE utf8mb4_unicode_ci,
+  `name` varchar(254) NOT NULL,
+  `synonym` varchar(250) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -786,12 +855,12 @@ CREATE TABLE `locationcode` (
   `id` int UNSIGNED NOT NULL,
   `location_id` int UNSIGNED NOT NULL,
   `type` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '0-Odbus 1- red bus 2-dolphin 3-bus india',
-  `providerid` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `providerid` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -804,15 +873,15 @@ CREATE TABLE `owner_fare` (
   `bus_operator_id` int DEFAULT NULL,
   `source_id` int DEFAULT NULL,
   `destination_id` int DEFAULT NULL,
-  `date` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date` text NOT NULL,
   `seater_price` double NOT NULL,
   `sleeper_price` double NOT NULL,
-  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason` text NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -822,24 +891,24 @@ CREATE TABLE `owner_fare` (
 
 CREATE TABLE `pre_booking` (
   `id` int UNSIGNED NOT NULL,
-  `transaction_id` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_id` varchar(200) NOT NULL,
   `user_id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `j_day` int NOT NULL DEFAULT '0' COMMENT 'journey day | 0-same day 1-nxt day',
   `journey_dt` date NOT NULL,
-  `bus_info` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'json data',
-  `customer_info` mediumtext COLLATE utf8mb4_unicode_ci COMMENT 'json data',
+  `bus_info` mediumtext NOT NULL COMMENT 'json data',
+  `customer_info` mediumtext COMMENT 'json data',
   `total_fare` double(8,2) UNSIGNED NOT NULL,
   `is_coupon` int NOT NULL DEFAULT '0' COMMENT '0-no 1-yes',
-  `coupon_code` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `coupon_code` varchar(80) DEFAULT NULL,
   `coupon_discount` decimal(9,2) DEFAULT NULL,
   `discounted_fare` decimal(9,2) DEFAULT NULL,
-  `customer_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `customer_id` varchar(50) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -852,13 +921,13 @@ CREATE TABLE `pre_booking_detail` (
   `pre_booking_id` int UNSIGNED NOT NULL,
   `journey_date` date NOT NULL,
   `j_day` int NOT NULL DEFAULT '0' COMMENT 'journey day | 0-same day 1-nxt day',
-  `bus_id` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `seat_name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bus_id` varchar(120) NOT NULL,
+  `seat_name` varchar(120) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -868,12 +937,12 @@ CREATE TABLE `pre_booking_detail` (
 
 CREATE TABLE `reason` (
   `id` int NOT NULL,
-  `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -883,21 +952,21 @@ CREATE TABLE `reason` (
 
 CREATE TABLE `review` (
   `id` int UNSIGNED NOT NULL,
-  `pnr` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pnr` varchar(60) NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `customer_id` int NOT NULL,
-  `reference_key` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'link for email',
-  `rating_overall` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `rating_comfort` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `rating_clean` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `rating_behavior` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `rating_timing` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'out of 5',
-  `comments` varchar(2500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reference_key` varchar(250) NOT NULL COMMENT 'link for email',
+  `rating_overall` varchar(25) NOT NULL COMMENT 'out of 5',
+  `rating_comfort` varchar(25) NOT NULL COMMENT 'out of 5',
+  `rating_clean` varchar(25) NOT NULL COMMENT 'out of 5',
+  `rating_behavior` varchar(25) NOT NULL COMMENT 'out of 5',
+  `rating_timing` varchar(25) NOT NULL COMMENT 'out of 5',
+  `comments` varchar(2500) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -907,12 +976,13 @@ CREATE TABLE `review` (
 
 CREATE TABLE `safety` (
   `id` int NOT NULL,
-  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `icon` mediumblob,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -923,16 +993,97 @@ CREATE TABLE `safety` (
 CREATE TABLE `seats` (
   `id` int NOT NULL,
   `bus_seat_layout_id` int UNSIGNED NOT NULL,
-  `seatType` enum('1','2','3','4') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '1=Seater       \r\n2 = Sleeper     \r\n3=Vertical Sleeper\r\n4=None',
-  `berthType` enum('1','2') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '1=Lower Berth\r\n2=Upper Berth',
-  `seatText` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `seat_class_id` int NOT NULL,
+  `berthType` enum('1','2') NOT NULL COMMENT '1=Lower Berth\r\n2=Upper Berth',
+  `seatText` varchar(20) DEFAULT '',
   `rowNumber` int NOT NULL,
   `colNumber` int NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `created_by` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(250) DEFAULT NULL,
   `status` int NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `seat_block`
+--
+
+CREATE TABLE `seat_block` (
+  `id` int NOT NULL,
+  `operator_id` int NOT NULL,
+  `bus_id` int UNSIGNED NOT NULL,
+  `date_applied` datetime NOT NULL,
+  `reason` varchar(500) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(250) NOT NULL,
+  `status` int NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `seat_block_seats`
+--
+
+CREATE TABLE `seat_block_seats` (
+  `id` int NOT NULL,
+  `seat_block_id` int NOT NULL,
+  `seats_id` int NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(250) NOT NULL,
+  `status` int NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `seat_class`
+--
+
+CREATE TABLE `seat_class` (
+  `id` int NOT NULL,
+  `name` varchar(120) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `seat_open`
+--
+
+CREATE TABLE `seat_open` (
+  `id` int NOT NULL,
+  `operator_id` int NOT NULL,
+  `bus_id` int UNSIGNED NOT NULL,
+  `date_applied` datetime NOT NULL,
+  `reason` varchar(250) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(250) NOT NULL,
+  `status` int NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `seat_open_seats`
+--
+
+CREATE TABLE `seat_open_seats` (
+  `id` int NOT NULL,
+  `seat_open_id` int NOT NULL,
+  `seats_id` int NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(250) NOT NULL,
+  `status` int NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -949,22 +1100,22 @@ CREATE TABLE `site_master` (
   `service_charge` int UNSIGNED NOT NULL,
   `per_trasaction` double(8,2) UNSIGNED NOT NULL,
   `max_seat_booked` int UNSIGNED NOT NULL,
-  `support_email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `booking_email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `request_email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `other_email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_no1` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_no2` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_no3` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_no4` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `facebook_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `twitter_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `linkedin_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `instagram_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `googleplus_url` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `support_email` varchar(200) NOT NULL,
+  `booking_email` varchar(200) NOT NULL,
+  `request_email` varchar(200) NOT NULL,
+  `other_email` varchar(200) NOT NULL,
+  `contact_no1` varchar(50) NOT NULL,
+  `contact_no2` varchar(50) NOT NULL,
+  `contact_no3` varchar(50) NOT NULL,
+  `contact_no4` varchar(50) NOT NULL,
+  `facebook_url` varchar(254) NOT NULL,
+  `twitter_url` varchar(254) NOT NULL,
+  `linkedin_url` varchar(254) NOT NULL,
+  `instagram_url` varchar(254) NOT NULL,
+  `googleplus_url` varchar(254) NOT NULL,
   `min_fare_amt` int NOT NULL,
   `earned_pts` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -974,18 +1125,18 @@ CREATE TABLE `site_master` (
 
 CREATE TABLE `slider` (
   `id` int UNSIGNED NOT NULL,
-  `occassion` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `occassion` varchar(250) NOT NULL,
   `category` int DEFAULT NULL COMMENT '0-main slider 1-adv-slider1 2-adv-slider 2, 3-adv-slider-3',
-  `url` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `slider_img` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `alt_tag` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(250) DEFAULT NULL,
+  `slider_img` varchar(254) NOT NULL,
+  `alt_tag` varchar(250) NOT NULL,
   `start_date` datetime NOT NULL,
   `end_date` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -998,15 +1149,15 @@ CREATE TABLE `special_fare` (
   `bus_operator_id` int DEFAULT NULL,
   `source_id` int UNSIGNED DEFAULT NULL,
   `destination_id` int UNSIGNED DEFAULT NULL,
-  `date` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date` text NOT NULL,
   `seater_price` double(8,2) NOT NULL,
   `sleeper_price` double(8,2) NOT NULL,
-  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason` text NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1016,12 +1167,12 @@ CREATE TABLE `special_fare` (
 
 CREATE TABLE `ticket_cancelation` (
   `id` int UNSIGNED NOT NULL,
-  `name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(200) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1032,14 +1183,14 @@ CREATE TABLE `ticket_cancelation` (
 CREATE TABLE `ticket_cancelation_rule` (
   `id` int UNSIGNED NOT NULL,
   `ticket_cancelation_id` int UNSIGNED NOT NULL,
-  `hour_lag_start` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `hour_lag_end` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `cancelation_percentage` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hour_lag_start` varchar(10) NOT NULL,
+  `hour_lag_end` varchar(10) NOT NULL,
+  `cancelation_percentage` varchar(10) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1056,15 +1207,15 @@ CREATE TABLE `ticket_price` (
   `destination_id` int UNSIGNED NOT NULL,
   `base_seat_fare` double(8,2) UNSIGNED NOT NULL,
   `base_sleeper_fare` double(8,2) UNSIGNED NOT NULL,
-  `dep_time` time DEFAULT NULL,
-  `arr_time` time DEFAULT NULL,
+  `dep_time` datetime DEFAULT NULL,
+  `arr_time` datetime DEFAULT NULL,
   `start_j_days` int NOT NULL DEFAULT '0',
   `j_day` int NOT NULL DEFAULT '0' COMMENT '0-same day 1- next day so on.. ',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1074,27 +1225,47 @@ CREATE TABLE `ticket_price` (
 
 CREATE TABLE `user` (
   `id` int NOT NULL,
-  `user_pin` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `first_name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `middle_name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `last_name` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `thumbnail` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `org_name` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` varchar(600) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `alternate_phone` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'additional phone',
-  `alternate_email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'additional email',
-  `password` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_pin` varchar(50) NOT NULL,
+  `first_name` varchar(120) DEFAULT NULL,
+  `middle_name` varchar(120) DEFAULT NULL,
+  `last_name` varchar(120) DEFAULT NULL,
+  `thumbnail` varchar(255) DEFAULT NULL,
+  `email` varchar(120) NOT NULL,
+  `location` varchar(250) DEFAULT NULL,
+  `org_name` varchar(254) DEFAULT NULL,
+  `address` varchar(600) DEFAULT NULL,
+  `phone` varchar(40) DEFAULT NULL,
+  `alternate_phone` varchar(30) DEFAULT NULL COMMENT 'additional phone',
+  `alternate_email` varchar(100) DEFAULT NULL COMMENT 'additional email',
+  `password` varchar(60) NOT NULL,
   `user_role` int DEFAULT NULL,
-  `rand_key` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rand_key` varchar(254) NOT NULL,
   `last_login` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int NOT NULL,
+  `name` varchar(120) NOT NULL,
+  `email` varchar(120) DEFAULT '',
+  `phone` varchar(40) DEFAULT '',
+  `password` varchar(100) DEFAULT '',
+  `otp` varchar(50) DEFAULT '',
+  `is_verified` int NOT NULL DEFAULT '0',
+  `msg_id` varchar(50) DEFAULT '',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(50) DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1105,15 +1276,15 @@ CREATE TABLE `user` (
 CREATE TABLE `user_bank_details` (
   `id` int NOT NULL,
   `user_id` int NOT NULL,
-  `banking_name` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_name` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ifsc_code` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `account_number` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `banking_name` varchar(250) DEFAULT NULL,
+  `bank_name` varchar(200) DEFAULT NULL,
+  `ifsc_code` varchar(50) DEFAULT NULL,
+  `account_number` varchar(50) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Indexes for dumped tables
@@ -1123,7 +1294,8 @@ CREATE TABLE `user_bank_details` (
 -- Indexes for table `amenities`
 --
 ALTER TABLE `amenities`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `name` (`name`);
 
 --
 -- Indexes for table `appdownload`
@@ -1143,39 +1315,45 @@ ALTER TABLE `appversion`
 ALTER TABLE `boarding_droping`
   ADD PRIMARY KEY (`id`),
   ADD KEY `location_id` (`location_id`);
+ALTER TABLE `boarding_droping` ADD FULLTEXT KEY `boarding_point` (`boarding_point`);
 
 --
 -- Indexes for table `booking`
 --
 ALTER TABLE `booking`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `pnr` (`pnr`),
   ADD KEY `bus_id` (`bus_id`),
-  ADD KEY `user_id` (`bus_operator_id`),
-  ADD KEY `booking_customer_id` (`booking_customer_id`);
-
---
--- Indexes for table `booking_customer`
---
-ALTER TABLE `booking_customer`
-  ADD PRIMARY KEY (`id`);
+  ADD KEY `users_id` (`users_id`),
+  ADD KEY `transaction_id` (`transaction_id`),
+  ADD KEY `boarding_point` (`boarding_point`),
+  ADD KEY `dropping_point` (`dropping_point`),
+  ADD KEY `boarding_time` (`boarding_time`),
+  ADD KEY `dropping_time` (`dropping_time`);
 
 --
 -- Indexes for table `booking_detail`
 --
 ALTER TABLE `booking_detail`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `booking_id` (`booking_id`);
+  ADD KEY `booking_id` (`booking_id`),
+  ADD KEY `passenger_name` (`passenger_name`),
+  ADD KEY `passenger_gender` (`passenger_gender`),
+  ADD KEY `passenger_age` (`passenger_age`);
 
 --
 -- Indexes for table `bus`
 --
 ALTER TABLE `bus`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `bus_number` (`bus_number`) USING BTREE,
   ADD KEY `bus_operator_FK` (`bus_operator_id`),
   ADD KEY `bus_type_fk` (`bus_type_id`),
   ADD KEY `bus_sitting_fk` (`bus_sitting_id`),
   ADD KEY `cancellation_slab_fk` (`cancellationslabs_id`),
-  ADD KEY `bus_seatlayout_id_fk` (`bus_seat_layout_id`);
+  ADD KEY `bus_seatlayout_id_fk` (`bus_seat_layout_id`),
+  ADD KEY `name` (`name`),
+  ADD KEY `via` (`via`);
 
 --
 -- Indexes for table `bus_amenities`
@@ -1204,7 +1382,8 @@ ALTER TABLE `bus_cancelled_date`
 -- Indexes for table `bus_class`
 --
 ALTER TABLE `bus_class`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `class_name` (`class_name`);
 
 --
 -- Indexes for table `bus_closing_hours`
@@ -1217,13 +1396,22 @@ ALTER TABLE `bus_closing_hours`
 --
 ALTER TABLE `bus_contacts`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `bus_id` (`bus_id`);
+  ADD KEY `bus_id` (`bus_id`),
+  ADD KEY `phone` (`phone`);
 
 --
 -- Indexes for table `bus_extra_fare`
 --
 ALTER TABLE `bus_extra_fare`
   ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_id` (`bus_id`);
+
+--
+-- Indexes for table `bus_festival_fare`
+--
+ALTER TABLE `bus_festival_fare`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `festival_fare_id` (`festival_fare_id`),
   ADD KEY `bus_id` (`bus_id`);
 
 --
@@ -1237,7 +1425,11 @@ ALTER TABLE `bus_gallery`
 -- Indexes for table `bus_operator`
 --
 ALTER TABLE `bus_operator`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email_id` (`email_id`),
+  ADD UNIQUE KEY `contact_number` (`contact_number`),
+  ADD KEY `operator_name` (`operator_name`),
+  ADD KEY `location_name` (`location_name`);
 
 --
 -- Indexes for table `bus_owner_fare`
@@ -1275,7 +1467,10 @@ ALTER TABLE `bus_schedule_date`
 ALTER TABLE `bus_seats`
   ADD PRIMARY KEY (`id`),
   ADD KEY `bus_seats_ibfk_1` (`bus_id`),
-  ADD KEY `ticket_price_FK` (`ticket_price_id`);
+  ADD KEY `ticket_price_FK` (`ticket_price_id`),
+  ADD KEY `seats_id_fk` (`seats_id`),
+  ADD KEY `bookStatus` (`bookStatus`),
+  ADD KEY `new_fare` (`new_fare`);
 
 --
 -- Indexes for table `bus_seats_extra`
@@ -1287,13 +1482,15 @@ ALTER TABLE `bus_seats_extra`
 -- Indexes for table `bus_seat_layout`
 --
 ALTER TABLE `bus_seat_layout`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `name` (`name`);
 
 --
 -- Indexes for table `bus_sitting`
 --
 ALTER TABLE `bus_sitting`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `name` (`name`);
 
 --
 -- Indexes for table `bus_slots`
@@ -1324,20 +1521,34 @@ ALTER TABLE `bus_stoppage_additional_fare`
 ALTER TABLE `bus_stoppage_timing`
   ADD PRIMARY KEY (`id`),
   ADD KEY `stoppage_timing_bus_id_fk` (`bus_id`),
-  ADD KEY `location_timing_fk` (`location_id`);
+  ADD KEY `location_timing_fk` (`location_id`),
+  ADD KEY `boardin_droping_id_fk` (`boarding_droping_id`),
+  ADD KEY `stoppage_name` (`stoppage_name`),
+  ADD KEY `stoppage_time` (`stoppage_time`);
 
 --
 -- Indexes for table `bus_type`
 --
 ALTER TABLE `bus_type`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `class_type_fk` (`type`);
+  ADD KEY `class_type_fk` (`bus_class_id`),
+  ADD KEY `name` (`name`);
 
 --
 -- Indexes for table `cancellationslabs`
 --
 ALTER TABLE `cancellationslabs`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `rule_name` (`rule_name`);
+
+--
+-- Indexes for table `cancellationslabs_info`
+--
+ALTER TABLE `cancellationslabs_info`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cancellationslab_id_FK` (`cancellation_slab_id`),
+  ADD KEY `duration` (`duration`),
+  ADD KEY `deduction` (`deduction`);
 
 --
 -- Indexes for table `city_closing`
@@ -1368,6 +1579,22 @@ ALTER TABLE `coupon_assigned_bus`
   ADD PRIMARY KEY (`id`),
   ADD KEY `bus_id` (`bus_id`),
   ADD KEY `coupon_assigned_id_fk` (`coupon_id`);
+
+--
+-- Indexes for table `credentials`
+--
+ALTER TABLE `credentials`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `customer_payment`
+--
+ALTER TABLE `customer_payment`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `order_id` (`order_id`),
+  ADD UNIQUE KEY `razorpay_id` (`razorpay_id`),
+  ADD KEY `name` (`name`),
+  ADD KEY `payment_done` (`payment_done`);
 
 --
 -- Indexes for table `customer_query`
@@ -1401,10 +1628,24 @@ ALTER TABLE `extended_bus_closing_hours`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `festival_fare`
+--
+ALTER TABLE `festival_fare`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gateway_information`
+--
+ALTER TABLE `gateway_information`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `location`
 --
 ALTER TABLE `location`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `name` (`name`),
+  ADD KEY `synonym` (`synonym`);
 
 --
 -- Indexes for table `locationcode`
@@ -1425,7 +1666,10 @@ ALTER TABLE `owner_fare`
 ALTER TABLE `pre_booking`
   ADD PRIMARY KEY (`id`),
   ADD KEY `bus_id` (`bus_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `transaction_id` (`transaction_id`),
+  ADD KEY `journey_dt` (`journey_dt`),
+  ADD KEY `coupon_code` (`coupon_code`);
 
 --
 -- Indexes for table `pre_booking_detail`
@@ -1451,14 +1695,58 @@ ALTER TABLE `review`
 -- Indexes for table `safety`
 --
 ALTER TABLE `safety`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `name` (`name`);
 
 --
 -- Indexes for table `seats`
 --
 ALTER TABLE `seats`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `seats_ibfk_1` (`bus_seat_layout_id`);
+  ADD KEY `seats_ibfk_1` (`bus_seat_layout_id`),
+  ADD KEY `seats_ibfk_12` (`seat_class_id`),
+  ADD KEY `berthType` (`berthType`),
+  ADD KEY `seatText` (`seatText`),
+  ADD KEY `colNumber` (`colNumber`),
+  ADD KEY `rowNumber` (`rowNumber`);
+
+--
+-- Indexes for table `seat_block`
+--
+ALTER TABLE `seat_block`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `operator_id` (`operator_id`),
+  ADD KEY `bus_id` (`bus_id`);
+
+--
+-- Indexes for table `seat_block_seats`
+--
+ALTER TABLE `seat_block_seats`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `seat_block_id` (`seat_block_id`);
+
+--
+-- Indexes for table `seat_class`
+--
+ALTER TABLE `seat_class`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `name` (`name`);
+
+--
+-- Indexes for table `seat_open`
+--
+ALTER TABLE `seat_open`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `operator_id` (`operator_id`),
+  ADD KEY `bus_id` (`bus_id`);
+
+--
+-- Indexes for table `seat_open_seats`
+--
+ALTER TABLE `seat_open_seats`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `seat_id` (`seats_id`),
+  ADD KEY `seat_open_id` (`seat_open_id`);
 
 --
 -- Indexes for table `site_master`
@@ -1503,13 +1791,26 @@ ALTER TABLE `ticket_price`
   ADD KEY `bus_id` (`bus_id`),
   ADD KEY `ticket_price_bus_operator_fk` (`bus_operator_id`),
   ADD KEY `ticket_price_source_fk` (`source_id`),
-  ADD KEY `ticket_price_destination_fk` (`destination_id`);
+  ADD KEY `ticket_price_destination_fk` (`destination_id`),
+  ADD KEY `start_j_days` (`start_j_days`),
+  ADD KEY `j_day` (`j_day`);
 
 --
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `name` (`name`),
+  ADD KEY `email` (`email`) USING BTREE,
+  ADD KEY `phone` (`phone`),
+  ADD KEY `otp` (`otp`),
+  ADD KEY `is_verified` (`is_verified`);
 
 --
 -- Indexes for table `user_bank_details`
@@ -1551,6 +1852,12 @@ ALTER TABLE `boarding_droping`
 --
 ALTER TABLE `booking`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `booking_detail`
+--
+ALTER TABLE `booking_detail`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus`
@@ -1599,6 +1906,12 @@ ALTER TABLE `bus_contacts`
 --
 ALTER TABLE `bus_extra_fare`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `bus_festival_fare`
+--
+ALTER TABLE `bus_festival_fare`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_gallery`
@@ -1691,6 +2004,12 @@ ALTER TABLE `cancellationslabs`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `cancellationslabs_info`
+--
+ALTER TABLE `cancellationslabs_info`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `city_closing`
 --
 ALTER TABLE `city_closing`
@@ -1713,6 +2032,18 @@ ALTER TABLE `coupon`
 --
 ALTER TABLE `coupon_assigned_bus`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `credentials`
+--
+ALTER TABLE `credentials`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `customer_payment`
+--
+ALTER TABLE `customer_payment`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `customer_query`
@@ -1742,6 +2073,18 @@ ALTER TABLE `custom_pages`
 -- AUTO_INCREMENT for table `extended_bus_closing_hours`
 --
 ALTER TABLE `extended_bus_closing_hours`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `festival_fare`
+--
+ALTER TABLE `festival_fare`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `gateway_information`
+--
+ALTER TABLE `gateway_information`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
@@ -1799,6 +2142,36 @@ ALTER TABLE `seats`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `seat_block`
+--
+ALTER TABLE `seat_block`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `seat_block_seats`
+--
+ALTER TABLE `seat_block_seats`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `seat_class`
+--
+ALTER TABLE `seat_class`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `seat_open`
+--
+ALTER TABLE `seat_open`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `seat_open_seats`
+--
+ALTER TABLE `seat_open_seats`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `site_master`
 --
 ALTER TABLE `site_master`
@@ -1841,6 +2214,12 @@ ALTER TABLE `user`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `user_bank_details`
 --
 ALTER TABLE `user_bank_details`
@@ -1861,32 +2240,23 @@ ALTER TABLE `boarding_droping`
 --
 ALTER TABLE `booking`
   ADD CONSTRAINT `booking_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
-  ADD CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`bus_operator_id`) REFERENCES `user` (`id`),
-  ADD CONSTRAINT `booking_ibfk_3` FOREIGN KEY (`booking_customer_id`) REFERENCES `booking_customer` (`id`),
-  ADD CONSTRAINT `booking_ibfk_4` FOREIGN KEY (`booking_customer_id`) REFERENCES `booking_customer` (`id`);
+  ADD CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `bus`
 --
 ALTER TABLE `bus`
-  ADD CONSTRAINT `bus_operator_FK` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `bus_seatlayout_id_fk` FOREIGN KEY (`bus_seat_layout_id`) REFERENCES `bus_seat_layout` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `bus_sitting_fk` FOREIGN KEY (`bus_sitting_id`) REFERENCES `bus_sitting` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `bus_type_fk` FOREIGN KEY (`bus_type_id`) REFERENCES `bus_type` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `cancellation_slab_fk` FOREIGN KEY (`cancellationslabs_id`) REFERENCES `cancellationslabs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
---
--- Constraints for table `bus_amenities`
---
-ALTER TABLE `bus_amenities`
-  ADD CONSTRAINT `bus_amenities_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
-  ADD CONSTRAINT `bus_amenities_ibfk_2` FOREIGN KEY (`amenities_id`) REFERENCES `amenities` (`id`);
+  ADD CONSTRAINT `bus_operator_FK` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`),
+  ADD CONSTRAINT `bus_seatlayout_id_fk` FOREIGN KEY (`bus_seat_layout_id`) REFERENCES `bus_seat_layout` (`id`),
+  ADD CONSTRAINT `bus_sitting_fk` FOREIGN KEY (`bus_sitting_id`) REFERENCES `bus_sitting` (`id`),
+  ADD CONSTRAINT `bus_type_id_fk` FOREIGN KEY (`bus_type_id`) REFERENCES `bus_type` (`id`),
+  ADD CONSTRAINT `cancellation_slab_fk` FOREIGN KEY (`cancellationslabs_id`) REFERENCES `cancellationslabs` (`id`);
 
 --
 -- Constraints for table `bus_cancelled`
 --
 ALTER TABLE `bus_cancelled`
-  ADD CONSTRAINT `bus_operator_for_cancelled_FK` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `bus_operator_for_cancelled_FK` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
 
 --
 -- Constraints for table `bus_cancelled_date`
@@ -1907,6 +2277,13 @@ ALTER TABLE `bus_extra_fare`
   ADD CONSTRAINT `bus_extra_fare_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
 
 --
+-- Constraints for table `bus_festival_fare`
+--
+ALTER TABLE `bus_festival_fare`
+  ADD CONSTRAINT `bus_festival_fare_ibfk_1` FOREIGN KEY (`festival_fare_id`) REFERENCES `festival_fare` (`id`),
+  ADD CONSTRAINT `bus_festival_fare_ibfk_2` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
+
+--
 -- Constraints for table `bus_gallery`
 --
 ALTER TABLE `bus_gallery`
@@ -1916,8 +2293,8 @@ ALTER TABLE `bus_gallery`
 -- Constraints for table `bus_safety`
 --
 ALTER TABLE `bus_safety`
-  ADD CONSTRAINT `safety_bus_id_fk` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `safety_id_fk` FOREIGN KEY (`safety_id`) REFERENCES `safety` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `safety_bus_id_fk` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
+  ADD CONSTRAINT `safety_id_fk` FOREIGN KEY (`safety_id`) REFERENCES `safety` (`id`);
 
 --
 -- Constraints for table `bus_schedule_date`
@@ -1930,7 +2307,8 @@ ALTER TABLE `bus_schedule_date`
 --
 ALTER TABLE `bus_seats`
   ADD CONSTRAINT `bus_seats_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
-  ADD CONSTRAINT `ticket_price_FK` FOREIGN KEY (`ticket_price_id`) REFERENCES `ticket_price` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `seats_id_fk` FOREIGN KEY (`seats_id`) REFERENCES `seats` (`id`),
+  ADD CONSTRAINT `ticket_price_FK` FOREIGN KEY (`ticket_price_id`) REFERENCES `ticket_price` (`id`);
 
 --
 -- Constraints for table `bus_seats_extra`
@@ -1948,42 +2326,49 @@ ALTER TABLE `bus_slots`
 -- Constraints for table `bus_stoppage_additional_fare`
 --
 ALTER TABLE `bus_stoppage_additional_fare`
-  ADD CONSTRAINT `bus_stoppage_additional_fare_ibfk_1` FOREIGN KEY (`ticket_price_id`) REFERENCES `ticket_price` (`id`),
-  ADD CONSTRAINT `bus_stoppage_additional_fare_ibfk_2` FOREIGN KEY (`bus_seats_id`) REFERENCES `bus_seats` (`id`);
+  ADD CONSTRAINT `bus_seats_id_fk` FOREIGN KEY (`bus_seats_id`) REFERENCES `bus_seats` (`id`),
+  ADD CONSTRAINT `bus_stoppage_additional_fare_ibfk_1` FOREIGN KEY (`ticket_price_id`) REFERENCES `ticket_price` (`id`);
 
 --
 -- Constraints for table `bus_stoppage_timing`
 --
 ALTER TABLE `bus_stoppage_timing`
-  ADD CONSTRAINT `location_timing_fk` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `stoppage_timing_bus_id_fk` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `boardin_droping_id_fk` FOREIGN KEY (`boarding_droping_id`) REFERENCES `boarding_droping` (`id`),
+  ADD CONSTRAINT `location_timing_fk` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`),
+  ADD CONSTRAINT `stoppage_timing_bus_id_fk` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
 
 --
 -- Constraints for table `bus_type`
 --
 ALTER TABLE `bus_type`
-  ADD CONSTRAINT `class_type_fk` FOREIGN KEY (`type`) REFERENCES `bus_class` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `class_type_fk` FOREIGN KEY (`bus_class_id`) REFERENCES `bus_class` (`id`);
+
+--
+-- Constraints for table `cancellationslabs_info`
+--
+ALTER TABLE `cancellationslabs_info`
+  ADD CONSTRAINT `cancellationslab_id_FK` FOREIGN KEY (`cancellation_slab_id`) REFERENCES `cancellationslabs` (`id`);
 
 --
 -- Constraints for table `city_closing`
 --
 ALTER TABLE `city_closing`
   ADD CONSTRAINT `city_closing_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
-  ADD CONSTRAINT `location_closing_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `location_closing_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`);
 
 --
 -- Constraints for table `city_closing_extended`
 --
 ALTER TABLE `city_closing_extended`
   ADD CONSTRAINT `city_closing_extended_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
-  ADD CONSTRAINT `city_closing_extended_location_fk` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `city_closing_extended_location_fk` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`);
 
 --
 -- Constraints for table `coupon_assigned_bus`
 --
 ALTER TABLE `coupon_assigned_bus`
   ADD CONSTRAINT `coupon_assigned_bus_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
-  ADD CONSTRAINT `coupon_assigned_id_fk` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `coupon_assigned_id_fk` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`);
 
 --
 -- Constraints for table `customer_query_category_issues`
@@ -2020,15 +2405,43 @@ ALTER TABLE `review`
 -- Constraints for table `seats`
 --
 ALTER TABLE `seats`
-  ADD CONSTRAINT `seats_ibfk_1` FOREIGN KEY (`bus_seat_layout_id`) REFERENCES `bus_seat_layout` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `seats_ibfk_1` FOREIGN KEY (`bus_seat_layout_id`) REFERENCES `bus_seat_layout` (`id`),
+  ADD CONSTRAINT `seats_ibfk_12` FOREIGN KEY (`seat_class_id`) REFERENCES `seat_class` (`id`);
+
+--
+-- Constraints for table `seat_block`
+--
+ALTER TABLE `seat_block`
+  ADD CONSTRAINT `seat_block_ibfk_1` FOREIGN KEY (`operator_id`) REFERENCES `bus_operator` (`id`),
+  ADD CONSTRAINT `seat_block_ibfk_2` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
+
+--
+-- Constraints for table `seat_block_seats`
+--
+ALTER TABLE `seat_block_seats`
+  ADD CONSTRAINT `seat_block_seats_ibfk_1` FOREIGN KEY (`seat_block_id`) REFERENCES `seat_block` (`id`);
+
+--
+-- Constraints for table `seat_open`
+--
+ALTER TABLE `seat_open`
+  ADD CONSTRAINT `seat_open_ibfk_1` FOREIGN KEY (`operator_id`) REFERENCES `bus_operator` (`id`),
+  ADD CONSTRAINT `seat_open_ibfk_2` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
+
+--
+-- Constraints for table `seat_open_seats`
+--
+ALTER TABLE `seat_open_seats`
+  ADD CONSTRAINT `seat_open_seats_ibfk_1` FOREIGN KEY (`seats_id`) REFERENCES `seats` (`id`),
+  ADD CONSTRAINT `seat_open_seats_ibfk_2` FOREIGN KEY (`seat_open_id`) REFERENCES `seat_open` (`id`);
 
 --
 -- Constraints for table `special_fare`
 --
 ALTER TABLE `special_fare`
-  ADD CONSTRAINT `special_fare_destination_fk` FOREIGN KEY (`destination_id`) REFERENCES `location` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `special_fare_operator_fk` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `special_fare_source_fk` FOREIGN KEY (`source_id`) REFERENCES `location` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `special_fare_destination_fk` FOREIGN KEY (`destination_id`) REFERENCES `location` (`id`),
+  ADD CONSTRAINT `special_fare_operator_fk` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`),
+  ADD CONSTRAINT `special_fare_source_fk` FOREIGN KEY (`source_id`) REFERENCES `location` (`id`);
 
 --
 -- Constraints for table `ticket_cancelation_rule`
@@ -2040,11 +2453,11 @@ ALTER TABLE `ticket_cancelation_rule`
 -- Constraints for table `ticket_price`
 --
 ALTER TABLE `ticket_price`
-  ADD CONSTRAINT `ticket_price_bus_operator_fk` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `ticket_price_destination_fk` FOREIGN KEY (`destination_id`) REFERENCES `location` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `ticket_price_bus_operator_fk` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`),
+  ADD CONSTRAINT `ticket_price_destination_fk` FOREIGN KEY (`destination_id`) REFERENCES `location` (`id`),
   ADD CONSTRAINT `ticket_price_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   ADD CONSTRAINT `ticket_price_ibfk_2` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
-  ADD CONSTRAINT `ticket_price_source_fk` FOREIGN KEY (`source_id`) REFERENCES `location` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `ticket_price_source_fk` FOREIGN KEY (`source_id`) REFERENCES `location` (`id`);
 
 --
 -- Constraints for table `user_bank_details`
