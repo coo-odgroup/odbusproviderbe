@@ -50,7 +50,7 @@ class SeatBlockRepository
                 {
                     if($lberth["seatChecked"] == true)
                     {
-                        $seat['seat_id'] = $lberth['seatId'];
+                        $seat['seats_id'] = $lberth['seatId'];
                         $seat['created_by'] = "Admin";
                        
                         $seats[]=$seat;
@@ -68,7 +68,7 @@ class SeatBlockRepository
                 {
                     if($uberth["seatChecked"] == true)
                     {
-                        $seat['seat_id'] = $uberth['seatId'];
+                        $seat['seats_id'] = $uberth['seatId'];
                         $seat['created_by'] = "Admin";
 
                         $seats[]=$seat;
@@ -106,7 +106,7 @@ class SeatBlockRepository
                 {
                     if($lberth["seatChecked"] == 'true')
                     {
-                        $seat['seat_id'] = $lberth['seatId'];
+                        $seat['seats_id'] = $lberth['seatId'];
                         $seat['created_by'] = "Admin";
                         $seats[]=$seat;
                     }
@@ -122,7 +122,7 @@ class SeatBlockRepository
                 {
                     if($uberth["seatChecked"] == 'true')
                     {
-                        $seat['seat_id'] = $uberth['seatId'];
+                        $seat['seats_id'] = $uberth['seatId'];
                         $seat['created_by'] = "Admin";
                         $seats[]=$seat;
                     }

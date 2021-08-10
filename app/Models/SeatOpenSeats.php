@@ -13,7 +13,7 @@ class SeatOpenSeats extends Model
 {
     use HasFactory;
     protected $table = 'seat_open_seats';
-    protected $fillable = ['seat_open_id','seat_id'];
+    protected $fillable = ['seat_open_id','seats_id'];
 
 
 	public function seats()
