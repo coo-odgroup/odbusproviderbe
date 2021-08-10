@@ -29,7 +29,7 @@ use App\Http\Controllers\BusSlotsController;
 use App\Http\Controllers\CityClosingController;
 use App\Http\Controllers\CityClosingExtendedController;
 use App\Http\Controllers\BusOperatorController;
-
+use App\Http\Controllers\BookingSeizedController;
 
 use App\Http\Controllers\SeatOpenController;
 use App\Http\Controllers\SeatBlockController;
@@ -88,6 +88,14 @@ Route::delete('/BusSitting/{id}', [BusSittingController::class, 'deleteBusSittin
 Route::get('/BusSitting/{id}', [BusSittingController::class, 'getBusSitting']);
 Route::post('/BusSittingDT', [BusSittingController::class, 'getBusSittingDT']);
 Route::put('/changeStatusBusSitting/{id}', [BusSittingController::class, 'changeStatus']);
+
+//Booking Seized
+
+Route::get('/bookingseized',[BookingSeizedController::class,'getAllseized']);
+Route::post('/bookingseized',[BookingSeizedController::class,'updateSeized']);
+Route::put('/changebookingseizedStatus/{id}', [BookingSeizedController::class, 'changeStatus']);
+
+
 
 ///SEATOPEN///
 

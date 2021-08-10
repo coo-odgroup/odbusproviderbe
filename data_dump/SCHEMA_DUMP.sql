@@ -1286,6 +1286,16 @@ CREATE TABLE `user_bank_details` (
   `status` int UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE `booking_seized` (
+  `id` int NOT NULL,
+  `bus_id` int UNSIGNED NOT NULL,
+  `location_id` int UNSIGNED NOT NULL,
+  `seize_booking_minute` int NOT NULL COMMENT 'value in minute',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(250) NOT NULL,
+  `status` int NOT NULL DEFAULT '0'
+)
 --
 -- Indexes for dumped tables
 --
@@ -2464,6 +2474,33 @@ ALTER TABLE `ticket_price`
 --
 ALTER TABLE `user_bank_details`
   ADD CONSTRAINT `user_bank_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+
+ALTER TABLE `booking_seized`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `location_id` (`location_id`),
+  ADD KEY `bus_id` (`bus_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `booking_seized`
+--
+ALTER TABLE `booking_seized`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `booking_seized`
+--
+ALTER TABLE `booking_seized`
+  ADD CONSTRAINT `booking_seized_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `booking_seized_ibfk_2` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

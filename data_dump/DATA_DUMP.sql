@@ -3027,6 +3027,34 @@ CREATE TABLE `user_bank_details` (
 -- Indexes for dumped tables
 --
 
+CREATE TABLE `booking_seized` (
+  `id` int NOT NULL,
+  `bus_id` int UNSIGNED NOT NULL,
+  `location_id` int UNSIGNED NOT NULL,
+  `seize_booking_minute` int NOT NULL COMMENT 'value in minute',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(250) NOT NULL,
+  `status` int NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `booking_seized`
+--
+
+INSERT INTO `booking_seized` (`id`, `bus_id`, `location_id`, `seize_booking_minute`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(2, 3, 1294, 250, '2021-08-07 10:09:21', '2021-08-07 05:32:31', 'admin', 1),
+(4, 2, 1294, 250, '2021-08-07 14:33:32', '2021-08-07 10:26:20', 'Admin', 0),
+(5, 2, 1313, 450, '2021-08-07 14:33:32', '2021-08-10 11:16:09', 'Admin', 0);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `booking_seized`
+--
+
 --
 -- Indexes for table `amenities`
 --
@@ -4201,6 +4229,32 @@ ALTER TABLE `ticket_price`
 --
 ALTER TABLE `user_bank_details`
   ADD CONSTRAINT `user_bank_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  
+ALTER TABLE `booking_seized`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `location_id` (`location_id`),
+  ADD KEY `bus_id` (`bus_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `booking_seized`
+--
+ALTER TABLE `booking_seized`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `booking_seized`
+--
+ALTER TABLE `booking_seized`
+  ADD CONSTRAINT `booking_seized_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `booking_seized_ibfk_2` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;  
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

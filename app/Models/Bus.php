@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\BusSeats;
 use App\Models\BusAmenities;
 use App\Models\BusSafety;
+
+use App\Models\BusSeatLayout;
+use App\Models\bus_seats;
+
 // use App\Models\Amenities;
 use App\Models\CityClosing;
 use App\Models\BusContacts;
@@ -17,6 +21,10 @@ use App\Models\BusOperator;
 use App\Models\BusCancelled;
 use App\Models\CancellationSlab;
 use App\Models\TicketPrice;
+use App\Models\BusStoppageTiming;
+use App\Models\BookingSeized;
+
+
 
 
 
@@ -64,11 +72,11 @@ class Bus extends Model
     }     
     public function busOperator()
     {
-    	return $this->belongsTo(BusOperator::class);
+        return $this->belongsTo(BusOperator::class);
     }
     public function specialFare()
     {
-    	return $this->belongsToMany(SpecialFare::class);       
+        return $this->belongsToMany(SpecialFare::class);       
     }
 
     public function festivalFare()
@@ -78,23 +86,38 @@ class Bus extends Model
 
     public function BusSitting()
     {
-    	return $this->belongsTo(BusSitting::class);
+        return $this->belongsTo(BusSitting::class);
     }
     public function BusType()
     {
-    	return $this->belongsTo(BusType::class);
+        return $this->belongsTo(BusType::class);
     }
-    public function BusSeatLayout()
+
+    public function busSeatLayout()
     {
-    	return $this->belongsTo(BusSeatLayout::class);
+        return $this->belongsTo(BusSeatLayout::class);
     }
+
+    public function bus_seats()
+    {
+        return $this->hasMany(BusSeats::class);
+    }
+
     public function ownerfare()
     {
-    	return $this->belongsToMany(OwnerFare::class);
+        return $this->belongsToMany(OwnerFare::class);
+    } 
+    public function bookingseized()
+    {
+        return $this->hasMany(BookingSeized::class);
     }
     public function cancelationSlab()
     {        
         return $this->belongsTo(CancellationSlab::class);        
+    } 
+    public function busStoppageTimimg()
+    {        
+        return $this->hasMany(BusStoppageTiming::class);        
     }
 
 }
