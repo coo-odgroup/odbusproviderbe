@@ -1678,7 +1678,7 @@ CREATE TABLE `customer_payment` (
   `amount` double(8,2) DEFAULT '0.00',
   `order_id` varchar(200) NOT NULL DEFAULT '',
   `razorpay_id` varchar(200) DEFAULT NULL,
-  `razorpay_signature` varchar(200) NOT NULL DEFAULT '',
+  `razorpay_signature` varchar(200) DEFAULT NULL,
   `payment_done` int(11) NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
