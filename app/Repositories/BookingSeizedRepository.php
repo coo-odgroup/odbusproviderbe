@@ -34,7 +34,19 @@ class BookingSeizedRepository
 
 
 
+    public function save($seizedData)
+    {
+        //Log::info($seizedData);
+        $seized = new $this->bookingSeized; 
+        $seized->bus_id = $seizedData['bus_id'];   
+        $seized->location_id = $seizedData['location_id'];  
+        $seized->seize_booking_minute = $seizedData['seize_booking_minute'];   
+        $seized->created_by = $seizedData['created_by'];   
 
+        $seized->save();
+        return $seized->fresh();
+      
+    }
 
     public function update($seizedData)
     {   

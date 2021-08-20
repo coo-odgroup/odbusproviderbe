@@ -24,49 +24,14 @@ class BookingSeizedService
     }
 
    
-    // public function deleteById($id)
-    // {
-    //     try {
-    //         $seatopen = $this->seatopenRepository->delete($id);
-    //     } catch (Exception $e) {
-    //         Log::info($e->getMessage());
-    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-    //     }
-    //     return $seatopen;
-    // }
-
-   
+    
     
     public function getAll()
     {
         return $this->bookingseizedRepository->getAll();
     }
 
-    // public function addseatopen($request)
-    // {
-    //     return $this->seatopenRepository->addseatopen($request);
-    // } 
-    // public function updateseatopen($request, $id)
-    // {
-    //     try {
-    //         $seatopen = $this->seatopenRepository->updateseatopen($request, $id);
-    //     } catch (Exception $e) {
-    //         Log::info($e->getMessage());
-    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-    //     }
-    //     return $seatopen;
-    // }
-    
-    // public function getseatopenDT($request)
-    // {
-    //     return $this->seatopenRepository->getseatopenDT($request);
-    // }
-   
-    
-    // public function getById($id)
-    // {
-    //     return $this->bookingseizedRepository->getById($id);
-    // }
+  
     
     public function updateSeized($data)
     { 
@@ -93,15 +58,15 @@ class BookingSeizedService
     }
 
    
-    // public function savePostData($data)
-    // {   
-    //     try {
-    //         $amenity = $this->seatopenRepository->save($data);
-    //     } catch (Exception $e) {
-    //         Log::info($e->getMessage());
-    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-    //     }
-    //     return $amenity;
-    // }
+    public function savePostData($data)
+    {   
+        try {
+            $amenity = $this->bookingseizedRepository->save($data);
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $amenity;
+    }
 
 }

@@ -52,6 +52,7 @@ class BusSeatsService
             $post = $this->busSeatsRepository->update($data, $id);
 
         } catch (Exception $e) {
+            Log::info($e);
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $post;

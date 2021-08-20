@@ -188,7 +188,7 @@ class BusSeatsRepository
     }
     public function update($data, $id)
     {
-        Log::info($data);
+        //Log::info($data);
         $layoutArray=$data['bus_seat_layout_data'];
         foreach($layoutArray as $sLayoutData)
         {
@@ -243,20 +243,30 @@ class BusSeatsRepository
                             if($lowerBerthData['seatId']=="")
                             {
                                 $busseats = new $this->busSeats;
+                                 $busseats=$this->getModel($busseats,$data,$lowerBerthData);
+                                if($lowerBerthData['seatId']=="")
+                                {                                
+                                    $busseats->save();
+                                }
+                                else
+                                {
+                                    $busseats->update();
+                                }
                             }
                             else
                             {
                                 $busseats = $this->busSeats->find($lowerBerthData['seatId']);
+                                $busseats=$this->getModel($busseats,$data,$lowerBerthData);
+                                if($lowerBerthData['seatId']=="")
+                                {                                
+                                    $busseats->save();
+                                }
+                                else
+                                {
+                                    $busseats->update();
+                                }
                             }
-                            $busseats=$this->getModel($busseats,$data,$lowerBerthData);
-                            if($lowerBerthData['seatId']=="")
-                            {                                
-                                $busseats->save();
-                            }
-                            else
-                            {
-                                $busseats->update();
-                            }
+                           
                         }
                     }
                 }

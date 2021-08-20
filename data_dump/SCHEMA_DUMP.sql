@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 13, 2021 at 03:12 PM
+-- Generation Time: Aug 20, 2021 at 06:21 PM
 -- Server version: 5.7.34-cll-lve
 -- PHP Version: 7.3.28
 
@@ -438,6 +438,7 @@ CREATE TABLE `bus_seats` (
   `seats_id` int(11) NOT NULL,
   `category` int(10) UNSIGNED NOT NULL COMMENT '0-odbus 1-conductor',
   `bookStatus` int(11) NOT NULL DEFAULT '0' COMMENT '0=Not Booked,\r\n1= Booked,\r\n2=Reserved',
+  `seat_type_gender` varchar(5) DEFAULT NULL COMMENT 'M= male F = female',
   `duration` varchar(10) NOT NULL DEFAULT '0' COMMENT 'if grater than 0 its additional seats/ sleepers in minutes THE  gap after which full seats will be given to odbus',
   `new_fare` double(8,2) NOT NULL DEFAULT '0.00',
   `created_at` datetime NOT NULL,
@@ -714,7 +715,7 @@ CREATE TABLE `customer_payment` (
   `amount` double(8,2) DEFAULT '0.00',
   `order_id` varchar(200) NOT NULL DEFAULT '',
   `razorpay_id` varchar(200) DEFAULT NULL,
-  `razorpay_signature` varchar(200) NOT NULL DEFAULT '',
+  `razorpay_signature` varchar(200) DEFAULT NULL,
   `payment_done` int(11) NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP

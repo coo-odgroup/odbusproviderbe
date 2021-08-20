@@ -20,6 +20,7 @@ use App\AppValidator\BusSequenceValidator;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\BusAmenitiesService;
 use App\Services\BusContactsService;
+use App\Services\BookingSeizedService;
 use App\Models\BusStoppage;
 use App\Services\BusStoppageService;
 
@@ -44,8 +45,9 @@ class BusController extends Controller
     protected $BusStoppageTimingService;
     protected $busSeatsService;
     protected $busSafetyService;
+    protected $bookingSeizedService;
 
-    public function __construct(BusContactsService $busContactsService,BusAmenitiesService $busAmenitiesService,BusService $busService,BusValidator $busValidator, BusSequenceValidator $BusSequenceValidator, BusStoppageService $BusStoppageService, BusStoppageTimingService $BusStoppageTimingService, BusSeatsService $busSeatsService, BusSafetyService $busSafetyService)
+    public function __construct(BusContactsService $busContactsService,BusAmenitiesService $busAmenitiesService,BusService $busService,BusValidator $busValidator, BusSequenceValidator $BusSequenceValidator, BusStoppageService $BusStoppageService, BusStoppageTimingService $BusStoppageTimingService, BusSeatsService $busSeatsService, BusSafetyService $busSafetyService, BookingSeizedService $bookingSeizedService)
     {
         $this->busService = $busService;
         $this->busValidator = $busValidator;
@@ -56,6 +58,7 @@ class BusController extends Controller
         $this->BusStoppageTimingService=$BusStoppageTimingService;
         $this->busSeatsService=$busSeatsService;
         $this->busSafetyService=$busSafetyService;
+        $this->bookingSeizedService=$bookingSeizedService;
     }
     public function seatsBus(Request $request) {
         
@@ -106,7 +109,7 @@ class BusController extends Controller
     public function update(Request $request, $id) {
         
         $data = $request->only([
-            'bus_operator_id', 'user_id','amenities','safety', 'ticket_cancelation_id', 'name', 'via','bus_number','bus_description','bus_type_id','bus_sitting_id','cancelation_points','cancellationslabs_id','created_by','bus_seat_layout_id'
+            'bus_operator_id', 'user_id','amenities','safety', 'ticket_cancelation_id', 'name', 'via','bus_number','bus_description','bus_type_id','bus_sitting_id','cancelation_points','cancellationslabs_id','created_by','bus_seat_layout_id','max_seat_book'
         ]);
        
         $busValidation = $this->busValidator->validate($data);
@@ -240,8 +243,9 @@ class BusController extends Controller
     }
     public function save(Request $request) {
         $data=$request;
-        // Log::info($data);
+        
         // return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_ACCEPTED);
+
 
         $NewBus['name']=$data['name'];
         $NewBus['via']=$data['via'];
@@ -256,6 +260,7 @@ class BusController extends Controller
         $NewBus['created_by']=$data['created_by'];
         $NewBus['bus_number']=$data['bus_number'];
         $NewBus['amenities']=$data['amenities'];
+        $NewBus['max_seat_book']=$data['max_seat_book'];
 
               
         try {
@@ -332,6 +337,8 @@ class BusController extends Controller
         {
             $timing_grp['bus_id']=$bus_last_insert_id;
             $timing_grp['location_id']=$routeValue['source_id'];
+            
+
             $found_arrival=0;
             $depature_time="";
             foreach($routeValue['sourceBoarding'] as $destinations)
@@ -365,7 +372,14 @@ class BusController extends Controller
         foreach($busRoutesInfo as $routeinfoKey=>$routeinfoVal)
         {
            
-            $routeinfoData['bus_id']=$bus_last_insert_id; //get it from return id
+            $booking_seized_array['bus_id']=$routeinfoData['bus_id']=$bus_last_insert_id; //get it from return id
+            $booking_seized_array['location_id']=$routeinfoVal['from_location'];
+            $booking_seized_array['seize_booking_minute']=$routeinfoVal['booking_seized'];
+            $booking_seized_array['created_by']=$data['created_by'];
+            
+            $this->bookingSeizedService->savePostData($booking_seized_array);
+
+
             $routeinfoData['bus_operator_id']=$data['bus_operator_id'];
             $routeinfoData['source_id']=$routeinfoVal['from_location'];
             $routeinfoData['destination_id']=$routeinfoVal['to_location'];

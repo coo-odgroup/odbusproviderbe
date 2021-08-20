@@ -38,7 +38,9 @@ class BusRepository
     }
     public function getAll()
     {
-        return $this->bus->orderBy('name','ASC')->get(); 
+        return $this->bus->with('cancellationslabs')
+        ->orderBy('name','ASC')
+        ->get(); 
     }
     public function getByOperaor($id)
     {
@@ -117,6 +119,7 @@ class BusRepository
         $bus->bus_number = $data['bus_number'];
         $bus->bus_description = $data['bus_description'];
         $bus->bus_type_id = $data['bus_type_id'];
+        $bus->max_seat_book = $data['max_seat_book'];
         $bus->bus_sitting_id = $data['bus_sitting_id'];
         $bus->bus_seat_layout_id = $data['bus_seat_layout_id'];
         $bus->running_cycle = "0";        
