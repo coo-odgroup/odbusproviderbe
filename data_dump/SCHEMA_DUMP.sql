@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 20, 2021 at 06:21 PM
+-- Generation Time: Aug 30, 2021 at 06:12 PM
 -- Server version: 5.7.34-cll-lve
 -- PHP Version: 7.3.28
 
@@ -108,17 +108,17 @@ CREATE TABLE `booking` (
   `destination_id` int(10) UNSIGNED NOT NULL,
   `j_day` int(11) NOT NULL DEFAULT '1' COMMENT 'journey day | 1-same day 2-nxt day so on',
   `journey_dt` date NOT NULL,
-  `boarding_point` varchar(50) NOT NULL,
-  `dropping_point` varchar(50) NOT NULL,
-  `boarding_time` varchar(120) DEFAULT NULL,
-  `dropping_time` varchar(120) NOT NULL,
+  `boarding_point` varchar(120) NOT NULL,
+  `dropping_point` varchar(120) NOT NULL,
+  `boarding_time` time NOT NULL,
+  `dropping_time` time NOT NULL,
   `origin` enum('ODBUS','RPBOA','GRANDBUS','JANARDANBUS','KHAMBESWARI','MOBUS') DEFAULT NULL,
   `app_type` set('WEB','MOB','ANDROID','CLNTWEB','CLNTMOB','ASSNWEB','ASSNMOB','CONDUCTOR','AGENT','MANAGER','OPERATOR') NOT NULL,
   `typ_id` varchar(50) NOT NULL COMMENT 'Type of Users booking Ticket',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int(10) UNSIGNED NOT NULL DEFAULT '1'
+  `status` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked, 1= Booked(based on successful payment)'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -130,7 +130,7 @@ CREATE TABLE `booking` (
 CREATE TABLE `booking_detail` (
   `id` int(11) NOT NULL,
   `booking_id` int(10) UNSIGNED NOT NULL,
-  `seat_no` varchar(80) NOT NULL,
+  `bus_seats_id` int(10) UNSIGNED NOT NULL,
   `passenger_name` varchar(250) NOT NULL,
   `passenger_gender` varchar(120) NOT NULL,
   `passenger_age` varchar(80) NOT NULL,
@@ -139,7 +139,7 @@ CREATE TABLE `booking_detail` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int(10) UNSIGNED NOT NULL DEFAULT '1'
+  `status` int(10) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -157,6 +157,21 @@ CREATE TABLE `booking_seized` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `booking_sequence`
+--
+
+CREATE TABLE `booking_sequence` (
+  `id` int(11) NOT NULL,
+  `booking_id` int(10) UNSIGNED NOT NULL,
+  `sequence_start_no` int(11) NOT NULL,
+  `sequence_end_no` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -343,6 +358,21 @@ CREATE TABLE `bus_gallery` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `bus_location_sequence`
+--
+
+CREATE TABLE `bus_location_sequence` (
+  `id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `location_id` int(10) UNSIGNED NOT NULL,
+  `sequence` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `bus_operator`
 --
 
@@ -437,8 +467,6 @@ CREATE TABLE `bus_seats` (
   `ticket_price_id` int(10) UNSIGNED NOT NULL,
   `seats_id` int(11) NOT NULL,
   `category` int(10) UNSIGNED NOT NULL COMMENT '0-odbus 1-conductor',
-  `bookStatus` int(11) NOT NULL DEFAULT '0' COMMENT '0=Not Booked,\r\n1= Booked,\r\n2=Reserved',
-  `seat_type_gender` varchar(5) DEFAULT NULL COMMENT 'M= male F = female',
   `duration` varchar(10) NOT NULL DEFAULT '0' COMMENT 'if grater than 0 its additional seats/ sleepers in minutes THE  gap after which full seats will be given to odbus',
   `new_fare` double(8,2) NOT NULL DEFAULT '0.00',
   `created_at` datetime NOT NULL,
@@ -712,6 +740,7 @@ CREATE TABLE `credentials` (
 CREATE TABLE `customer_payment` (
   `id` int(11) NOT NULL,
   `name` varchar(254) DEFAULT '',
+  `transaction_id` varchar(120) NOT NULL DEFAULT '',
   `amount` double(8,2) DEFAULT '0.00',
   `order_id` varchar(200) NOT NULL DEFAULT '',
   `razorpay_id` varchar(200) DEFAULT NULL,
@@ -1359,7 +1388,8 @@ ALTER TABLE `booking_detail`
   ADD KEY `booking_id` (`booking_id`),
   ADD KEY `passenger_name` (`passenger_name`),
   ADD KEY `passenger_gender` (`passenger_gender`),
-  ADD KEY `passenger_age` (`passenger_age`);
+  ADD KEY `passenger_age` (`passenger_age`),
+  ADD KEY `bus_seats_id` (`bus_seats_id`);
 
 --
 -- Indexes for table `booking_seized`
@@ -1368,6 +1398,13 @@ ALTER TABLE `booking_seized`
   ADD PRIMARY KEY (`id`),
   ADD KEY `location_id` (`location_id`),
   ADD KEY `bus_id` (`bus_id`);
+
+--
+-- Indexes for table `booking_sequence`
+--
+ALTER TABLE `booking_sequence`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `booking_id` (`booking_id`);
 
 --
 -- Indexes for table `bus`
@@ -1450,6 +1487,14 @@ ALTER TABLE `bus_gallery`
   ADD KEY `bus_id` (`bus_id`);
 
 --
+-- Indexes for table `bus_location_sequence`
+--
+ALTER TABLE `bus_location_sequence`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_id` (`bus_id`),
+  ADD KEY `location_id` (`location_id`);
+
+--
 -- Indexes for table `bus_operator`
 --
 ALTER TABLE `bus_operator`
@@ -1497,7 +1542,6 @@ ALTER TABLE `bus_seats`
   ADD KEY `bus_seats_ibfk_1` (`bus_id`),
   ADD KEY `ticket_price_FK` (`ticket_price_id`),
   ADD KEY `seats_id_fk` (`seats_id`),
-  ADD KEY `bookStatus` (`bookStatus`),
   ADD KEY `new_fare` (`new_fare`);
 
 --
@@ -1622,7 +1666,8 @@ ALTER TABLE `customer_payment`
   ADD UNIQUE KEY `order_id` (`order_id`),
   ADD UNIQUE KEY `razorpay_id` (`razorpay_id`),
   ADD KEY `name` (`name`),
-  ADD KEY `payment_done` (`payment_done`);
+  ADD KEY `payment_done` (`payment_done`),
+  ADD KEY `transaction_id` (`transaction_id`);
 
 --
 -- Indexes for table `customer_query`
@@ -1894,6 +1939,12 @@ ALTER TABLE `booking_seized`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `booking_sequence`
+--
+ALTER TABLE `booking_sequence`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `bus`
 --
 ALTER TABLE `bus`
@@ -1952,6 +2003,12 @@ ALTER TABLE `bus_festival_fare`
 --
 ALTER TABLE `bus_gallery`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `bus_location_sequence`
+--
+ALTER TABLE `bus_location_sequence`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_operator`
@@ -2277,11 +2334,23 @@ ALTER TABLE `booking`
   ADD CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 --
+-- Constraints for table `booking_detail`
+--
+ALTER TABLE `booking_detail`
+  ADD CONSTRAINT `booking_detail_ibfk_1` FOREIGN KEY (`bus_seats_id`) REFERENCES `bus_seats` (`id`);
+
+--
 -- Constraints for table `booking_seized`
 --
 ALTER TABLE `booking_seized`
   ADD CONSTRAINT `booking_seized_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`),
   ADD CONSTRAINT `booking_seized_ibfk_2` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
+
+--
+-- Constraints for table `booking_sequence`
+--
+ALTER TABLE `booking_sequence`
+  ADD CONSTRAINT `booking_sequence_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`id`);
 
 --
 -- Constraints for table `bus`
@@ -2329,6 +2398,13 @@ ALTER TABLE `bus_festival_fare`
 --
 ALTER TABLE `bus_gallery`
   ADD CONSTRAINT `bus_gallery_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
+
+--
+-- Constraints for table `bus_location_sequence`
+--
+ALTER TABLE `bus_location_sequence`
+  ADD CONSTRAINT `bus_location_sequence_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
+  ADD CONSTRAINT `bus_location_sequence_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`);
 
 --
 -- Constraints for table `bus_safety`
