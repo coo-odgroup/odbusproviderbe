@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use App\Models\Users;
 use App\Models\Bus;
 class Booking extends Model
 {
@@ -16,14 +16,18 @@ class Booking extends Model
                             'total_fare','ownr_fare','is_coupon','coupon_code','coupon_discount',
                             'discounted_fare','origin','app_type','typ_id','created_by'];
 
-     public function User()
+     public function Users()
       {
-            return $this->belongsTo(User::class);
+            return $this->belongsTo(Users::class);
       }
 
       public function Bus()
       {
             return $this->belongsTo(Bus::class);
+      }
+      public function BookingDetail()
+      {
+            return $this->hasMany(BookingDetail::class);
       }
 
 }

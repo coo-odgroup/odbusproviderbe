@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SeatOpenReportController;
 use App\Http\Controllers\SeatBlockReportController;
+use App\Http\Controllers\ExtraSeatOpenReportController;
+use App\Http\Controllers\CompleteReportController;
 use App\Http\Controllers\BusSittingController;
 use App\Http\Controllers\BusTypeController;
 use App\Http\Controllers\SafetyController;
@@ -197,10 +199,11 @@ Route::delete('/review/{id}', [ReviewController::class, 'deleteReview']);
 Route::get('/review/{id}', [ReviewController::class, 'getReview']);
 Route::get('/getreview/{bid}', [ReviewController::class, 'getReviewByBid']);
 
+////Reports/////
 Route::get('/seatopenreport',[SeatOpenReportController::class,'getAllseatopen']);
-
-////SeatBlockReport/////
 Route::get('/seatblockreport',[SeatBlockReportController::class,'getAllseatblock']);
+Route::get('/extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
+Route::get('/completereport',[CompleteReportController::class,'getAll']);
 
 
 Route::get('/GetLocations/{search_query}', [LocationController::class, 'GetLocations']);
