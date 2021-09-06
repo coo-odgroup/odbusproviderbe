@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
 use App\Models\BusStoppage;
 use App\Models\Seats;
+use App\Models\TicketPrice;
+
 
 class BusSeats extends Model
 {
@@ -24,5 +26,9 @@ class BusSeats extends Model
     public function seats()
     {
         return $this->belongsTo(Seats::class);
+    }
+    public function ticketPrice()
+    {
+        return $this->belongsTo(TicketPrice::class);        
     }
 }

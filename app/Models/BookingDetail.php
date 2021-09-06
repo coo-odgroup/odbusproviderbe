@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
 use App\Models\Booking;
+use App\Models\BusSeats;
+
 class BookingDetail extends Model
 {
     use HasFactory;
@@ -18,8 +20,14 @@ class BookingDetail extends Model
       {
             return $this->belongsTo(Bus::class);
       }
-      public function Booking()
+      public function BusSeats()
       {
-            return $this->belongsTo(Booking::class);
+            return $this->belongsTo(BusSeats::class);
       }
+
+      // public function Booking()
+      // {
+      //       return $this->belongsTo(Booking::class);
+      // }
+      
 }

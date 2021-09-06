@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Users;
 use App\Models\Bus;
+use App\Models\BookingDetail;
+use App\Models\CustomerPayment;
+
+
 class Booking extends Model
 {
     use HasFactory;
@@ -24,10 +28,15 @@ class Booking extends Model
       public function Bus()
       {
             return $this->belongsTo(Bus::class);
-      }
+      } 
+
       public function BookingDetail()
       {
             return $this->hasMany(BookingDetail::class);
+      }
+      public function CustomerPayment()
+      {
+            return $this->hasOne(CustomerPayment::class);
       }
 
 }

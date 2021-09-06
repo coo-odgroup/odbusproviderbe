@@ -37,6 +37,7 @@ use App\Http\Controllers\BookingSeizedController;
 
 use App\Http\Controllers\SeatOpenController;
 use App\Http\Controllers\SeatBlockController;
+use App\Http\Controllers\FailledTransactionReportController;
 
 
 use App\Http\Controllers\LocationController;
@@ -204,6 +205,7 @@ Route::get('/seatopenreport',[SeatOpenReportController::class,'getAllseatopen'])
 Route::get('/seatblockreport',[SeatBlockReportController::class,'getAllseatblock']);
 Route::get('/extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
 Route::get('/completereport',[CompleteReportController::class,'getAll']);
+Route::get('failledtransactionreport',[FailledTransactionReportController::class,'getAll']);
 
 
 Route::get('/GetLocations/{search_query}', [LocationController::class, 'GetLocations']);

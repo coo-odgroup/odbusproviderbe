@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Config;
 
 
 /*Priyadarshi to Review*/
-class CompleteReportRepository
+class FailledTransactionReportRepository
 {
     protected $booking;
     protected $location;
@@ -30,7 +30,7 @@ class CompleteReportRepository
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
-                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
+                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '2' );})
                              ->get() ; 
 
         $data_arr = array();
