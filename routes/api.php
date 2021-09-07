@@ -62,6 +62,7 @@ use App\Http\Controllers\BusSpecialFareController;
 use App\Http\Controllers\BusOwnerFareController;
 use App\Http\Controllers\FestivalFareController;
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\OdbusChargesController;
 
 
 use App\Http\Middleware\LogRoute;
@@ -514,7 +515,8 @@ Route::put('/updateOneToMany', [ArticleController::class, 'updateOneToMany']);
 
 
 
-
+Route::get('/odbus_charges/{id}',[OdbusChargesController::class,'getById']);
+Route::put('/odbus_charges/{id}',[OdbusChargesController::class,'update']);
 
 
 //});
