@@ -105,6 +105,11 @@ class BusOperatorRepository
         $busOperators->bank_name = $data['bank_name'];
         $busOperators->bank_ifsc = $data['bank_ifsc'];
         $busOperators->bank_account_number = $data['bank_account_number'];
+
+        $busOperators->need_gst_bill = $data['need_gst_bill'];
+        $busOperators->gst_number = $data['gst_number'];
+        $busOperators->gst_amount = $data['gst_amount'];
+
         $busOperators->created_by = $data['created_by'];
         return $busOperators;
     }

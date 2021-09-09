@@ -79,6 +79,9 @@ class BusOperatorController extends Controller
           'bank_name',
           'bank_ifsc',
           'bank_account_number',
+          'need_gst_bill',
+          'gst_number',
+          'gst_amount',
           'created_by'
         ]);  
         $BusOperatorValidation = $this->BusOperatorValidator->validate($data);
@@ -112,7 +115,10 @@ class BusOperatorController extends Controller
             'bank_name',
             'bank_ifsc',
             'bank_account_number',
-            'created_by'
+            'created_by',
+            'need_gst_bill',
+            'gst_number',
+            'gst_amount',
         ]);
         $BusOperatorValidation = $this->BusOperatorValidator->validate($data);
         if ($BusOperatorValidation->fails()) {
