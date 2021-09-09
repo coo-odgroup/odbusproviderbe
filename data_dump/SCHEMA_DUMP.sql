@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 30, 2021 at 06:12 PM
+-- Generation Time: Sep 09, 2021 at 08:13 PM
 -- Server version: 5.7.34-cll-lve
 -- PHP Version: 7.3.28
 
@@ -118,7 +118,7 @@ CREATE TABLE `booking` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked, 1= Booked(based on successful payment)'
+  `status` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked, 1= Booked(based on successful payment), 2=booking cancelled'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -139,7 +139,7 @@ CREATE TABLE `booking_detail` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int(10) UNSIGNED NOT NULL DEFAULT '0'
+  `status` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked,1= Booked(based on successful payment), 2=booking cancelled'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -391,6 +391,9 @@ CREATE TABLE `bus_operator` (
   `bank_name` varchar(50) DEFAULT NULL,
   `bank_ifsc` varchar(50) DEFAULT NULL,
   `bank_account_number` varchar(50) DEFAULT NULL,
+  `need_gst_bill` int(11) NOT NULL DEFAULT '0',
+  `gst_number` varchar(250) DEFAULT NULL,
+  `gst_amount` double(8,2) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
@@ -740,12 +743,13 @@ CREATE TABLE `credentials` (
 CREATE TABLE `customer_payment` (
   `id` int(11) NOT NULL,
   `name` varchar(254) DEFAULT '',
-  `transaction_id` varchar(120) NOT NULL DEFAULT '',
+  `booking_id` int(10) UNSIGNED NOT NULL,
   `amount` double(8,2) DEFAULT '0.00',
   `order_id` varchar(200) NOT NULL DEFAULT '',
   `razorpay_id` varchar(200) DEFAULT NULL,
   `razorpay_signature` varchar(200) DEFAULT NULL,
-  `payment_done` int(11) NOT NULL DEFAULT '0',
+  `payment_done` int(11) NOT NULL DEFAULT '0' COMMENT '0:payment not done, 1:payment done, 2:refunded ',
+  `refund_id` varchar(120) NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -909,6 +913,23 @@ CREATE TABLE `locationcode` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `odbus_charges`
+--
+
+CREATE TABLE `odbus_charges` (
+  `id` int(11) NOT NULL,
+  `payment_gateway_charges` double(8,2) NOT NULL COMMENT 'Value in %',
+  `email_sms_charges` double(8,2) NOT NULL,
+  `odbus_gst_charges` double(8,2) NOT NULL COMMENT 'Value in %',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -1239,6 +1260,23 @@ CREATE TABLE `ticket_cancelation_rule` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ticket_fare_slab`
+--
+
+CREATE TABLE `ticket_fare_slab` (
+  `id` int(11) NOT NULL,
+  `starting_fare` double NOT NULL,
+  `upto_fare` double NOT NULL,
+  `odbus_commision` double NOT NULL COMMENT 'Value in %	',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -1667,7 +1705,7 @@ ALTER TABLE `customer_payment`
   ADD UNIQUE KEY `razorpay_id` (`razorpay_id`),
   ADD KEY `name` (`name`),
   ADD KEY `payment_done` (`payment_done`),
-  ADD KEY `transaction_id` (`transaction_id`);
+  ADD KEY `transaction_id` (`booking_id`);
 
 --
 -- Indexes for table `customer_query`
@@ -1726,6 +1764,12 @@ ALTER TABLE `location`
 ALTER TABLE `locationcode`
   ADD PRIMARY KEY (`id`),
   ADD KEY `location_id` (`location_id`);
+
+--
+-- Indexes for table `odbus_charges`
+--
+ALTER TABLE `odbus_charges`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `owner_fare`
@@ -1854,6 +1898,12 @@ ALTER TABLE `ticket_cancelation`
 ALTER TABLE `ticket_cancelation_rule`
   ADD PRIMARY KEY (`id`),
   ADD KEY `ticket_cancelation_id` (`ticket_cancelation_id`);
+
+--
+-- Indexes for table `ticket_fare_slab`
+--
+ALTER TABLE `ticket_fare_slab`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `ticket_price`
@@ -2191,6 +2241,12 @@ ALTER TABLE `locationcode`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `odbus_charges`
+--
+ALTER TABLE `odbus_charges`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `owner_fare`
 --
 ALTER TABLE `owner_fare`
@@ -2291,6 +2347,12 @@ ALTER TABLE `ticket_cancelation`
 --
 ALTER TABLE `ticket_cancelation_rule`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `ticket_fare_slab`
+--
+ALTER TABLE `ticket_fare_slab`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `ticket_price`
@@ -2486,6 +2548,12 @@ ALTER TABLE `city_closing_extended`
 ALTER TABLE `coupon_assigned_bus`
   ADD CONSTRAINT `coupon_assigned_bus_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
   ADD CONSTRAINT `coupon_assigned_id_fk` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`);
+
+--
+-- Constraints for table `customer_payment`
+--
+ALTER TABLE `customer_payment`
+  ADD CONSTRAINT `customer_payment_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`id`);
 
 --
 -- Constraints for table `customer_query_category_issues`

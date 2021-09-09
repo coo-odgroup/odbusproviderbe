@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 07, 2021 at 08:14 PM
+-- Generation Time: Sep 09, 2021 at 08:13 PM
 -- Server version: 5.7.34-cll-lve
 -- PHP Version: 7.3.28
 
@@ -187,9 +187,10 @@ INSERT INTO `booking` (`id`, `transaction_id`, `pnr`, `users_id`, `bus_id`, `sou
 (1, '20210902164616830524', 'OD32845109', 1, 3, 1345, 1374, 2, '2021-09-03', 'Atharanala', 'Bus Stand', '20:20:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-02 16:46:16', '2021-09-02 16:46:34', 'Customer', 1),
 (2, '20210902170108912541', 'OD50172493', 2, 3, 1345, 1374, 2, '2021-09-03', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-02 17:01:08', '2021-09-02 17:01:11', 'Customer', 1),
 (3, '20210902170217577686', 'OD17382906', 2, 3, 1345, 1374, 2, '2021-09-02', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-02 17:02:17', '2021-09-02 17:02:21', 'Customer', 1),
-(4, '20210904130454989796', 'OD83570126', 3, 3, 1345, 1304, 2, '2021-09-04', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-04 13:04:54', '2021-09-04 13:05:01', 'Customer', 1),
-(5, '20210904130629993742', 'OD63812749', 3, 3, 1345, 1304, 2, '2021-09-04', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-04 13:06:29', '2021-09-04 13:06:33', 'Customer', 1),
-(6, '20210906205722919894', 'OD93814720', 5, 3, 1345, 1304, 2, '2021-09-06', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-06 20:57:22', '2021-09-06 20:57:31', 'Customer', 1);
+(4, '20210904130454989796', 'OD83570126', 2, 3, 1345, 1304, 2, '2021-09-04', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-04 13:04:54', '2021-09-04 13:05:01', 'Customer', 1),
+(5, '20210904130629993742', 'OD63812749', 2, 3, 1345, 1304, 2, '2021-09-04', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-04 13:06:29', '2021-09-08 14:45:42', 'Customer', 2),
+(6, '20210906205722919894', 'OD93814720', 2, 3, 1345, 1304, 2, '2021-09-06', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-06 20:57:22', '2021-09-08 14:32:56', 'Customer', 2),
+(7, '20210908221202972135', 'OD72106349', 7, 3, 1345, 1304, 2, '2021-09-08', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-08 22:12:02', '2021-09-08 22:12:07', 'Customer', 1);
 
 -- --------------------------------------------------------
 
@@ -209,7 +210,7 @@ CREATE TABLE `booking_detail` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int(10) UNSIGNED NOT NULL DEFAULT '0'
+  `status` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked,1= Booked(based on successful payment), 2=booking cancelled'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -224,9 +225,9 @@ INSERT INTO `booking_detail` (`id`, `booking_id`, `bus_seats_id`, `passenger_nam
 (5, 3, 6, 'ere', 'M', '12', 600, 0, '2021-09-02 17:02:17', '2021-09-02 17:02:17', 'Customer', 0),
 (6, 3, 1, 'rererer', 'F', '12', 400, 0, '2021-09-02 17:02:17', '2021-09-02 17:02:17', 'Customer', 0),
 (7, 4, 13, 'Test', 'F', '22', 1000, 0, '2021-09-04 13:04:54', '2021-09-04 13:04:54', 'Customer', 0),
-(8, 5, 15, 'Test2', 'F', '22', 1000, 0, '2021-09-04 13:06:30', '2021-09-04 13:06:30', 'Customer', 0),
-(9, 6, 15, 'test1', 'F', '22', 1000, 0, '2021-09-06 20:57:22', '2021-09-06 20:57:22', 'Customer', 0),
-(10, 6, 13, 'tet2', 'F', '22', 1000, 0, '2021-09-06 20:57:22', '2021-09-06 20:57:22', 'Customer', 0);
+(9, 6, 15, 'test1', 'F', '22', 1000, 0, '2021-09-06 20:57:22', '2021-09-08 14:32:56', 'Customer', 2),
+(10, 6, 13, 'tet2', 'F', '22', 1000, 0, '2021-09-06 20:57:22', '2021-09-08 14:32:56', 'Customer', 2),
+(11, 7, 15, 'test', 'F', '22', 1000, 0, '2021-09-08 22:12:02', '2021-09-08 22:12:02', 'Customer', 0);
 
 -- --------------------------------------------------------
 
@@ -282,7 +283,8 @@ INSERT INTO `booking_sequence` (`id`, `booking_id`, `sequence_start_no`, `sequen
 (3, 3, 1, 2, '2021-09-02 11:32:17', '2021-09-02 11:32:17'),
 (4, 4, 1, 4, '2021-09-04 07:34:54', '2021-09-04 07:34:54'),
 (5, 5, 1, 4, '2021-09-04 07:36:30', '2021-09-04 07:36:30'),
-(6, 6, 1, 4, '2021-09-06 15:27:22', '2021-09-06 15:27:22');
+(6, 6, 1, 4, '2021-09-06 15:27:22', '2021-09-06 15:27:22'),
+(7, 7, 1, 4, '2021-09-08 16:42:02', '2021-09-08 16:42:02');
 
 -- --------------------------------------------------------
 
@@ -558,6 +560,9 @@ CREATE TABLE `bus_operator` (
   `bank_name` varchar(50) DEFAULT NULL,
   `bank_ifsc` varchar(50) DEFAULT NULL,
   `bank_account_number` varchar(50) DEFAULT NULL,
+  `need_gst_bill` int(11) NOT NULL DEFAULT '0',
+  `gst_number` varchar(250) DEFAULT NULL,
+  `gst_amount` double(8,2) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
@@ -568,16 +573,16 @@ CREATE TABLE `bus_operator` (
 -- Dumping data for table `bus_operator`
 --
 
-INSERT INTO `bus_operator` (`id`, `email_id`, `password`, `operator_name`, `contact_number`, `organisation_name`, `location_name`, `address`, `additional_email`, `additional_contact`, `bank_account_name`, `bank_name`, `bank_ifsc`, `bank_account_number`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, 'deesasd@ss.com', 'Admin@2010', 'GPM Travels', '9692424122', 'SEOFIED', 'Bhubaneswar', 'Station Bazar Road', NULL, NULL, 'Chandrakanta Rath', 'IOBS', 'IO5287', '123654785412', '2021-02-01 09:37:56', '2021-03-13 13:02:04', 'Admin', 1),
-(2, 'deepak@gmail.com', '25425', 'DD BUS Service', '9875486547', 'DD', 'bargarh', 'Lane 1,  Patia', NULL, NULL, 'Deepak Das', 'Punjab National Bank', 'PUB25415', '22552254125', '2021-02-01 11:57:18', '2021-02-10 09:08:13', 'Admin', 1),
-(3, 'deepaks@gmail.com', 'KK@123', 'KK', '1236547890', 'KK INT', 'bhubaneswar', 'Bhubaneswar', NULL, NULL, NULL, NULL, NULL, NULL, '2021-02-01 13:13:36', '2021-02-25 14:10:44', 'Admin', 0),
-(4, 'aasss@gmaill.com', 'abcd', 'SAS services', '1234569870', 'ABCDS', 'ATRE', 'TYHR', NULL, NULL, NULL, NULL, NULL, NULL, '2021-02-01 13:17:58', '2021-02-26 13:59:29', 'Admin', 2),
-(5, 'Chandra@gmail.com', '123456', 'NEXO Travels', '5454545459', 'Test', 'BBSR', 'BBSR', NULL, NULL, NULL, NULL, NULL, NULL, '2021-02-26 13:59:20', '2021-02-26 13:59:20', 'Admin', 1),
-(6, 'pdsir@gmail.com', '111111', 'demo', '2154545454', 'NEW OD', 'BBSR', 'BBS', NULL, NULL, NULL, NULL, NULL, NULL, '2021-02-27 06:26:28', '2021-02-27 06:26:28', 'Admin', 1),
-(7, 'chandras@odgroup.in', 'Admin@2010', 'CK BUS', '8798457865', 'CK BUS', 'Bhubaneswar', 'Bhubaneswar', NULL, NULL, NULL, NULL, NULL, NULL, '2021-06-30 12:44:13', '2021-06-30 12:44:26', 'Admin', 1),
-(8, 'hussen@odbus.in', 'Admin@2010', 'Hussen Travels', '9040236166', 'Hussen travels', 'Balianta', 'Balianta, Bhubaneswar', NULL, NULL, 'Dinesh Das', 'Statebank of India', 'SBIN0007447', '20015874178', '2021-07-17 06:55:02', '2021-07-17 06:55:23', 'Admin', 1),
-(9, 'santosh@odbus.in', 'Admin@2010', 'Santosh Dash', '8249244495', 'DASH AND DASH', 'Bhubaneswar', 'Kalpana Sqr', NULL, NULL, NULL, NULL, NULL, NULL, '2021-09-03 07:50:59', '2021-09-03 07:51:02', 'Admin', 1);
+INSERT INTO `bus_operator` (`id`, `email_id`, `password`, `operator_name`, `contact_number`, `organisation_name`, `location_name`, `address`, `additional_email`, `additional_contact`, `bank_account_name`, `bank_name`, `bank_ifsc`, `bank_account_number`, `need_gst_bill`, `gst_number`, `gst_amount`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(1, 'deesasd@ss.com', 'Admin@2010', 'GPM Travels', '9692424122', 'SEOFIED', 'Bhubaneswar', 'Station Bazar Road', NULL, NULL, 'Chandrakanta Rath', 'IOBS', 'IO5287', '123654785412', 0, NULL, NULL, '2021-02-01 09:37:56', '2021-03-13 13:02:04', 'Admin', 1),
+(2, 'deepak@gmail.com', '25425', 'DD BUS Service', '9875486547', 'DD', 'bargarh', 'Lane 1,  Patia', NULL, NULL, 'Deepak Das', 'Punjab National Bank', 'PUB25415', '22552254125', 0, NULL, NULL, '2021-02-01 11:57:18', '2021-02-10 09:08:13', 'Admin', 1),
+(3, 'deepaks@gmail.com', 'KK@123', 'KK', '1236547890', 'KK INT', 'bhubaneswar', 'Bhubaneswar', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-01 13:13:36', '2021-02-25 14:10:44', 'Admin', 0),
+(4, 'aasss@gmaill.com', 'abcd', 'SAS services', '1234569870', 'ABCDS', 'ATRE', 'TYHR', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-01 13:17:58', '2021-02-26 13:59:29', 'Admin', 2),
+(5, 'Chandra@gmail.com', '123456', 'NEXO Travels', '5454545459', 'Test', 'BBSR', 'BBSR', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-26 13:59:20', '2021-02-26 13:59:20', 'Admin', 1),
+(6, 'pdsir@gmail.com', '111111', 'demo', '2154545454', 'NEW OD', 'BBSR', 'BBS', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-27 06:26:28', '2021-02-27 06:26:28', 'Admin', 1),
+(7, 'chandras@odgroup.in', 'Admin@2010', 'CK BUS', '8798457865', 'CK BUS', 'Bhubaneswar', 'Bhubaneswar', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-06-30 12:44:13', '2021-06-30 12:44:26', 'Admin', 1),
+(8, 'hussen@odbus.in', 'Admin@2010', 'Hussen Travels', '9040236166', 'Hussen travels', 'Balianta', 'Balianta, Bhubaneswar', NULL, NULL, 'Dinesh Das', 'Statebank of India', 'SBIN0007447', '20015874178', 0, NULL, NULL, '2021-07-17 06:55:02', '2021-07-17 06:55:23', 'Admin', 1),
+(9, 'santosh@odbus.in', 'Admin@2010', 'Santosh Dash', '8249244495', 'DASH AND DASH', 'Bhubaneswar', 'Kalpana Sqr', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-09-03 07:50:59', '2021-09-03 07:51:02', 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -1129,8 +1134,9 @@ INSERT INTO `customer_payment` (`id`, `name`, `booking_id`, `amount`, `order_id`
 (2, 'lima Mohanty', 2, 1000.00, 'order_Hsa4VftCUf6fkZ', 'pay_Hsa4clbC6Pcajr', '31fecbe08e1cdb6e4d37c051ad577b7273efe40fc54d1039acc3e979d6a6368e', 1, '0', '2021-09-02 17:01:11', '2021-09-02 17:01:22'),
 (3, 'lima Mohanty', 3, 1000.00, 'order_Hsa5jfMEPCk797', 'pay_Hsa5ocJvrGO5Jz', '13e58ebe1738ae31a2759742d3bc995d0e6f44ff7b73ad2cf46b0e1d62751e52', 1, '0', '2021-09-02 17:02:21', '2021-09-02 17:02:33'),
 (4, 'Test Ladies', 4, 1000.00, 'order_HtJ7H526fPJOqF', 'pay_HtJ7OEgdkNXzjV', '75f2259b040a9ef81f9f5a8470d8b6d15af3441ab9b91ad0b9439c9bccd3c078', 1, '0', '2021-09-04 13:05:01', '2021-09-04 13:05:16'),
-(5, 'Test2', 5, 1000.00, 'order_HtJ8tYb9GZhzI4', 'pay_HtJ8xmPAmqQnDI', 'e68538253991342aa45579b3e9808920ac349b72e89a081effd6208ebfb00ec6', 1, '0', '2021-09-04 13:06:33', '2021-09-04 13:06:41'),
-(6, 'ghthdth rgbrgbg', 6, 2000.00, 'order_HuEEdFSuNESXjf', 'pay_HuEEiGQRCv5YQD', '874da183fb2933638d3edf6e07ef74f2da2ce5221b1d5adb3b6bd7b0fe1cd206', 1, '0', '2021-09-06 20:57:31', '2021-09-06 20:57:43');
+(5, 'Test2', 5, 1000.00, 'order_HtJ8tYb9GZhzI4', 'pay_HtJ8xmPAmqQnDI', 'e68538253991342aa45579b3e9808920ac349b72e89a081effd6208ebfb00ec6', 2, 'rfnd_Huuy6w1PLpVDqy', '2021-09-04 13:06:33', '2021-09-08 14:45:42'),
+(6, 'ghthdth rgbrgbg', 6, 2000.00, 'order_HuEEdFSuNESXjf', 'pay_HuEEiGQRCv5YQD', '874da183fb2933638d3edf6e07ef74f2da2ce5221b1d5adb3b6bd7b0fe1cd206', 2, 'rfnd_HuukdRLUMIWfvJ', '2021-09-06 20:57:31', '2021-09-08 14:32:56'),
+(7, 'test', 7, 1000.00, 'order_Hv2Zg2GriJpKUL', 'pay_Hv2ZmhnsOVHZPk', 'a58c93f1dd3a549e1f15bc2f3b4586b80afda3f0af5761cdf00899db028b792b', 1, '0', '2021-09-08 22:12:07', '2021-09-08 22:12:20');
 
 -- --------------------------------------------------------
 
@@ -2438,6 +2444,32 @@ INSERT INTO `ticket_cancelation_rule` (`id`, `ticket_cancelation_id`, `hour_lag_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ticket_fare_slab`
+--
+
+CREATE TABLE `ticket_fare_slab` (
+  `id` int(11) NOT NULL,
+  `starting_fare` double NOT NULL,
+  `upto_fare` double NOT NULL,
+  `odbus_commision` double NOT NULL COMMENT 'Value in %	',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ticket_fare_slab`
+--
+
+INSERT INTO `ticket_fare_slab` (`id`, `starting_fare`, `upto_fare`, `odbus_commision`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(1, 1, 300, 10, '2021-09-08 12:14:48', '2021-09-08 12:14:48', '', 1),
+(2, 301, 700, 8, '2021-09-08 12:15:15', '2021-09-08 12:15:15', '', 1),
+(3, 701, 99999999, 7, '2021-09-08 12:15:34', '2021-09-08 12:15:34', '', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ticket_price`
 --
 
@@ -2535,11 +2567,12 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `password`, `otp`, `is_verified`, `msg_id`, `created_at`, `updated_at`, `created_by`) VALUES
 (1, 'Swagatika', 'sahu.swagatika@gmail.com', '9916457575', '$2y$10$lj2O6x4KlFF1PwULD8/PA.EOZ25GQ.Kd60ZwlSV.fva9KkYNHRlme', '40207', 0, '', '2021-09-02 16:46:16', '2021-09-06 15:47:08', ''),
-(2, 'Lima', 'banashri.seofied@gmail.com', '7978817539', '$2y$10$8CnZiaJJb8Ou3iXn0t9nQee0vuf8UTio5h9IIUSHeQtYqUCDYSiGS', '28674', 0, '', '2021-09-02 17:01:08', '2021-09-07 16:13:55', ''),
+(2, 'Lima', 'banashri.seofied@gmail.com', '7978817539', '$2y$10$8CnZiaJJb8Ou3iXn0t9nQee0vuf8UTio5h9IIUSHeQtYqUCDYSiGS', NULL, 1, '', '2021-09-02 17:01:08', '2021-09-08 12:08:36', ''),
 (3, 'Test2', 'nayakabhishek2@gmail.com', NULL, '', '', 0, '', '2021-09-04 13:04:54', '2021-09-04 13:06:29', ''),
 (4, 'Swagatika11', 'swagatikasahu.seofied@gmail.com', NULL, '$2y$10$x87jijVrwGBoZ1PQcudRGulxUzkGwuj.7G5c53svPNIzYRgiXGHyu', '61893', 0, '', '2021-09-06 16:19:13', '2021-09-06 16:45:07', 'Admin'),
 (5, 'ghthdth rgbrgbg', 'nayakababhishek.seofied@gmail.com', '7894310911', '', '', 0, '', '2021-09-06 20:57:22', '2021-09-06 20:57:22', ''),
-(6, 'priyadarshi parida', 'neotorand@gmail.com', NULL, '$2y$10$UuoQSteulYA3rgIlOw4ireFmTaQmQti.kPmI5e8lgj7IlJpNE7JZ.', NULL, 1, '', '2021-09-07 16:10:20', '2021-09-07 16:16:01', 'priyadarshi parida');
+(6, 'priyadarshi parida', 'neotorand@gmail.com', NULL, '$2y$10$UuoQSteulYA3rgIlOw4ireFmTaQmQti.kPmI5e8lgj7IlJpNE7JZ.', NULL, 1, '', '2021-09-07 16:10:20', '2021-09-07 16:16:01', 'priyadarshi parida'),
+(7, 'test', 'nayakabhishek2@gmail.com', '9853515703', '', '', 0, '', '2021-09-08 22:12:02', '2021-09-08 22:12:02', '');
 
 -- --------------------------------------------------------
 
@@ -3087,6 +3120,12 @@ ALTER TABLE `ticket_cancelation_rule`
   ADD KEY `ticket_cancelation_id` (`ticket_cancelation_id`);
 
 --
+-- Indexes for table `ticket_fare_slab`
+--
+ALTER TABLE `ticket_fare_slab`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `ticket_price`
 --
 ALTER TABLE `ticket_price`
@@ -3155,13 +3194,13 @@ ALTER TABLE `boarding_droping`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `booking_detail`
 --
 ALTER TABLE `booking_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `booking_seized`
@@ -3173,7 +3212,7 @@ ALTER TABLE `booking_seized`
 -- AUTO_INCREMENT for table `booking_sequence`
 --
 ALTER TABLE `booking_sequence`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `bus`
@@ -3365,7 +3404,7 @@ ALTER TABLE `credentials`
 -- AUTO_INCREMENT for table `customer_payment`
 --
 ALTER TABLE `customer_payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `customer_query`
@@ -3530,6 +3569,12 @@ ALTER TABLE `ticket_cancelation_rule`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT for table `ticket_fare_slab`
+--
+ALTER TABLE `ticket_fare_slab`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `ticket_price`
 --
 ALTER TABLE `ticket_price`
@@ -3545,7 +3590,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `user_bank_details`
