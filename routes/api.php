@@ -64,6 +64,8 @@ use App\Http\Controllers\FestivalFareController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\OdbusChargesController;
 
+use App\Http\Controllers\OffersController;
+
 
 use App\Http\Middleware\LogRoute;
 use Laravel\Passport\Passport;
@@ -517,6 +519,9 @@ Route::put('/updateOneToMany', [ArticleController::class, 'updateOneToMany']);
 
 Route::get('/odbus_charges/{id}',[OdbusChargesController::class,'getById']);
 Route::put('/odbus_charges/{id}',[OdbusChargesController::class,'update']);
+
+
+Route::post('/offersDT', [OffersController::class, 'getOffersDT']);
 
 
 //});
