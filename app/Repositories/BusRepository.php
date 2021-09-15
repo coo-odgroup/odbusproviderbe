@@ -9,6 +9,7 @@ use App\Models\BusStoppage;
 use App\Models\BusAmenities;
 use App\Models\Amenities;
 use App\Models\User;
+use App\Models\TicketPrice;
 use App\Models\cancelationSlab;
 use App\Models\BoardingDroping;
 use Illuminate\Support\Collection;
@@ -20,9 +21,10 @@ class BusRepository
 {
     protected $bus;
     protected $seats;
+    protected $ticketPrice;
     public function __construct(Bus $bus,BusSchedule $busSchedule, BusType $busType, BusSitting $busSitting,
      BusStoppage $busStoppage, BusAmenities $busAmenities, Amenities $amenities,
-      BoardingDroping $boardingDroping, User $user,BusScheduleDate $busScheduleDate, Seats $seats)
+      BoardingDroping $boardingDroping, User $user,BusScheduleDate $busScheduleDate, Seats $seats, TicketPrice $ticketPrice)
     {
         $this->bus = $bus;
         $this->busSchedule = $busSchedule;
@@ -35,6 +37,7 @@ class BusRepository
         $this->user = $user;
         $this->busScheduleDate = $busScheduleDate;
         $this->Seats = $seats;
+        $this->ticketPrice=$ticketPrice;
     }
     public function getAll()
     {
@@ -179,6 +182,10 @@ class BusRepository
         $bus = $this->bus->find($id);
         $bus->status = 2;
         $bus->update();
+
+        $ticketPrice = $this->ticketPrice->find('bus_id');
+        $ticketPrice->status = 2;
+        $ticketPrice->update();
         return $bus;
     }
     
