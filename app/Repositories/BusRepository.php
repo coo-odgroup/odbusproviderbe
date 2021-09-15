@@ -183,9 +183,9 @@ class BusRepository
         $bus->status = 2;
         $bus->update();
 
-        $ticketPrice = $this->ticketPrice->find('bus_id');
-        $ticketPrice->status = 2;
-        $ticketPrice->update();
+        // $ticketPrice = $this->ticketPrice->find('bus_id',$id);
+        // $ticketPrice->status = 2;
+        // $ticketPrice->update();
         return $bus;
     }
     
