@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 15, 2021 at 06:10 AM
+-- Generation Time: Sep 16, 2021 at 12:21 PM
 -- Server version: 8.0.26
 -- PHP Version: 7.4.14
 
@@ -36,7 +36,7 @@ CREATE TABLE `amenities` (
   `created_by` varchar(50) DEFAULT NULL,
   `reason` varchar(250) DEFAULT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `amenities`
@@ -66,7 +66,7 @@ CREATE TABLE `appdownload` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -88,7 +88,7 @@ CREATE TABLE `appversion` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -104,7 +104,7 @@ CREATE TABLE `boarding_droping` (
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `boarding_droping`
@@ -175,15 +175,51 @@ CREATE TABLE `booking` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked, 1= Booked(based on successful payment), 2=booking cancelled',
-  `total_fare` double(8,2) DEFAULT '0.00',
-  `owner_fare` double(8,2) DEFAULT '0.00',
-  `odbus_gst_charges` double(8,2) DEFAULT '0.00',
-  `odbus_gst_amount` double(8,2) DEFAULT '0.00',
-  `owner_gst_charges` double(8,2) DEFAULT '0.00',
-  `owner_gst_amount` double(8,2) DEFAULT '0.00',
-  `odbus_charges` double(8,2) NOT NULL DEFAULT '0.00'
-) ;
+  `status` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked, 1= Booked(based on successful payment), 2=booking cancelled'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `booking`
+--
+
+INSERT INTO `booking` (`id`, `transaction_id`, `pnr`, `users_id`, `bus_id`, `source_id`, `destination_id`, `j_day`, `journey_dt`, `boarding_point`, `dropping_point`, `boarding_time`, `dropping_time`, `origin`, `app_type`, `typ_id`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(1, '20210902164616830524', 'OD32845109', 1, 3, 1345, 1374, 2, '2021-09-03', 'Atharanala', 'Bus Stand', '20:20:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-02 16:46:16', '2021-09-02 16:46:34', 'Customer', 1),
+(2, '20210902170108912541', 'OD50172493', 2, 3, 1345, 1374, 2, '2021-09-03', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-02 17:01:08', '2021-09-02 17:01:11', 'Customer', 1),
+(3, '20210902170217577686', 'OD17382906', 2, 3, 1345, 1374, 2, '2021-09-02', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-02 17:02:17', '2021-09-02 17:02:21', 'Customer', 1),
+(4, '20210904130454989796', 'OD83570126', 2, 3, 1345, 1304, 2, '2021-09-04', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-04 13:04:54', '2021-09-04 13:05:01', 'Customer', 1),
+(5, '20210904130629993742', 'OD63812749', 2, 3, 1345, 1304, 2, '2021-09-04', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-04 13:06:29', '2021-09-08 14:45:42', 'Customer', 2),
+(6, '20210906205722919894', 'OD93814720', 2, 3, 1345, 1304, 2, '2021-09-06', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-06 20:57:22', '2021-09-08 14:32:56', 'Customer', 2),
+(7, '20210908221202972135', 'OD72106349', 7, 3, 1345, 1304, 2, '2021-09-08', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-08 22:12:02', '2021-09-08 22:12:07', 'Customer', 1),
+(8, '20210911102238274274', 'OD58316927', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:22:38', '2021-09-11 10:22:47', 'Customer', 1),
+(9, '20210911102527570776', 'OD57291380', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:25:27', '2021-09-11 10:25:30', 'Customer', 1),
+(10, '20210911104251670603', 'OD63091472', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:42:51', '2021-09-11 10:42:54', 'Customer', 1),
+(11, '20210911104542327154', 'OD93410768', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:45:42', '2021-09-11 10:45:44', 'Customer', 1),
+(12, '20210911104706381488', 'OD18095463', 8, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:47:06', '2021-09-11 10:47:09', 'Customer', 1),
+(13, '20210911104843668006', 'OD23980451', 8, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:48:43', '2021-09-11 10:48:46', 'Customer', 1),
+(14, '20210911105026893713', 'OD57824960', 8, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:50:26', '2021-09-11 10:50:29', 'Customer', 1),
+(15, '20210911110915474326', 'OD56132048', 8, 3, 1345, 1304, 2, '2021-09-12', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 11:09:15', '2021-09-11 11:24:51', 'Customer', 2),
+(16, '20210911113347540069', 'OD48509236', 2, 3, 1345, 1304, 2, '2021-09-12', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 11:33:47', '2021-09-11 11:33:50', 'Customer', 1),
+(17, '20210911123931237767', 'OD78502413', 9, 3, 1345, 1304, 2, '2021-09-11', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 12:39:31', '2021-09-11 12:39:35', 'Customer', 1),
+(18, '20210911150525949480', 'OD49715862', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:05:25', '2021-09-11 15:05:25', 'Customer', 0),
+(19, '20210911150631349734', 'OD48723659', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:06:31', '2021-09-11 15:06:31', 'Customer', 0),
+(20, '20210911150809491906', 'OD59813470', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:08:09', '2021-09-11 15:08:09', 'Customer', 0),
+(21, '20210911151043595627', 'OD74350692', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:10:43', '2021-09-11 15:10:43', 'Customer', 0),
+(22, '20210911151121148579', 'OD63049825', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:11:21', '2021-09-11 15:11:21', 'Customer', 0),
+(23, '20210911151339817187', 'OD27051364', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:13:39', '2021-09-11 15:13:39', 'Customer', 0),
+(24, '20210911151538870049', 'OD78139526', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:15:38', '2021-09-11 15:15:38', 'Customer', 0),
+(25, '20210911151805826871', 'OD57910384', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:18:05', '2021-09-11 15:18:05', 'Customer', 0),
+(26, '20210911151845900316', 'OD16805734', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:18:45', '2021-09-11 15:18:45', 'Customer', 0),
+(27, '20210911152001947019', 'OD90512763', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:20:01', '2021-09-11 15:20:01', 'Customer', 0),
+(28, '20210911152112291783', 'OD80963425', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:21:12', '2021-09-11 15:21:12', 'Customer', 0),
+(29, '2021091115233759227', 'OD47958103', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:23:37', '2021-09-11 15:23:37', 'Customer', 0),
+(30, '20210911153046790038', 'OD31958076', 2, 5, 1374, 1304, 1, '2021-09-12', 'Bonth Chhawk', 'Bus stand', '15:30:00', '20:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:30:46', '2021-09-11 15:30:46', 'Customer', 0),
+(31, '20210911153139176983', 'OD27039145', 2, 5, 1374, 1304, 1, '2021-09-12', 'Bonth Chhawk', 'Bus stand', '15:30:00', '20:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:31:39', '2021-09-11 15:31:39', 'Customer', 0),
+(32, '20210911153627719412', 'OD10653789', 8, 5, 1345, 1374, 1, '2021-09-12', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:36:27', '2021-09-11 15:36:59', 'Customer', 1),
+(33, '20210911154903357499', 'OD04761893', 2, 5, 1345, 1374, 1, '2021-08-31', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:49:03', '2021-09-11 15:49:03', 'Customer', 0),
+(34, '2021091115493646741', 'OD68349270', 2, 5, 1345, 1374, 1, '2021-08-31', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:49:36', '2021-09-11 15:49:36', 'Customer', 0),
+(35, '20210911162624753982', 'OD01643857', 8, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 16:26:24', '2021-09-11 16:26:27', 'Customer', 1),
+(36, '20210911162824334646', 'OD78643219', 8, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 16:28:24', '2021-09-11 16:28:27', 'Customer', 1),
+(37, '20210911171459752452', '06231958', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 17:14:59', '2021-09-11 17:14:59', 'Customer', 0);
 
 -- --------------------------------------------------------
 
@@ -198,11 +234,53 @@ CREATE TABLE `booking_detail` (
   `passenger_name` varchar(250) NOT NULL,
   `passenger_gender` varchar(120) NOT NULL,
   `passenger_age` varchar(80) NOT NULL,
+  `total_fare` double NOT NULL,
+  `owner_fare` double NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked,1= Booked(based on successful payment), 2=booking cancelled'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `booking_detail`
+--
+
+INSERT INTO `booking_detail` (`id`, `booking_id`, `bus_seats_id`, `passenger_name`, `passenger_gender`, `passenger_age`, `total_fare`, `owner_fare`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(1, 1, 6, 'lima m', 'M', '11', 600, 0, '2021-09-02 16:46:16', '2021-09-02 16:46:16', 'Customer', 0),
+(2, 1, 2, 'lima f', 'F', '12', 400, 0, '2021-09-02 16:46:16', '2021-09-02 16:46:16', 'Customer', 0),
+(3, 2, 5, 'gdfd', 'M', '12', 600, 0, '2021-09-02 17:01:08', '2021-09-02 17:01:08', 'Customer', 0),
+(4, 2, 1, 'fdfdf', 'F', '12', 400, 0, '2021-09-02 17:01:08', '2021-09-02 17:01:08', 'Customer', 0),
+(5, 3, 6, 'ere', 'M', '12', 600, 0, '2021-09-02 17:02:17', '2021-09-02 17:02:17', 'Customer', 0),
+(6, 3, 1, 'rererer', 'F', '12', 400, 0, '2021-09-02 17:02:17', '2021-09-02 17:02:17', 'Customer', 0),
+(7, 4, 13, 'Test', 'F', '22', 1000, 0, '2021-09-04 13:04:54', '2021-09-04 13:04:54', 'Customer', 0),
+(9, 6, 15, 'test1', 'F', '22', 1000, 0, '2021-09-06 20:57:22', '2021-09-08 14:32:56', 'Customer', 2),
+(10, 6, 13, 'tet2', 'F', '22', 1000, 0, '2021-09-06 20:57:22', '2021-09-08 14:32:56', 'Customer', 2),
+(11, 7, 15, 'test', 'F', '22', 1000, 0, '2021-09-08 22:12:02', '2021-09-08 22:12:02', 'Customer', 0),
+(12, 8, 2, 'lima m', 'M', '29', 400, 0, '2021-09-11 10:22:38', '2021-09-11 10:22:38', 'Customer', 0),
+(13, 8, 3, 'lima f', 'F', '29', 400, 0, '2021-09-11 10:22:38', '2021-09-11 10:22:38', 'Customer', 0),
+(14, 9, 2, 'lima', 'F', '12', 400, 0, '2021-09-11 10:25:27', '2021-09-11 10:25:27', 'Customer', 0),
+(15, 9, 3, 'lima', 'M', '12', 400, 0, '2021-09-11 10:25:27', '2021-09-11 10:25:27', 'Customer', 0),
+(16, 10, 2, 'lima ff', 'F', '24', 400, 0, '2021-09-11 10:42:51', '2021-09-11 10:42:51', 'Customer', 0),
+(17, 10, 3, 'lima mm', 'M', '24', 400, 0, '2021-09-11 10:42:51', '2021-09-11 10:42:51', 'Customer', 0),
+(18, 11, 2, 'xfdf', 'F', '34', 400, 0, '2021-09-11 10:45:42', '2021-09-11 10:45:42', 'Customer', 0),
+(19, 11, 3, 'dfdfd', 'F', '34', 400, 0, '2021-09-11 10:45:42', '2021-09-11 10:45:42', 'Customer', 0),
+(20, 12, 2, 'hgf', 'M', '12', 400, 0, '2021-09-11 10:47:06', '2021-09-11 10:47:06', 'Customer', 0),
+(21, 12, 3, 'ghghg', 'F', '12', 400, 0, '2021-09-11 10:47:06', '2021-09-11 10:47:06', 'Customer', 0),
+(22, 13, 2, 'fgfg', 'F', '12', 400, 0, '2021-09-11 10:48:43', '2021-09-11 10:48:43', 'Customer', 0),
+(23, 13, 3, 'fgfg', 'F', '12', 400, 0, '2021-09-11 10:48:43', '2021-09-11 10:48:43', 'Customer', 0),
+(24, 14, 2, 'dfdf', 'M', '12', 400, 0, '2021-09-11 10:50:26', '2021-09-11 10:50:26', 'Customer', 0),
+(25, 14, 3, 'fdfdfdf', 'F', '12', 400, 0, '2021-09-11 10:50:26', '2021-09-11 10:50:26', 'Customer', 0),
+(26, 15, 14, 'lima', 'F', '12', 1000, 0, '2021-09-11 11:09:15', '2021-09-11 11:24:51', 'Customer', 2),
+(27, 16, 13, 'lima mm', 'M', '23', 1000, 0, '2021-09-11 11:33:47', '2021-09-11 11:33:47', 'Customer', 0),
+(28, 16, 14, 'lima ff', 'F', '23', 1000, 0, '2021-09-11 11:33:47', '2021-09-11 11:33:47', 'Customer', 0),
+(29, 17, 16, 'priyadarshi', 'F', '45', 1000, 0, '2021-09-11 12:39:31', '2021-09-11 12:39:31', 'Customer', 0),
+(30, 30, 47, 'wewew', 'F', '12', 500, 0, '2021-09-11 15:30:46', '2021-09-11 15:30:46', 'Customer', 0),
+(31, 31, 48, 'deer', 'M', '12', 500, 0, '2021-09-11 15:31:39', '2021-09-11 15:31:39', 'Customer', 0),
+(32, 32, 35, 'sdsdsd', 'F', '12', 300, 0, '2021-09-11 15:36:27', '2021-09-11 15:36:27', 'Customer', 0),
+(33, 35, 35, 'sdsd', 'F', '12', 300, 0, '2021-09-11 16:26:24', '2021-09-11 16:26:24', 'Customer', 0),
+(34, 36, 39, 'ghghgh', 'F', '13', 300, 0, '2021-09-11 16:28:24', '2021-09-11 16:28:24', 'Customer', 0),
+(35, 37, 1, 'dfdf', 'M', '12', 400, 0, '2021-09-11 17:14:59', '2021-09-11 17:14:59', 'Customer', 0);
 
 -- --------------------------------------------------------
 
@@ -219,7 +297,7 @@ CREATE TABLE `booking_seized` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `booking_seized`
@@ -251,7 +329,50 @@ CREATE TABLE `booking_sequence` (
   `sequence_end_no` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `booking_sequence`
+--
+
+INSERT INTO `booking_sequence` (`id`, `booking_id`, `sequence_start_no`, `sequence_end_no`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 2, '2021-09-02 11:16:16', '2021-09-02 11:16:16'),
+(2, 2, 1, 2, '2021-09-02 11:31:08', '2021-09-02 11:31:08'),
+(3, 3, 1, 2, '2021-09-02 11:32:17', '2021-09-02 11:32:17'),
+(4, 4, 1, 4, '2021-09-04 07:34:54', '2021-09-04 07:34:54'),
+(5, 5, 1, 4, '2021-09-04 07:36:30', '2021-09-04 07:36:30'),
+(6, 6, 1, 4, '2021-09-06 15:27:22', '2021-09-06 15:27:22'),
+(7, 7, 1, 4, '2021-09-08 16:42:02', '2021-09-08 16:42:02'),
+(8, 8, 1, 2, '2021-09-11 04:52:38', '2021-09-11 04:52:38'),
+(9, 9, 1, 2, '2021-09-11 04:55:27', '2021-09-11 04:55:27'),
+(10, 10, 1, 2, '2021-09-11 05:12:51', '2021-09-11 05:12:51'),
+(11, 11, 1, 2, '2021-09-11 05:15:42', '2021-09-11 05:15:42'),
+(12, 12, 1, 2, '2021-09-11 05:17:06', '2021-09-11 05:17:06'),
+(13, 13, 1, 2, '2021-09-11 05:18:43', '2021-09-11 05:18:43'),
+(14, 14, 1, 2, '2021-09-11 05:20:26', '2021-09-11 05:20:26'),
+(15, 15, 1, 4, '2021-09-11 05:39:15', '2021-09-11 05:39:15'),
+(16, 16, 1, 4, '2021-09-11 06:03:47', '2021-09-11 06:03:47'),
+(17, 17, 1, 4, '2021-09-11 07:09:31', '2021-09-11 07:09:31'),
+(18, 18, 1, 3, '2021-09-11 09:35:25', '2021-09-11 09:35:25'),
+(19, 19, 1, 3, '2021-09-11 09:36:31', '2021-09-11 09:36:31'),
+(20, 20, 1, 3, '2021-09-11 09:38:09', '2021-09-11 09:38:09'),
+(21, 21, 1, 3, '2021-09-11 09:40:43', '2021-09-11 09:40:43'),
+(22, 22, 1, 3, '2021-09-11 09:41:21', '2021-09-11 09:41:21'),
+(23, 23, 1, 3, '2021-09-11 09:43:39', '2021-09-11 09:43:39'),
+(24, 24, 1, 3, '2021-09-11 09:45:38', '2021-09-11 09:45:38'),
+(25, 25, 1, 3, '2021-09-11 09:48:05', '2021-09-11 09:48:05'),
+(26, 26, 1, 3, '2021-09-11 09:48:45', '2021-09-11 09:48:45'),
+(27, 27, 1, 3, '2021-09-11 09:50:01', '2021-09-11 09:50:01'),
+(28, 28, 1, 3, '2021-09-11 09:51:12', '2021-09-11 09:51:12'),
+(29, 29, 1, 3, '2021-09-11 09:53:37', '2021-09-11 09:53:37'),
+(30, 30, 3, 4, '2021-09-11 10:00:46', '2021-09-11 10:00:46'),
+(31, 31, 3, 4, '2021-09-11 10:01:39', '2021-09-11 10:01:39'),
+(32, 32, 1, 3, '2021-09-11 10:06:27', '2021-09-11 10:06:27'),
+(33, 33, 1, 3, '2021-09-11 10:19:03', '2021-09-11 10:19:03'),
+(34, 34, 1, 3, '2021-09-11 10:19:36', '2021-09-11 10:19:36'),
+(35, 35, 1, 3, '2021-09-11 10:56:24', '2021-09-11 10:56:24'),
+(36, 36, 1, 3, '2021-09-11 10:58:24', '2021-09-11 10:58:24'),
+(37, 37, 1, 2, '2021-09-11 11:44:59', '2021-09-11 11:44:59');
 
 -- --------------------------------------------------------
 
@@ -283,7 +404,7 @@ CREATE TABLE `bus` (
   `status` int UNSIGNED NOT NULL DEFAULT '0',
   `sequence` int NOT NULL DEFAULT '1000',
   `max_seat_book` int NOT NULL DEFAULT '6'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus`
@@ -310,7 +431,7 @@ CREATE TABLE `bus_amenities` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) DEFAULT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_amenities`
@@ -343,7 +464,7 @@ CREATE TABLE `bus_cancelled` (
   `updated_at` datetime NOT NULL,
   `cancelled_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -359,7 +480,7 @@ CREATE TABLE `bus_cancelled_date` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -373,7 +494,7 @@ CREATE TABLE `bus_class` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_class`
@@ -398,7 +519,7 @@ CREATE TABLE `bus_closing_hours` (
   `status` int NOT NULL DEFAULT '1',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -417,7 +538,7 @@ CREATE TABLE `bus_contacts` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_contacts`
@@ -457,7 +578,7 @@ CREATE TABLE `bus_extra_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -469,7 +590,7 @@ CREATE TABLE `bus_festival_fare` (
   `id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `festival_fare_id` int NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -486,7 +607,7 @@ CREATE TABLE `bus_gallery` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -501,7 +622,7 @@ CREATE TABLE `bus_location_sequence` (
   `sequence` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_location_sequence`
@@ -553,7 +674,7 @@ CREATE TABLE `bus_operator` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-)  COMMENT='Bus Operators';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Bus Operators';
 
 --
 -- Dumping data for table `bus_operator`
@@ -580,7 +701,7 @@ CREATE TABLE `bus_owner_fare` (
   `id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `owner_fare_id` int UNSIGNED NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -595,7 +716,7 @@ CREATE TABLE `bus_safety` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_safety`
@@ -625,7 +746,7 @@ CREATE TABLE `bus_schedule` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_schedule`
@@ -649,7 +770,7 @@ CREATE TABLE `bus_schedule_date` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `status` int NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_schedule_date`
@@ -735,7 +856,7 @@ CREATE TABLE `bus_seats` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_seats`
@@ -846,7 +967,7 @@ CREATE TABLE `bus_seats_extra` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -861,7 +982,7 @@ CREATE TABLE `bus_seat_layout` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_seat_layout`
@@ -889,7 +1010,7 @@ CREATE TABLE `bus_sitting` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_sitting`
@@ -925,7 +1046,7 @@ CREATE TABLE `bus_slots` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -937,7 +1058,7 @@ CREATE TABLE `bus_special_fare` (
   `id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `special_fare_id` int UNSIGNED NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -954,7 +1075,7 @@ CREATE TABLE `bus_stoppage_additional_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -973,7 +1094,7 @@ CREATE TABLE `bus_stoppage_timing` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_stoppage_timing`
@@ -1017,7 +1138,7 @@ CREATE TABLE `bus_type` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_type`
@@ -1042,7 +1163,7 @@ CREATE TABLE `cancellationslabs` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(250) DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `cancellationslabs`
@@ -1068,7 +1189,7 @@ CREATE TABLE `cancellationslabs_info` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(250) DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `cancellationslabs_info`
@@ -1100,7 +1221,7 @@ CREATE TABLE `city_closing` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1118,7 +1239,7 @@ CREATE TABLE `city_closing_extended` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1145,7 +1266,7 @@ CREATE TABLE `coupon` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1161,7 +1282,7 @@ CREATE TABLE `coupon_assigned_bus` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1176,7 +1297,7 @@ CREATE TABLE `credentials` (
   `mail_password` varchar(254) NOT NULL,
   `razorpay_key` varchar(256) NOT NULL,
   `razorpay_secret` varchar(256) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `credentials`
@@ -1203,7 +1324,33 @@ CREATE TABLE `customer_payment` (
   `refund_id` varchar(120) NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `customer_payment`
+--
+
+INSERT INTO `customer_payment` (`id`, `name`, `booking_id`, `amount`, `order_id`, `razorpay_id`, `razorpay_signature`, `payment_done`, `refund_id`, `created_at`, `updated_at`) VALUES
+(1, 'Lima Mohanty', 1, 1000.00, 'order_Hs7lm7v0D2J7vU', 'pay_Hs7mEvNWfBWGju', '1857152289a235245ca66360fde74a4216a005b972e700b0f5ac7b7059174b99', 2, 'rfnd_Hu8xw6yaPTsIiP', '2021-09-02 16:46:34', '2021-09-06 15:48:14'),
+(2, 'lima Mohanty', 2, 1000.00, 'order_Hsa4VftCUf6fkZ', 'pay_Hsa4clbC6Pcajr', '31fecbe08e1cdb6e4d37c051ad577b7273efe40fc54d1039acc3e979d6a6368e', 1, '0', '2021-09-02 17:01:11', '2021-09-02 17:01:22'),
+(3, 'lima Mohanty', 3, 1000.00, 'order_Hsa5jfMEPCk797', 'pay_Hsa5ocJvrGO5Jz', '13e58ebe1738ae31a2759742d3bc995d0e6f44ff7b73ad2cf46b0e1d62751e52', 1, '0', '2021-09-02 17:02:21', '2021-09-02 17:02:33'),
+(4, 'Test Ladies', 4, 1000.00, 'order_HtJ7H526fPJOqF', 'pay_HtJ7OEgdkNXzjV', '75f2259b040a9ef81f9f5a8470d8b6d15af3441ab9b91ad0b9439c9bccd3c078', 1, '0', '2021-09-04 13:05:01', '2021-09-04 13:05:16'),
+(5, 'Test2', 5, 1000.00, 'order_HtJ8tYb9GZhzI4', 'pay_HtJ8xmPAmqQnDI', 'e68538253991342aa45579b3e9808920ac349b72e89a081effd6208ebfb00ec6', 2, 'rfnd_Huuy6w1PLpVDqy', '2021-09-04 13:06:33', '2021-09-08 14:45:42'),
+(6, 'ghthdth rgbrgbg', 6, 2000.00, 'order_HuEEdFSuNESXjf', 'pay_HuEEiGQRCv5YQD', '874da183fb2933638d3edf6e07ef74f2da2ce5221b1d5adb3b6bd7b0fe1cd206', 2, 'rfnd_HuukdRLUMIWfvJ', '2021-09-06 20:57:31', '2021-09-08 14:32:56'),
+(7, 'test', 7, 1000.00, 'order_Hv2Zg2GriJpKUL', 'pay_Hv2ZmhnsOVHZPk', 'a58c93f1dd3a549e1f15bc2f3b4586b80afda3f0af5761cdf00899db028b792b', 1, '0', '2021-09-08 22:12:07', '2021-09-08 22:12:20'),
+(8, 'Lima Mohanty', 8, 800.00, 'order_Hw25kCzlEiiOEo', 'pay_Hw2679u4geja5N', 'e220181a906fe2f643e7dac73f495cd4bff59e3e6b7939fdc85ffa5bf08847b8', 1, '0', '2021-09-11 10:22:47', '2021-09-11 10:23:13'),
+(9, 'Lima Mohanty', 9, 800.00, 'order_Hw28cYhfPF3S0p', NULL, NULL, 0, '0', '2021-09-11 10:25:30', '2021-09-11 10:25:30'),
+(10, 'Lima Mohanty', 10, 800.00, 'order_Hw2R0EgJSai0G6', 'pay_Hw2R7zKoQQL9DQ', '6bf42033a0f431cc130b0f9772f86d22bbb5c708a581bbf017e430925cef8654', 1, '0', '2021-09-11 10:42:54', '2021-09-11 10:43:06'),
+(11, 'Lima Mohanty', 11, 800.00, 'order_Hw2U08G1IKtCwo', 'pay_Hw2U72GGp3KMSl', 'b4ea4b8437e9cde3c5f4899c5e0a3ab4131a35b53f4b2739b6a12f899592a0f0', 1, '0', '2021-09-11 10:45:44', '2021-09-11 10:45:56'),
+(12, 'lima Mohanty', 12, 800.00, 'order_Hw2VUW9jNkxvyu', 'pay_Hw2VcLdPthbulU', '323b253f9d2db6cc48b949eae2157cfaea1490ea6e5b24407b4183ba3218acde', 1, '0', '2021-09-11 10:47:09', '2021-09-11 10:47:21'),
+(13, 'lima Mohanty', 13, 800.00, 'order_Hw2XCNtJPpGNdP', 'pay_Hw2XKs9pBDTAae', '4a247f34f619a23f6da35c5c56d485b4233fdd1b39dc9615d54128cfd1387899', 1, '0', '2021-09-11 10:48:46', '2021-09-11 10:48:58'),
+(14, 'lima Mohanty', 14, 800.00, 'order_Hw2Z0mU4nQAfiG', 'pay_Hw2Z6XCdtpx2Ck', '381630dd24e25641e9b13a7afdd2f01f535a948f9a2d3d220e1e46ef193e3517', 1, '0', '2021-09-11 10:50:29', '2021-09-11 10:50:39'),
+(15, 'lima Mohanty', 15, 1000.00, 'order_Hw2stByB9rqRAZ', 'pay_Hw2t3Yk5ykPSl6', '46e93c7346ccbe10c3be82ebb370c5ee87946d2578a461bea9a95c7f533f177c', 2, 'rfnd_Hw39JfWRvnugtF', '2021-09-11 11:09:18', '2021-09-11 11:24:51'),
+(16, 'Lima Mohanty', 16, 2000.00, 'order_Hw3InTrv7fw50l', 'pay_Hw3IsvDn2QMCB8', 'cfb9ba28917152d702d3c04592047b233925f7fd65b30f9919aee41dda55fced', 1, '0', '2021-09-11 11:33:50', '2021-09-11 11:33:59'),
+(17, 'priyadarshi', 17, 1000.00, 'order_Hw4QG4xBKZlv6x', 'pay_Hw4QWH26QeGM0x', 'b900cd6bc6f6d82cb83bce57f6be28f88a6ba05998e3e89bb7004fd54fd30cb6', 1, '0', '2021-09-11 12:39:35', '2021-09-11 12:39:55'),
+(18, 'lima Mohanty', 32, 300.00, 'order_Hw7ReJCfehR6ZM', 'pay_Hw7Rk0Ey9h2XF2', '999b015fffe702021f239caad45c84be2ff2ee45a8e422a441f555fa27cba0ac', 1, '0', '2021-09-11 15:36:59', '2021-09-11 15:37:08'),
+(19, 'lima Mohanty', 35, 300.00, 'order_Hw8HuHu8L3j5m2', 'pay_Hw8I1OVCEPV6dc', '4242b0be144a82a8125c29853b8ce80d7c3b7c8ae3e6086653d4349c2f6f4b0d', 1, '0', '2021-09-11 16:26:27', '2021-09-11 16:26:39'),
+(20, 'lima Mohanty', 36, 300.00, 'order_Hw8K11HfGAZVWW', 'pay_Hw8K7lSokIUV35', 'b1e74604e2fe511d3791da4751c60f063d909a3c67a5e5d4c79ac7a1ebdd382c', 1, '0', '2021-09-11 16:28:27', '2021-09-11 16:28:38');
 
 -- --------------------------------------------------------
 
@@ -1221,7 +1368,7 @@ CREATE TABLE `customer_query` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1236,7 +1383,7 @@ CREATE TABLE `customer_query_category` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1252,7 +1399,7 @@ CREATE TABLE `customer_query_category_issues` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1276,7 +1423,7 @@ CREATE TABLE `custom_pages` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1293,7 +1440,7 @@ CREATE TABLE `extended_bus_closing_hours` (
   `status` int NOT NULL DEFAULT '1',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1314,7 +1461,7 @@ CREATE TABLE `festival_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1331,7 +1478,7 @@ CREATE TABLE `gateway_information` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(50) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `gateway_information`
@@ -1354,7 +1501,7 @@ CREATE TABLE `location` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `location`
@@ -1869,7 +2016,7 @@ CREATE TABLE `locationcode` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `locationcode`
@@ -1957,7 +2104,7 @@ CREATE TABLE `odbus_charges` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `odbus_charges`
@@ -1981,7 +2128,7 @@ CREATE TABLE `offers` (
   `updated_at` timestamp NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -1995,7 +2142,7 @@ CREATE TABLE `offer_category` (
   `created_at` timestamp NOT NULL,
   `updated_at` timestamp NOT NULL,
   `status` int NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `offer_category`
@@ -2005,6 +2152,31 @@ INSERT INTO `offer_category` (`id`, `category_name`, `created_at`, `updated_at`,
 (1, 'BUS WISE COUPON', '2021-09-11 12:16:31', '2021-09-11 12:16:31', 1),
 (2, 'ROUTE WISE COUPON', '2021-09-11 12:16:31', '2021-09-11 12:16:31', 1),
 (3, 'SPECIAL COUPON', '2021-09-11 12:17:06', '2021-09-11 12:17:06', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ownerpayment`
+--
+
+CREATE TABLE `ownerpayment` (
+  `id` int NOT NULL,
+  `bus_operator_id` int NOT NULL,
+  `date` date NOT NULL,
+  `amount` int NOT NULL,
+  `remark` text NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `status` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `ownerpayment`
+--
+
+INSERT INTO `ownerpayment` (`id`, `bus_operator_id`, `date`, `amount`, `remark`, `created_by`, `created_at`, `updated_at`, `status`) VALUES
+(1, 1, '2021-09-17', 5000, 'test', 'Admin', '2021-09-16 09:51:55', '2021-09-16 09:51:55', 0);
 
 -- --------------------------------------------------------
 
@@ -2025,7 +2197,7 @@ CREATE TABLE `owner_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2052,7 +2224,7 @@ CREATE TABLE `pre_booking` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2071,7 +2243,7 @@ CREATE TABLE `pre_booking_detail` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2086,7 +2258,7 @@ CREATE TABLE `reason` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2110,7 +2282,7 @@ CREATE TABLE `review` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2126,7 +2298,7 @@ CREATE TABLE `safety` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `safety`
@@ -2158,7 +2330,7 @@ CREATE TABLE `seats` (
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(250) DEFAULT NULL,
   `status` int NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `seats`
@@ -2349,7 +2521,7 @@ CREATE TABLE `seat_block` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2365,7 +2537,7 @@ CREATE TABLE `seat_block_seats` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2378,7 +2550,7 @@ CREATE TABLE `seat_class` (
   `name` varchar(120) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `seat_class`
@@ -2406,7 +2578,14 @@ CREATE TABLE `seat_open` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `seat_open`
+--
+
+INSERT INTO `seat_open` (`id`, `operator_id`, `bus_id`, `date_applied`, `reason`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(2, 1, 3, '2021-09-18 00:00:00', 'Request From Owner', '2021-09-16 07:25:29', '2021-09-16 07:26:40', 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -2422,7 +2601,21 @@ CREATE TABLE `seat_open_seats` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `seat_open_seats`
+--
+
+INSERT INTO `seat_open_seats` (`id`, `seat_open_id`, `seats_id`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(5, 2, 33, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
+(6, 2, 34, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
+(7, 2, 39, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
+(8, 2, 40, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
+(9, 2, 56, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
+(10, 2, 57, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
+(11, 2, 60, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
+(12, 2, 61, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0);
 
 -- --------------------------------------------------------
 
@@ -2454,7 +2647,7 @@ CREATE TABLE `site_master` (
   `googleplus_url` varchar(254) NOT NULL,
   `min_fare_amt` int NOT NULL,
   `earned_pts` int NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2475,7 +2668,7 @@ CREATE TABLE `slider` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2496,7 +2689,7 @@ CREATE TABLE `special_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2511,7 +2704,7 @@ CREATE TABLE `ticket_cancelation` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ticket_cancelation`
@@ -2536,7 +2729,7 @@ CREATE TABLE `ticket_cancelation_rule` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ticket_cancelation_rule`
@@ -2563,7 +2756,7 @@ CREATE TABLE `ticket_fare_slab` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int NOT NULL DEFAULT '1'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ticket_fare_slab`
@@ -2597,7 +2790,7 @@ CREATE TABLE `ticket_price` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ticket_price`
@@ -2644,7 +2837,7 @@ CREATE TABLE `user` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `user`
@@ -2671,7 +2864,23 @@ CREATE TABLE `users` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) DEFAULT ''
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `phone`, `password`, `otp`, `is_verified`, `msg_id`, `created_at`, `updated_at`, `created_by`) VALUES
+(1, 'Swagatika', 'sahu.swagatika@gmail.com', '9916457575', '$2y$10$lj2O6x4KlFF1PwULD8/PA.EOZ25GQ.Kd60ZwlSV.fva9KkYNHRlme', '40207', 0, '', '2021-09-02 16:46:16', '2021-09-06 15:47:08', ''),
+(2, 'Lima Mohanty', 'banashri.seofied2@gmail.com', '7978817539', '$2y$10$8CnZiaJJb8Ou3iXn0t9nQee0vuf8UTio5h9IIUSHeQtYqUCDYSiGS', NULL, 1, '', '2021-09-02 17:01:08', '2021-09-11 17:14:59', ''),
+(3, 'Test2', 'nayakabhishek2@gmail.com', NULL, '', '', 0, '', '2021-09-04 13:04:54', '2021-09-04 13:06:29', ''),
+(4, 'Swagatika11', 'swagatikasahu.seofied@gmail.com', NULL, '$2y$10$x87jijVrwGBoZ1PQcudRGulxUzkGwuj.7G5c53svPNIzYRgiXGHyu', '61893', 0, '', '2021-09-06 16:19:13', '2021-09-06 16:45:07', 'Admin'),
+(5, 'ghthdth rgbrgbg', 'nayakababhishek.seofied@gmail.com', '7894310911', '', '', 0, '', '2021-09-06 20:57:22', '2021-09-06 20:57:22', ''),
+(6, 'priyadarshi parida', 'neotorand@gmail.com', NULL, '$2y$10$UuoQSteulYA3rgIlOw4ireFmTaQmQti.kPmI5e8lgj7IlJpNE7JZ.', NULL, 1, '', '2021-09-07 16:10:20', '2021-09-07 16:16:01', 'priyadarshi parida'),
+(7, 'test', 'nayakabhishek2@gmail.com', '9853515703', '', '', 0, '', '2021-09-08 22:12:02', '2021-09-08 22:12:02', ''),
+(8, 'lima Mohanty', 'banashri.seofied@gmail.com', '4545454545', '', '', 0, '', '2021-09-11 10:47:06', '2021-09-11 16:28:24', ''),
+(9, 'priyadarshi', 'neotorand@gmail.com', '9437112909', '', '', 0, '', '2021-09-11 12:39:31', '2021-09-11 12:39:31', ''),
+(10, 'sehnsha', 'sehnsha@gmail.com', '2234567995', '', '', 0, '', '2021-09-11 15:06:16', '2021-09-11 15:06:16', '');
 
 -- --------------------------------------------------------
 
@@ -2690,7 +2899,7 @@ CREATE TABLE `user_bank_details` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Indexes for dumped tables
@@ -3104,6 +3313,13 @@ ALTER TABLE `offer_category`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `ownerpayment`
+--
+ALTER TABLE `ownerpayment`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
+
+--
 -- Indexes for table `owner_fare`
 --
 ALTER TABLE `owner_fare`
@@ -3306,13 +3522,13 @@ ALTER TABLE `boarding_droping`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `booking_detail`
 --
 ALTER TABLE `booking_detail`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `booking_seized`
@@ -3324,7 +3540,7 @@ ALTER TABLE `booking_seized`
 -- AUTO_INCREMENT for table `booking_sequence`
 --
 ALTER TABLE `booking_sequence`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `bus`
@@ -3516,7 +3732,7 @@ ALTER TABLE `credentials`
 -- AUTO_INCREMENT for table `customer_payment`
 --
 ALTER TABLE `customer_payment`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `customer_query`
@@ -3591,6 +3807,12 @@ ALTER TABLE `offer_category`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `ownerpayment`
+--
+ALTER TABLE `ownerpayment`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `owner_fare`
 --
 ALTER TABLE `owner_fare`
@@ -3654,13 +3876,13 @@ ALTER TABLE `seat_class`
 -- AUTO_INCREMENT for table `seat_open`
 --
 ALTER TABLE `seat_open`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `seat_open_seats`
 --
 ALTER TABLE `seat_open_seats`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `site_master`
@@ -3714,7 +3936,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `user_bank_details`
@@ -3916,6 +4138,12 @@ ALTER TABLE `locationcode`
 --
 ALTER TABLE `offers`
   ADD CONSTRAINT `offers_ibfk_1` FOREIGN KEY (`offer_category_id`) REFERENCES `offer_category` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- Constraints for table `ownerpayment`
+--
+ALTER TABLE `ownerpayment`
+  ADD CONSTRAINT `ownerpayment_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Constraints for table `pre_booking`

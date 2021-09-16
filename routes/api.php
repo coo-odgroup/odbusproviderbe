@@ -9,6 +9,7 @@ use App\Http\Controllers\ExtraSeatOpenReportController;
 use App\Http\Controllers\CompleteReportController;
 use App\Http\Controllers\BusSittingController;
 use App\Http\Controllers\BusTypeController;
+use App\Http\Controllers\OwnerPaymentReportController;
 use App\Http\Controllers\SafetyController;
 use App\Http\Controllers\AmenitiesController;
 use App\Http\Controllers\AppDownloadController;
@@ -38,7 +39,7 @@ use App\Http\Controllers\BookingSeizedController;
 use App\Http\Controllers\SeatOpenController;
 use App\Http\Controllers\SeatBlockController;
 use App\Http\Controllers\FailledTransactionReportController;
-
+use App\Http\Controllers\OwnerPaymentController;
 
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\AppVersionController;
@@ -203,16 +204,25 @@ Route::delete('/review/{id}', [ReviewController::class, 'deleteReview']);
 Route::get('/review/{id}', [ReviewController::class, 'getReview']);
 Route::get('/getreview/{bid}', [ReviewController::class, 'getReviewByBid']);
 
-////Reports/////
-Route::get('/seatopenreport',[SeatOpenReportController::class,'getAllseatopen']);
-Route::get('/seatblockreport',[SeatBlockReportController::class,'getAllseatblock']);
-Route::get('/extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
-Route::get('/completereport',[CompleteReportController::class,'getAll']);
-Route::get('failledtransactionreport',[FailledTransactionReportController::class,'getAll']);
 
+////SeatOpenReport/////
+Route::get('/seatopenreport',[SeatOpenReportController::class,'getAllseatopen']);
+////SeatBlockReport/////
+Route::get('/seatblockreport',[SeatBlockReportController::class,'getAllseatblock']);
+///ExtraSeatOpenReport////
+Route::get('/extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
+///CompleteReport////
+Route::get('/completereport',[CompleteReportController::class,'getAll']);
+///FailledTransactionReport////
+Route::get('failledtransactionreport',[FailledTransactionReportController::class,'getAll']);
+///BusCancellationReport////
+Route::get('buscancellationreport',[BusCancellationReportController::class,'getAll']);
+////OwnerPaymentReport/////
+Route::get('ownerpaymentreport',[OwnerPaymentReportController::class,'getAll']);
+// ClearTransactionReport //
+Route::get('cleartransactionreport',[ClearTransactionReportController::class,'getAll']);
 
 Route::get('/GetLocations/{search_query}', [LocationController::class, 'GetLocations']);
-
 Route::get('/locations', [locationController::class, 'getAllLocations']);
 Route::get('/locations/{id}', [locationController::class, 'getlocationbyID']);
 Route::post('/locations/', [locationController::class, 'createLocation'])->middleware('log.route');
@@ -522,6 +532,11 @@ Route::put('/odbus_charges/{id}',[OdbusChargesController::class,'update']);
 
 
 Route::post('/offersDT', [OffersController::class, 'getOffersDT']);
+
+////////////Owner Payment//////
+Route::get('/ownerpayment',[OwnerPaymentController::class,'getAllOwnerPayment']);
+Route::post('/ownerpayment',[OwnerPaymentController::class,'createOwnerPayment']);
+Route::post('/getownerpaymentDT', [OwnerPaymentController::class, 'getOwnerPaymentDT']);
 
 
 //});

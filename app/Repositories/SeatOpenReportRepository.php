@@ -33,12 +33,15 @@ class SeatOpenReportRepository
     }    
     public function getAll()
     {
-        $data = $this->seatOpen ->with('seatOpenSeats.seats')->with('bus','bus.busOperator','bus.ticketPrice.location')->get();
+        $data = $this->seatOpen ->with('seatOpenSeats.seats')->with('bus','bus.busOperator','bus.ticketPrice')
+        ->where('status','1')
+        ->get();
 
         $data_arr = array();
         foreach ($data as $key => $v)
         {
             $data_arr[]=$v->toArray(); 
+            $data_arr[$key]['date_applied']=date('j M Y',strtotime($v->date_applied));
             foreach ($data_arr as $e) 
             {
                 $counter=0;
