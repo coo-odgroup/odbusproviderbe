@@ -10,8 +10,8 @@ use App\Models\BusOperator;
 class OwnerPayment extends Model
 {
     use HasFactory; 
-    protected $table = 'ownerpayment';
-    protected $fillable = ['bus_operator_id','date','amount','remark','created_by'];
+    protected $table = 'owner_payment';
+    protected $fillable = ['bus_operator_id','payment_date','amount','transination_id','remark','created_by'];
     
 
     public function busOperator()

@@ -39,9 +39,9 @@ class OwnerPaymentController extends Controller
 
     public function createOwnerPayment(Request $request) 
     {
-        // Log::info($request);exit;
+        // Log::info($request);
         
-        $data = $request->only(['bus_operator_id','date','amount','remark','created_by']);
+        $data = $request->only(['bus_operator_id','date','transaction_id','amount','remark','created_by']);
 
         $ownerPaymentValidator = $this->ownerPaymentValidator->validate($data);
         if ($ownerPaymentValidator->fails()) {

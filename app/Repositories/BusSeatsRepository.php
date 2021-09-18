@@ -190,6 +190,8 @@ class BusSeatsRepository
     {
         //Log::info($data);
         $layoutArray=$data['bus_seat_layout_data'];
+        $bus_id=$data['bus_id'];
+        
         foreach($layoutArray as $sLayoutData)
         {
             if(isset($sLayoutData['upperBerth']))

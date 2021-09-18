@@ -230,10 +230,9 @@ class BusCancelledRepository
     public function changeStatus($id)
     {
         $buscancel = $this->busCancelled->find($id);
-        // Log::info($buscancel);exit;
         if($buscancel->status==0){
             $buscancel->status = 1;
-        }elseif($busCancelled->status==1){
+        }elseif($buscancel->status==1){
             $buscancel->status = 0;
         }
         $buscancel->update();

@@ -24,7 +24,7 @@ class OwnerPaymentReportRepository
   
     public function getAll()
     {
-    	return $this->ownerPayment->with('busOperator')->whereNotIn('status', [2])->get();   
+    	return $this->ownerPayment->with('busOperator')->get();   
 
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -16,6 +15,7 @@ use App\Http\Controllers\AppDownloadController;
 use App\Http\Controllers\BusSeatLayoutController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\DummyController;
+use App\Http\Controllers\BusCancellationReportController;
 use App\Http\Controllers\CustomerQueryController;
 use App\Http\Controllers\CustomerQueryCategoryController;
 use App\Http\Controllers\BusController;
@@ -35,7 +35,7 @@ use App\Http\Controllers\CityClosingController;
 use App\Http\Controllers\CityClosingExtendedController;
 use App\Http\Controllers\BusOperatorController;
 use App\Http\Controllers\BookingSeizedController;
-
+use App\Http\Controllers\CancelTicketReportController;
 use App\Http\Controllers\SeatOpenController;
 use App\Http\Controllers\SeatBlockController;
 use App\Http\Controllers\FailledTransactionReportController;
@@ -537,6 +537,9 @@ Route::post('/offersDT', [OffersController::class, 'getOffersDT']);
 Route::get('/ownerpayment',[OwnerPaymentController::class,'getAllOwnerPayment']);
 Route::post('/ownerpayment',[OwnerPaymentController::class,'createOwnerPayment']);
 Route::post('/getownerpaymentDT', [OwnerPaymentController::class, 'getOwnerPaymentDT']);
+Route::get('cancelticketreport',[CancelTicketReportController::class,'getAll']);
+
+
 
 
 //});

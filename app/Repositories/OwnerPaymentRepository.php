@@ -81,8 +81,9 @@ class OwnerPaymentRepository
     public function getModel($data, OwnerPayment $ownerPayment)
     {
         $ownerPayment->bus_operator_id = $data['bus_operator_id'];
-        $ownerPayment->date = $data['date'];
+        $ownerPayment->payment_date = $data['date'];
         $ownerPayment->amount = $data['amount'];
+        $ownerPayment->transaction_id = $data['transaction_id'];
         $ownerPayment->remark = $data['remark'];
         $ownerPayment->created_by = $data['created_by'];
         $ownerPayment->status = 0;
