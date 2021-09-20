@@ -14,6 +14,7 @@ class OwnerPaymentValidator
             'bus_operator_id' => 'required',
             'date' => 'required',
             'amount' => 'required',
+            'transaction_id' => 'required',
             'remark' => 'required',
             'created_by' => 'required'
             
