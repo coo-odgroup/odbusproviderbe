@@ -6,6 +6,7 @@ use App\Http\Controllers\SeatOpenReportController;
 use App\Http\Controllers\SeatBlockReportController;
 use App\Http\Controllers\ExtraSeatOpenReportController;
 use App\Http\Controllers\CompleteReportController;
+use App\Http\Controllers\ClearTransactionReportController;
 use App\Http\Controllers\BusSittingController;
 use App\Http\Controllers\BusTypeController;
 use App\Http\Controllers\OwnerPaymentReportController;

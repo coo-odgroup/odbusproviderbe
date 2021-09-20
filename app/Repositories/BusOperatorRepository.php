@@ -99,6 +99,7 @@ class BusOperatorRepository
         $busOperators->organisation_name = $data['organisation_name'];
         $busOperators->location_name = $data['location_name'];
         $busOperators->address = $data['address'];
+        $busOperators->operator_info = $data['operator_info'];
         $busOperators->additional_email = $data['additional_email'];
         $busOperators->additional_contact = $data['additional_contact'];
         $busOperators->bank_account_name = $data['bank_account_name'];
