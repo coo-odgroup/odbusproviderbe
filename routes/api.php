@@ -2,21 +2,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\SeatOpenReportController;
-use App\Http\Controllers\SeatBlockReportController;
-use App\Http\Controllers\ExtraSeatOpenReportController;
-use App\Http\Controllers\CompleteReportController;
-use App\Http\Controllers\ClearTransactionReportController;
 use App\Http\Controllers\BusSittingController;
 use App\Http\Controllers\BusTypeController;
-use App\Http\Controllers\OwnerPaymentReportController;
 use App\Http\Controllers\SafetyController;
 use App\Http\Controllers\AmenitiesController;
 use App\Http\Controllers\AppDownloadController;
 use App\Http\Controllers\BusSeatLayoutController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\DummyController;
-use App\Http\Controllers\BusCancellationReportController;
 use App\Http\Controllers\CustomerQueryController;
 use App\Http\Controllers\CustomerQueryCategoryController;
 use App\Http\Controllers\BusController;
@@ -36,12 +29,9 @@ use App\Http\Controllers\CityClosingController;
 use App\Http\Controllers\CityClosingExtendedController;
 use App\Http\Controllers\BusOperatorController;
 use App\Http\Controllers\BookingSeizedController;
-use App\Http\Controllers\CancelTicketReportController;
 use App\Http\Controllers\SeatOpenController;
 use App\Http\Controllers\SeatBlockController;
-use App\Http\Controllers\FailledTransactionReportController;
 use App\Http\Controllers\OwnerPaymentController;
-
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\AppVersionController;
 use App\Http\Controllers\SiteMasterController;
@@ -69,14 +59,38 @@ use App\Http\Controllers\OdbusChargesController;
 use App\Http\Controllers\OffersController;
 
 
+use App\Http\Controllers\DashboardController;
+
+
 use App\Http\Middleware\LogRoute;
 use Laravel\Passport\Passport;
+
+
+// ReportController
+use App\Http\Controllers\SeatOpenReportController;
+use App\Http\Controllers\SeatBlockReportController;
+use App\Http\Controllers\ExtraSeatOpenReportController;
+use App\Http\Controllers\CompleteReportController;
+use App\Http\Controllers\ClearTransactionReportController;
+use App\Http\Controllers\OwnerPaymentReportController;
+use App\Http\Controllers\BusCancellationReportController;
+use App\Http\Controllers\FailledTransactionReportController;
+use App\Http\Controllers\CouponUsedUserReportController;
+use App\Http\Controllers\CancelTicketReportController;
+
+
+
+
+
 
 
 Route::middleware('auth:api')->group( function () {
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
+
+
+Route::get('/dashboarddata',[DashboardController::class,'getAll']);
 
 //Route::middleware(['api'])->group(function ($router) {
 
@@ -222,6 +236,15 @@ Route::get('buscancellationreport',[BusCancellationReportController::class,'getA
 Route::get('ownerpaymentreport',[OwnerPaymentReportController::class,'getAll']);
 // ClearTransactionReport //
 Route::get('cleartransactionreport',[ClearTransactionReportController::class,'getAll']);
+
+//CouponUsedUserReportController//
+Route::get('couponuseduserreport',[CouponUsedUserReportController::class,'getAll']);
+
+//CancelTicketReport
+Route::get('cancelticketreport',[CancelTicketReportController::class,'getAll']);
+
+
+
 
 Route::get('/GetLocations/{search_query}', [LocationController::class, 'GetLocations']);
 Route::get('/locations', [locationController::class, 'getAllLocations']);
@@ -538,7 +561,6 @@ Route::post('/offersDT', [OffersController::class, 'getOffersDT']);
 Route::get('/ownerpayment',[OwnerPaymentController::class,'getAllOwnerPayment']);
 Route::post('/ownerpayment',[OwnerPaymentController::class,'createOwnerPayment']);
 Route::post('/getownerpaymentDT', [OwnerPaymentController::class, 'getOwnerPaymentDT']);
-Route::get('cancelticketreport',[CancelTicketReportController::class,'getAll']);
 
 
 

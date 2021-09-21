@@ -21,8 +21,7 @@ class ExtraSeatOpenReportService
     public function __construct(ExtraSeatOpenReportRepository $extraseatopenreportRepository)
     {
         $this->extraseatopenreportRepository = $extraseatopenreportRepository;
-    }  
-    
+    }      
     
     public function getAll()
     {

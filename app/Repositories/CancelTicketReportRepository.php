@@ -41,16 +41,15 @@ class CancelTicketReportRepository
             $data_arr[$key]['from_location']=$this->location->where('id', $v->source_id)->get();
             $data_arr[$key]['to_location']=$this->location->where('id', $v->destination_id)->get();
 
-             $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-            
-           
+            $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
+                      
             foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
             {                          
                 $data_arr[$key]['source'][$k]=$this->location->where('id', $a['source_id'])->get();
                 $data_arr[$key]['destination'][$k]=$this->location->where('id', $a['destination_id'])->get(); 
             }
         } 
-       log::info($data_arr);
+       // log::info($data_arr);
         return $data_arr;     
     }
 

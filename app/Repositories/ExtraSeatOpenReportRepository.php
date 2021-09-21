@@ -28,16 +28,13 @@ class ExtraSeatOpenReportRepository
         $this->extraseatOpen = $extraseatOpen;
     }   
 
-    // public function getAll()
-    // {
-    //     return $this->seatOpen ->with('seatOpenSeats.seats')->with('bus','bus.busOperator')->get();
-    // }
+
     public function getAll()
     {
-        // return $this->seatOpen ->with('seatOpenSeats.seats')->with('bus','bus.busOperator')->get();
 
-        // return "wait";
-     return $this->extraseatOpen->get();
+        return "WORK IN PROGRESS";
+        
+     // return $this->extraseatOpen->get();
    
 
     }
