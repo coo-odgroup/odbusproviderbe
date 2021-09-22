@@ -31,6 +31,7 @@ class CompleteReportRepository
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
+                             ->orderBy('id','DESC')
                              ->get() ; 
 
         $data_arr = array();

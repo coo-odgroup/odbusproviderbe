@@ -26,9 +26,20 @@ class DashboardController extends Controller
 
     public function getAll()
     {
-        // Log::info('1');
         $dashboarddata = $this->deshboardService->getAll();
         return $this->successResponse($dashboarddata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function getRoute()
+    {
+        $routedata = $this->deshboardService->getRoute();
+        return $this->successResponse($routedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    
+    public function getOperator()
+    {
+        $operatordata = $this->deshboardService->getOperator();
+        return $this->successResponse($operatordata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
 }

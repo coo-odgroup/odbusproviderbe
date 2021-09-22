@@ -84,13 +84,15 @@ use App\Http\Controllers\CancelTicketReportController;
 
 
 
-Route::middleware('auth:api')->group( function () {
+	Route::middleware('auth:api')->group( function () {
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
 
 
 Route::get('/dashboarddata',[DashboardController::class,'getAll']);
+Route::get('/toproutedata',[DashboardController::class,'getRoute']);
+Route::get('/operatordata',[DashboardController::class,'getOperator']);
 
 //Route::middleware(['api'])->group(function ($router) {
 

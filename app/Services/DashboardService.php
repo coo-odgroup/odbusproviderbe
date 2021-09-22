@@ -27,6 +27,14 @@ class DashboardService
     public function getAll()
     {
         return $this->dashboardRepository->getAll();
+    }  
+    public function getRoute()
+    {
+        return $this->dashboardRepository->getRoute();
+    }  
+    public function getOperator()
+    {
+        return $this->dashboardRepository->getOperator();
     }
 
 }

@@ -36,7 +36,7 @@ class BusCancellationReportRepository
    
     public function getAll()
     {
-         $data= $this->busCancelled->with('bus.BusSitting','bus.BusType','bus.busOperator','bus.ticketPrice','busCancelledDate')->whereNotIn('status', [2])->get();
+         $data= $this->busCancelled->with('bus.BusSitting','bus.BusType','bus.busOperator','bus.ticketPrice','busCancelledDate')->where('status', 1)->get();
 
         $data_arr = array();
         foreach($data as $key=>$v)
