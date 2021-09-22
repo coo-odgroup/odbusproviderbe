@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.4
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 16, 2021 at 12:21 PM
--- Server version: 8.0.26
--- PHP Version: 7.4.14
+-- Generation Time: Sep 22, 2021 at 09:32 AM
+-- Server version: 10.2.39-MariaDB
+-- PHP Version: 7.2.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `odbusbackend`
+-- Database: `odbusco_backend`
 --
 
 -- --------------------------------------------------------
@@ -28,15 +28,15 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `amenities` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(100) NOT NULL,
-  `icon` blob,
+  `icon` blob DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) DEFAULT NULL,
   `reason` varchar(250) DEFAULT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `amenities`
@@ -60,13 +60,13 @@ INSERT INTO `amenities` (`id`, `name`, `icon`, `created_at`, `updated_at`, `crea
 --
 
 CREATE TABLE `appdownload` (
-  `id` bigint UNSIGNED NOT NULL,
-  `mobileno` bigint UNSIGNED NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `mobileno` bigint(20) UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -75,20 +75,20 @@ CREATE TABLE `appdownload` (
 --
 
 CREATE TABLE `appversion` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `info` varchar(250) DEFAULT NULL,
   `name` varchar(120) NOT NULL,
-  `mandatory` int NOT NULL DEFAULT '1' COMMENT '0-not mandatory 1- manadatory',
-  `version` int NOT NULL,
-  `new_version_names` mediumtext,
-  `new_version_codes` mediumtext,
-  `allowed_days` int DEFAULT NULL,
+  `mandatory` int(11) NOT NULL DEFAULT 1 COMMENT '0-not mandatory 1- manadatory',
+  `version` int(11) NOT NULL,
+  `new_version_names` mediumtext DEFAULT NULL,
+  `new_version_codes` mediumtext DEFAULT NULL,
+  `allowed_days` int(11) DEFAULT NULL,
   `has_issues` varchar(1) NOT NULL DEFAULT 'N',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -97,14 +97,14 @@ CREATE TABLE `appversion` (
 --
 
 CREATE TABLE `boarding_droping` (
-  `id` int NOT NULL,
-  `location_id` int UNSIGNED NOT NULL,
+  `id` int(11) NOT NULL,
+  `location_id` int(10) UNSIGNED NOT NULL,
   `boarding_point` text NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `boarding_droping`
@@ -156,14 +156,14 @@ INSERT INTO `boarding_droping` (`id`, `location_id`, `boarding_point`, `created_
 --
 
 CREATE TABLE `booking` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `transaction_id` varchar(200) NOT NULL,
   `pnr` varchar(100) NOT NULL,
-  `users_id` int NOT NULL COMMENT 'Users ID',
-  `bus_id` int UNSIGNED NOT NULL,
-  `source_id` int UNSIGNED NOT NULL,
-  `destination_id` int UNSIGNED NOT NULL,
-  `j_day` int NOT NULL DEFAULT '1' COMMENT 'journey day | 1-same day 2-nxt day so on',
+  `users_id` int(11) NOT NULL COMMENT 'Users ID',
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `source_id` int(10) UNSIGNED NOT NULL,
+  `destination_id` int(10) UNSIGNED NOT NULL,
+  `j_day` int(11) NOT NULL DEFAULT 1 COMMENT 'journey day | 1-same day 2-nxt day so on',
   `journey_dt` date NOT NULL,
   `boarding_point` varchar(120) NOT NULL,
   `dropping_point` varchar(120) NOT NULL,
@@ -172,54 +172,38 @@ CREATE TABLE `booking` (
   `origin` enum('ODBUS','RPBOA','GRANDBUS','JANARDANBUS','KHAMBESWARI','MOBUS') DEFAULT NULL,
   `app_type` set('WEB','MOB','ANDROID','CLNTWEB','CLNTMOB','ASSNWEB','ASSNMOB','CONDUCTOR','AGENT','MANAGER','OPERATOR') NOT NULL,
   `typ_id` varchar(50) NOT NULL COMMENT 'Type of Users booking Ticket',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked, 1= Booked(based on successful payment), 2=booking cancelled'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0=Not Booked, 1= Booked(based on successful payment), 2=booking cancelled',
+  `total_fare` double(8,2) DEFAULT 0.00,
+  `owner_fare` double(8,2) DEFAULT 0.00,
+  `odbus_gst_charges` double(8,2) DEFAULT 0.00,
+  `odbus_gst_amount` double(8,2) DEFAULT 0.00,
+  `owner_gst_charges` double(8,2) DEFAULT 0.00,
+  `owner_gst_amount` double(8,2) DEFAULT 0.00,
+  `odbus_charges` double(8,2) NOT NULL DEFAULT 0.00
+) ;
 
 --
 -- Dumping data for table `booking`
 --
 
-INSERT INTO `booking` (`id`, `transaction_id`, `pnr`, `users_id`, `bus_id`, `source_id`, `destination_id`, `j_day`, `journey_dt`, `boarding_point`, `dropping_point`, `boarding_time`, `dropping_time`, `origin`, `app_type`, `typ_id`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, '20210902164616830524', 'OD32845109', 1, 3, 1345, 1374, 2, '2021-09-03', 'Atharanala', 'Bus Stand', '20:20:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-02 16:46:16', '2021-09-02 16:46:34', 'Customer', 1),
-(2, '20210902170108912541', 'OD50172493', 2, 3, 1345, 1374, 2, '2021-09-03', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-02 17:01:08', '2021-09-02 17:01:11', 'Customer', 1),
-(3, '20210902170217577686', 'OD17382906', 2, 3, 1345, 1374, 2, '2021-09-02', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-02 17:02:17', '2021-09-02 17:02:21', 'Customer', 1),
-(4, '20210904130454989796', 'OD83570126', 2, 3, 1345, 1304, 2, '2021-09-04', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-04 13:04:54', '2021-09-04 13:05:01', 'Customer', 1),
-(5, '20210904130629993742', 'OD63812749', 2, 3, 1345, 1304, 2, '2021-09-04', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-04 13:06:29', '2021-09-08 14:45:42', 'Customer', 2),
-(6, '20210906205722919894', 'OD93814720', 2, 3, 1345, 1304, 2, '2021-09-06', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-06 20:57:22', '2021-09-08 14:32:56', 'Customer', 2),
-(7, '20210908221202972135', 'OD72106349', 7, 3, 1345, 1304, 2, '2021-09-08', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-08 22:12:02', '2021-09-08 22:12:07', 'Customer', 1),
-(8, '20210911102238274274', 'OD58316927', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:22:38', '2021-09-11 10:22:47', 'Customer', 1),
-(9, '20210911102527570776', 'OD57291380', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:25:27', '2021-09-11 10:25:30', 'Customer', 1),
-(10, '20210911104251670603', 'OD63091472', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:42:51', '2021-09-11 10:42:54', 'Customer', 1),
-(11, '20210911104542327154', 'OD93410768', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:45:42', '2021-09-11 10:45:44', 'Customer', 1),
-(12, '20210911104706381488', 'OD18095463', 8, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:47:06', '2021-09-11 10:47:09', 'Customer', 1),
-(13, '20210911104843668006', 'OD23980451', 8, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:48:43', '2021-09-11 10:48:46', 'Customer', 1),
-(14, '20210911105026893713', 'OD57824960', 8, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 10:50:26', '2021-09-11 10:50:29', 'Customer', 1),
-(15, '20210911110915474326', 'OD56132048', 8, 3, 1345, 1304, 2, '2021-09-12', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 11:09:15', '2021-09-11 11:24:51', 'Customer', 2),
-(16, '20210911113347540069', 'OD48509236', 2, 3, 1345, 1304, 2, '2021-09-12', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 11:33:47', '2021-09-11 11:33:50', 'Customer', 1),
-(17, '20210911123931237767', 'OD78502413', 9, 3, 1345, 1304, 2, '2021-09-11', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 12:39:31', '2021-09-11 12:39:35', 'Customer', 1),
-(18, '20210911150525949480', 'OD49715862', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:05:25', '2021-09-11 15:05:25', 'Customer', 0),
-(19, '20210911150631349734', 'OD48723659', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:06:31', '2021-09-11 15:06:31', 'Customer', 0),
-(20, '20210911150809491906', 'OD59813470', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:08:09', '2021-09-11 15:08:09', 'Customer', 0),
-(21, '20210911151043595627', 'OD74350692', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:10:43', '2021-09-11 15:10:43', 'Customer', 0),
-(22, '20210911151121148579', 'OD63049825', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:11:21', '2021-09-11 15:11:21', 'Customer', 0),
-(23, '20210911151339817187', 'OD27051364', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:13:39', '2021-09-11 15:13:39', 'Customer', 0),
-(24, '20210911151538870049', 'OD78139526', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:15:38', '2021-09-11 15:15:38', 'Customer', 0),
-(25, '20210911151805826871', 'OD57910384', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:18:05', '2021-09-11 15:18:05', 'Customer', 0),
-(26, '20210911151845900316', 'OD16805734', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:18:45', '2021-09-11 15:18:45', 'Customer', 0),
-(27, '20210911152001947019', 'OD90512763', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:20:01', '2021-09-11 15:20:01', 'Customer', 0),
-(28, '20210911152112291783', 'OD80963425', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:21:12', '2021-09-11 15:21:12', 'Customer', 0),
-(29, '2021091115233759227', 'OD47958103', 2, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:23:37', '2021-09-11 15:23:37', 'Customer', 0),
-(30, '20210911153046790038', 'OD31958076', 2, 5, 1374, 1304, 1, '2021-09-12', 'Bonth Chhawk', 'Bus stand', '15:30:00', '20:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:30:46', '2021-09-11 15:30:46', 'Customer', 0),
-(31, '20210911153139176983', 'OD27039145', 2, 5, 1374, 1304, 1, '2021-09-12', 'Bonth Chhawk', 'Bus stand', '15:30:00', '20:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:31:39', '2021-09-11 15:31:39', 'Customer', 0),
-(32, '20210911153627719412', 'OD10653789', 8, 5, 1345, 1374, 1, '2021-09-12', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:36:27', '2021-09-11 15:36:59', 'Customer', 1),
-(33, '20210911154903357499', 'OD04761893', 2, 5, 1345, 1374, 1, '2021-08-31', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:49:03', '2021-09-11 15:49:03', 'Customer', 0),
-(34, '2021091115493646741', 'OD68349270', 2, 5, 1345, 1374, 1, '2021-08-31', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 15:49:36', '2021-09-11 15:49:36', 'Customer', 0),
-(35, '20210911162624753982', 'OD01643857', 8, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 16:26:24', '2021-09-11 16:26:27', 'Customer', 1),
-(36, '20210911162824334646', 'OD78643219', 8, 5, 1345, 1374, 1, '2021-09-11', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-11 16:28:24', '2021-09-11 16:28:27', 'Customer', 1),
-(37, '20210911171459752452', '06231958', 2, 3, 1345, 1374, 2, '2021-09-11', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-11 17:14:59', '2021-09-11 17:14:59', 'Customer', 0);
+INSERT INTO `booking` (`id`, `transaction_id`, `pnr`, `users_id`, `bus_id`, `source_id`, `destination_id`, `j_day`, `journey_dt`, `boarding_point`, `dropping_point`, `boarding_time`, `dropping_time`, `origin`, `app_type`, `typ_id`, `created_at`, `updated_at`, `created_by`, `status`, `total_fare`, `owner_fare`, `odbus_gst_charges`, `odbus_gst_amount`, `owner_gst_charges`, `owner_gst_amount`, `odbus_charges`) VALUES
+(1, '20210915115749614729', '81970326', 1, 5, 1345, 1374, 1, '2021-09-15', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-15 11:57:49', '2021-09-15 11:57:53', 'Customer', 1, 880.00, 800.00, 5.00, 40.00, 0.00, 0.00, 56.00),
+(2, '20210915124025172945', '45019378', 1, 5, 1374, 1304, 2, '2021-09-16', 'Bonth Chhawk', 'Bus stand', '15:30:00', '20:00:00', 'ODBUS', 'WEB', '1', '2021-09-15 12:40:25', '2021-09-15 12:40:28', 'Customer', 1, 556.00, 500.00, 5.00, 25.00, 0.00, 0.00, 40.00),
+(3, '20210915132116519835', '85269314', 1, 7, 1345, 1292, 1, '2021-09-15', 'Bus stand', 'Badambadi', '20:00:00', '23:00:00', 'ODBUS', 'WEB', '1', '2021-09-15 13:21:16', '2021-09-15 13:21:19', 'Customer', 1, 172.00, 150.00, 5.00, 7.50, 0.00, 0.00, 15.00),
+(4, '20210915141644265268', '26594103', 1, 5, 1374, 1304, 2, '2021-09-15', 'Bonth Chhawk', 'Bus stand', '15:30:00', '20:00:00', 'ODBUS', 'WEB', '1', '2021-09-15 14:16:44', '2021-09-15 14:16:47', 'Customer', 1, 556.00, 500.00, 5.00, 25.00, 0.00, 0.00, 40.00),
+(5, '20210915155237398747', '25963148', 1, 5, 1345, 1374, 1, '2021-09-15', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-15 15:52:37', '2021-09-15 15:52:41', 'Customer', 1, 1100.00, 1000.00, 5.00, 50.00, 0.00, 0.00, 70.00),
+(6, '20210915155953207103', '43715869', 1, 5, 1345, 1374, 1, '2021-09-16', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-15 15:59:53', '2021-09-15 15:59:57', 'Customer', 1, 667.00, 600.00, 5.00, 30.00, 0.00, 0.00, 48.00),
+(7, '2021091614084884667', '01394257', 1, 5, 1345, 1374, 1, '2021-09-17', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-16 14:08:48', '2021-09-16 14:09:09', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(8, '2021091614084898903', '90462518', 1, 5, 1345, 1374, 1, '2021-09-17', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-16 14:08:48', '2021-09-16 14:10:59', 'Customer', 1, 446.00, 400.00, 5.00, 20.00, 0.00, 0.00, 32.00),
+(9, '20210916140848126923', '87953024', 1, 5, 1345, 1374, 1, '2021-09-17', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-16 14:08:48', '2021-09-16 14:09:46', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(10, '20210916141405504398', '69152873', 1, 5, 1345, 1374, 1, '2021-09-17', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-16 14:14:05', '2021-09-16 14:14:17', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(11, '202109212305186543', '94518762', 10, 3, 1345, 1304, 2, '2021-09-21', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-21 23:05:18', '2021-09-21 23:05:18', 'Customer', 0, 1100.00, 1000.00, 5.00, 50.00, 0.00, 0.00, 70.00),
+(12, '20210921230609796704', '82793056', 10, 3, 1345, 1304, 2, '2021-09-21', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-21 23:06:09', '2021-09-21 23:06:13', 'Customer', 1, 1100.00, 1000.00, 5.00, 50.00, 0.00, 0.00, 70.00),
+(13, '20210922145726205657', '19502783', 11, 5, 1345, 1374, 1, '2021-09-23', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 14:57:26', '2021-09-22 14:57:40', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(14, '20210922145727927509', '67980342', 12, 5, 1345, 1374, 1, '2021-09-23', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 14:57:27', '2021-09-22 14:57:40', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00);
 
 -- --------------------------------------------------------
 
@@ -228,59 +212,41 @@ INSERT INTO `booking` (`id`, `transaction_id`, `pnr`, `users_id`, `bus_id`, `sou
 --
 
 CREATE TABLE `booking_detail` (
-  `id` int NOT NULL,
-  `booking_id` int UNSIGNED NOT NULL,
-  `bus_seats_id` int UNSIGNED NOT NULL,
+  `id` int(11) NOT NULL,
+  `booking_id` int(10) UNSIGNED NOT NULL,
+  `bus_seats_id` int(10) UNSIGNED NOT NULL,
   `passenger_name` varchar(250) NOT NULL,
   `passenger_gender` varchar(120) NOT NULL,
   `passenger_age` varchar(80) NOT NULL,
-  `total_fare` double NOT NULL,
-  `owner_fare` double NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '0=Not Booked,1= Booked(based on successful payment), 2=booking cancelled'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0=Not Booked,1= Booked(based on successful payment), 2=booking cancelled'
+) ;
 
 --
 -- Dumping data for table `booking_detail`
 --
 
-INSERT INTO `booking_detail` (`id`, `booking_id`, `bus_seats_id`, `passenger_name`, `passenger_gender`, `passenger_age`, `total_fare`, `owner_fare`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, 1, 6, 'lima m', 'M', '11', 600, 0, '2021-09-02 16:46:16', '2021-09-02 16:46:16', 'Customer', 0),
-(2, 1, 2, 'lima f', 'F', '12', 400, 0, '2021-09-02 16:46:16', '2021-09-02 16:46:16', 'Customer', 0),
-(3, 2, 5, 'gdfd', 'M', '12', 600, 0, '2021-09-02 17:01:08', '2021-09-02 17:01:08', 'Customer', 0),
-(4, 2, 1, 'fdfdf', 'F', '12', 400, 0, '2021-09-02 17:01:08', '2021-09-02 17:01:08', 'Customer', 0),
-(5, 3, 6, 'ere', 'M', '12', 600, 0, '2021-09-02 17:02:17', '2021-09-02 17:02:17', 'Customer', 0),
-(6, 3, 1, 'rererer', 'F', '12', 400, 0, '2021-09-02 17:02:17', '2021-09-02 17:02:17', 'Customer', 0),
-(7, 4, 13, 'Test', 'F', '22', 1000, 0, '2021-09-04 13:04:54', '2021-09-04 13:04:54', 'Customer', 0),
-(9, 6, 15, 'test1', 'F', '22', 1000, 0, '2021-09-06 20:57:22', '2021-09-08 14:32:56', 'Customer', 2),
-(10, 6, 13, 'tet2', 'F', '22', 1000, 0, '2021-09-06 20:57:22', '2021-09-08 14:32:56', 'Customer', 2),
-(11, 7, 15, 'test', 'F', '22', 1000, 0, '2021-09-08 22:12:02', '2021-09-08 22:12:02', 'Customer', 0),
-(12, 8, 2, 'lima m', 'M', '29', 400, 0, '2021-09-11 10:22:38', '2021-09-11 10:22:38', 'Customer', 0),
-(13, 8, 3, 'lima f', 'F', '29', 400, 0, '2021-09-11 10:22:38', '2021-09-11 10:22:38', 'Customer', 0),
-(14, 9, 2, 'lima', 'F', '12', 400, 0, '2021-09-11 10:25:27', '2021-09-11 10:25:27', 'Customer', 0),
-(15, 9, 3, 'lima', 'M', '12', 400, 0, '2021-09-11 10:25:27', '2021-09-11 10:25:27', 'Customer', 0),
-(16, 10, 2, 'lima ff', 'F', '24', 400, 0, '2021-09-11 10:42:51', '2021-09-11 10:42:51', 'Customer', 0),
-(17, 10, 3, 'lima mm', 'M', '24', 400, 0, '2021-09-11 10:42:51', '2021-09-11 10:42:51', 'Customer', 0),
-(18, 11, 2, 'xfdf', 'F', '34', 400, 0, '2021-09-11 10:45:42', '2021-09-11 10:45:42', 'Customer', 0),
-(19, 11, 3, 'dfdfd', 'F', '34', 400, 0, '2021-09-11 10:45:42', '2021-09-11 10:45:42', 'Customer', 0),
-(20, 12, 2, 'hgf', 'M', '12', 400, 0, '2021-09-11 10:47:06', '2021-09-11 10:47:06', 'Customer', 0),
-(21, 12, 3, 'ghghg', 'F', '12', 400, 0, '2021-09-11 10:47:06', '2021-09-11 10:47:06', 'Customer', 0),
-(22, 13, 2, 'fgfg', 'F', '12', 400, 0, '2021-09-11 10:48:43', '2021-09-11 10:48:43', 'Customer', 0),
-(23, 13, 3, 'fgfg', 'F', '12', 400, 0, '2021-09-11 10:48:43', '2021-09-11 10:48:43', 'Customer', 0),
-(24, 14, 2, 'dfdf', 'M', '12', 400, 0, '2021-09-11 10:50:26', '2021-09-11 10:50:26', 'Customer', 0),
-(25, 14, 3, 'fdfdfdf', 'F', '12', 400, 0, '2021-09-11 10:50:26', '2021-09-11 10:50:26', 'Customer', 0),
-(26, 15, 14, 'lima', 'F', '12', 1000, 0, '2021-09-11 11:09:15', '2021-09-11 11:24:51', 'Customer', 2),
-(27, 16, 13, 'lima mm', 'M', '23', 1000, 0, '2021-09-11 11:33:47', '2021-09-11 11:33:47', 'Customer', 0),
-(28, 16, 14, 'lima ff', 'F', '23', 1000, 0, '2021-09-11 11:33:47', '2021-09-11 11:33:47', 'Customer', 0),
-(29, 17, 16, 'priyadarshi', 'F', '45', 1000, 0, '2021-09-11 12:39:31', '2021-09-11 12:39:31', 'Customer', 0),
-(30, 30, 47, 'wewew', 'F', '12', 500, 0, '2021-09-11 15:30:46', '2021-09-11 15:30:46', 'Customer', 0),
-(31, 31, 48, 'deer', 'M', '12', 500, 0, '2021-09-11 15:31:39', '2021-09-11 15:31:39', 'Customer', 0),
-(32, 32, 35, 'sdsdsd', 'F', '12', 300, 0, '2021-09-11 15:36:27', '2021-09-11 15:36:27', 'Customer', 0),
-(33, 35, 35, 'sdsd', 'F', '12', 300, 0, '2021-09-11 16:26:24', '2021-09-11 16:26:24', 'Customer', 0),
-(34, 36, 39, 'ghghgh', 'F', '13', 300, 0, '2021-09-11 16:28:24', '2021-09-11 16:28:24', 'Customer', 0),
-(35, 37, 1, 'dfdf', 'M', '12', 400, 0, '2021-09-11 17:14:59', '2021-09-11 17:14:59', 'Customer', 0);
+INSERT INTO `booking_detail` (`id`, `booking_id`, `bus_seats_id`, `passenger_name`, `passenger_gender`, `passenger_age`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(1, 1, 44, 'lima m', 'M', '12', '2021-09-15 11:57:49', '2021-09-15 11:57:49', 'Customer', 0),
+(2, 1, 46, 'lima f', 'F', '22', '2021-09-15 11:57:49', '2021-09-15 11:57:49', 'Customer', 0),
+(3, 2, 47, 'lima', 'F', '23', '2021-09-15 12:40:25', '2021-09-15 12:40:25', 'Customer', 0),
+(4, 3, 144, 'lima', 'F', '22', '2021-09-15 13:21:16', '2021-09-15 13:21:16', 'Customer', 0),
+(5, 4, 47, 'lima', 'M', '12', '2021-09-15 14:16:44', '2021-09-15 14:16:44', 'Customer', 0),
+(6, 5, 45, 'D DAS', 'M', '25', '2021-09-15 15:52:37', '2021-09-15 15:52:37', 'Customer', 0),
+(7, 5, 36, 'S DAS', 'M', '28', '2021-09-15 15:52:37', '2021-09-15 15:52:37', 'Customer', 0),
+(8, 5, 37, 'DD DAS', 'M', '30', '2021-09-15 15:52:37', '2021-09-15 15:52:37', 'Customer', 0),
+(9, 6, 36, 'R Sharma', 'M', '25', '2021-09-15 15:59:53', '2021-09-15 15:59:53', 'Customer', 0),
+(10, 6, 37, 'G Sharma', 'M', '26', '2021-09-15 15:59:53', '2021-09-15 15:59:53', 'Customer', 0),
+(11, 7, 35, 'rashmiranjan sahoo', 'M', '29', '2021-09-16 14:08:48', '2021-09-16 14:08:48', 'Customer', 0),
+(12, 8, 35, 'Dillip Singh', 'M', '29', '2021-09-16 14:08:48', '2021-09-16 14:08:48', 'Customer', 0),
+(13, 9, 35, 'DEEPAK KUMAR', 'M', '24', '2021-09-16 14:08:48', '2021-09-16 14:08:48', 'Customer', 0),
+(14, 10, 39, 'santosh', 'M', '25', '2021-09-16 14:14:05', '2021-09-16 14:14:05', 'Customer', 0),
+(15, 11, 14, 'qwefewf', 'F', '32', '2021-09-21 23:05:18', '2021-09-21 23:05:18', 'Customer', 0),
+(16, 12, 14, 'dwqwqd', 'F', '22', '2021-09-21 23:06:09', '2021-09-21 23:06:09', 'Customer', 0),
+(17, 13, 35, 'Hussne', 'M', '25', '2021-09-22 14:57:26', '2021-09-22 14:57:26', 'Customer', 0),
+(18, 14, 35, 'AK Padhy', 'M', '32', '2021-09-22 14:57:27', '2021-09-22 14:57:27', 'Customer', 0);
 
 -- --------------------------------------------------------
 
@@ -289,15 +255,15 @@ INSERT INTO `booking_detail` (`id`, `booking_id`, `bus_seats_id`, `passenger_nam
 --
 
 CREATE TABLE `booking_seized` (
-  `id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `location_id` int UNSIGNED NOT NULL,
-  `seize_booking_minute` int NOT NULL COMMENT 'value in minute',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `location_id` int(10) UNSIGNED NOT NULL,
+  `seize_booking_minute` int(11) NOT NULL COMMENT 'value in minute',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `booking_seized`
@@ -314,7 +280,15 @@ INSERT INTO `booking_seized` (`id`, `bus_id`, `location_id`, `seize_booking_minu
 (8, 5, 1374, 240, '2021-09-11 09:32:39', '2021-09-11 09:32:39', 'Admin', 0),
 (9, 5, 1345, 256, '2021-09-11 09:32:39', '2021-09-11 09:32:39', 'Admin', 0),
 (10, 6, 1291, 120, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
-(11, 6, 1291, 120, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0);
+(11, 6, 1291, 120, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
+(12, 7, 1345, 350, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(13, 7, 1345, 350, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(14, 7, 1345, 350, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(15, 7, 1345, 350, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(16, 7, 1291, 550, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(17, 7, 1291, 550, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(18, 7, 1292, 580, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(19, 7, 1292, 580, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0);
 
 -- --------------------------------------------------------
 
@@ -323,56 +297,33 @@ INSERT INTO `booking_seized` (`id`, `bus_id`, `location_id`, `seize_booking_minu
 --
 
 CREATE TABLE `booking_sequence` (
-  `id` int NOT NULL,
-  `booking_id` int UNSIGNED NOT NULL,
-  `sequence_start_no` int NOT NULL,
-  `sequence_end_no` int NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `id` int(11) NOT NULL,
+  `booking_id` int(10) UNSIGNED NOT NULL,
+  `sequence_start_no` int(11) NOT NULL,
+  `sequence_end_no` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ;
 
 --
 -- Dumping data for table `booking_sequence`
 --
 
 INSERT INTO `booking_sequence` (`id`, `booking_id`, `sequence_start_no`, `sequence_end_no`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 2, '2021-09-02 11:16:16', '2021-09-02 11:16:16'),
-(2, 2, 1, 2, '2021-09-02 11:31:08', '2021-09-02 11:31:08'),
-(3, 3, 1, 2, '2021-09-02 11:32:17', '2021-09-02 11:32:17'),
-(4, 4, 1, 4, '2021-09-04 07:34:54', '2021-09-04 07:34:54'),
-(5, 5, 1, 4, '2021-09-04 07:36:30', '2021-09-04 07:36:30'),
-(6, 6, 1, 4, '2021-09-06 15:27:22', '2021-09-06 15:27:22'),
-(7, 7, 1, 4, '2021-09-08 16:42:02', '2021-09-08 16:42:02'),
-(8, 8, 1, 2, '2021-09-11 04:52:38', '2021-09-11 04:52:38'),
-(9, 9, 1, 2, '2021-09-11 04:55:27', '2021-09-11 04:55:27'),
-(10, 10, 1, 2, '2021-09-11 05:12:51', '2021-09-11 05:12:51'),
-(11, 11, 1, 2, '2021-09-11 05:15:42', '2021-09-11 05:15:42'),
-(12, 12, 1, 2, '2021-09-11 05:17:06', '2021-09-11 05:17:06'),
-(13, 13, 1, 2, '2021-09-11 05:18:43', '2021-09-11 05:18:43'),
-(14, 14, 1, 2, '2021-09-11 05:20:26', '2021-09-11 05:20:26'),
-(15, 15, 1, 4, '2021-09-11 05:39:15', '2021-09-11 05:39:15'),
-(16, 16, 1, 4, '2021-09-11 06:03:47', '2021-09-11 06:03:47'),
-(17, 17, 1, 4, '2021-09-11 07:09:31', '2021-09-11 07:09:31'),
-(18, 18, 1, 3, '2021-09-11 09:35:25', '2021-09-11 09:35:25'),
-(19, 19, 1, 3, '2021-09-11 09:36:31', '2021-09-11 09:36:31'),
-(20, 20, 1, 3, '2021-09-11 09:38:09', '2021-09-11 09:38:09'),
-(21, 21, 1, 3, '2021-09-11 09:40:43', '2021-09-11 09:40:43'),
-(22, 22, 1, 3, '2021-09-11 09:41:21', '2021-09-11 09:41:21'),
-(23, 23, 1, 3, '2021-09-11 09:43:39', '2021-09-11 09:43:39'),
-(24, 24, 1, 3, '2021-09-11 09:45:38', '2021-09-11 09:45:38'),
-(25, 25, 1, 3, '2021-09-11 09:48:05', '2021-09-11 09:48:05'),
-(26, 26, 1, 3, '2021-09-11 09:48:45', '2021-09-11 09:48:45'),
-(27, 27, 1, 3, '2021-09-11 09:50:01', '2021-09-11 09:50:01'),
-(28, 28, 1, 3, '2021-09-11 09:51:12', '2021-09-11 09:51:12'),
-(29, 29, 1, 3, '2021-09-11 09:53:37', '2021-09-11 09:53:37'),
-(30, 30, 3, 4, '2021-09-11 10:00:46', '2021-09-11 10:00:46'),
-(31, 31, 3, 4, '2021-09-11 10:01:39', '2021-09-11 10:01:39'),
-(32, 32, 1, 3, '2021-09-11 10:06:27', '2021-09-11 10:06:27'),
-(33, 33, 1, 3, '2021-09-11 10:19:03', '2021-09-11 10:19:03'),
-(34, 34, 1, 3, '2021-09-11 10:19:36', '2021-09-11 10:19:36'),
-(35, 35, 1, 3, '2021-09-11 10:56:24', '2021-09-11 10:56:24'),
-(36, 36, 1, 3, '2021-09-11 10:58:24', '2021-09-11 10:58:24'),
-(37, 37, 1, 2, '2021-09-11 11:44:59', '2021-09-11 11:44:59');
+(1, 1, 1, 3, '2021-09-15 15:57:49', '2021-09-15 15:57:49'),
+(2, 2, 3, 4, '2021-09-15 16:40:25', '2021-09-15 16:40:25'),
+(3, 3, 1, 3, '2021-09-15 17:21:16', '2021-09-15 17:21:16'),
+(4, 4, 3, 4, '2021-09-15 18:16:44', '2021-09-15 18:16:44'),
+(5, 5, 1, 3, '2021-09-15 19:52:37', '2021-09-15 19:52:37'),
+(6, 6, 1, 3, '2021-09-15 19:59:53', '2021-09-15 19:59:53'),
+(7, 7, 1, 3, '2021-09-16 18:08:48', '2021-09-16 18:08:48'),
+(8, 8, 1, 3, '2021-09-16 18:08:48', '2021-09-16 18:08:48'),
+(9, 9, 1, 3, '2021-09-16 18:08:48', '2021-09-16 18:08:48'),
+(10, 10, 1, 3, '2021-09-16 18:14:05', '2021-09-16 18:14:05'),
+(11, 11, 1, 4, '2021-09-22 03:05:18', '2021-09-22 03:05:18'),
+(12, 12, 1, 4, '2021-09-22 03:06:09', '2021-09-22 03:06:09'),
+(13, 13, 1, 3, '2021-09-22 18:57:26', '2021-09-22 18:57:26'),
+(14, 14, 1, 3, '2021-09-22 18:57:27', '2021-09-22 18:57:27');
 
 -- --------------------------------------------------------
 
@@ -381,30 +332,30 @@ INSERT INTO `booking_sequence` (`id`, `booking_id`, `sequence_start_no`, `sequen
 --
 
 CREATE TABLE `bus` (
-  `id` int UNSIGNED NOT NULL,
-  `user_id` int NOT NULL,
-  `bus_operator_id` int NOT NULL DEFAULT '1',
+  `id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `bus_operator_id` int(11) NOT NULL DEFAULT 1,
   `name` varchar(200) NOT NULL,
   `via` varchar(200) NOT NULL,
   `bus_number` varchar(50) NOT NULL,
   `bus_description` varchar(250) DEFAULT NULL,
-  `bus_type_id` int UNSIGNED NOT NULL,
-  `bus_sitting_id` int UNSIGNED NOT NULL,
-  `bus_seat_layout_id` int UNSIGNED NOT NULL,
-  `cancellationslabs_id` int NOT NULL,
-  `running_cycle` int UNSIGNED NOT NULL,
-  `popularity` int UNSIGNED DEFAULT NULL COMMENT 'Higher the number higher will be posotioning in buslist',
-  `admin_notes` mediumtext,
-  `has_return_bus` int NOT NULL COMMENT '0-no 1-yes',
-  `return_bus_id` int DEFAULT NULL,
-  `cancelation_points` mediumtext,
+  `bus_type_id` int(10) UNSIGNED NOT NULL,
+  `bus_sitting_id` int(10) UNSIGNED NOT NULL,
+  `bus_seat_layout_id` int(10) UNSIGNED NOT NULL,
+  `cancellationslabs_id` int(11) NOT NULL,
+  `running_cycle` int(10) UNSIGNED NOT NULL,
+  `popularity` int(10) UNSIGNED DEFAULT NULL COMMENT 'Higher the number higher will be posotioning in buslist',
+  `admin_notes` mediumtext DEFAULT NULL,
+  `has_return_bus` int(11) NOT NULL COMMENT '0-no 1-yes',
+  `return_bus_id` int(11) DEFAULT NULL,
+  `cancelation_points` mediumtext DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0',
-  `sequence` int NOT NULL DEFAULT '1000',
-  `max_seat_book` int NOT NULL DEFAULT '6'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `sequence` int(11) NOT NULL DEFAULT 1000,
+  `max_seat_book` int(11) NOT NULL DEFAULT 6
+) ;
 
 --
 -- Dumping data for table `bus`
@@ -413,9 +364,10 @@ CREATE TABLE `bus` (
 INSERT INTO `bus` (`id`, `user_id`, `bus_operator_id`, `name`, `via`, `bus_number`, `bus_description`, `bus_type_id`, `bus_sitting_id`, `bus_seat_layout_id`, `cancellationslabs_id`, `running_cycle`, `popularity`, `admin_notes`, `has_return_bus`, `return_bus_id`, `cancelation_points`, `created_at`, `updated_at`, `created_by`, `status`, `sequence`, `max_seat_book`) VALUES
 (1, 1, 1, 'MAA', 'Bhadark', 'OD 22A5345', NULL, 315, 3, 7, 1, 0, NULL, NULL, 0, NULL, NULL, '2021-08-30 13:05:42', '2021-08-30 13:08:10', 'Admin', 2, 1000, 6),
 (3, 1, 1, 'MAA', 'Bhadark', 'OD 22A5344', NULL, 315, 3, 7, 1, 1, NULL, NULL, 0, NULL, NULL, '2021-08-30 13:07:51', '2021-08-30 13:09:05', 'Admin', 1, 1000, 6),
-(4, 1, 9, 'Arnapurna', 'Angul', 'OD 02 BE 478959', 'Luxury Bus', 315, 3, 7, 2, 0, NULL, NULL, 0, NULL, NULL, '2021-09-03 07:53:42', '2021-09-03 07:53:45', 'Admin', 1, 1000, 6),
+(4, 1, 9, 'Arnapurna', 'Angul', 'OD 02 BE 478959', 'Luxury Bus', 315, 3, 7, 2, 0, NULL, NULL, 0, NULL, NULL, '2021-09-03 07:53:42', '2021-09-15 08:51:47', 'Admin', 2, 1000, 6),
 (5, 1, 9, 'Das & das', 'bhadrak', 'OD 02 AQ 9046', NULL, 315, 3, 7, 1, 1, NULL, NULL, 0, NULL, NULL, '2021-09-11 09:32:39', '2021-09-11 09:33:06', 'Admin', 1, 1000, 4),
-(6, 1, 1, 'testing', 'bhadrak', '123456', NULL, 315, 3, 7, 1, 0, NULL, NULL, 0, NULL, NULL, '2021-09-11 09:38:04', '2021-09-11 09:40:49', 'Admin', 2, 1000, 6);
+(6, 1, 1, 'testing', 'bhadrak', '123456', NULL, 315, 3, 7, 1, 0, NULL, NULL, 0, NULL, NULL, '2021-09-11 09:38:04', '2021-09-11 09:40:49', 'Admin', 2, 1000, 6),
+(7, 1, 8, 'HH BUS', 'Angul', 'OD 02 HH 5254', NULL, 315, 3, 11, 3, 2, NULL, NULL, 0, NULL, NULL, '2021-09-15 07:44:48', '2021-09-15 07:45:48', 'Admin', 1, 1000, 5);
 
 -- --------------------------------------------------------
 
@@ -424,14 +376,14 @@ INSERT INTO `bus` (`id`, `user_id`, `bus_operator_id`, `name`, `via`, `bus_numbe
 --
 
 CREATE TABLE `bus_amenities` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `amenities_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `amenities_id` int(10) UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) DEFAULT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `bus_amenities`
@@ -445,7 +397,9 @@ INSERT INTO `bus_amenities` (`id`, `bus_id`, `amenities_id`, `created_at`, `upda
 (5, 4, 2, '2021-09-03 07:53:42', '2021-09-03 07:53:42', 'Admin', 1),
 (6, 5, 1, '2021-09-11 09:32:39', '2021-09-11 09:32:39', 'Admin', 1),
 (7, 6, 1, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 1),
-(8, 6, 4, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 1);
+(8, 6, 4, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 1),
+(9, 7, 2, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 1),
+(10, 7, 4, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -454,17 +408,17 @@ INSERT INTO `bus_amenities` (`id`, `bus_id`, `amenities_id`, `created_at`, `upda
 --
 
 CREATE TABLE `bus_cancelled` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `bus_operator_id` int NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
   `month` varchar(50) DEFAULT NULL,
   `year` varchar(50) DEFAULT NULL,
   `reason` varchar(200) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `cancelled_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -473,14 +427,14 @@ CREATE TABLE `bus_cancelled` (
 --
 
 CREATE TABLE `bus_cancelled_date` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_cancelled_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_cancelled_id` int(10) UNSIGNED NOT NULL,
   `cancelled_date` date NOT NULL,
   `created_by` varchar(200) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -489,12 +443,12 @@ CREATE TABLE `bus_cancelled_date` (
 --
 
 CREATE TABLE `bus_class` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `class_name` varchar(250) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 --
 -- Dumping data for table `bus_class`
@@ -511,15 +465,15 @@ INSERT INTO `bus_class` (`id`, `class_name`, `created_at`, `updated_at`, `create
 --
 
 CREATE TABLE `bus_closing_hours` (
-  `id` int NOT NULL,
-  `bus_id` int NOT NULL,
-  `city_id` int NOT NULL,
+  `id` int(11) NOT NULL,
+  `bus_id` int(11) NOT NULL,
+  `city_id` int(11) NOT NULL,
   `dep_time` varchar(250) NOT NULL,
   `closing_hours` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '1',
+  `status` int(11) NOT NULL DEFAULT 1,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 -- --------------------------------------------------------
 
@@ -528,17 +482,17 @@ CREATE TABLE `bus_closing_hours` (
 --
 
 CREATE TABLE `bus_contacts` (
-  `id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `type` int NOT NULL COMMENT '0-operator 1-manager 2-conductor',
+  `id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `type` int(11) NOT NULL COMMENT '0-operator 1-manager 2-conductor',
   `phone` varchar(100) NOT NULL,
-  `booking_sms_send` int NOT NULL DEFAULT '0' COMMENT '0-dontsend 1-send',
-  `cancel_sms_send` int NOT NULL DEFAULT '0' COMMENT '0-dontsend 1-send',
+  `booking_sms_send` int(11) NOT NULL DEFAULT 0 COMMENT '0-dontsend 1-send',
+  `cancel_sms_send` int(11) NOT NULL DEFAULT 0 COMMENT '0-dontsend 1-send',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `bus_contacts`
@@ -559,7 +513,10 @@ INSERT INTO `bus_contacts` (`id`, `bus_id`, `type`, `phone`, `booking_sms_send`,
 (12, 5, 0, '7978817539', 1, 1, '2021-09-11 09:32:39', '2021-09-11 09:32:39', 'Admin', 1),
 (13, 6, 2, '1234567898', 1, 1, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 1),
 (14, 6, 1, '2123434567', 1, 1, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 1),
-(15, 6, 0, '2345678998', 1, 1, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 1);
+(15, 6, 0, '2345678998', 1, 1, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 1),
+(16, 7, 2, '5487548754', 1, 1, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 1),
+(17, 7, 1, '5487548754', 1, 1, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 1),
+(18, 7, 0, '5487548754', 1, 1, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -568,17 +525,17 @@ INSERT INTO `bus_contacts` (`id`, `bus_id`, `type`, `phone`, `booking_sms_send`,
 --
 
 CREATE TABLE `bus_extra_fare` (
-  `id` bigint UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `type` int UNSIGNED NOT NULL COMMENT '1 - Operator, 2 - ODBUS',
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `type` int(10) UNSIGNED NOT NULL COMMENT '1 - Operator, 2 - ODBUS',
   `journey_date` date DEFAULT NULL,
-  `seat_fare` int NOT NULL COMMENT 'extra 30rs.. added to all seaters',
-  `sleeper_fare` int NOT NULL COMMENT 'extra 70rs.. added to all sleapers',
+  `seat_fare` int(11) NOT NULL COMMENT 'extra 30rs.. added to all seaters',
+  `sleeper_fare` int(11) NOT NULL COMMENT 'extra 70rs.. added to all sleapers',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -587,10 +544,10 @@ CREATE TABLE `bus_extra_fare` (
 --
 
 CREATE TABLE `bus_festival_fare` (
-  `id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `festival_fare_id` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `festival_fare_id` int(11) NOT NULL
+) ;
 
 -- --------------------------------------------------------
 
@@ -599,15 +556,15 @@ CREATE TABLE `bus_festival_fare` (
 --
 
 CREATE TABLE `bus_gallery` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
   `image` mediumblob NOT NULL,
   `alt_tag` varchar(250) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -616,13 +573,13 @@ CREATE TABLE `bus_gallery` (
 --
 
 CREATE TABLE `bus_location_sequence` (
-  `id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `location_id` int UNSIGNED NOT NULL,
-  `sequence` int NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `location_id` int(10) UNSIGNED NOT NULL,
+  `sequence` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ;
 
 --
 -- Dumping data for table `bus_location_sequence`
@@ -644,7 +601,12 @@ INSERT INTO `bus_location_sequence` (`id`, `bus_id`, `location_id`, `sequence`, 
 (16, 6, 1291, 1, '2021-09-11 04:08:04', '2021-09-11 04:08:04'),
 (17, 6, 1292, 2, '2021-09-11 04:08:04', '2021-09-11 04:08:04'),
 (18, 6, 1374, 3, '2021-09-11 04:08:04', '2021-09-11 04:08:04'),
-(19, 6, 1304, 4, '2021-09-11 04:08:04', '2021-09-11 04:08:04');
+(19, 6, 1304, 4, '2021-09-11 04:08:04', '2021-09-11 04:08:04'),
+(20, 7, 1345, 1, '2021-09-15 11:44:48', '2021-09-15 11:44:48'),
+(21, 7, 1291, 2, '2021-09-15 11:44:48', '2021-09-15 11:44:48'),
+(22, 7, 1292, 3, '2021-09-15 11:44:48', '2021-09-15 11:44:48'),
+(23, 7, 1294, 4, '2021-09-15 11:44:48', '2021-09-15 11:44:48'),
+(24, 7, 1297, 5, '2021-09-15 11:44:48', '2021-09-15 11:44:48');
 
 -- --------------------------------------------------------
 
@@ -653,28 +615,28 @@ INSERT INTO `bus_location_sequence` (`id`, `bus_id`, `location_id`, `sequence`, 
 --
 
 CREATE TABLE `bus_operator` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `email_id` varchar(50) NOT NULL,
   `password` varchar(20) NOT NULL,
   `operator_name` varchar(50) NOT NULL,
   `contact_number` varchar(15) NOT NULL,
   `organisation_name` varchar(50) NOT NULL,
   `location_name` varchar(150) NOT NULL,
-  `address` text,
+  `address` text DEFAULT NULL,
   `additional_email` varchar(50) DEFAULT NULL,
   `additional_contact` varchar(15) DEFAULT NULL,
   `bank_account_name` varchar(50) DEFAULT NULL,
   `bank_name` varchar(50) DEFAULT NULL,
   `bank_ifsc` varchar(50) DEFAULT NULL,
   `bank_account_number` varchar(50) DEFAULT NULL,
-  `need_gst_bill` int NOT NULL DEFAULT '0',
+  `need_gst_bill` int(11) NOT NULL DEFAULT 0,
   `gst_number` varchar(250) DEFAULT NULL,
   `gst_amount` double(8,2) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Bus Operators';
+  `status` int(11) NOT NULL DEFAULT 0
+)  COMMENT='Bus Operators';
 
 --
 -- Dumping data for table `bus_operator`
@@ -698,10 +660,10 @@ INSERT INTO `bus_operator` (`id`, `email_id`, `password`, `operator_name`, `cont
 --
 
 CREATE TABLE `bus_owner_fare` (
-  `id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `owner_fare_id` int UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `owner_fare_id` int(10) UNSIGNED NOT NULL
+) ;
 
 -- --------------------------------------------------------
 
@@ -710,13 +672,13 @@ CREATE TABLE `bus_owner_fare` (
 --
 
 CREATE TABLE `bus_safety` (
-  `id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `safety_id` int NOT NULL,
+  `id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `safety_id` int(11) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 --
 -- Dumping data for table `bus_safety`
@@ -731,7 +693,9 @@ INSERT INTO `bus_safety` (`id`, `bus_id`, `safety_id`, `created_at`, `updated_at
 (6, 4, 4, '2021-09-03 07:53:42', '2021-09-03 07:53:42', 'Admin'),
 (7, 5, 1, '2021-09-11 09:32:39', '2021-09-11 09:32:39', 'Admin'),
 (8, 6, 1, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin'),
-(9, 6, 2, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin');
+(9, 6, 2, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin'),
+(10, 7, 1, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin'),
+(11, 7, 3, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin');
 
 -- --------------------------------------------------------
 
@@ -740,13 +704,13 @@ INSERT INTO `bus_safety` (`id`, `bus_id`, `safety_id`, `created_at`, `updated_at
 --
 
 CREATE TABLE `bus_schedule` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `bus_schedule`
@@ -754,7 +718,8 @@ CREATE TABLE `bus_schedule` (
 
 INSERT INTO `bus_schedule` (`id`, `bus_id`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
 (1, 3, '2021-08-30 13:09:05', '2021-09-11 09:33:13', 'Admin', 1),
-(2, 5, '2021-09-11 09:33:06', '2021-09-11 09:33:10', 'Admin', 1);
+(2, 5, '2021-09-11 09:33:06', '2021-09-11 09:33:10', 'Admin', 1),
+(3, 7, '2021-09-15 07:45:48', '2021-09-15 07:45:51', 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -763,14 +728,14 @@ INSERT INTO `bus_schedule` (`id`, `bus_id`, `created_at`, `updated_at`, `created
 --
 
 CREATE TABLE `bus_schedule_date` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_schedule_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_schedule_id` int(10) UNSIGNED NOT NULL,
   `entry_date` date NOT NULL,
   `created_by` varchar(200) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `status` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL
+) ;
 
 --
 -- Dumping data for table `bus_schedule_date`
@@ -836,7 +801,37 @@ INSERT INTO `bus_schedule_date` (`id`, `bus_schedule_id`, `entry_date`, `created
 (57, 2, '2021-10-07', 'Admin', '2021-09-11 09:33:06', '2021-09-11 09:33:06', 1),
 (58, 2, '2021-10-08', 'Admin', '2021-09-11 09:33:06', '2021-09-11 09:33:06', 1),
 (59, 2, '2021-10-09', 'Admin', '2021-09-11 09:33:06', '2021-09-11 09:33:06', 1),
-(60, 2, '2021-10-10', 'Admin', '2021-09-11 09:33:06', '2021-09-11 09:33:06', 1);
+(60, 2, '2021-10-10', 'Admin', '2021-09-11 09:33:06', '2021-09-11 09:33:06', 1),
+(61, 3, '2021-09-15', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(62, 3, '2021-09-17', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(63, 3, '2021-09-19', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(64, 3, '2021-09-21', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(65, 3, '2021-09-23', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(66, 3, '2021-09-25', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(67, 3, '2021-09-27', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(68, 3, '2021-09-29', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(69, 3, '2021-10-01', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(70, 3, '2021-10-03', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(71, 3, '2021-10-05', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(72, 3, '2021-10-07', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(73, 3, '2021-10-09', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(74, 3, '2021-10-11', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(75, 3, '2021-10-13', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(76, 3, '2021-10-15', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(77, 3, '2021-10-17', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(78, 3, '2021-10-19', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(79, 3, '2021-10-21', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(80, 3, '2021-10-23', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(81, 3, '2021-10-25', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(82, 3, '2021-10-27', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(83, 3, '2021-10-29', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(84, 3, '2021-10-31', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(85, 3, '2021-11-02', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(86, 3, '2021-11-04', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(87, 3, '2021-11-06', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(88, 3, '2021-11-08', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(89, 3, '2021-11-10', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1),
+(90, 3, '2021-11-12', 'Admin', '2021-09-15 07:45:48', '2021-09-15 07:45:48', 1);
 
 -- --------------------------------------------------------
 
@@ -845,18 +840,18 @@ INSERT INTO `bus_schedule_date` (`id`, `bus_schedule_id`, `entry_date`, `created
 --
 
 CREATE TABLE `bus_seats` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `ticket_price_id` int UNSIGNED NOT NULL,
-  `seats_id` int NOT NULL,
-  `category` int UNSIGNED NOT NULL COMMENT '0-odbus 1-conductor',
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `ticket_price_id` int(10) UNSIGNED NOT NULL,
+  `seats_id` int(11) NOT NULL,
+  `category` int(10) UNSIGNED NOT NULL COMMENT '0-odbus 1-conductor',
   `duration` varchar(10) NOT NULL DEFAULT '0' COMMENT 'if grater than 0 its additional seats/ sleepers in minutes THE  gap after which full seats will be given to odbus',
-  `new_fare` double(8,2) NOT NULL DEFAULT '0.00',
+  `new_fare` double(8,2) NOT NULL DEFAULT 0.00,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `bus_seats`
@@ -948,7 +943,143 @@ INSERT INTO `bus_seats` (`id`, `bus_id`, `ticket_price_id`, `seats_id`, `categor
 (83, 6, 11, 45, 0, '0', 0.00, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
 (84, 6, 11, 51, 0, '0', 0.00, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
 (85, 6, 11, 55, 0, '0', 0.00, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
-(86, 6, 11, 56, 0, '0', 0.00, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0);
+(86, 6, 11, 56, 0, '0', 0.00, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
+(87, 7, 12, 146, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(88, 7, 12, 147, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(89, 7, 12, 149, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(90, 7, 12, 150, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(91, 7, 12, 151, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(92, 7, 12, 153, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(93, 7, 12, 154, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(94, 7, 12, 155, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(95, 7, 12, 157, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(96, 7, 12, 158, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(97, 7, 12, 159, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(98, 7, 12, 161, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(99, 7, 12, 169, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(100, 7, 12, 170, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(101, 7, 12, 171, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(102, 7, 12, 174, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(103, 7, 12, 177, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(104, 7, 13, 146, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(105, 7, 13, 147, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(106, 7, 13, 149, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(107, 7, 13, 150, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(108, 7, 13, 151, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(109, 7, 13, 153, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(110, 7, 13, 154, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(111, 7, 13, 155, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(112, 7, 13, 157, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(113, 7, 13, 158, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(114, 7, 13, 159, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(115, 7, 13, 161, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(116, 7, 13, 169, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(117, 7, 13, 170, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(118, 7, 13, 171, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(119, 7, 13, 174, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(120, 7, 13, 177, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(121, 7, 14, 146, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(122, 7, 14, 147, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(123, 7, 14, 149, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(124, 7, 14, 150, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(125, 7, 14, 151, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(126, 7, 14, 153, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(127, 7, 14, 154, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(128, 7, 14, 155, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(129, 7, 14, 157, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(130, 7, 14, 158, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(131, 7, 14, 159, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(132, 7, 14, 161, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(133, 7, 14, 169, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(134, 7, 14, 170, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(135, 7, 14, 171, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(136, 7, 14, 174, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(137, 7, 14, 177, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(138, 7, 15, 146, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(139, 7, 15, 147, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(140, 7, 15, 149, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(141, 7, 15, 150, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(142, 7, 15, 151, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(143, 7, 15, 153, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(144, 7, 15, 154, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(145, 7, 15, 155, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(146, 7, 15, 157, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(147, 7, 15, 158, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(148, 7, 15, 159, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(149, 7, 15, 161, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(150, 7, 15, 169, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(151, 7, 15, 170, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(152, 7, 15, 171, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(153, 7, 15, 174, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(154, 7, 15, 177, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(155, 7, 16, 146, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(156, 7, 16, 147, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(157, 7, 16, 149, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(158, 7, 16, 150, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(159, 7, 16, 151, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(160, 7, 16, 153, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(161, 7, 16, 154, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(162, 7, 16, 155, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(163, 7, 16, 157, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(164, 7, 16, 158, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(165, 7, 16, 159, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(166, 7, 16, 161, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(167, 7, 16, 169, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(168, 7, 16, 170, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(169, 7, 16, 171, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(170, 7, 16, 174, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(171, 7, 16, 177, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(172, 7, 17, 146, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(173, 7, 17, 147, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(174, 7, 17, 149, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(175, 7, 17, 150, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(176, 7, 17, 151, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(177, 7, 17, 153, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(178, 7, 17, 154, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(179, 7, 17, 155, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(180, 7, 17, 157, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(181, 7, 17, 158, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(182, 7, 17, 159, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(183, 7, 17, 161, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(184, 7, 17, 169, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(185, 7, 17, 170, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(186, 7, 17, 171, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(187, 7, 17, 174, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(188, 7, 17, 177, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(189, 7, 18, 146, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(190, 7, 18, 147, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(191, 7, 18, 149, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(192, 7, 18, 150, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(193, 7, 18, 151, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(194, 7, 18, 153, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(195, 7, 18, 154, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(196, 7, 18, 155, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(197, 7, 18, 157, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(198, 7, 18, 158, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(199, 7, 18, 159, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(200, 7, 18, 161, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(201, 7, 18, 169, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(202, 7, 18, 170, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(203, 7, 18, 171, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(204, 7, 18, 174, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(205, 7, 18, 177, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(206, 7, 19, 146, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(207, 7, 19, 147, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(208, 7, 19, 149, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(209, 7, 19, 150, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(210, 7, 19, 151, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(211, 7, 19, 153, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(212, 7, 19, 154, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(213, 7, 19, 155, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(214, 7, 19, 157, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(215, 7, 19, 158, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(216, 7, 19, 159, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(217, 7, 19, 161, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(218, 7, 19, 169, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(219, 7, 19, 170, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(220, 7, 19, 171, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(221, 7, 19, 174, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(222, 7, 19, 177, 0, '0', 0.00, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0);
 
 -- --------------------------------------------------------
 
@@ -957,17 +1088,17 @@ INSERT INTO `bus_seats` (`id`, `bus_id`, `ticket_price_id`, `seats_id`, `categor
 --
 
 CREATE TABLE `bus_seats_extra` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
   `journey_dt` date NOT NULL,
-  `type` int UNSIGNED NOT NULL COMMENT '1 - Block, 2 - Open',
-  `seat_type` int UNSIGNED NOT NULL COMMENT '0-seater 1-sleeper',
+  `type` int(10) UNSIGNED NOT NULL COMMENT '1 - Block, 2 - Open',
+  `seat_type` int(10) UNSIGNED NOT NULL COMMENT '0-seater 1-sleeper',
   `seat_number` varchar(10) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -976,13 +1107,13 @@ CREATE TABLE `bus_seats_extra` (
 --
 
 CREATE TABLE `bus_seat_layout` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `bus_seat_layout`
@@ -1004,13 +1135,13 @@ INSERT INTO `bus_seat_layout` (`id`, `name`, `created_at`, `updated_at`, `create
 --
 
 CREATE TABLE `bus_sitting` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `bus_sitting`
@@ -1038,15 +1169,15 @@ INSERT INTO `bus_sitting` (`id`, `name`, `created_at`, `updated_at`, `created_by
 --
 
 CREATE TABLE `bus_slots` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
   `name` varchar(254) NOT NULL,
-  `type` int NOT NULL DEFAULT '0' COMMENT '0- ODBUS    1- conductor ',
+  `type` int(11) NOT NULL DEFAULT 0 COMMENT '0- ODBUS    1- conductor ',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -1055,10 +1186,10 @@ CREATE TABLE `bus_slots` (
 --
 
 CREATE TABLE `bus_special_fare` (
-  `id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `special_fare_id` int UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `special_fare_id` int(10) UNSIGNED NOT NULL
+) ;
 
 -- --------------------------------------------------------
 
@@ -1067,15 +1198,15 @@ CREATE TABLE `bus_special_fare` (
 --
 
 CREATE TABLE `bus_stoppage_additional_fare` (
-  `id` int UNSIGNED NOT NULL,
-  `ticket_price_id` int UNSIGNED NOT NULL,
-  `bus_seats_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `ticket_price_id` int(10) UNSIGNED NOT NULL,
+  `bus_seats_id` int(10) UNSIGNED NOT NULL,
   `additional_fare` double(8,2) UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -1084,17 +1215,17 @@ CREATE TABLE `bus_stoppage_additional_fare` (
 --
 
 CREATE TABLE `bus_stoppage_timing` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `location_id` int UNSIGNED NOT NULL,
-  `boarding_droping_id` int NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `location_id` int(10) UNSIGNED NOT NULL,
+  `boarding_droping_id` int(11) NOT NULL,
   `stoppage_name` varchar(250) DEFAULT NULL,
   `stoppage_time` time NOT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp(),
   `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `bus_stoppage_timing`
@@ -1122,7 +1253,15 @@ INSERT INTO `bus_stoppage_timing` (`id`, `bus_id`, `location_id`, `boarding_drop
 (19, 6, 1291, 1, 'Bermunda', '08:00:00', '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
 (20, 6, 1292, 11, 'Badambadi', '09:00:00', '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
 (21, 6, 1374, 34, 'Bus Stand', '12:00:00', '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
-(22, 6, 1304, 41, 'Bus stand', '05:00:00', '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0);
+(22, 6, 1304, 41, 'Bus stand', '05:00:00', '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
+(23, 7, 1345, 9, 'Bus stand', '20:00:00', '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(24, 7, 1345, 10, 'Atharanala', '20:15:00', '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(25, 7, 1291, 3, 'Rasulgarh', '21:30:00', '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(26, 7, 1291, 4, 'Palasuni', '21:45:00', '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(27, 7, 1292, 11, 'Badambadi', '23:00:00', '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(28, 7, 1292, 13, 'OMP', '23:45:00', '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(29, 7, 1294, 5, 'Sambalpur Town', '06:10:00', '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(30, 7, 1297, 16, 'Bus stand', '07:00:00', '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0);
 
 -- --------------------------------------------------------
 
@@ -1131,14 +1270,14 @@ INSERT INTO `bus_stoppage_timing` (`id`, `bus_id`, `location_id`, `boarding_drop
 --
 
 CREATE TABLE `bus_type` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_class_id` int NOT NULL DEFAULT '0',
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_class_id` int(11) NOT NULL DEFAULT 0,
   `name` varchar(50) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `bus_type`
@@ -1156,14 +1295,14 @@ INSERT INTO `bus_type` (`id`, `bus_class_id`, `name`, `created_at`, `updated_at`
 --
 
 CREATE TABLE `cancellationslabs` (
-  `id` int NOT NULL,
-  `api_id` int DEFAULT NULL,
+  `id` int(11) NOT NULL,
+  `api_id` int(11) DEFAULT NULL,
   `rule_name` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '0',
+  `status` int(11) NOT NULL DEFAULT 0,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 --
 -- Dumping data for table `cancellationslabs`
@@ -1181,15 +1320,15 @@ INSERT INTO `cancellationslabs` (`id`, `api_id`, `rule_name`, `status`, `created
 --
 
 CREATE TABLE `cancellationslabs_info` (
-  `id` int NOT NULL,
-  `cancellation_slab_id` int NOT NULL,
+  `id` int(11) NOT NULL,
+  `cancellation_slab_id` int(11) NOT NULL,
   `duration` varchar(250) NOT NULL,
   `deduction` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '1',
+  `status` int(11) NOT NULL DEFAULT 1,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(250) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 --
 -- Dumping data for table `cancellationslabs_info`
@@ -1213,15 +1352,15 @@ INSERT INTO `cancellationslabs_info` (`id`, `cancellation_slab_id`, `duration`, 
 --
 
 CREATE TABLE `city_closing` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `location_id` int UNSIGNED NOT NULL,
-  `closing_hours` int UNSIGNED DEFAULT NULL COMMENT 'Time in minutes',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `location_id` int(10) UNSIGNED NOT NULL,
+  `closing_hours` int(10) UNSIGNED DEFAULT NULL COMMENT 'Time in minutes',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -1230,16 +1369,16 @@ CREATE TABLE `city_closing` (
 --
 
 CREATE TABLE `city_closing_extended` (
-  `id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `location_id` int UNSIGNED DEFAULT NULL,
+  `id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `location_id` int(10) UNSIGNED DEFAULT NULL,
   `journey_date` date NOT NULL,
-  `closing_hours` int UNSIGNED DEFAULT NULL COMMENT 'Time in minutes',
+  `closing_hours` int(10) UNSIGNED DEFAULT NULL COMMENT 'Time in minutes',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -1248,16 +1387,16 @@ CREATE TABLE `city_closing_extended` (
 --
 
 CREATE TABLE `coupon` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `coupon_title` varchar(254) DEFAULT NULL,
   `coupon_code` varchar(25) DEFAULT NULL,
   `type` enum('Percent','CutOff') NOT NULL,
   `amount` double(8,2) DEFAULT NULL COMMENT 'in % or in cash',
   `max_discount_price` double(8,2) DEFAULT NULL COMMENT 'incase of % deduction',
   `min_tran_amount` double(8,2) DEFAULT NULL,
-  `max_redeem` int DEFAULT NULL,
-  `max_use_limit` int DEFAULT NULL,
-  `category` int DEFAULT NULL COMMENT '0-booking date 1-journey date',
+  `max_redeem` int(11) DEFAULT NULL,
+  `max_use_limit` int(11) DEFAULT NULL,
+  `category` int(11) DEFAULT NULL COMMENT '0-booking date 1-journey date',
   `from_date` datetime DEFAULT NULL,
   `to_date` datetime DEFAULT NULL,
   `short_desc` varchar(200) NOT NULL,
@@ -1265,8 +1404,8 @@ CREATE TABLE `coupon` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -1275,14 +1414,14 @@ CREATE TABLE `coupon` (
 --
 
 CREATE TABLE `coupon_assigned_bus` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `coupon_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `coupon_id` int(10) UNSIGNED NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -1291,13 +1430,13 @@ CREATE TABLE `coupon_assigned_bus` (
 --
 
 CREATE TABLE `credentials` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `sms_textlocal_key` varchar(254) NOT NULL,
   `mail_username` varchar(254) NOT NULL,
   `mail_password` varchar(254) NOT NULL,
   `razorpay_key` varchar(256) NOT NULL,
   `razorpay_secret` varchar(256) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 --
 -- Dumping data for table `credentials`
@@ -1313,44 +1452,40 @@ INSERT INTO `credentials` (`id`, `sms_textlocal_key`, `mail_username`, `mail_pas
 --
 
 CREATE TABLE `customer_payment` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(254) DEFAULT '',
-  `booking_id` int UNSIGNED NOT NULL,
-  `amount` double(8,2) DEFAULT '0.00',
+  `booking_id` int(10) UNSIGNED NOT NULL,
+  `amount` double(8,2) DEFAULT 0.00,
   `order_id` varchar(200) NOT NULL DEFAULT '',
   `razorpay_id` varchar(200) DEFAULT NULL,
   `razorpay_signature` varchar(200) DEFAULT NULL,
-  `payment_done` int NOT NULL DEFAULT '0' COMMENT '0:payment not done, 1:payment done, 2:refunded ',
+  `payment_done` int(11) NOT NULL DEFAULT 0 COMMENT '0:payment not done, 1:payment done, 2:refunded ',
   `refund_id` varchar(120) NOT NULL DEFAULT '0',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp()
+) ;
 
 --
 -- Dumping data for table `customer_payment`
 --
 
 INSERT INTO `customer_payment` (`id`, `name`, `booking_id`, `amount`, `order_id`, `razorpay_id`, `razorpay_signature`, `payment_done`, `refund_id`, `created_at`, `updated_at`) VALUES
-(1, 'Lima Mohanty', 1, 1000.00, 'order_Hs7lm7v0D2J7vU', 'pay_Hs7mEvNWfBWGju', '1857152289a235245ca66360fde74a4216a005b972e700b0f5ac7b7059174b99', 2, 'rfnd_Hu8xw6yaPTsIiP', '2021-09-02 16:46:34', '2021-09-06 15:48:14'),
-(2, 'lima Mohanty', 2, 1000.00, 'order_Hsa4VftCUf6fkZ', 'pay_Hsa4clbC6Pcajr', '31fecbe08e1cdb6e4d37c051ad577b7273efe40fc54d1039acc3e979d6a6368e', 1, '0', '2021-09-02 17:01:11', '2021-09-02 17:01:22'),
-(3, 'lima Mohanty', 3, 1000.00, 'order_Hsa5jfMEPCk797', 'pay_Hsa5ocJvrGO5Jz', '13e58ebe1738ae31a2759742d3bc995d0e6f44ff7b73ad2cf46b0e1d62751e52', 1, '0', '2021-09-02 17:02:21', '2021-09-02 17:02:33'),
-(4, 'Test Ladies', 4, 1000.00, 'order_HtJ7H526fPJOqF', 'pay_HtJ7OEgdkNXzjV', '75f2259b040a9ef81f9f5a8470d8b6d15af3441ab9b91ad0b9439c9bccd3c078', 1, '0', '2021-09-04 13:05:01', '2021-09-04 13:05:16'),
-(5, 'Test2', 5, 1000.00, 'order_HtJ8tYb9GZhzI4', 'pay_HtJ8xmPAmqQnDI', 'e68538253991342aa45579b3e9808920ac349b72e89a081effd6208ebfb00ec6', 2, 'rfnd_Huuy6w1PLpVDqy', '2021-09-04 13:06:33', '2021-09-08 14:45:42'),
-(6, 'ghthdth rgbrgbg', 6, 2000.00, 'order_HuEEdFSuNESXjf', 'pay_HuEEiGQRCv5YQD', '874da183fb2933638d3edf6e07ef74f2da2ce5221b1d5adb3b6bd7b0fe1cd206', 2, 'rfnd_HuukdRLUMIWfvJ', '2021-09-06 20:57:31', '2021-09-08 14:32:56'),
-(7, 'test', 7, 1000.00, 'order_Hv2Zg2GriJpKUL', 'pay_Hv2ZmhnsOVHZPk', 'a58c93f1dd3a549e1f15bc2f3b4586b80afda3f0af5761cdf00899db028b792b', 1, '0', '2021-09-08 22:12:07', '2021-09-08 22:12:20'),
-(8, 'Lima Mohanty', 8, 800.00, 'order_Hw25kCzlEiiOEo', 'pay_Hw2679u4geja5N', 'e220181a906fe2f643e7dac73f495cd4bff59e3e6b7939fdc85ffa5bf08847b8', 1, '0', '2021-09-11 10:22:47', '2021-09-11 10:23:13'),
-(9, 'Lima Mohanty', 9, 800.00, 'order_Hw28cYhfPF3S0p', NULL, NULL, 0, '0', '2021-09-11 10:25:30', '2021-09-11 10:25:30'),
-(10, 'Lima Mohanty', 10, 800.00, 'order_Hw2R0EgJSai0G6', 'pay_Hw2R7zKoQQL9DQ', '6bf42033a0f431cc130b0f9772f86d22bbb5c708a581bbf017e430925cef8654', 1, '0', '2021-09-11 10:42:54', '2021-09-11 10:43:06'),
-(11, 'Lima Mohanty', 11, 800.00, 'order_Hw2U08G1IKtCwo', 'pay_Hw2U72GGp3KMSl', 'b4ea4b8437e9cde3c5f4899c5e0a3ab4131a35b53f4b2739b6a12f899592a0f0', 1, '0', '2021-09-11 10:45:44', '2021-09-11 10:45:56'),
-(12, 'lima Mohanty', 12, 800.00, 'order_Hw2VUW9jNkxvyu', 'pay_Hw2VcLdPthbulU', '323b253f9d2db6cc48b949eae2157cfaea1490ea6e5b24407b4183ba3218acde', 1, '0', '2021-09-11 10:47:09', '2021-09-11 10:47:21'),
-(13, 'lima Mohanty', 13, 800.00, 'order_Hw2XCNtJPpGNdP', 'pay_Hw2XKs9pBDTAae', '4a247f34f619a23f6da35c5c56d485b4233fdd1b39dc9615d54128cfd1387899', 1, '0', '2021-09-11 10:48:46', '2021-09-11 10:48:58'),
-(14, 'lima Mohanty', 14, 800.00, 'order_Hw2Z0mU4nQAfiG', 'pay_Hw2Z6XCdtpx2Ck', '381630dd24e25641e9b13a7afdd2f01f535a948f9a2d3d220e1e46ef193e3517', 1, '0', '2021-09-11 10:50:29', '2021-09-11 10:50:39'),
-(15, 'lima Mohanty', 15, 1000.00, 'order_Hw2stByB9rqRAZ', 'pay_Hw2t3Yk5ykPSl6', '46e93c7346ccbe10c3be82ebb370c5ee87946d2578a461bea9a95c7f533f177c', 2, 'rfnd_Hw39JfWRvnugtF', '2021-09-11 11:09:18', '2021-09-11 11:24:51'),
-(16, 'Lima Mohanty', 16, 2000.00, 'order_Hw3InTrv7fw50l', 'pay_Hw3IsvDn2QMCB8', 'cfb9ba28917152d702d3c04592047b233925f7fd65b30f9919aee41dda55fced', 1, '0', '2021-09-11 11:33:50', '2021-09-11 11:33:59'),
-(17, 'priyadarshi', 17, 1000.00, 'order_Hw4QG4xBKZlv6x', 'pay_Hw4QWH26QeGM0x', 'b900cd6bc6f6d82cb83bce57f6be28f88a6ba05998e3e89bb7004fd54fd30cb6', 1, '0', '2021-09-11 12:39:35', '2021-09-11 12:39:55'),
-(18, 'lima Mohanty', 32, 300.00, 'order_Hw7ReJCfehR6ZM', 'pay_Hw7Rk0Ey9h2XF2', '999b015fffe702021f239caad45c84be2ff2ee45a8e422a441f555fa27cba0ac', 1, '0', '2021-09-11 15:36:59', '2021-09-11 15:37:08'),
-(19, 'lima Mohanty', 35, 300.00, 'order_Hw8HuHu8L3j5m2', 'pay_Hw8I1OVCEPV6dc', '4242b0be144a82a8125c29853b8ce80d7c3b7c8ae3e6086653d4349c2f6f4b0d', 1, '0', '2021-09-11 16:26:27', '2021-09-11 16:26:39'),
-(20, 'lima Mohanty', 36, 300.00, 'order_Hw8K11HfGAZVWW', 'pay_Hw8K7lSokIUV35', 'b1e74604e2fe511d3791da4751c60f063d909a3c67a5e5d4c79ac7a1ebdd382c', 1, '0', '2021-09-11 16:28:27', '2021-09-11 16:28:38');
+(1, 'Lima Mohanty', 1, 880.00, 'order_HxdqgRcfNubdzJ', 'pay_HxdqszoctoieS0', 'f4666d78a181d6525403d439121a32f419a4af07b6e290d04d1bb5c284812fc9', 2, '0', '2021-09-15 11:57:53', '2021-09-15 11:58:20'),
+(2, 'Lima Mohanty', 2, 556.00, 'order_HxeZflN0BteSSf', 'pay_Hxea1Kxo9naqIx', '730ed3460b4422945271d5104aff7ccd6e8eb18adf456cc51c9e39f6a3049c34', 1, '0', '2021-09-15 12:40:28', '2021-09-15 12:40:55'),
+(3, 'Lima Mohanty', 3, 172.00, 'order_HxfGpjQbqeORCz', 'pay_HxfGxbBv4H8qbb', 'c3fc0980ab8275b72df7635be1dab3e1181325480d2b66fa0d7ad417351394a7', 1, '0', '2021-09-15 13:21:19', '2021-09-15 13:21:34'),
+(4, 'Lima Mohanty', 4, 556.00, 'order_HxgDQ1yKUCmk3Y', 'pay_HxgDc3SBilxj7n', '936a065ced9aaa1272121f1ebe792a2b1d4ed38b9e301cee7e3ddaabd6d9f7d4', 1, '0', '2021-09-15 14:16:47', '2021-09-15 14:17:04'),
+(5, 'Dinesh Das', 5, 1100.00, 'order_Hxhqi9U1ND6Std', 'pay_HxhqtaIZFHiehF', '3ed03d06da4f1fd68e3d798f9c9e21faaaf0a765f68bf98998d1acaa7f12c7e7', 1, '0', '2021-09-15 15:52:41', '2021-09-15 15:52:56'),
+(6, 'Dinesh', 6, 667.00, 'order_HxhyON8hzqKG7Z', 'pay_HxhyX5cTAfdVJL', '8346e676632b43a87da77cd4dbf9ba9b722477532902050249d61a008e540d7f', 1, '0', '2021-09-15 15:59:57', '2021-09-15 16:00:11'),
+(7, 'DEEPAK KUMAR', 9, 341.00, 'order_Hy4cKXyBsL0hgg', NULL, NULL, 0, '0', '2021-09-16 14:09:01', '2021-09-16 14:09:01'),
+(8, 'Dillip', 8, 446.00, 'order_Hy4cLMpi3XiInq', NULL, NULL, 0, '0', '2021-09-16 14:09:02', '2021-09-16 14:09:02'),
+(9, 'rashmiranjan sahoo', 7, 341.00, 'order_Hy4cTU4mtzhX6n', NULL, NULL, 0, '0', '2021-09-16 14:09:09', '2021-09-16 14:09:09'),
+(10, 'DEEPAK KUMAR', 9, 341.00, 'order_Hy4cnAIYhC7uH8', NULL, NULL, 0, '0', '2021-09-16 14:09:27', '2021-09-16 14:09:27'),
+(11, 'DEEPAK KUMAR', 9, 341.00, 'order_Hy4d7duCl2aUez', NULL, NULL, 0, '0', '2021-09-16 14:09:46', '2021-09-16 14:09:46'),
+(12, 'Dillip', 8, 446.00, 'order_Hy4ePMJ6cWzyGn', NULL, NULL, 0, '0', '2021-09-16 14:10:59', '2021-09-16 14:10:59'),
+(13, 'santosh', 10, 341.00, 'order_Hy4hte6VmFNORb', NULL, NULL, 0, '0', '2021-09-16 14:14:17', '2021-09-16 14:14:17'),
+(14, 'ghthdth rgbrgbg', 12, 1100.00, 'order_I0CRPBDzbCAFo3', 'pay_I0CRVUBBGVKItZ', '2bba15c73f30af6c6c8ba2fd33fd949dc43a6e77f86f7fc18b514ff4999e1d40', 1, '0', '2021-09-21 23:06:13', '2021-09-21 23:06:26'),
+(15, 'AK Padhy', 14, 341.00, 'order_I0SeRSp6Se3kd4', 'pay_I0Sfk8b3h9Ddfz', 'b71aeffb4bac59a2043e05654b8b39c1ffed01f0d705c42b4d8c66a09b826314', 1, '0', '2021-09-22 14:57:40', '2021-09-22 14:59:30'),
+(16, 'MD Hussen', 13, 341.00, 'order_I0SeRTXdBJdX0m', 'pay_I0SfNp31jQiPXp', '26eaebe0aedd8a08c9b260dfc5bc7bdfaa05e89ea9291070c3609d6a74797b9e', 1, '0', '2021-09-22 14:57:40', '2021-09-22 14:58:43');
 
 -- --------------------------------------------------------
 
@@ -1359,16 +1494,16 @@ INSERT INTO `customer_payment` (`id`, `name`, `booking_id`, `amount`, `order_id`
 --
 
 CREATE TABLE `customer_query` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `email` varchar(120) DEFAULT NULL,
   `phone` varchar(120) DEFAULT NULL,
   `query_typ` enum('RESERVATION','CONTACT') DEFAULT NULL,
-  `data` mediumtext COMMENT 'json_data',
+  `data` mediumtext DEFAULT NULL COMMENT 'json_data',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -1377,13 +1512,13 @@ CREATE TABLE `customer_query` (
 --
 
 CREATE TABLE `customer_query_category` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -1392,14 +1527,14 @@ CREATE TABLE `customer_query_category` (
 --
 
 CREATE TABLE `customer_query_category_issues` (
-  `id` int UNSIGNED NOT NULL,
-  `customer_query_category_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `customer_query_category_id` int(10) UNSIGNED NOT NULL,
   `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -1408,22 +1543,22 @@ CREATE TABLE `customer_query_category_issues` (
 --
 
 CREATE TABLE `custom_pages` (
-  `id` int NOT NULL,
-  `origin` int DEFAULT '0' COMMENT '0-odbus 1-rpboa 2-janardana ',
-  `type` int DEFAULT '0' COMMENT '0-custom pages  1-route pages 2-news',
+  `id` int(11) NOT NULL,
+  `origin` int(11) DEFAULT 0 COMMENT '0-odbus 1-rpboa 2-janardana ',
+  `type` int(11) DEFAULT 0 COMMENT '0-custom pages  1-route pages 2-news',
   `source_id` varchar(120) NOT NULL COMMENT 'only for route pages',
   `destination_id` varchar(120) NOT NULL COMMENT 'only for route pages',
   `name` varchar(120) DEFAULT NULL,
   `url` varchar(120) DEFAULT NULL,
-  `content` mediumtext,
+  `content` mediumtext DEFAULT NULL,
   `meta_title` varchar(120) DEFAULT NULL,
   `meta_keyword` varchar(600) DEFAULT NULL,
   `meta_descriptiom` varchar(500) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -1432,15 +1567,15 @@ CREATE TABLE `custom_pages` (
 --
 
 CREATE TABLE `extended_bus_closing_hours` (
-  `id` int NOT NULL,
-  `bus_id` int NOT NULL,
-  `city_id` int NOT NULL,
+  `id` int(11) NOT NULL,
+  `bus_id` int(11) NOT NULL,
+  `city_id` int(11) NOT NULL,
   `dep_time` varchar(250) NOT NULL,
   `closing_hours` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '1',
+  `status` int(11) NOT NULL DEFAULT 1,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 -- --------------------------------------------------------
 
@@ -1449,19 +1584,19 @@ CREATE TABLE `extended_bus_closing_hours` (
 --
 
 CREATE TABLE `festival_fare` (
-  `id` int NOT NULL,
-  `bus_operator_id` int DEFAULT NULL,
-  `source_id` int DEFAULT NULL,
-  `destination_id` int DEFAULT NULL,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL,
+  `bus_operator_id` int(11) DEFAULT NULL,
+  `source_id` int(11) DEFAULT NULL,
+  `destination_id` int(11) DEFAULT NULL,
+  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `seater_price` double NOT NULL,
   `sleeper_price` double NOT NULL,
   `reason` text NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -1470,15 +1605,15 @@ CREATE TABLE `festival_fare` (
 --
 
 CREATE TABLE `gateway_information` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `sender` varchar(120) NOT NULL,
-  `channel_type` int DEFAULT NULL COMMENT 'channel | 0-sms 1-email',
+  `channel_type` int(11) DEFAULT NULL COMMENT 'channel | 0-sms 1-email',
   `service_provider` varchar(50) DEFAULT NULL,
   `contents` varchar(250) NOT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp(),
   `created_by` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 --
 -- Dumping data for table `gateway_information`
@@ -1494,14 +1629,14 @@ INSERT INTO `gateway_information` (`id`, `sender`, `channel_type`, `service_prov
 --
 
 CREATE TABLE `location` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(254) NOT NULL,
   `synonym` varchar(250) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `location`
@@ -2008,15 +2143,15 @@ INSERT INTO `location` (`id`, `name`, `synonym`, `created_at`, `updated_at`, `cr
 --
 
 CREATE TABLE `locationcode` (
-  `id` int UNSIGNED NOT NULL,
-  `location_id` int UNSIGNED NOT NULL,
-  `type` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '0-Odbus 1- red bus 2-dolphin 3-bus india',
+  `id` int(10) UNSIGNED NOT NULL,
+  `location_id` int(10) UNSIGNED NOT NULL,
+  `type` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0-Odbus 1- red bus 2-dolphin 3-bus india',
   `providerid` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `locationcode`
@@ -2096,15 +2231,15 @@ INSERT INTO `locationcode` (`id`, `location_id`, `type`, `providerid`, `created_
 --
 
 CREATE TABLE `odbus_charges` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `payment_gateway_charges` double(8,2) NOT NULL COMMENT 'Value in %',
   `email_sms_charges` double(8,2) NOT NULL,
   `odbus_gst_charges` double(8,2) NOT NULL COMMENT 'Value in %',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `odbus_charges`
@@ -2120,15 +2255,15 @@ INSERT INTO `odbus_charges` (`id`, `payment_gateway_charges`, `email_sms_charges
 --
 
 CREATE TABLE `offers` (
-  `id` int NOT NULL,
-  `offer_category_id` int NOT NULL,
+  `id` int(11) NOT NULL,
+  `offer_category_id` int(11) NOT NULL,
   `offer_image` blob NOT NULL,
   `offer_text` varchar(250) NOT NULL,
-  `created_at` timestamp NOT NULL,
-  `updated_at` timestamp NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `status` int(11) NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -2137,12 +2272,12 @@ CREATE TABLE `offers` (
 --
 
 CREATE TABLE `offer_category` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `category_name` varchar(250) NOT NULL,
-  `created_at` timestamp NOT NULL,
-  `updated_at` timestamp NOT NULL,
-  `status` int NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `status` int(11) NOT NULL DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `offer_category`
@@ -2156,39 +2291,14 @@ INSERT INTO `offer_category` (`id`, `category_name`, `created_at`, `updated_at`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ownerpayment`
---
-
-CREATE TABLE `ownerpayment` (
-  `id` int NOT NULL,
-  `bus_operator_id` int NOT NULL,
-  `date` date NOT NULL,
-  `amount` int NOT NULL,
-  `remark` text NOT NULL,
-  `created_by` varchar(250) NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  `status` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `ownerpayment`
---
-
-INSERT INTO `ownerpayment` (`id`, `bus_operator_id`, `date`, `amount`, `remark`, `created_by`, `created_at`, `updated_at`, `status`) VALUES
-(1, 1, '2021-09-17', 5000, 'test', 'Admin', '2021-09-16 09:51:55', '2021-09-16 09:51:55', 0);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `owner_fare`
 --
 
 CREATE TABLE `owner_fare` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_operator_id` int DEFAULT NULL,
-  `source_id` int DEFAULT NULL,
-  `destination_id` int DEFAULT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_operator_id` int(11) DEFAULT NULL,
+  `source_id` int(11) DEFAULT NULL,
+  `destination_id` int(11) DEFAULT NULL,
   `date` text NOT NULL,
   `seater_price` double NOT NULL,
   `sleeper_price` double NOT NULL,
@@ -2196,8 +2306,34 @@ CREATE TABLE `owner_fare` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `owner_payment`
+--
+
+CREATE TABLE `owner_payment` (
+  `id` int(11) NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
+  `payment_date` date NOT NULL,
+  `amount` int(11) NOT NULL,
+  `transaction_id` varchar(250) NOT NULL,
+  `remark` text NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `status` int(11) NOT NULL
+) ;
+
+--
+-- Dumping data for table `owner_payment`
+--
+
+INSERT INTO `owner_payment` (`id`, `bus_operator_id`, `payment_date`, `amount`, `transaction_id`, `remark`, `created_by`, `created_at`, `updated_at`, `status`) VALUES
+(1, 1, '2021-09-17', 5000, '123214nfh', 'test', 'Admin', '2021-09-16 09:51:55', '2021-09-16 09:51:55', 0);
 
 -- --------------------------------------------------------
 
@@ -2206,16 +2342,16 @@ CREATE TABLE `owner_fare` (
 --
 
 CREATE TABLE `pre_booking` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `transaction_id` varchar(200) NOT NULL,
-  `user_id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `j_day` int NOT NULL DEFAULT '0' COMMENT 'journey day | 0-same day 1-nxt day',
+  `user_id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `j_day` int(11) NOT NULL DEFAULT 0 COMMENT 'journey day | 0-same day 1-nxt day',
   `journey_dt` date NOT NULL,
   `bus_info` mediumtext NOT NULL COMMENT 'json data',
-  `customer_info` mediumtext COMMENT 'json data',
+  `customer_info` mediumtext DEFAULT NULL COMMENT 'json data',
   `total_fare` double(8,2) UNSIGNED NOT NULL,
-  `is_coupon` int NOT NULL DEFAULT '0' COMMENT '0-no 1-yes',
+  `is_coupon` int(11) NOT NULL DEFAULT 0 COMMENT '0-no 1-yes',
   `coupon_code` varchar(80) DEFAULT NULL,
   `coupon_discount` decimal(9,2) DEFAULT NULL,
   `discounted_fare` decimal(9,2) DEFAULT NULL,
@@ -2223,8 +2359,8 @@ CREATE TABLE `pre_booking` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -2233,17 +2369,17 @@ CREATE TABLE `pre_booking` (
 --
 
 CREATE TABLE `pre_booking_detail` (
-  `id` int NOT NULL,
-  `pre_booking_id` int UNSIGNED NOT NULL,
+  `id` int(11) NOT NULL,
+  `pre_booking_id` int(10) UNSIGNED NOT NULL,
   `journey_date` date NOT NULL,
-  `j_day` int NOT NULL DEFAULT '0' COMMENT 'journey day | 0-same day 1-nxt day',
+  `j_day` int(11) NOT NULL DEFAULT 0 COMMENT 'journey day | 0-same day 1-nxt day',
   `bus_id` varchar(120) NOT NULL,
   `seat_name` varchar(120) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -2252,13 +2388,13 @@ CREATE TABLE `pre_booking_detail` (
 --
 
 CREATE TABLE `reason` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(254) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -2267,10 +2403,10 @@ CREATE TABLE `reason` (
 --
 
 CREATE TABLE `review` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `pnr` varchar(60) NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `customer_id` int NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `customer_id` int(11) NOT NULL,
   `reference_key` varchar(250) NOT NULL COMMENT 'link for email',
   `rating_overall` varchar(25) NOT NULL COMMENT 'out of 5',
   `rating_comfort` varchar(25) NOT NULL COMMENT 'out of 5',
@@ -2281,8 +2417,8 @@ CREATE TABLE `review` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 -- --------------------------------------------------------
 
@@ -2291,14 +2427,14 @@ CREATE TABLE `review` (
 --
 
 CREATE TABLE `safety` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(250) NOT NULL,
-  `icon` mediumblob,
+  `icon` mediumblob DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `safety`
@@ -2319,18 +2455,18 @@ INSERT INTO `safety` (`id`, `name`, `icon`, `created_at`, `updated_at`, `created
 --
 
 CREATE TABLE `seats` (
-  `id` int NOT NULL,
-  `bus_seat_layout_id` int UNSIGNED NOT NULL,
-  `seat_class_id` int NOT NULL,
+  `id` int(11) NOT NULL,
+  `bus_seat_layout_id` int(10) UNSIGNED NOT NULL,
+  `seat_class_id` int(11) NOT NULL,
   `berthType` enum('1','2') NOT NULL COMMENT '1=Lower Berth\r\n2=Upper Berth',
   `seatText` varchar(20) DEFAULT '',
-  `rowNumber` int NOT NULL,
-  `colNumber` int NOT NULL,
+  `rowNumber` int(11) NOT NULL,
+  `colNumber` int(11) NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(250) DEFAULT NULL,
-  `status` int NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `seats`
@@ -2512,16 +2648,23 @@ INSERT INTO `seats` (`id`, `bus_seat_layout_id`, `seat_class_id`, `berthType`, `
 --
 
 CREATE TABLE `seat_block` (
-  `id` int NOT NULL,
-  `operator_id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
+  `id` int(11) NOT NULL,
+  `operator_id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
   `date_applied` datetime NOT NULL,
   `reason` varchar(500) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 0
+) ;
+
+--
+-- Dumping data for table `seat_block`
+--
+
+INSERT INTO `seat_block` (`id`, `operator_id`, `bus_id`, `date_applied`, `reason`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(2, 1, 3, '2021-09-17 00:00:00', 'Request From Conductor', '2021-09-15 10:04:06', '2021-09-15 10:04:06', 'Admin', 0);
 
 -- --------------------------------------------------------
 
@@ -2530,14 +2673,22 @@ CREATE TABLE `seat_block` (
 --
 
 CREATE TABLE `seat_block_seats` (
-  `id` int NOT NULL,
-  `seat_block_id` int NOT NULL,
-  `seats_id` int NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL,
+  `seat_block_id` int(11) NOT NULL,
+  `seats_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 0
+) ;
+
+--
+-- Dumping data for table `seat_block_seats`
+--
+
+INSERT INTO `seat_block_seats` (`id`, `seat_block_id`, `seats_id`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(4, 2, 43, '2021-09-15 10:04:06', '2021-09-15 10:04:06', 'Admin', 0),
+(5, 2, 49, '2021-09-15 10:04:06', '2021-09-15 10:04:06', 'Admin', 0);
 
 -- --------------------------------------------------------
 
@@ -2546,11 +2697,11 @@ CREATE TABLE `seat_block_seats` (
 --
 
 CREATE TABLE `seat_class` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(120) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 --
 -- Dumping data for table `seat_class`
@@ -2569,23 +2720,23 @@ INSERT INTO `seat_class` (`id`, `name`, `created_at`, `updated_at`) VALUES
 --
 
 CREATE TABLE `seat_open` (
-  `id` int NOT NULL,
-  `operator_id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
+  `id` int(11) NOT NULL,
+  `operator_id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
   `date_applied` datetime NOT NULL,
   `reason` varchar(250) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `seat_open`
 --
 
 INSERT INTO `seat_open` (`id`, `operator_id`, `bus_id`, `date_applied`, `reason`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(2, 1, 3, '2021-09-18 00:00:00', 'Request From Owner', '2021-09-16 07:25:29', '2021-09-16 07:26:40', 'Admin', 1);
+(1, 1, 3, '2021-09-16 00:00:00', 'Request From Owner', '2021-09-15 09:54:06', '2021-09-15 09:54:11', 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -2594,28 +2745,25 @@ INSERT INTO `seat_open` (`id`, `operator_id`, `bus_id`, `date_applied`, `reason`
 --
 
 CREATE TABLE `seat_open_seats` (
-  `id` int NOT NULL,
-  `seat_open_id` int NOT NULL,
-  `seats_id` int NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id` int(11) NOT NULL,
+  `seat_open_id` int(11) NOT NULL,
+  `seats_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `seat_open_seats`
 --
 
 INSERT INTO `seat_open_seats` (`id`, `seat_open_id`, `seats_id`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(5, 2, 33, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
-(6, 2, 34, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
-(7, 2, 39, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
-(8, 2, 40, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
-(9, 2, 56, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
-(10, 2, 57, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
-(11, 2, 60, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0),
-(12, 2, 61, '2021-09-16 07:25:29', '2021-09-16 07:25:29', 'Admin', 0);
+(1, 1, 32, '2021-09-15 09:54:06', '2021-09-15 09:54:06', 'Admin', 0),
+(2, 1, 33, '2021-09-15 09:54:06', '2021-09-15 09:54:06', 'Admin', 0),
+(3, 1, 34, '2021-09-15 09:54:06', '2021-09-15 09:54:06', 'Admin', 0),
+(4, 1, 35, '2021-09-15 09:54:06', '2021-09-15 09:54:06', 'Admin', 0),
+(5, 1, 36, '2021-09-15 09:54:06', '2021-09-15 09:54:06', 'Admin', 0);
 
 -- --------------------------------------------------------
 
@@ -2624,14 +2772,14 @@ INSERT INTO `seat_open_seats` (`id`, `seat_open_id`, `seats_id`, `created_at`, `
 --
 
 CREATE TABLE `site_master` (
-  `id` int UNSIGNED NOT NULL,
-  `site_live` int UNSIGNED NOT NULL DEFAULT '0',
+  `id` int(10) UNSIGNED NOT NULL,
+  `site_live` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `live_at` datetime NOT NULL,
   `extra_price` double(8,2) UNSIGNED NOT NULL,
-  `calender_days` int UNSIGNED NOT NULL,
-  `service_charge` int UNSIGNED NOT NULL,
+  `calender_days` int(10) UNSIGNED NOT NULL,
+  `service_charge` int(10) UNSIGNED NOT NULL,
   `per_trasaction` double(8,2) UNSIGNED NOT NULL,
-  `max_seat_booked` int UNSIGNED NOT NULL,
+  `max_seat_booked` int(10) UNSIGNED NOT NULL,
   `support_email` varchar(200) NOT NULL,
   `booking_email` varchar(200) NOT NULL,
   `request_email` varchar(200) NOT NULL,
@@ -2645,9 +2793,9 @@ CREATE TABLE `site_master` (
   `linkedin_url` varchar(254) NOT NULL,
   `instagram_url` varchar(254) NOT NULL,
   `googleplus_url` varchar(254) NOT NULL,
-  `min_fare_amt` int NOT NULL,
-  `earned_pts` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `min_fare_amt` int(11) NOT NULL,
+  `earned_pts` int(11) NOT NULL
+) ;
 
 -- --------------------------------------------------------
 
@@ -2656,9 +2804,9 @@ CREATE TABLE `site_master` (
 --
 
 CREATE TABLE `slider` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `occassion` varchar(250) NOT NULL,
-  `category` int DEFAULT NULL COMMENT '0-main slider 1-adv-slider1 2-adv-slider 2, 3-adv-slider-3',
+  `category` int(11) DEFAULT NULL COMMENT '0-main slider 1-adv-slider1 2-adv-slider 2, 3-adv-slider-3',
   `url` varchar(250) DEFAULT NULL,
   `slider_img` varchar(254) NOT NULL,
   `alt_tag` varchar(250) NOT NULL,
@@ -2667,8 +2815,8 @@ CREATE TABLE `slider` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -2677,10 +2825,10 @@ CREATE TABLE `slider` (
 --
 
 CREATE TABLE `special_fare` (
-  `id` int UNSIGNED NOT NULL,
-  `bus_operator_id` int DEFAULT NULL,
-  `source_id` int UNSIGNED DEFAULT NULL,
-  `destination_id` int UNSIGNED DEFAULT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_operator_id` int(11) DEFAULT NULL,
+  `source_id` int(10) UNSIGNED DEFAULT NULL,
+  `destination_id` int(10) UNSIGNED DEFAULT NULL,
   `date` text NOT NULL,
   `seater_price` double(8,2) NOT NULL,
   `sleeper_price` double(8,2) NOT NULL,
@@ -2688,8 +2836,8 @@ CREATE TABLE `special_fare` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 -- --------------------------------------------------------
 
@@ -2698,13 +2846,13 @@ CREATE TABLE `special_fare` (
 --
 
 CREATE TABLE `ticket_cancelation` (
-  `id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(200) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `ticket_cancelation`
@@ -2720,16 +2868,16 @@ INSERT INTO `ticket_cancelation` (`id`, `name`, `created_at`, `updated_at`, `cre
 --
 
 CREATE TABLE `ticket_cancelation_rule` (
-  `id` int UNSIGNED NOT NULL,
-  `ticket_cancelation_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `ticket_cancelation_id` int(10) UNSIGNED NOT NULL,
   `hour_lag_start` varchar(10) NOT NULL,
   `hour_lag_end` varchar(10) NOT NULL,
   `cancelation_percentage` varchar(10) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `ticket_cancelation_rule`
@@ -2748,15 +2896,15 @@ INSERT INTO `ticket_cancelation_rule` (`id`, `ticket_cancelation_id`, `hour_lag_
 --
 
 CREATE TABLE `ticket_fare_slab` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `starting_fare` double NOT NULL,
   `upto_fare` double NOT NULL,
   `odbus_commision` double NOT NULL COMMENT 'Value in %	',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
-  `status` int NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(11) NOT NULL DEFAULT 1
+) ;
 
 --
 -- Dumping data for table `ticket_fare_slab`
@@ -2774,23 +2922,23 @@ INSERT INTO `ticket_fare_slab` (`id`, `starting_fare`, `upto_fare`, `odbus_commi
 --
 
 CREATE TABLE `ticket_price` (
-  `id` int UNSIGNED NOT NULL,
-  `user_id` int NOT NULL,
-  `bus_operator_id` int NOT NULL,
-  `bus_id` int UNSIGNED NOT NULL,
-  `source_id` int UNSIGNED NOT NULL,
-  `destination_id` int UNSIGNED NOT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
+  `bus_id` int(10) UNSIGNED NOT NULL,
+  `source_id` int(10) UNSIGNED NOT NULL,
+  `destination_id` int(10) UNSIGNED NOT NULL,
   `base_seat_fare` double(8,2) UNSIGNED NOT NULL,
   `base_sleeper_fare` double(8,2) UNSIGNED NOT NULL,
   `dep_time` datetime DEFAULT NULL,
   `arr_time` datetime DEFAULT NULL,
-  `start_j_days` int NOT NULL DEFAULT '0',
-  `j_day` int NOT NULL DEFAULT '0' COMMENT '0-same day 1- next day so on.. ',
+  `start_j_days` int(11) NOT NULL DEFAULT 0,
+  `j_day` int(11) NOT NULL DEFAULT 0 COMMENT '0-same day 1- next day so on.. ',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `ticket_price`
@@ -2807,7 +2955,15 @@ INSERT INTO `ticket_price` (`id`, `user_id`, `bus_operator_id`, `bus_id`, `sourc
 (8, 1, 9, 5, 1374, 1304, 500.00, 600.00, '2021-09-12 15:30:00', '2021-09-12 20:00:00', 2, 2, '2021-09-11 09:32:39', '2021-09-11 09:32:39', 'Admin', 0),
 (9, 1, 9, 5, 1345, 1304, 800.00, 900.00, '2021-09-11 11:00:00', '2021-09-12 20:00:00', 1, 2, '2021-09-11 09:32:39', '2021-09-11 09:32:39', 'Admin', 0),
 (10, 1, 1, 6, 1291, 1374, 300.00, 400.00, '2021-09-11 08:00:00', '2021-09-12 12:00:00', 1, 2, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
-(11, 1, 1, 6, 1291, 1304, 500.00, 700.00, '2021-09-11 08:00:00', '2021-09-12 05:00:00', 1, 2, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0);
+(11, 1, 1, 6, 1291, 1304, 500.00, 700.00, '2021-09-11 08:00:00', '2021-09-12 05:00:00', 1, 2, '2021-09-11 09:38:04', '2021-09-11 09:38:04', 'Admin', 0),
+(12, 1, 8, 7, 1345, 1294, 500.00, 0.00, '2021-09-15 20:00:00', '2021-09-16 06:10:00', 1, 2, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(13, 1, 8, 7, 1345, 1297, 600.00, 0.00, '2021-09-15 20:00:00', '2021-09-16 07:00:00', 1, 2, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(14, 1, 8, 7, 1345, 1291, 125.00, 0.00, '2021-09-15 20:00:00', '2021-09-15 21:45:00', 1, 1, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(15, 1, 8, 7, 1345, 1292, 150.00, 0.00, '2021-09-15 20:00:00', '2021-09-15 23:45:00', 1, 1, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(16, 1, 8, 7, 1291, 1294, 400.00, 0.00, '2021-09-15 21:30:00', '2021-09-16 06:10:00', 1, 2, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(17, 1, 8, 7, 1291, 1297, 500.00, 0.00, '2021-09-15 21:30:00', '2021-09-16 07:00:00', 1, 2, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(18, 1, 8, 7, 1292, 1294, 365.00, 0.00, '2021-09-15 23:00:00', '2021-09-16 06:10:00', 1, 2, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0),
+(19, 1, 8, 7, 1292, 1297, 465.00, 0.00, '2021-09-15 23:00:00', '2021-09-16 07:00:00', 1, 2, '2021-09-15 07:44:48', '2021-09-15 07:44:48', 'Admin', 0);
 
 -- --------------------------------------------------------
 
@@ -2816,7 +2972,7 @@ INSERT INTO `ticket_price` (`id`, `user_id`, `bus_operator_id`, `bus_id`, `sourc
 --
 
 CREATE TABLE `user` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `user_pin` varchar(50) NOT NULL,
   `first_name` varchar(120) DEFAULT NULL,
   `middle_name` varchar(120) DEFAULT NULL,
@@ -2830,14 +2986,14 @@ CREATE TABLE `user` (
   `alternate_phone` varchar(30) DEFAULT NULL COMMENT 'additional phone',
   `alternate_email` varchar(100) DEFAULT NULL COMMENT 'additional email',
   `password` varchar(60) NOT NULL,
-  `user_role` int DEFAULT NULL,
+  `user_role` int(11) DEFAULT NULL,
   `rand_key` varchar(254) NOT NULL,
   `last_login` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Dumping data for table `user`
@@ -2853,34 +3009,36 @@ INSERT INTO `user` (`id`, `user_pin`, `first_name`, `middle_name`, `last_name`, 
 --
 
 CREATE TABLE `users` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(120) NOT NULL,
   `email` varchar(120) DEFAULT '',
   `phone` varchar(40) DEFAULT '',
   `password` varchar(100) DEFAULT '',
   `otp` varchar(50) DEFAULT '',
-  `is_verified` int NOT NULL DEFAULT '0',
+  `is_verified` int(11) NOT NULL DEFAULT 0,
   `msg_id` varchar(50) DEFAULT '',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `password`, `otp`, `is_verified`, `msg_id`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, 'Swagatika', 'sahu.swagatika@gmail.com', '9916457575', '$2y$10$lj2O6x4KlFF1PwULD8/PA.EOZ25GQ.Kd60ZwlSV.fva9KkYNHRlme', '40207', 0, '', '2021-09-02 16:46:16', '2021-09-06 15:47:08', ''),
-(2, 'Lima Mohanty', 'banashri.seofied2@gmail.com', '7978817539', '$2y$10$8CnZiaJJb8Ou3iXn0t9nQee0vuf8UTio5h9IIUSHeQtYqUCDYSiGS', NULL, 1, '', '2021-09-02 17:01:08', '2021-09-11 17:14:59', ''),
-(3, 'Test2', 'nayakabhishek2@gmail.com', NULL, '', '', 0, '', '2021-09-04 13:04:54', '2021-09-04 13:06:29', ''),
-(4, 'Swagatika11', 'swagatikasahu.seofied@gmail.com', NULL, '$2y$10$x87jijVrwGBoZ1PQcudRGulxUzkGwuj.7G5c53svPNIzYRgiXGHyu', '61893', 0, '', '2021-09-06 16:19:13', '2021-09-06 16:45:07', 'Admin'),
-(5, 'ghthdth rgbrgbg', 'nayakababhishek.seofied@gmail.com', '7894310911', '', '', 0, '', '2021-09-06 20:57:22', '2021-09-06 20:57:22', ''),
-(6, 'priyadarshi parida', 'neotorand@gmail.com', NULL, '$2y$10$UuoQSteulYA3rgIlOw4ireFmTaQmQti.kPmI5e8lgj7IlJpNE7JZ.', NULL, 1, '', '2021-09-07 16:10:20', '2021-09-07 16:16:01', 'priyadarshi parida'),
-(7, 'test', 'nayakabhishek2@gmail.com', '9853515703', '', '', 0, '', '2021-09-08 22:12:02', '2021-09-08 22:12:02', ''),
-(8, 'lima Mohanty', 'banashri.seofied@gmail.com', '4545454545', '', '', 0, '', '2021-09-11 10:47:06', '2021-09-11 16:28:24', ''),
-(9, 'priyadarshi', 'neotorand@gmail.com', '9437112909', '', '', 0, '', '2021-09-11 12:39:31', '2021-09-11 12:39:31', ''),
-(10, 'sehnsha', 'sehnsha@gmail.com', '2234567995', '', '', 0, '', '2021-09-11 15:06:16', '2021-09-11 15:06:16', '');
+(1, 'Lima mohanty', 'banashri.seofied@gmail.com', '7978817539', '$2y$10$jJ8pBJ/3PZymollUEvQ.Fufxs6ql0JaVGh2iJv640qST/cm1Xtsry', NULL, 1, '', '2021-09-15 11:57:49', '2021-09-18 11:55:50', ''),
+(2, 'Lima Mohanty', 'banashri.seofied2@gmail.com', '8763447921', NULL, NULL, 1, '', '2021-09-15 12:40:25', '2021-09-18 11:47:11', ''),
+(3, 'Dinesh', 'dasdinesh07@gmail.com', '9124419800', '', '', 0, '', '2021-09-15 15:52:37', '2021-09-15 15:59:53', ''),
+(4, 'azfar', 'azfarali.odbus@gmail.com', '8917209213', '', '', 0, '', '2021-09-16 14:07:47', '2021-09-16 14:09:15', ''),
+(5, 'rashmiranjan sahoo', 'rashmiranjan.seofied@gmail.com', '6370406925', '', '', 0, '', '2021-09-16 14:08:48', '2021-09-16 14:08:48', ''),
+(6, 'Dillip', 'dillipsing.seofied@gmail.com', '9040666087', '', '', 0, '', '2021-09-16 14:08:48', '2021-09-16 14:08:48', ''),
+(7, 'DEEPAK KUMAR', 'PREETANJU838@GMAIL.COM', '8917431396', '', '', 0, '', '2021-09-16 14:08:48', '2021-09-16 14:08:48', ''),
+(8, 'santosh', 'dashlife400099@gmail.com', '8249244495', '', '', 0, '', '2021-09-16 14:14:05', '2021-09-16 14:14:05', ''),
+(9, 'TAPAS KUMAR BEHERA', NULL, '8917253403', '$2y$10$Ox.9raCyZAvBzrlSZjekJ.eHZykN6l1RVcIETbptxa9z/LmDlxrbu', NULL, 1, '', '2021-09-18 20:34:07', '2021-09-18 20:34:25', 'TAPAS KUMAR BEHERA'),
+(10, 'Abhishek', 'abhishek.seofied@gmail.com', '7894310911', '$2y$10$OuQuze6PYZl0ql1NiD7MiO32F5RhtHDkJ380q0EQCpnKcWpMyl4xG', NULL, 1, '', '2021-09-21 23:05:17', '2021-09-22 00:14:00', ''),
+(11, 'MD Hussen', 'hussen@odbus.in', '7978201573', '', '', 0, '', '2021-09-22 14:57:26', '2021-09-22 14:57:26', ''),
+(12, 'AK Padhy', 'padhiashwini@gmail.com', '9778807336', '', '', 0, '', '2021-09-22 14:57:27', '2021-09-22 14:57:27', '');
 
 -- --------------------------------------------------------
 
@@ -2889,8 +3047,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `phone`, `password`, `otp`, `is_veri
 --
 
 CREATE TABLE `user_bank_details` (
-  `id` int NOT NULL,
-  `user_id` int NOT NULL,
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `banking_name` varchar(250) DEFAULT NULL,
   `bank_name` varchar(200) DEFAULT NULL,
   `ifsc_code` varchar(50) DEFAULT NULL,
@@ -2898,8 +3056,8 @@ CREATE TABLE `user_bank_details` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ;
 
 --
 -- Indexes for dumped tables
@@ -3313,17 +3471,17 @@ ALTER TABLE `offer_category`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `ownerpayment`
---
-ALTER TABLE `ownerpayment`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `bus_operator_id` (`bus_operator_id`);
-
---
 -- Indexes for table `owner_fare`
 --
 ALTER TABLE `owner_fare`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `owner_payment`
+--
+ALTER TABLE `owner_payment`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
 
 --
 -- Indexes for table `pre_booking`
@@ -3498,451 +3656,451 @@ ALTER TABLE `user_bank_details`
 -- AUTO_INCREMENT for table `amenities`
 --
 ALTER TABLE `amenities`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `appdownload`
 --
 ALTER TABLE `appdownload`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `appversion`
 --
 ALTER TABLE `appversion`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `boarding_droping`
 --
 ALTER TABLE `boarding_droping`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `booking_detail`
 --
 ALTER TABLE `booking_detail`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `booking_seized`
 --
 ALTER TABLE `booking_seized`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `booking_sequence`
 --
 ALTER TABLE `booking_sequence`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `bus`
 --
 ALTER TABLE `bus`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `bus_amenities`
 --
 ALTER TABLE `bus_amenities`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `bus_cancelled`
 --
 ALTER TABLE `bus_cancelled`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_cancelled_date`
 --
 ALTER TABLE `bus_cancelled_date`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_class`
 --
 ALTER TABLE `bus_class`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `bus_closing_hours`
 --
 ALTER TABLE `bus_closing_hours`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_contacts`
 --
 ALTER TABLE `bus_contacts`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `bus_extra_fare`
 --
 ALTER TABLE `bus_extra_fare`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_festival_fare`
 --
 ALTER TABLE `bus_festival_fare`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_gallery`
 --
 ALTER TABLE `bus_gallery`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_location_sequence`
 --
 ALTER TABLE `bus_location_sequence`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `bus_operator`
 --
 ALTER TABLE `bus_operator`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `bus_owner_fare`
 --
 ALTER TABLE `bus_owner_fare`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_safety`
 --
 ALTER TABLE `bus_safety`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `bus_schedule`
 --
 ALTER TABLE `bus_schedule`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `bus_schedule_date`
 --
 ALTER TABLE `bus_schedule_date`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
 
 --
 -- AUTO_INCREMENT for table `bus_seats`
 --
 ALTER TABLE `bus_seats`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=223;
 
 --
 -- AUTO_INCREMENT for table `bus_seat_layout`
 --
 ALTER TABLE `bus_seat_layout`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `bus_sitting`
 --
 ALTER TABLE `bus_sitting`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `bus_slots`
 --
 ALTER TABLE `bus_slots`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_special_fare`
 --
 ALTER TABLE `bus_special_fare`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_stoppage_additional_fare`
 --
 ALTER TABLE `bus_stoppage_additional_fare`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus_stoppage_timing`
 --
 ALTER TABLE `bus_stoppage_timing`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `bus_type`
 --
 ALTER TABLE `bus_type`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=340;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=340;
 
 --
 -- AUTO_INCREMENT for table `cancellationslabs`
 --
 ALTER TABLE `cancellationslabs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `cancellationslabs_info`
 --
 ALTER TABLE `cancellationslabs_info`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `city_closing`
 --
 ALTER TABLE `city_closing`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `city_closing_extended`
 --
 ALTER TABLE `city_closing_extended`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `coupon`
 --
 ALTER TABLE `coupon`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `coupon_assigned_bus`
 --
 ALTER TABLE `coupon_assigned_bus`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `credentials`
 --
 ALTER TABLE `credentials`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `customer_payment`
 --
 ALTER TABLE `customer_payment`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `customer_query`
 --
 ALTER TABLE `customer_query`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `customer_query_category`
 --
 ALTER TABLE `customer_query_category`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `customer_query_category_issues`
 --
 ALTER TABLE `customer_query_category_issues`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `custom_pages`
 --
 ALTER TABLE `custom_pages`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `extended_bus_closing_hours`
 --
 ALTER TABLE `extended_bus_closing_hours`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `festival_fare`
 --
 ALTER TABLE `festival_fare`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `gateway_information`
 --
 ALTER TABLE `gateway_information`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `location`
 --
 ALTER TABLE `location`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1805;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1805;
 
 --
 -- AUTO_INCREMENT for table `locationcode`
 --
 ALTER TABLE `locationcode`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `odbus_charges`
 --
 ALTER TABLE `odbus_charges`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `offers`
 --
 ALTER TABLE `offers`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `offer_category`
 --
 ALTER TABLE `offer_category`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `ownerpayment`
---
-ALTER TABLE `ownerpayment`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `owner_fare`
 --
 ALTER TABLE `owner_fare`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `owner_payment`
+--
+ALTER TABLE `owner_payment`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `pre_booking`
 --
 ALTER TABLE `pre_booking`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `pre_booking_detail`
 --
 ALTER TABLE `pre_booking_detail`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `reason`
 --
 ALTER TABLE `reason`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `review`
 --
 ALTER TABLE `review`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `safety`
 --
 ALTER TABLE `safety`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `seats`
 --
 ALTER TABLE `seats`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=178;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=178;
 
 --
 -- AUTO_INCREMENT for table `seat_block`
 --
 ALTER TABLE `seat_block`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `seat_block_seats`
 --
 ALTER TABLE `seat_block_seats`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `seat_class`
 --
 ALTER TABLE `seat_class`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `seat_open`
 --
 ALTER TABLE `seat_open`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `seat_open_seats`
 --
 ALTER TABLE `seat_open_seats`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `site_master`
 --
 ALTER TABLE `site_master`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `slider`
 --
 ALTER TABLE `slider`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `special_fare`
 --
 ALTER TABLE `special_fare`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `ticket_cancelation`
 --
 ALTER TABLE `ticket_cancelation`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `ticket_cancelation_rule`
 --
 ALTER TABLE `ticket_cancelation_rule`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `ticket_fare_slab`
 --
 ALTER TABLE `ticket_fare_slab`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `ticket_price`
 --
 ALTER TABLE `ticket_price`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `user_bank_details`
 --
 ALTER TABLE `user_bank_details`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -4137,13 +4295,13 @@ ALTER TABLE `locationcode`
 -- Constraints for table `offers`
 --
 ALTER TABLE `offers`
-  ADD CONSTRAINT `offers_ibfk_1` FOREIGN KEY (`offer_category_id`) REFERENCES `offer_category` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `offers_ibfk_1` FOREIGN KEY (`offer_category_id`) REFERENCES `offer_category` (`id`);
 
 --
--- Constraints for table `ownerpayment`
+-- Constraints for table `owner_payment`
 --
-ALTER TABLE `ownerpayment`
-  ADD CONSTRAINT `ownerpayment_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `owner_payment`
+  ADD CONSTRAINT `owner_payment_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
 
 --
 -- Constraints for table `pre_booking`
