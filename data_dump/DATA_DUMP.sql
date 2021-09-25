@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 22, 2021 at 09:32 AM
+-- Generation Time: Sep 25, 2021 at 06:12 AM
 -- Server version: 10.2.39-MariaDB
 -- PHP Version: 7.2.30
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `odbusco_backend`
+-- Database: `neoflix_odbusbackend`
 --
 
 -- --------------------------------------------------------
@@ -36,7 +36,7 @@ CREATE TABLE `amenities` (
   `created_by` varchar(50) DEFAULT NULL,
   `reason` varchar(250) DEFAULT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `amenities`
@@ -66,7 +66,7 @@ CREATE TABLE `appdownload` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -88,7 +88,7 @@ CREATE TABLE `appversion` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -104,7 +104,7 @@ CREATE TABLE `boarding_droping` (
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `boarding_droping`
@@ -183,14 +183,14 @@ CREATE TABLE `booking` (
   `owner_gst_charges` double(8,2) DEFAULT 0.00,
   `owner_gst_amount` double(8,2) DEFAULT 0.00,
   `odbus_charges` double(8,2) NOT NULL DEFAULT 0.00
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `booking`
 --
 
 INSERT INTO `booking` (`id`, `transaction_id`, `pnr`, `users_id`, `bus_id`, `source_id`, `destination_id`, `j_day`, `journey_dt`, `boarding_point`, `dropping_point`, `boarding_time`, `dropping_time`, `origin`, `app_type`, `typ_id`, `created_at`, `updated_at`, `created_by`, `status`, `total_fare`, `owner_fare`, `odbus_gst_charges`, `odbus_gst_amount`, `owner_gst_charges`, `owner_gst_amount`, `odbus_charges`) VALUES
-(1, '20210915115749614729', '81970326', 1, 5, 1345, 1374, 1, '2021-09-15', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-15 11:57:49', '2021-09-15 11:57:53', 'Customer', 1, 880.00, 800.00, 5.00, 40.00, 0.00, 0.00, 56.00),
+(1, '20210915115749614729', '81970326', 1, 5, 1345, 1374, 1, '2021-09-28', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-15 11:57:49', '2021-09-24 11:48:30', 'Customer', 1, 880.00, 800.00, 5.00, 40.00, 0.00, 0.00, 56.00),
 (2, '20210915124025172945', '45019378', 1, 5, 1374, 1304, 2, '2021-09-16', 'Bonth Chhawk', 'Bus stand', '15:30:00', '20:00:00', 'ODBUS', 'WEB', '1', '2021-09-15 12:40:25', '2021-09-15 12:40:28', 'Customer', 1, 556.00, 500.00, 5.00, 25.00, 0.00, 0.00, 40.00),
 (3, '20210915132116519835', '85269314', 1, 7, 1345, 1292, 1, '2021-09-15', 'Bus stand', 'Badambadi', '20:00:00', '23:00:00', 'ODBUS', 'WEB', '1', '2021-09-15 13:21:16', '2021-09-15 13:21:19', 'Customer', 1, 172.00, 150.00, 5.00, 7.50, 0.00, 0.00, 15.00),
 (4, '20210915141644265268', '26594103', 1, 5, 1374, 1304, 2, '2021-09-15', 'Bonth Chhawk', 'Bus stand', '15:30:00', '20:00:00', 'ODBUS', 'WEB', '1', '2021-09-15 14:16:44', '2021-09-15 14:16:47', 'Customer', 1, 556.00, 500.00, 5.00, 25.00, 0.00, 0.00, 40.00),
@@ -200,10 +200,32 @@ INSERT INTO `booking` (`id`, `transaction_id`, `pnr`, `users_id`, `bus_id`, `sou
 (8, '2021091614084898903', '90462518', 1, 5, 1345, 1374, 1, '2021-09-17', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-16 14:08:48', '2021-09-16 14:10:59', 'Customer', 1, 446.00, 400.00, 5.00, 20.00, 0.00, 0.00, 32.00),
 (9, '20210916140848126923', '87953024', 1, 5, 1345, 1374, 1, '2021-09-17', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-16 14:08:48', '2021-09-16 14:09:46', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
 (10, '20210916141405504398', '69152873', 1, 5, 1345, 1374, 1, '2021-09-17', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-16 14:14:05', '2021-09-16 14:14:17', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
-(11, '202109212305186543', '94518762', 10, 3, 1345, 1304, 2, '2021-09-21', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-21 23:05:18', '2021-09-21 23:05:18', 'Customer', 0, 1100.00, 1000.00, 5.00, 50.00, 0.00, 0.00, 70.00),
+(11, '202109212305186543', '94518762', 10, 3, 1345, 1304, 2, '2021-09-21', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-21 23:05:18', '2021-09-24 15:23:55', 'Customer', 1, 1100.00, 1000.00, 5.00, 50.00, 0.00, 0.00, 70.00),
 (12, '20210921230609796704', '82793056', 10, 3, 1345, 1304, 2, '2021-09-21', 'Bus stand', 'Bus stand', '20:00:00', '09:00:00', 'ODBUS', 'WEB', '1', '2021-09-21 23:06:09', '2021-09-21 23:06:13', 'Customer', 1, 1100.00, 1000.00, 5.00, 50.00, 0.00, 0.00, 70.00),
 (13, '20210922145726205657', '19502783', 11, 5, 1345, 1374, 1, '2021-09-23', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 14:57:26', '2021-09-22 14:57:40', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
-(14, '20210922145727927509', '67980342', 12, 5, 1345, 1374, 1, '2021-09-23', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 14:57:27', '2021-09-22 14:57:40', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00);
+(14, '20210922145727927509', '67980342', 12, 5, 1345, 1374, 1, '2021-09-27', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 14:57:27', '2021-09-22 14:57:40', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(15, '20210922162331723827', '48156379', 13, 5, 1345, 1374, 1, '2021-09-23', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 16:23:31', '2021-09-22 16:23:31', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(16, '20210922162445411214', '62493057', 13, 5, 1345, 1374, 1, '2021-09-23', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 16:24:45', '2021-09-22 16:24:45', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(17, '20210922162544481822', '79856301', 13, 5, 1345, 1374, 1, '2021-09-23', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 16:25:44', '2021-09-22 16:25:44', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(18, '20210922162627850925', '06439152', 13, 5, 1345, 1374, 1, '2021-09-23', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 16:26:27', '2021-09-22 16:26:27', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(19, '20210922162711402218', '04516297', 13, 5, 1345, 1374, 1, '2021-09-23', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 16:27:11', '2021-09-22 16:27:11', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(20, '20210922163215770782', '46275391', 13, 5, 1345, 1374, 1, '2021-09-22', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-22 16:32:15', '2021-09-22 16:44:33', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(21, '20210924111546866280', '15670932', 1, 5, 1345, 1374, 1, '2021-09-27', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 11:15:46', '2021-09-24 11:15:46', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(22, '20210924112517380349', '28603945', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 11:25:17', '2021-09-24 11:25:17', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(23, '20210924113427694788', '43821607', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 11:34:27', '2021-09-24 11:34:27', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(24, '20210924113745204959', '50297814', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 11:37:45', '2021-09-24 11:37:45', 'Customer', 2, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(25, '20210924114115934887', '63950178', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 11:41:15', '2021-09-24 11:41:15', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(26, '20210924114537992373', '37086925', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 11:45:38', '2021-09-24 11:45:38', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(27, '20210924114813883660', '27450389', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 11:48:13', '2021-09-24 11:48:13', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(28, '20210924115406191392', '47593208', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 11:54:06', '2021-09-24 11:54:25', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(29, '20210924120108382603', '02743619', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 12:01:08', '2021-09-24 12:01:08', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(30, '20210924120736405631', '83164295', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 12:07:36', '2021-09-24 12:07:54', 'Customer', 1, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(31, '20210924125202736057', '62013894', 2, 5, 1345, 1374, 1, '2021-09-25', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 12:52:02', '2021-09-24 12:52:02', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(32, '20210924125419870337', '98651207', 2, 5, 1345, 1374, 1, '2021-09-25', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 12:54:19', '2021-09-24 12:54:19', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(33, '20210924125548385223', '68904753', 2, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 12:55:48', '2021-09-24 12:55:48', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(34, '20210924125947597160', '67532890', 2, 5, 1345, 1374, 1, '2021-09-25', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 12:59:47', '2021-09-24 12:59:47', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00),
+(35, '20210924152314839386', '31078269', 1, 3, 1345, 1374, 2, '2021-09-24', 'Bus stand', 'Bus Stand', '20:00:00', '01:00:00', 'ODBUS', 'WEB', '1', '2021-09-24 15:23:14', '2021-09-24 15:23:14', 'Customer', 0, 446.00, 400.00, 5.00, 20.00, 0.00, 0.00, 32.00),
+(36, '20210924154210787512', '18723960', 1, 5, 1345, 1374, 1, '2021-09-24', 'Bus stand', 'Bonth Chhawk', '11:00:00', '15:30:00', 'ODBUS', 'WEB', '1', '2021-09-24 15:42:10', '2021-09-24 15:42:29', 'Customer', 0, 341.00, 300.00, 5.00, 15.00, 0.00, 0.00, 30.00);
 
 -- --------------------------------------------------------
 
@@ -222,7 +244,7 @@ CREATE TABLE `booking_detail` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0=Not Booked,1= Booked(based on successful payment), 2=booking cancelled'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `booking_detail`
@@ -246,7 +268,29 @@ INSERT INTO `booking_detail` (`id`, `booking_id`, `bus_seats_id`, `passenger_nam
 (15, 11, 14, 'qwefewf', 'F', '32', '2021-09-21 23:05:18', '2021-09-21 23:05:18', 'Customer', 0),
 (16, 12, 14, 'dwqwqd', 'F', '22', '2021-09-21 23:06:09', '2021-09-21 23:06:09', 'Customer', 0),
 (17, 13, 35, 'Hussne', 'M', '25', '2021-09-22 14:57:26', '2021-09-22 14:57:26', 'Customer', 0),
-(18, 14, 35, 'AK Padhy', 'M', '32', '2021-09-22 14:57:27', '2021-09-22 14:57:27', 'Customer', 0);
+(18, 14, 35, 'AK Padhy', 'M', '32', '2021-09-22 14:57:27', '2021-09-22 14:57:27', 'Customer', 0),
+(19, 15, 39, 'Lima', 'M', '34', '2021-09-22 16:23:31', '2021-09-22 16:23:31', 'Customer', 0),
+(20, 16, 39, 'Lima 3333', 'M', '34', '2021-09-22 16:24:45', '2021-09-22 16:24:45', 'Customer', 0),
+(21, 17, 39, 'Lima 3333', 'M', '34', '2021-09-22 16:25:44', '2021-09-22 16:25:44', 'Customer', 0),
+(22, 18, 39, 'Lima 3333', 'M', '34', '2021-09-22 16:26:27', '2021-09-22 16:26:27', 'Customer', 0),
+(23, 19, 39, 'Lima 3333', 'M', '34', '2021-09-22 16:27:11', '2021-09-22 16:27:11', 'Customer', 0),
+(24, 20, 35, 'lima', 'F', '23', '2021-09-22 16:32:15', '2021-09-22 16:32:15', 'Customer', 0),
+(25, 21, 35, 'lima', 'F', '23', '2021-09-24 11:15:46', '2021-09-24 11:15:46', 'Customer', 0),
+(26, 22, 35, 'Lima', 'F', '28', '2021-09-24 11:25:17', '2021-09-24 11:25:17', 'Customer', 0),
+(27, 23, 35, 'lima', 'M', '12', '2021-09-24 11:34:27', '2021-09-24 11:34:27', 'Customer', 0),
+(28, 24, 35, 'lima', 'F', '28', '2021-09-24 11:37:45', '2021-09-24 11:37:45', 'Customer', 0),
+(29, 25, 35, 'lima22', 'F', '12', '2021-09-24 11:41:15', '2021-09-24 11:41:15', 'Customer', 0),
+(30, 26, 36, 'lima', 'F', '12', '2021-09-24 11:45:38', '2021-09-24 11:45:38', 'Customer', 0),
+(31, 27, 37, 'Lima', 'F', '12', '2021-09-24 11:48:13', '2021-09-24 11:48:13', 'Customer', 0),
+(32, 28, 39, 'Lima', 'F', '34', '2021-09-24 11:54:06', '2021-09-24 11:54:06', 'Customer', 0),
+(33, 29, 42, 'lima', 'F', '87', '2021-09-24 12:01:08', '2021-09-24 12:01:08', 'Customer', 0),
+(34, 30, 40, 'lima', 'F', '28', '2021-09-24 12:07:36', '2021-09-24 12:07:36', 'Customer', 0),
+(35, 31, 37, 'lima', 'F', '28', '2021-09-24 12:52:02', '2021-09-24 12:52:02', 'Customer', 0),
+(36, 32, 37, 'Lima', 'F', '28', '2021-09-24 12:54:19', '2021-09-24 12:54:19', 'Customer', 0),
+(37, 33, 41, 'lima', 'F', '28', '2021-09-24 12:55:48', '2021-09-24 12:55:48', 'Customer', 0),
+(38, 34, 42, 'lima', 'F', '28', '2021-09-24 12:59:47', '2021-09-24 12:59:47', 'Customer', 0),
+(39, 35, 2, 'lima', 'F', '12', '2021-09-24 15:23:14', '2021-09-24 15:23:14', 'Customer', 0),
+(40, 36, 41, 'lima', 'F', '12', '2021-09-24 15:42:10', '2021-09-24 15:42:10', 'Customer', 0);
 
 -- --------------------------------------------------------
 
@@ -263,7 +307,7 @@ CREATE TABLE `booking_seized` (
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `booking_seized`
@@ -303,7 +347,7 @@ CREATE TABLE `booking_sequence` (
   `sequence_end_no` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `booking_sequence`
@@ -323,7 +367,29 @@ INSERT INTO `booking_sequence` (`id`, `booking_id`, `sequence_start_no`, `sequen
 (11, 11, 1, 4, '2021-09-22 03:05:18', '2021-09-22 03:05:18'),
 (12, 12, 1, 4, '2021-09-22 03:06:09', '2021-09-22 03:06:09'),
 (13, 13, 1, 3, '2021-09-22 18:57:26', '2021-09-22 18:57:26'),
-(14, 14, 1, 3, '2021-09-22 18:57:27', '2021-09-22 18:57:27');
+(14, 14, 1, 3, '2021-09-22 18:57:27', '2021-09-22 18:57:27'),
+(15, 15, 1, 3, '2021-09-22 20:23:31', '2021-09-22 20:23:31'),
+(16, 16, 1, 3, '2021-09-22 20:24:45', '2021-09-22 20:24:45'),
+(17, 17, 1, 3, '2021-09-22 20:25:44', '2021-09-22 20:25:44'),
+(18, 18, 1, 3, '2021-09-22 20:26:27', '2021-09-22 20:26:27'),
+(19, 19, 1, 3, '2021-09-22 20:27:11', '2021-09-22 20:27:11'),
+(20, 20, 1, 3, '2021-09-22 20:32:15', '2021-09-22 20:32:15'),
+(21, 21, 1, 3, '2021-09-24 15:15:46', '2021-09-24 15:15:46'),
+(22, 22, 1, 3, '2021-09-24 15:25:17', '2021-09-24 15:25:17'),
+(23, 23, 1, 3, '2021-09-24 15:34:27', '2021-09-24 15:34:27'),
+(24, 24, 1, 3, '2021-09-24 15:37:45', '2021-09-24 15:37:45'),
+(25, 25, 1, 3, '2021-09-24 15:41:15', '2021-09-24 15:41:15'),
+(26, 26, 1, 3, '2021-09-24 15:45:38', '2021-09-24 15:45:38'),
+(27, 27, 1, 3, '2021-09-24 15:48:13', '2021-09-24 15:48:13'),
+(28, 28, 1, 3, '2021-09-24 15:54:06', '2021-09-24 15:54:06'),
+(29, 29, 1, 3, '2021-09-24 16:01:08', '2021-09-24 16:01:08'),
+(30, 30, 1, 3, '2021-09-24 16:07:36', '2021-09-24 16:07:36'),
+(31, 31, 1, 3, '2021-09-24 16:52:02', '2021-09-24 16:52:02'),
+(32, 32, 1, 3, '2021-09-24 16:54:19', '2021-09-24 16:54:19'),
+(33, 33, 1, 3, '2021-09-24 16:55:48', '2021-09-24 16:55:48'),
+(34, 34, 1, 3, '2021-09-24 16:59:47', '2021-09-24 16:59:47'),
+(35, 35, 1, 2, '2021-09-24 19:23:14', '2021-09-24 19:23:14'),
+(36, 36, 1, 3, '2021-09-24 19:42:10', '2021-09-24 19:42:10');
 
 -- --------------------------------------------------------
 
@@ -355,7 +421,7 @@ CREATE TABLE `bus` (
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `sequence` int(11) NOT NULL DEFAULT 1000,
   `max_seat_book` int(11) NOT NULL DEFAULT 6
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus`
@@ -383,7 +449,7 @@ CREATE TABLE `bus_amenities` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) DEFAULT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_amenities`
@@ -418,7 +484,7 @@ CREATE TABLE `bus_cancelled` (
   `updated_at` datetime NOT NULL,
   `cancelled_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -434,7 +500,7 @@ CREATE TABLE `bus_cancelled_date` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -448,7 +514,7 @@ CREATE TABLE `bus_class` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_class`
@@ -473,7 +539,7 @@ CREATE TABLE `bus_closing_hours` (
   `status` int(11) NOT NULL DEFAULT 1,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -492,7 +558,7 @@ CREATE TABLE `bus_contacts` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_contacts`
@@ -535,7 +601,7 @@ CREATE TABLE `bus_extra_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -547,7 +613,7 @@ CREATE TABLE `bus_festival_fare` (
   `id` int(11) NOT NULL,
   `bus_id` int(10) UNSIGNED NOT NULL,
   `festival_fare_id` int(11) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -564,7 +630,7 @@ CREATE TABLE `bus_gallery` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -579,7 +645,7 @@ CREATE TABLE `bus_location_sequence` (
   `sequence` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_location_sequence`
@@ -619,6 +685,7 @@ CREATE TABLE `bus_operator` (
   `email_id` varchar(50) NOT NULL,
   `password` varchar(20) NOT NULL,
   `operator_name` varchar(50) NOT NULL,
+  `operator_info` text DEFAULT NULL,
   `contact_number` varchar(15) NOT NULL,
   `organisation_name` varchar(50) NOT NULL,
   `location_name` varchar(150) NOT NULL,
@@ -636,22 +703,22 @@ CREATE TABLE `bus_operator` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
-)  COMMENT='Bus Operators';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Bus Operators';
 
 --
 -- Dumping data for table `bus_operator`
 --
 
-INSERT INTO `bus_operator` (`id`, `email_id`, `password`, `operator_name`, `contact_number`, `organisation_name`, `location_name`, `address`, `additional_email`, `additional_contact`, `bank_account_name`, `bank_name`, `bank_ifsc`, `bank_account_number`, `need_gst_bill`, `gst_number`, `gst_amount`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, 'deesasd@ss.com', 'Admin@2010', 'GPM Travels', '9692424122', 'SEOFIED', 'Bhubaneswar', 'Station Bazar Road', NULL, NULL, 'Chandrakanta Rath', 'IOBS', 'IO5287', '123654785412', 0, NULL, NULL, '2021-02-01 09:37:56', '2021-03-13 13:02:04', 'Admin', 1),
-(2, 'deepak@gmail.com', '25425', 'DD BUS Service', '9875486547', 'DD', 'bargarh', 'Lane 1,  Patia', NULL, NULL, 'Deepak Das', 'Punjab National Bank', 'PUB25415', '22552254125', 0, NULL, NULL, '2021-02-01 11:57:18', '2021-02-10 09:08:13', 'Admin', 1),
-(3, 'deepaks@gmail.com', 'KK@123', 'KK', '1236547890', 'KK INT', 'bhubaneswar', 'Bhubaneswar', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-01 13:13:36', '2021-02-25 14:10:44', 'Admin', 0),
-(4, 'aasss@gmaill.com', 'abcd', 'SAS services', '1234569870', 'ABCDS', 'ATRE', 'TYHR', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-01 13:17:58', '2021-02-26 13:59:29', 'Admin', 2),
-(5, 'Chandra@gmail.com', '123456', 'NEXO Travels', '5454545459', 'Test', 'BBSR', 'BBSR', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-26 13:59:20', '2021-02-26 13:59:20', 'Admin', 1),
-(6, 'pdsir@gmail.com', '111111', 'demo', '2154545454', 'NEW OD', 'BBSR', 'BBS', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-27 06:26:28', '2021-02-27 06:26:28', 'Admin', 1),
-(7, 'chandras@odgroup.in', 'Admin@2010', 'CK BUS', '8798457865', 'CK BUS', 'Bhubaneswar', 'Bhubaneswar', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-06-30 12:44:13', '2021-06-30 12:44:26', 'Admin', 1),
-(8, 'hussen@odbus.in', 'Admin@2010', 'Hussen Travels', '9040236166', 'Hussen travels', 'Balianta', 'Balianta, Bhubaneswar', NULL, NULL, 'Dinesh Das', 'Statebank of India', 'SBIN0007447', '20015874178', 0, NULL, NULL, '2021-07-17 06:55:02', '2021-07-17 06:55:23', 'Admin', 1),
-(9, 'santosh@odbus.in', 'Admin@2010', 'Santosh Dash', '8249244495', 'DASH AND DASH', 'Bhubaneswar', 'Kalpana Sqr', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-09-03 07:50:59', '2021-09-03 07:51:02', 'Admin', 1);
+INSERT INTO `bus_operator` (`id`, `email_id`, `password`, `operator_name`, `operator_info`, `contact_number`, `organisation_name`, `location_name`, `address`, `additional_email`, `additional_contact`, `bank_account_name`, `bank_name`, `bank_ifsc`, `bank_account_number`, `need_gst_bill`, `gst_number`, `gst_amount`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(1, 'deesasd@ss.com', 'Admin@2010', 'GPM Travels', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', '9692424122', 'SEOFIED', 'Bhubaneswar', 'Station Bazar Road', NULL, NULL, 'Chandrakanta Rath', 'IOBS', 'IO5287', '123654785412', 0, NULL, NULL, '2021-02-01 09:37:56', '2021-03-13 13:02:04', 'Admin', 1),
+(2, 'deepak@gmail.com', '25425', 'DD BUS Service', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', '9875486547', 'DD', 'bargarh', 'Lane 1,  Patia', NULL, NULL, 'Deepak Das', 'Punjab National Bank', 'PUB25415', '22552254125', 0, NULL, NULL, '2021-02-01 11:57:18', '2021-02-10 09:08:13', 'Admin', 1),
+(3, 'deepaks@gmail.com', 'KK@123', 'KK', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', '1236547890', 'KK INT', 'bhubaneswar', 'Bhubaneswar', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-01 13:13:36', '2021-02-25 14:10:44', 'Admin', 0),
+(4, 'aasss@gmaill.com', 'abcd', 'SAS services', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', '1234569870', 'ABCDS', 'ATRE', 'TYHR', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-01 13:17:58', '2021-02-26 13:59:29', 'Admin', 2),
+(5, 'Chandra@gmail.com', '123456', 'NEXO Travels', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', '5454545459', 'Test', 'BBSR', 'BBSR', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-26 13:59:20', '2021-02-26 13:59:20', 'Admin', 1),
+(6, 'pdsir@gmail.com', '111111', 'demo', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', '2154545454', 'NEW OD', 'BBSR', 'BBS', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-02-27 06:26:28', '2021-02-27 06:26:28', 'Admin', 1),
+(7, 'chandras@odgroup.in', 'Admin@2010', 'CK BUS', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', '8798457865', 'CK BUS', 'Bhubaneswar', 'Bhubaneswar', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-06-30 12:44:13', '2021-06-30 12:44:26', 'Admin', 1),
+(8, 'hussen@odbus.in', 'Admin@2010', 'Hussen Travels', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', '9040236166', 'Hussen travels', 'Balianta', 'Balianta, Bhubaneswar', NULL, NULL, 'Dinesh Das', 'Statebank of India', 'SBIN0007447', '20015874178', 0, NULL, NULL, '2021-07-17 06:55:02', '2021-07-17 06:55:23', 'Admin', 1),
+(9, 'santosh@odbus.in', 'Admin@2010', 'Santosh Dash', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', '8249244495', 'DASH AND DASH', 'Bhubaneswar', 'Kalpana Sqr', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2021-09-03 07:50:59', '2021-09-03 07:51:02', 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -663,7 +730,7 @@ CREATE TABLE `bus_owner_fare` (
   `id` int(11) NOT NULL,
   `bus_id` int(10) UNSIGNED NOT NULL,
   `owner_fare_id` int(10) UNSIGNED NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -678,7 +745,7 @@ CREATE TABLE `bus_safety` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_safety`
@@ -710,7 +777,7 @@ CREATE TABLE `bus_schedule` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_schedule`
@@ -735,7 +802,7 @@ CREATE TABLE `bus_schedule_date` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `status` int(11) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_schedule_date`
@@ -851,7 +918,7 @@ CREATE TABLE `bus_seats` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_seats`
@@ -1098,7 +1165,7 @@ CREATE TABLE `bus_seats_extra` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1113,7 +1180,7 @@ CREATE TABLE `bus_seat_layout` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_seat_layout`
@@ -1141,7 +1208,7 @@ CREATE TABLE `bus_sitting` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_sitting`
@@ -1177,7 +1244,7 @@ CREATE TABLE `bus_slots` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1189,7 +1256,7 @@ CREATE TABLE `bus_special_fare` (
   `id` int(11) NOT NULL,
   `bus_id` int(10) UNSIGNED NOT NULL,
   `special_fare_id` int(10) UNSIGNED NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1206,7 +1273,7 @@ CREATE TABLE `bus_stoppage_additional_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1225,7 +1292,7 @@ CREATE TABLE `bus_stoppage_timing` (
   `updated_at` datetime DEFAULT current_timestamp(),
   `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_stoppage_timing`
@@ -1277,7 +1344,7 @@ CREATE TABLE `bus_type` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bus_type`
@@ -1302,7 +1369,7 @@ CREATE TABLE `cancellationslabs` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(250) DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `cancellationslabs`
@@ -1328,7 +1395,7 @@ CREATE TABLE `cancellationslabs_info` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(250) DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `cancellationslabs_info`
@@ -1360,7 +1427,7 @@ CREATE TABLE `city_closing` (
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(50) NOT NULL DEFAULT 'Admin',
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1378,7 +1445,7 @@ CREATE TABLE `city_closing_extended` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1405,7 +1472,7 @@ CREATE TABLE `coupon` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1421,7 +1488,7 @@ CREATE TABLE `coupon_assigned_bus` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1436,7 +1503,7 @@ CREATE TABLE `credentials` (
   `mail_password` varchar(254) NOT NULL,
   `razorpay_key` varchar(256) NOT NULL,
   `razorpay_secret` varchar(256) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `credentials`
@@ -1463,7 +1530,7 @@ CREATE TABLE `customer_payment` (
   `refund_id` varchar(120) NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `customer_payment`
@@ -1485,7 +1552,22 @@ INSERT INTO `customer_payment` (`id`, `name`, `booking_id`, `amount`, `order_id`
 (13, 'santosh', 10, 341.00, 'order_Hy4hte6VmFNORb', NULL, NULL, 0, '0', '2021-09-16 14:14:17', '2021-09-16 14:14:17'),
 (14, 'ghthdth rgbrgbg', 12, 1100.00, 'order_I0CRPBDzbCAFo3', 'pay_I0CRVUBBGVKItZ', '2bba15c73f30af6c6c8ba2fd33fd949dc43a6e77f86f7fc18b514ff4999e1d40', 1, '0', '2021-09-21 23:06:13', '2021-09-21 23:06:26'),
 (15, 'AK Padhy', 14, 341.00, 'order_I0SeRSp6Se3kd4', 'pay_I0Sfk8b3h9Ddfz', 'b71aeffb4bac59a2043e05654b8b39c1ffed01f0d705c42b4d8c66a09b826314', 1, '0', '2021-09-22 14:57:40', '2021-09-22 14:59:30'),
-(16, 'MD Hussen', 13, 341.00, 'order_I0SeRTXdBJdX0m', 'pay_I0SfNp31jQiPXp', '26eaebe0aedd8a08c9b260dfc5bc7bdfaa05e89ea9291070c3609d6a74797b9e', 1, '0', '2021-09-22 14:57:40', '2021-09-22 14:58:43');
+(16, 'MD Hussen', 13, 341.00, 'order_I0SeRTXdBJdX0m', 'pay_I0SfNp31jQiPXp', '26eaebe0aedd8a08c9b260dfc5bc7bdfaa05e89ea9291070c3609d6a74797b9e', 1, '0', '2021-09-22 14:57:40', '2021-09-22 14:58:43'),
+(17, 'Chandra rath', 20, 341.00, 'order_I0UGcOukL611Oj', NULL, NULL, 0, '0', '2021-09-22 16:32:30', '2021-09-22 16:32:30'),
+(18, 'Chandra rath', 20, 341.00, 'order_I0UMoUxZXiEOLj', NULL, NULL, 0, '0', '2021-09-22 16:38:22', '2021-09-22 16:38:22'),
+(19, 'Chandra rath', 20, 341.00, 'order_I0UTLRsizAoz0S', NULL, NULL, 0, '0', '2021-09-22 16:44:33', '2021-09-22 16:44:33'),
+(20, 'Lima mohanty', 21, 341.00, 'order_I1BwLewdIEArh8', 'pay_I1BwRy4JptvhcI', 'c764ec24b3ccde7fd07946b4abffa1a2b23839cad726517690ed9d7df9969448', 1, '0', '2021-09-24 11:15:50', '2021-09-24 11:16:00'),
+(21, 'Lima mohanty', 22, 341.00, 'order_I1C6NnoSIacEOb', 'pay_I1C8GLag3mehfY', 'ef4fc3c476546a61c4b3488eb679addd15500314f0285c9d7c11544dc04118e5', 1, '0', '2021-09-24 11:25:20', '2021-09-24 11:27:12'),
+(22, 'Lima mohanty', 23, 341.00, 'order_I1CG76EbaQihvn', 'pay_I1CGDfM4xUI9Zv', '6be844d6e2271ea9e9ff54380f31f8d1cc07d6dabd99ffa6eb57118f50b463d6', 1, '0', '2021-09-24 11:34:32', '2021-09-24 11:34:43'),
+(23, 'Lima mohanty', 24, 341.00, 'order_I1CJYEy48kCXWR', 'pay_I1CJu1pnyK6u3B', 'f93d592d662339dc02a48497c7f8169afcf5fa25a18ada703371421bf2ba3424', 1, '0', '2021-09-24 11:37:47', '2021-09-24 11:38:12'),
+(24, 'Lima mohanty', 25, 341.00, 'order_I1CNG2BnsLH7mB', 'pay_I1CNNtlVgzhvMO', '9e538633044bf675dd82e86371cd0780f06f996813e96c79be97cfdf905681c3', 1, '0', '2021-09-24 11:41:18', '2021-09-24 11:41:30'),
+(25, 'Lima mohanty', 26, 341.00, 'order_I1CRsDC0zwYkMf', 'pay_I1CRyYjQiycsL0', 'b7e415bda8bf2d948a7f0765add6740f8807173ffff43ae9d9fdfc86ff1915b2', 1, '0', '2021-09-24 11:45:40', '2021-09-24 11:45:51'),
+(26, 'Lima mohanty', 27, 341.00, 'order_I1CUcAiYmlF9ul', 'pay_I1CUgNmgljbJjv', '08b102ad1d3dbee9d0d35d9276c069347edabced6870f23c11a9cb02e1e455dc', 1, '0', '2021-09-24 11:48:16', '2021-09-24 11:48:25'),
+(27, 'Lima mohanty', 28, 341.00, 'order_I1CapoKA88h1Bx', 'pay_I1CauwckzGWa4D', '797f85c4031233e9795fef28bbae615c1284777beedfb883411c7bcf5e2533fb', 1, '0', '2021-09-24 11:54:09', '2021-09-24 11:54:19'),
+(28, 'Lima mohanty', 30, 341.00, 'order_I1Cp55S7DczZrI', 'pay_I1CpBMBzrZE44Z', '0f07a9c5261f77f5d90b10c9608dae4dd52701f4efbb3f1336c42e075cf54e7c', 1, '0', '2021-09-24 12:07:38', '2021-09-24 12:07:49'),
+(29, 'lima', 34, 341.00, 'order_I1DiUm6fmxPlA1', NULL, NULL, 0, '0', '2021-09-24 13:00:06', '2021-09-24 13:00:06'),
+(30, 'Lima Mohanty', 35, 446.00, 'order_I1G9rw4dVGEx74', 'pay_I1G9xvsDEKnOnK', 'd35cfc0735ece35971c9749b2f8f1127e58a9f8578025e7ee16e10690a62ecd7', 1, '0', '2021-09-24 15:23:24', '2021-09-24 15:23:49'),
+(31, 'Lima Mohanty', 36, 341.00, 'order_I1GTkID01HREkI', 'pay_I1GTq8rzi3lElP', 'a8f17676d936c51a2deeb47fd8bd2e3884be273eb303dba75da86abad2d16303', 1, '0', '2021-09-24 15:42:13', '2021-09-24 15:42:23');
 
 -- --------------------------------------------------------
 
@@ -1503,7 +1585,7 @@ CREATE TABLE `customer_query` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1518,7 +1600,7 @@ CREATE TABLE `customer_query_category` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1534,7 +1616,7 @@ CREATE TABLE `customer_query_category_issues` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1558,7 +1640,7 @@ CREATE TABLE `custom_pages` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1575,7 +1657,7 @@ CREATE TABLE `extended_bus_closing_hours` (
   `status` int(11) NOT NULL DEFAULT 1,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1596,7 +1678,7 @@ CREATE TABLE `festival_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1613,7 +1695,7 @@ CREATE TABLE `gateway_information` (
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp(),
   `created_by` varchar(50) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `gateway_information`
@@ -1636,7 +1718,7 @@ CREATE TABLE `location` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `location`
@@ -2151,7 +2233,7 @@ CREATE TABLE `locationcode` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `locationcode`
@@ -2239,7 +2321,7 @@ CREATE TABLE `odbus_charges` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `odbus_charges`
@@ -2263,7 +2345,7 @@ CREATE TABLE `offers` (
   `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2277,7 +2359,7 @@ CREATE TABLE `offer_category` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `status` int(11) NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `offer_category`
@@ -2307,7 +2389,7 @@ CREATE TABLE `owner_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2326,7 +2408,7 @@ CREATE TABLE `owner_payment` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `status` int(11) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `owner_payment`
@@ -2360,7 +2442,7 @@ CREATE TABLE `pre_booking` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2379,7 +2461,7 @@ CREATE TABLE `pre_booking_detail` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2394,7 +2476,7 @@ CREATE TABLE `reason` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2406,7 +2488,8 @@ CREATE TABLE `review` (
   `id` int(10) UNSIGNED NOT NULL,
   `pnr` varchar(60) NOT NULL,
   `bus_id` int(10) UNSIGNED NOT NULL,
-  `customer_id` int(11) NOT NULL,
+  `users_id` int(11) NOT NULL,
+  `title` varchar(120) NOT NULL,
   `reference_key` varchar(250) NOT NULL COMMENT 'link for email',
   `rating_overall` varchar(25) NOT NULL COMMENT 'out of 5',
   `rating_comfort` varchar(25) NOT NULL COMMENT 'out of 5',
@@ -2418,7 +2501,17 @@ CREATE TABLE `review` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `review`
+--
+
+INSERT INTO `review` (`id`, `pnr`, `bus_id`, `users_id`, `title`, `reference_key`, `rating_overall`, `rating_comfort`, `rating_clean`, `rating_behavior`, `rating_timing`, `comments`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(1, '234565', 3, 1, 'Excellent Services', 'abcd@gmail.com', '4.0', '4.0', '3.0', '3.0', '3.0', 'Buses were clean and comfy. Free hot beverages were very good as well. Really enjoyed their great service.', '2021-09-22 05:26:43', '2021-09-22 05:26:43', 'Admin', 1),
+(2, '12345', 3, 1, 'Good services', 'abcde@gmail.com', '4.0', '4.0', '3.0', '3.0', '4.0', 'really a great traveel experience and services', '2021-09-22 08:09:32', '2021-09-22 08:09:32', '', 1),
+(3, '234565', 7, 1, 'Excellent Services', 'abcd@gmail.com', '4.0', '4.0', '3.0', '3.0', '3.0', 'Buses were clean and comfy. Free hot beverages were very good as well. Really enjoyed their great service.', '2021-09-22 05:26:43', '2021-09-22 05:26:43', 'Admin', 1),
+(4, '12345', 7, 1, 'Good services', 'abcde@gmail.com', '4.0', '4.0', '3.0', '3.0', '4.0', 'really a great traveel experience and services', '2021-09-22 08:09:32', '2021-09-22 08:09:32', '', 1);
 
 -- --------------------------------------------------------
 
@@ -2434,7 +2527,7 @@ CREATE TABLE `safety` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `safety`
@@ -2466,7 +2559,7 @@ CREATE TABLE `seats` (
   `updated_at` datetime DEFAULT NULL,
   `created_by` varchar(250) DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `seats`
@@ -2657,7 +2750,7 @@ CREATE TABLE `seat_block` (
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `seat_block`
@@ -2680,7 +2773,7 @@ CREATE TABLE `seat_block_seats` (
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `seat_block_seats`
@@ -2701,7 +2794,7 @@ CREATE TABLE `seat_class` (
   `name` varchar(120) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `seat_class`
@@ -2729,7 +2822,7 @@ CREATE TABLE `seat_open` (
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `seat_open`
@@ -2752,7 +2845,7 @@ CREATE TABLE `seat_open_seats` (
   `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `seat_open_seats`
@@ -2795,7 +2888,7 @@ CREATE TABLE `site_master` (
   `googleplus_url` varchar(254) NOT NULL,
   `min_fare_amt` int(11) NOT NULL,
   `earned_pts` int(11) NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2816,7 +2909,7 @@ CREATE TABLE `slider` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2837,7 +2930,7 @@ CREATE TABLE `special_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2852,7 +2945,7 @@ CREATE TABLE `ticket_cancelation` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ticket_cancelation`
@@ -2877,7 +2970,7 @@ CREATE TABLE `ticket_cancelation_rule` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ticket_cancelation_rule`
@@ -2904,7 +2997,7 @@ CREATE TABLE `ticket_fare_slab` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 1
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ticket_fare_slab`
@@ -2938,7 +3031,7 @@ CREATE TABLE `ticket_price` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ticket_price`
@@ -2993,7 +3086,7 @@ CREATE TABLE `user` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `user`
@@ -3013,6 +3106,11 @@ CREATE TABLE `users` (
   `name` varchar(120) NOT NULL,
   `email` varchar(120) DEFAULT '',
   `phone` varchar(40) DEFAULT '',
+  `pincode` varchar(255) DEFAULT NULL,
+  `street` varchar(255) DEFAULT NULL,
+  `district` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `profile_image` blob DEFAULT NULL,
   `password` varchar(100) DEFAULT '',
   `otp` varchar(50) DEFAULT '',
   `is_verified` int(11) NOT NULL DEFAULT 0,
@@ -3020,25 +3118,26 @@ CREATE TABLE `users` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) DEFAULT ''
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `phone`, `password`, `otp`, `is_verified`, `msg_id`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, 'Lima mohanty', 'banashri.seofied@gmail.com', '7978817539', '$2y$10$jJ8pBJ/3PZymollUEvQ.Fufxs6ql0JaVGh2iJv640qST/cm1Xtsry', NULL, 1, '', '2021-09-15 11:57:49', '2021-09-18 11:55:50', ''),
-(2, 'Lima Mohanty', 'banashri.seofied2@gmail.com', '8763447921', NULL, NULL, 1, '', '2021-09-15 12:40:25', '2021-09-18 11:47:11', ''),
-(3, 'Dinesh', 'dasdinesh07@gmail.com', '9124419800', '', '', 0, '', '2021-09-15 15:52:37', '2021-09-15 15:59:53', ''),
-(4, 'azfar', 'azfarali.odbus@gmail.com', '8917209213', '', '', 0, '', '2021-09-16 14:07:47', '2021-09-16 14:09:15', ''),
-(5, 'rashmiranjan sahoo', 'rashmiranjan.seofied@gmail.com', '6370406925', '', '', 0, '', '2021-09-16 14:08:48', '2021-09-16 14:08:48', ''),
-(6, 'Dillip', 'dillipsing.seofied@gmail.com', '9040666087', '', '', 0, '', '2021-09-16 14:08:48', '2021-09-16 14:08:48', ''),
-(7, 'DEEPAK KUMAR', 'PREETANJU838@GMAIL.COM', '8917431396', '', '', 0, '', '2021-09-16 14:08:48', '2021-09-16 14:08:48', ''),
-(8, 'santosh', 'dashlife400099@gmail.com', '8249244495', '', '', 0, '', '2021-09-16 14:14:05', '2021-09-16 14:14:05', ''),
-(9, 'TAPAS KUMAR BEHERA', NULL, '8917253403', '$2y$10$Ox.9raCyZAvBzrlSZjekJ.eHZykN6l1RVcIETbptxa9z/LmDlxrbu', NULL, 1, '', '2021-09-18 20:34:07', '2021-09-18 20:34:25', 'TAPAS KUMAR BEHERA'),
-(10, 'Abhishek', 'abhishek.seofied@gmail.com', '7894310911', '$2y$10$OuQuze6PYZl0ql1NiD7MiO32F5RhtHDkJ380q0EQCpnKcWpMyl4xG', NULL, 1, '', '2021-09-21 23:05:17', '2021-09-22 00:14:00', ''),
-(11, 'MD Hussen', 'hussen@odbus.in', '7978201573', '', '', 0, '', '2021-09-22 14:57:26', '2021-09-22 14:57:26', ''),
-(12, 'AK Padhy', 'padhiashwini@gmail.com', '9778807336', '', '', 0, '', '2021-09-22 14:57:27', '2021-09-22 14:57:27', '');
+INSERT INTO `users` (`id`, `name`, `email`, `phone`, `pincode`, `street`, `district`, `address`, `profile_image`, `password`, `otp`, `is_verified`, `msg_id`, `created_at`, `updated_at`, `created_by`) VALUES
+(1, 'Lima Mohanty', 'banashri.seofied@gmail.com', '7978817539', NULL, 'Bhubaneswar', 'Bhubaneswar', 'Bhubaneswar', NULL, '$2y$10$jJ8pBJ/3PZymollUEvQ.Fufxs6ql0JaVGh2iJv640qST/cm1Xtsry', NULL, 1, '', '2021-09-15 11:57:49', '2021-09-24 15:42:10', ''),
+(2, 'lima', 'banashri.seofied@gmail.com', '8763447921', NULL, NULL, NULL, NULL, NULL, '$2y$10$DgOktxtkDrfcwJD8PKxjDeS0O6/GRnYUtvdIbu//ZsMiNvz6qutfe', NULL, 1, '', '2021-09-15 12:40:25', '2021-09-24 15:43:15', ''),
+(3, 'Dinesh', 'dasdinesh07@gmail.com', '9124419800', NULL, NULL, NULL, NULL, NULL, '', '', 0, '', '2021-09-15 15:52:37', '2021-09-15 15:59:53', ''),
+(4, 'azfar', 'azfarali.odbus@gmail.com', '8917209213', NULL, NULL, NULL, NULL, NULL, '', '', 0, '', '2021-09-16 14:07:47', '2021-09-16 14:09:15', ''),
+(5, 'rashmiranjan sahoo', 'rashmiranjan.seofied@gmail.com', '6370406925', NULL, NULL, NULL, NULL, NULL, '', '', 0, '', '2021-09-16 14:08:48', '2021-09-16 14:08:48', ''),
+(6, 'Dillip', 'dillipsing.seofied@gmail.com', '9040666087', NULL, NULL, NULL, NULL, NULL, '', '', 0, '', '2021-09-16 14:08:48', '2021-09-16 14:08:48', ''),
+(7, 'DEEPAK KUMAR', 'PREETANJU838@GMAIL.COM', '8917431396', NULL, NULL, NULL, NULL, NULL, '', '', 0, '', '2021-09-16 14:08:48', '2021-09-16 14:08:48', ''),
+(8, 'santosh', 'dashlife400099@gmail.com', '8249244495', NULL, NULL, NULL, NULL, NULL, '', '', 0, '', '2021-09-16 14:14:05', '2021-09-16 14:14:05', ''),
+(9, 'TAPAS KUMAR BEHERA', NULL, '8917253403', NULL, NULL, NULL, NULL, NULL, '$2y$10$Ox.9raCyZAvBzrlSZjekJ.eHZykN6l1RVcIETbptxa9z/LmDlxrbu', NULL, 1, '', '2021-09-18 20:34:07', '2021-09-18 20:34:25', 'TAPAS KUMAR BEHERA'),
+(10, 'Abhishek', 'abhishek.seofied@gmail.com', '7894310911', NULL, NULL, NULL, NULL, NULL, '$2y$10$OuQuze6PYZl0ql1NiD7MiO32F5RhtHDkJ380q0EQCpnKcWpMyl4xG', NULL, 1, '', '2021-09-21 23:05:17', '2021-09-22 00:14:00', ''),
+(11, 'MD Hussen', 'hussen@odbus.in', '7978201573', NULL, NULL, NULL, NULL, NULL, '', '', 0, '', '2021-09-22 14:57:26', '2021-09-22 14:57:26', ''),
+(12, 'AK Padhy', 'padhiashwini@gmail.com', '9778807336', NULL, NULL, NULL, NULL, NULL, '', '', 0, '', '2021-09-22 14:57:27', '2021-09-22 14:57:27', ''),
+(13, 'Chandra rath', 'chandrakantaphp@gmail.com', '7008559705', NULL, NULL, NULL, NULL, NULL, '', '', 0, '', '2021-09-22 16:23:31', '2021-09-22 16:32:15', '');
 
 -- --------------------------------------------------------
 
@@ -3057,7 +3156,7 @@ CREATE TABLE `user_bank_details` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Indexes for dumped tables
@@ -3512,7 +3611,9 @@ ALTER TABLE `reason`
 --
 ALTER TABLE `review`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `bus_id` (`bus_id`);
+  ADD KEY `bus_id` (`bus_id`),
+  ADD KEY `users_id` (`users_id`),
+  ADD KEY `pnr` (`pnr`);
 
 --
 -- Indexes for table `safety`
@@ -3680,13 +3781,13 @@ ALTER TABLE `boarding_droping`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `booking_detail`
 --
 ALTER TABLE `booking_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `booking_seized`
@@ -3698,7 +3799,7 @@ ALTER TABLE `booking_seized`
 -- AUTO_INCREMENT for table `booking_sequence`
 --
 ALTER TABLE `booking_sequence`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `bus`
@@ -3890,7 +3991,7 @@ ALTER TABLE `credentials`
 -- AUTO_INCREMENT for table `customer_payment`
 --
 ALTER TABLE `customer_payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `customer_query`
@@ -3998,7 +4099,7 @@ ALTER TABLE `reason`
 -- AUTO_INCREMENT for table `review`
 --
 ALTER TABLE `review`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `safety`
@@ -4094,7 +4195,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `user_bank_details`
@@ -4320,7 +4421,8 @@ ALTER TABLE `pre_booking_detail`
 -- Constraints for table `review`
 --
 ALTER TABLE `review`
-  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
+  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `seats`

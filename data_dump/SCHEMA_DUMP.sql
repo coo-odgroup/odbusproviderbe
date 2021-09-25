@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 22, 2021 at 09:40 AM
+-- Generation Time: Sep 25, 2021 at 06:15 AM
 -- Server version: 10.2.39-MariaDB
 -- PHP Version: 7.2.30
 
@@ -385,6 +385,7 @@ CREATE TABLE `bus_operator` (
   `email_id` varchar(50) NOT NULL,
   `password` varchar(20) NOT NULL,
   `operator_name` varchar(50) NOT NULL,
+  `operator_info` text DEFAULT NULL,
   `contact_number` varchar(15) NOT NULL,
   `organisation_name` varchar(50) NOT NULL,
   `location_name` varchar(150) NOT NULL,
@@ -1078,7 +1079,8 @@ CREATE TABLE `review` (
   `id` int(10) UNSIGNED NOT NULL,
   `pnr` varchar(60) NOT NULL,
   `bus_id` int(10) UNSIGNED NOT NULL,
-  `customer_id` int(11) NOT NULL,
+  `users_id` int(11) NOT NULL,
+  `title` varchar(120) NOT NULL,
   `reference_key` varchar(250) NOT NULL COMMENT 'link for email',
   `rating_overall` varchar(25) NOT NULL COMMENT 'out of 5',
   `rating_comfort` varchar(25) NOT NULL COMMENT 'out of 5',
@@ -1399,6 +1401,11 @@ CREATE TABLE `users` (
   `name` varchar(120) NOT NULL,
   `email` varchar(120) DEFAULT '',
   `phone` varchar(40) DEFAULT '',
+  `pincode` varchar(255) DEFAULT NULL,
+  `street` varchar(255) DEFAULT NULL,
+  `district` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `profile_image` blob DEFAULT NULL,
   `password` varchar(100) DEFAULT '',
   `otp` varchar(50) DEFAULT '',
   `is_verified` int(11) NOT NULL DEFAULT 0,
@@ -1880,7 +1887,9 @@ ALTER TABLE `reason`
 --
 ALTER TABLE `review`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `bus_id` (`bus_id`);
+  ADD KEY `bus_id` (`bus_id`),
+  ADD KEY `users_id` (`users_id`),
+  ADD KEY `pnr` (`pnr`);
 
 --
 -- Indexes for table `safety`
@@ -2688,7 +2697,8 @@ ALTER TABLE `pre_booking_detail`
 -- Constraints for table `review`
 --
 ALTER TABLE `review`
-  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
+  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `seats`
