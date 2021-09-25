@@ -27,14 +27,29 @@ class DashboardService
     public function getAll()
     {
         return $this->dashboardRepository->getAll();
-    }  
+    } 
+
     public function getRoute()
     {
         return $this->dashboardRepository->getRoute();
     }  
+
     public function getOperator()
     {
         return $this->dashboardRepository->getOperator();
+    }
+
+    public function getticketstatics()
+    {
+        return $this->dashboardRepository->getticketstatics();
+    }
+    public function getbookingbydevice()
+    {
+        return $this->dashboardRepository->getbookingbydevice();
+    }
+    public function getpnrstatics()
+    {
+        return $this->dashboardRepository->getpnrstatics();
     }
 
 }

@@ -40,6 +40,24 @@ class DashboardController extends Controller
     {
         $operatordata = $this->deshboardService->getOperator();
         return $this->successResponse($operatordata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function getticketstatics()
+    {
+        $ticketstaticsdata = $this->deshboardService->getticketstatics();
+        return $this->successResponse($ticketstaticsdata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function getbookingbydevice()
+    {
+        $bookingbydevicedata = $this->deshboardService->getbookingbydevice();
+        return $this->successResponse($bookingbydevicedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    
+    public function getpnrstatics()
+    {
+        $pnrstaticsdata = $this->deshboardService->getpnrstatics();
+        return $this->successResponse($pnrstaticsdata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
 }

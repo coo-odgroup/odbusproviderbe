@@ -93,6 +93,9 @@ use App\Http\Controllers\CancelTicketReportController;
 Route::get('/dashboarddata',[DashboardController::class,'getAll']);
 Route::get('/toproutedata',[DashboardController::class,'getRoute']);
 Route::get('/operatordata',[DashboardController::class,'getOperator']);
+Route::get('/ticketstaticsdata',[DashboardController::class,'getticketstatics']);
+Route::get('/bookingbydevicedata',[DashboardController::class,'getbookingbydevice']);
+Route::get('/pnrstaticsdata',[DashboardController::class,'getpnrstatics']);
 
 //Route::middleware(['api'])->group(function ($router) {
 
@@ -230,6 +233,8 @@ Route::get('/seatblockreport',[SeatBlockReportController::class,'getAllseatblock
 Route::get('/extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
 ///CompleteReport////
 Route::get('/completereport',[CompleteReportController::class,'getAll']);
+
+Route::post('/completereport',[CompleteReportController::class,'getData']);
 ///FailledTransactionReport////
 Route::get('failledtransactionreport',[FailledTransactionReportController::class,'getAll']);
 ///BusCancellationReport////

@@ -32,4 +32,11 @@ class CompleteReportController extends Controller
         return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function getData(Request $request)
+    {
+        // Log:: info($request); exit;
+        $completeData = $this->completereportService->getData($request);
+        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
 }

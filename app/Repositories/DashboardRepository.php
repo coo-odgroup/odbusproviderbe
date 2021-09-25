@@ -36,7 +36,6 @@ class DashboardRepository
     {
         $dt_month = date('Y-m-d', strtotime('today - 30 days'));
         $dt_week = date('Y-m-d', strtotime('today - 7 days'));
-
         
         $data_arr = array();
         
@@ -52,7 +51,6 @@ class DashboardRepository
 
         $operator_data = $this->busoperator->where('status','1')->get() ;
         $active_operator_data = count($operator_data);
-
         
         
         $data_arr['today_pnr'] = $today_data;
@@ -64,19 +62,23 @@ class DashboardRepository
                                         ->selectRaw('sum(odbus_charges) as odbus_amount')
                                         ->where('created_at','>',$dt_month)
                                         ->where('status','1')
-                                        ->get();  ;
+                                        ->get();
+
         $data_arr['cancellation_profit'] = 1641 ;
+
 
         $data_arr['sales_today'] = $this->booking                         
                                         ->selectRaw('sum(owner_fare) as today_amount')
                                         ->where('journey_dt',$current_date)
                                         ->where('status','1')
                                         ->get(); 
+
         $data_arr['sales_this_week'] = $this->booking                         
                                         ->selectRaw('sum(owner_fare) as weak_amount')
                                         ->where('journey_dt','>',$dt_week)
                                         ->where('status','1')
                                         ->get();
+                                        
         $data_arr['sales_this_month'] = $this->booking                         
                                         ->selectRaw('sum(owner_fare) as month_amount')
                                         ->where('journey_dt','>',$dt_month)
@@ -97,6 +99,7 @@ class DashboardRepository
                           ->groupBy(['source_id', 'destination_id'])
                           ->orderBy('pnr_count','DESC')
                           ->where('journey_dt','>',$dt)
+                          ->where('status','1')
                           ->limit(5)
                           ->get();
 
@@ -109,17 +112,17 @@ class DashboardRepository
         } 
        
         return $data_arr;  
-
-
     }
     
-    public function getOperatorName($operatorId){ 
+    public function getOperatorName($operatorId)
+    { 
         $records = $this->bus
         ->with('busOperator')
         ->where('id',$operatorId)->get();
         $operatorName = $records[0]->busOperator->operator_name;
         return $operatorName;
     }
+
 
     public function getOperator()
     {
@@ -131,6 +134,7 @@ class DashboardRepository
         ->selectRaw('sum(owner_fare) as amount')
         ->whereDate('created_at', '>', $dt)
         ->groupBy('bus_id')
+        ->where('status','1')
         ->orderBy('count', 'DESC')
         ->get();
             if($busIds->isEmpty()){
@@ -149,6 +153,44 @@ class DashboardRepository
                 } 
             }
             return $topOperators;
+    }
+
+    public function getticketstatics()
+    {        
+       return "WORK IN PROGRESS";
+    }
+
+
+    public function getbookingbydevice()
+    {        
+       return "WORK IN PROGRESS";
+    }
+
+
+    public function getpnrstatics()
+    {        
+        $pnr_data = $this->booking
+                          ->select('journey_dt')
+                          ->selectRaw('count(*) as pnr_count')
+                          ->groupBy('journey_dt')
+                          ->orderBy('journey_dt','DESC')
+                          ->where('status','1')
+                          ->limit('7')
+                          ->get();
+        $data_arr = array();
+
+        $date_arr = array();
+        $pnr_count = array();
+
+        foreach($pnr_data as $v)
+        {
+            $date_arr[] = $v->journey_dt;
+            $pnr_count[] = $v->pnr_count;
+        } 
+        $data_arr['date'] = $date_arr ; 
+        $data_arr['pnr'] = $pnr_count ;
+
+        return $data_arr;
     }
 }
 
