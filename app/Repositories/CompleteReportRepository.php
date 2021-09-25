@@ -41,9 +41,8 @@ class CompleteReportRepository
             $data_arr[$key]['from_location']=$this->location->where('id', $v->source_id)->get();
             $data_arr[$key]['to_location']=$this->location->where('id', $v->destination_id)->get();
 
-             $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
+            $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
             
-           
             foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
             {                          
                 $data_arr[$key]['source'][$k]=$this->location->where('id', $a['source_id'])->get();
@@ -57,42 +56,63 @@ class CompleteReportRepository
 
     public function getData($request)
     {
-        // Log:: info($request); exit;
-        $paginate = $request->paginate ;
-        // Log:: info($paginate);exit;
-
-        if (empty($paginate)) 
-        {
-            $paginate = 5;
-        }
-        $data_arr = array();        
+        $extqry = "";
+        // Log:: info($request); exit;rozorpay_id,order_id,  where('created_at','Like',$current_date.'%')
+        $paginate = $request->rows_number;
+        $bus_operator_id = $request->bus_operator_id;
+        $date_range = $request->date_range;
+        $payment_id = $request->payment_id;
+        $date_type = $request->date_type;
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
-                             ->orderBy('id','DESC')
-                             ->paginate($paginate); 
+                             ->orderBy('id','DESC');
+        if($paginate=='all') 
+        {
+            $paginate = "";
+        }
 
-        // foreach($data as $key=>$v)
+        if($bus_operator_id)
+        {
+           $data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
+        }
+
+        if($payment_id)
+        {
+            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id );});
+        }
+
+
+        if($date_type == 'booking' && $date_range =="")
+        {
+            $date =$data->orderBy('created_at','DESC');
+        }
+        else if($date_type == 'booking' && $date_range !="")
+        {
+            $date =$data->where('created_at','Like', $date_range."%" )
+                        ->orderBy('created_at','DESC');
+        }
+        else if($date_type == 'journey' && $date_range =="")
+        {
+            $date =$data->orderBy('journey_dt','DESC');
+        }
+         else if($date_type == 'journey' && $date_range !="")
+        {
+             $date =$data->where('journey_dt', $date_range )
+                        ->orderBy('journey_dt','DESC');
+        }
+
+        // if($date_range)
         // {
-        //     $data_arr[]=$v->toArray();
-        //     $data_arr[$key]['from_location']=$this->location->where('id', $v->source_id)->get();
-        //     $data_arr[$key]['to_location']=$this->location->where('id', $v->destination_id)->get();
+        //     $date
+        // }
 
-        //      $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-            
-           
-        //     foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-        //     {                          
-        //         $data_arr[$key]['source'][$k]=$this->location->where('id', $a['source_id'])->get();
-        //         $data_arr[$key]['destination'][$k]=$this->location->where('id', $a['destination_id'])->get(); 
-        //     }
-        // } 
         
+         $data=$data->paginate($paginate); 
 
-        // return $data_arr;
 
 
         
@@ -107,8 +127,8 @@ class CompleteReportRepository
                // $v['destination']=[];
                foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
                 {                          
-                    $stoppages['source'][$key][$k]=$this->location->where('id', $a->source_id)->get();
-                    $stoppages['destination'][$key][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
                 }
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];
