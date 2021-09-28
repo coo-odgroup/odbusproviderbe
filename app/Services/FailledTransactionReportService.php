@@ -31,4 +31,9 @@ class FailledTransactionReportService
         return $this->failledtransactionreportrepository->getAll();
     }
 
+    public function getData($request)
+    {
+        return $this->failledtransactionreportrepository->getData($request);
+    }
+
 }

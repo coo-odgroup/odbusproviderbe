@@ -32,4 +32,10 @@ class FailledTransactionReportController extends Controller
         return $this->successResponse($Data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+     public function getData(Request $request)
+    {
+        $failledtransactionData = $this->failledtransactionreportService->getData($request);
+        return $this->successResponse($failledtransactionData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
 }

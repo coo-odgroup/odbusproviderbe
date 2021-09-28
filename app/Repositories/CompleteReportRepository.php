@@ -57,12 +57,14 @@ class CompleteReportRepository
     public function getData($request)
     {
         $extqry = "";
-        // Log:: info($request); exit;rozorpay_id,order_id,  where('created_at','Like',$current_date.'%')
+        // Log:: info($request); exit;
         $paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
         $date_range = $request->date_range;
         $payment_id = $request->payment_id;
         $date_type = $request->date_type;
+        $source_id = $request->source_id;
+        $destination_id = $request->destination_id;
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
@@ -75,14 +77,19 @@ class CompleteReportRepository
             $paginate = "";
         }
 
-        if($bus_operator_id)
+        if(!empty($bus_operator_id))
         {
            $data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
         }
 
-        if($payment_id)
+        if(!empty($payment_id))
         {
             $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id );});
+        }
+
+         if(!empty($source_id) && !empty($destination_id))
+        {
+            $data=$data->where('source_id',$source_id)->where('destination_id',$destination_id);
         }
 
 
@@ -105,10 +112,7 @@ class CompleteReportRepository
                         ->orderBy('journey_dt','DESC');
         }
 
-        // if($date_range)
-        // {
-        //     $date
-        // }
+       
 
         
          $data=$data->paginate($paginate); 
@@ -144,4 +148,5 @@ class CompleteReportRepository
            return $response;      
 
     }
+    
 }

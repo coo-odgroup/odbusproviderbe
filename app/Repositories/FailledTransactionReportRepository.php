@@ -53,4 +53,103 @@ class FailledTransactionReportRepository
         return $data_arr;     
     }
 
+   public function getData($request)
+    {
+        $extqry = "";
+        // Log:: info($request); 
+        $paginate = $request->rows_number;
+        $bus_operator_id = $request->bus_operator_id;
+        $date_range = $request->date_range;
+        $payment_id = $request->payment_id;
+        $date_type = $request->date_type;
+        $source_id = $request->source_id;
+        $destination_id = $request->destination_id;
+
+        $data= $this->booking->with('BookingDetail.BusSeats.seats',
+                                    'BookingDetail.BusSeats.ticketPrice',
+                                    'Bus','Users','CustomerPayment')
+                             ->with('bus.busstoppage')
+                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '2' );})
+                             ->orderBy('id','DESC');
+        if($paginate=='all') 
+        {
+            $paginate = "";
+        }
+
+        if(!empty($bus_operator_id))
+        {
+           $data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
+        }
+
+        if(!empty($payment_id))
+        {
+            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id );});
+        }
+
+         if(!empty($source_id) && !empty($destination_id))
+        {
+            $data=$data->where('source_id',$source_id)->where('destination_id',$destination_id);
+        }
+
+
+        if($date_type == 'booking' && $date_range =="")
+        {
+            $date =$data->orderBy('created_at','DESC');
+        }
+        else if($date_type == 'booking' && $date_range !="")
+        {
+            $date =$data->where('created_at','Like', $date_range."%" )
+                        ->orderBy('created_at','DESC');
+        }
+        else if($date_type == 'journey' && $date_range =="")
+        {
+            $date =$data->orderBy('journey_dt','DESC');
+        }
+         else if($date_type == 'journey' && $date_range !="")
+        {
+             $date =$data->where('journey_dt', $date_range )
+                        ->orderBy('journey_dt','DESC');
+        }
+
+       
+
+        
+         $data=$data->paginate($paginate); 
+
+
+
+        
+        if($data){
+            foreach($data as $key=>$v){
+
+               $v['from_location']=$this->location->where('id', $v->source_id)->get();
+               $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+
+               $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
+               // $v['source']=[];
+               // $v['destination']=[];
+               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                {                          
+                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                }
+                $v['source']= $stoppages['source'];
+                $v['destination']= $stoppages['destination'];
+            }
+        }
+
+      
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+        // Log:: info($response); 
+        
+           return $response;      
+
+    }
+
+
+
 }

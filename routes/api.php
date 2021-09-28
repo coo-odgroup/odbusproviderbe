@@ -226,21 +226,26 @@ Route::get('/getreview/{bid}', [ReviewController::class, 'getReviewByBid']);
 
 
 ////SeatOpenReport/////
-Route::get('/seatopenreport',[SeatOpenReportController::class,'getAllseatopen']);
+Route::get('seatopenreport',[SeatOpenReportController::class,'getAllseatopen']);
 ////SeatBlockReport/////
-Route::get('/seatblockreport',[SeatBlockReportController::class,'getAllseatblock']);
+Route::get('seatblockreport',[SeatBlockReportController::class,'getAllseatblock']);
 ///ExtraSeatOpenReport////
-Route::get('/extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
+Route::get('extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
 ///CompleteReport////
-Route::get('/completereport',[CompleteReportController::class,'getAll']);
+Route::get('completereport',[CompleteReportController::class,'getAll']);
 
-Route::post('/completereport',[CompleteReportController::class,'getData']);
+Route::post('completereport',[CompleteReportController::class,'getData']);
 ///FailledTransactionReport////
 Route::get('failledtransactionreport',[FailledTransactionReportController::class,'getAll']);
+
+Route::post('failledtransactionreport',[FailledTransactionReportController::class,'getData']);
 ///BusCancellationReport////
 Route::get('buscancellationreport',[BusCancellationReportController::class,'getAll']);
 ////OwnerPaymentReport/////
 Route::get('ownerpaymentreport',[OwnerPaymentReportController::class,'getAll']);
+
+Route::post('ownerpaymentreport',[OwnerPaymentReportController::class,'getData']);
+
 // ClearTransactionReport //
 Route::get('cleartransactionreport',[ClearTransactionReportController::class,'getAll']);
 
@@ -249,6 +254,8 @@ Route::get('couponuseduserreport',[CouponUsedUserReportController::class,'getAll
 
 //CancelTicketReport
 Route::get('cancelticketreport',[CancelTicketReportController::class,'getAll']);
+
+Route::post('cancelticketreport',[CancelTicketReportController::class,'getData']);
 
 
 

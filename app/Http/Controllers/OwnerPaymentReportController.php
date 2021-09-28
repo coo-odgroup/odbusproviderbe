@@ -30,5 +30,10 @@ class OwnerPaymentReportController extends Controller
         $extraseatopen = $this->ownerpaymentreportService->getAll();
         return $this->successResponse($extraseatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    public function getData(Request $request)
+    {
+        $ownerpayment = $this->ownerpaymentreportService->getData($request);
+        return $this->successResponse($ownerpayment,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
 
 }

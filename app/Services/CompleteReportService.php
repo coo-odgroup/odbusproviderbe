@@ -30,6 +30,7 @@ class CompleteReportService
     {
         return $this->completereportRepository->getAll();
     }
+    
     public function getData($request)
     {
         return $this->completereportRepository->getData($request);

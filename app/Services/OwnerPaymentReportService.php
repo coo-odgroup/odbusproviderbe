@@ -28,5 +28,9 @@ class OwnerPaymentReportService
     {
         return $this->ownerpaymentreportRepository->getAll();
     }
+    public function getData($request)
+    {
+        return $this->ownerpaymentreportRepository->getData($request);
+    }
 
 }
