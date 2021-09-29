@@ -227,8 +227,13 @@ Route::get('/getreview/{bid}', [ReviewController::class, 'getReviewByBid']);
 
 ////SeatOpenReport/////
 Route::get('seatopenreport',[SeatOpenReportController::class,'getAllseatopen']);
+
+Route::post('seatopenreport',[SeatOpenReportController::class,'getData']);
 ////SeatBlockReport/////
 Route::get('seatblockreport',[SeatBlockReportController::class,'getAllseatblock']);
+
+Route::post('seatblockreport',[SeatBlockReportController::class,'getData']);
+
 ///ExtraSeatOpenReport////
 Route::get('extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
 ///CompleteReport////
@@ -241,6 +246,9 @@ Route::get('failledtransactionreport',[FailledTransactionReportController::class
 Route::post('failledtransactionreport',[FailledTransactionReportController::class,'getData']);
 ///BusCancellationReport////
 Route::get('buscancellationreport',[BusCancellationReportController::class,'getAll']);
+
+Route::post('buscancellationreport',[BusCancellationReportController::class,'getData']);
+
 ////OwnerPaymentReport/////
 Route::get('ownerpaymentreport',[OwnerPaymentReportController::class,'getAll']);
 

@@ -31,6 +31,12 @@ class SeatOpenReportController extends Controller
         return $this->successResponse($seatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function getData(Request $request)
+    {
+        $seatopen = $this->seatopenreportService->getData($request);
+        return $this->successResponse($seatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
 
 
 

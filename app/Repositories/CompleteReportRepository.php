@@ -56,15 +56,46 @@ class CompleteReportRepository
 
     public function getData($request)
     {
-        $extqry = "";
         // Log:: info($request); exit;
+        $start_date="";
+        $end_date="";
         $paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
-        $date_range = $request->date_range;
         $payment_id = $request->payment_id;
         $date_type = $request->date_type;
         $source_id = $request->source_id;
         $destination_id = $request->destination_id;
+
+        $rangeFromDate  =  $request->rangeFromDate;
+        $rangeToDate  =  $request->rangeToDate;
+
+        if(!empty($rangeFromDate))
+        {
+            if(strlen($rangeFromDate['month'])==1)
+            {
+                $rangeFromDate['month']="0".$rangeFromDate['month'];
+            }
+            if(strlen($rangeFromDate['day'])==1)
+            {
+                $rangeFromDate['day']="0".$rangeFromDate['day'];
+            }
+
+            $start_date = $rangeFromDate['year'].'-'.$rangeFromDate['month'].'-'.$rangeFromDate['day'] ;     
+        }
+
+        if(!empty($rangeToDate))
+        {
+            if(strlen($rangeToDate['month'])==1)
+            {
+                $rangeToDate['month']="0".$rangeToDate['month'];
+            }
+            if(strlen($rangeToDate['day'])==1)
+            {
+                $rangeToDate['day']="0".$rangeToDate['day'];
+            }
+
+            $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
+        }
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
@@ -87,39 +118,34 @@ class CompleteReportRepository
             $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id );});
         }
 
-         if(!empty($source_id) && !empty($destination_id))
+        if(!empty($source_id) && !empty($destination_id))
         {
             $data=$data->where('source_id',$source_id)->where('destination_id',$destination_id);
         }
 
 
-        if($date_type == 'booking' && $date_range =="")
+        if($date_type == 'booking' && $start_date == null && $end_date == null)
         {
             $date =$data->orderBy('created_at','DESC');
         }
-        else if($date_type == 'booking' && $date_range !="")
+        else if($date_type == 'booking' && $start_date != null && $end_date != null)
         {
-            $date =$data->where('created_at','Like', $date_range."%" )
+            $date =$data->whereBetween('created_at', [$start_date, $end_date])
                         ->orderBy('created_at','DESC');
         }
-        else if($date_type == 'journey' && $date_range =="")
+        else if($date_type == 'journey' && $start_date == null && $end_date == null)
         {
             $date =$data->orderBy('journey_dt','DESC');
         }
-         else if($date_type == 'journey' && $date_range !="")
-        {
-             $date =$data->where('journey_dt', $date_range )
+         else if($date_type == 'journey' && $start_date != null && $end_date != null)
+        {                 
+             $date =$data-> whereBetween('journey_dt', [$start_date, $end_date])
                         ->orderBy('journey_dt','DESC');
         }
 
-       
-
         
          $data=$data->paginate($paginate); 
-
-
-
-        
+   
         if($data){
             foreach($data as $key=>$v){
 

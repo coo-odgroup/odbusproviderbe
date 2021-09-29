@@ -29,5 +29,10 @@ class BusCancellationReportController extends Controller
         $extraseatopen = $this->buscancellationreportService->getAll();
         return $this->successResponse($extraseatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    public function getData(Request $request)
+    {
+        $buscancel = $this->buscancellationreportService->getData($request);
+        return $this->successResponse($buscancel,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
 
 }

@@ -30,6 +30,11 @@ class SeatBlockReportController extends Controller
     {
         $seatblock = $this->seatblockreportService->getAll();
         return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+    public function getData(Request $request)
+    {
+        $seatblock = $this->seatblockreportService->getData($request);
+        return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
 }

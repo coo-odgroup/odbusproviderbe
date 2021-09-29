@@ -30,5 +30,9 @@ class SeatOpenReportService
     {
         return $this->seatopenreportRepository->getAll();
     }
+    public function getData($request)
+    {
+        return $this->seatopenreportRepository->getData($request);
+    }
 
 }

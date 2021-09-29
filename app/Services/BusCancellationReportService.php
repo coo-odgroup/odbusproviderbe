@@ -28,5 +28,9 @@ class BusCancellationReportService
     {
         return $this->buscancellationreportRepository->getAll();
     }
+    public function getData($request)
+    {
+        return $this->buscancellationreportRepository->getData($request);
+    }
 
 }
