@@ -128,20 +128,20 @@ class FailledTransactionReportRepository
 
         if($date_type == 'booking' && $start_date == null && $end_date == null)
         {
-            $date =$data->orderBy('created_at','DESC');
+            $data =$data->orderBy('created_at','DESC');
         }
         else if($date_type == 'booking' && $start_date != null && $end_date != null)
         {
-            $date =$data->whereBetween('created_at', [$start_date, $end_date])
+            $data =$data->whereBetween('created_at', [$start_date, $end_date])
                         ->orderBy('created_at','DESC');
         }
         else if($date_type == 'journey' && $start_date == null && $end_date == null)
         {
-            $date =$data->orderBy('journey_dt','DESC');
+            $data =$data->orderBy('journey_dt','DESC');
         }
          else if($date_type == 'journey' && $start_date != null && $end_date != null)
         {                 
-             $date =$data-> whereBetween('journey_dt', [$start_date, $end_date])
+             $data =$data-> whereBetween('journey_dt', [$start_date, $end_date])
                         ->orderBy('journey_dt','DESC');
         }
 
