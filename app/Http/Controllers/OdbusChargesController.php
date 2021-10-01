@@ -61,7 +61,7 @@ class OdbusChargesController extends Controller
 
     public function update(Request $request, $id) {
         $data = $request->only([
-          'payment_gateway_charges','email_sms_charges','odbus_gst_charges','created_by'
+          'payment_gateway_charges','email_sms_charges','odbus_gst_charges','advance_days_show','support_email','booking_email','request_email','other_email','mobile_no_1','mobile_no_2','mobile_no_3','mobile_no_4','created_by'
         ]);
         $odbusChargesValidation = $this->odbusChargesValidator->validate($data);
         if ($odbusChargesValidation->fails()) {

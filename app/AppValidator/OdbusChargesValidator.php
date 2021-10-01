@@ -12,7 +12,17 @@ class OdbusChargesValidator
         $rules = [
             'payment_gateway_charges' => 'required',
             'email_sms_charges' => 'required',
-            'odbus_gst_charges' => 'required'
+            'odbus_gst_charges' => 'required',
+            'advance_days_show' => 'required',
+            'support_email' => 'required',
+            'booking_email' => 'required',
+            'request_email' => 'required',
+            //'other_email' => 'required',
+            'mobile_no_1' => 'required',
+            'mobile_no_2' => 'required',
+            'mobile_no_3' => 'required',
+            //'mobile_no_4' => 'required'
+
         ];      
       
         $odbusChargesValidation = Validator::make($data, $rules);

@@ -24,10 +24,18 @@ class OdbusChargesRepository
     
     public function getModel($data, OdbusCharges $odbusCharges)
     {
-        Log::info($data);
         $odbusCharges->payment_gateway_charges = $data['payment_gateway_charges'];
         $odbusCharges->email_sms_charges = $data['email_sms_charges'];
         $odbusCharges->odbus_gst_charges = $data['odbus_gst_charges'];
+        $odbusCharges->advance_days_show = $data['advance_days_show'];
+        $odbusCharges->support_email = $data['support_email'];
+        $odbusCharges->booking_email = $data['booking_email'];
+        $odbusCharges->request_email = $data['request_email'];
+        $odbusCharges->other_email = $data['other_email'];
+        $odbusCharges->mobile_no_1 = $data['mobile_no_1'];
+        $odbusCharges->mobile_no_2 = $data['mobile_no_2'];
+        $odbusCharges->mobile_no_3 = $data['mobile_no_3'];
+        $odbusCharges->mobile_no_4 = $data['mobile_no_4'];
         $odbusCharges->created_by = $data['created_by'];
         return $odbusCharges;
     }
