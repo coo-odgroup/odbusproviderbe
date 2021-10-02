@@ -6,37 +6,33 @@ use App\Models\Slider;
 
 class SliderRepository
 {
-    /**
-     * @var Slider
-     */
-    protected $slider;
-
-    /**
-     * SliderRepository constructor.
-     *
-     * @param Slider $slider
-     */
+    
     public function __construct(Slider $slider)
     {
         $this->slider = $slider;
     }
 
-    /**
-     * Get all slider.
-     *
-     * @return Slider $slider
-     */
-    public function getAll()
+    public function getAllSlider()
     {
         return $this->slider->whereNotIn('status', [2])->get();
     }
+    public function getData($request)
+    {
+        $paginate = $request['paginate'];
+        $searchBy = $request['searchBy']; 
+        $status = $request['status'];
 
-    /**
-     * Get slider by id
-     *
-     * @param $id
-     * @return mixed
-     */
+        $list = $this->slider->where('slider', 'like', '%' .$searchBy . '%')->where('status', $status)->orderBy('id','desc');
+        $list =  $list->paginate($paginate);
+
+        $response = array(
+            "count" => $list->count(), 
+            "total" => $list->total(),
+            "data" => $list
+           );   
+           return $response;
+                            
+    }
     public function getById($id)
     {
         return $this->slider
@@ -44,67 +40,44 @@ class SliderRepository
             ->get();
     }
 
-    /**
-     * Save slider
-     *
-     * @param $data
-     * @return Slider
-     */
     public function save($data)
     {
-        $post = new $this->slider;
+        $slide = new $this->slider;
+        $slide->slider = $data['slider'];
+        $slide->occassion = $data['occassion'];
+        $slide->category = $data['category'];
+        $slide->url = $data['url'];
+        $slide->slider_img = $data['slider_img'];
+        $slide->alt_tag = $data['alt_tag'];
+        $slide->start_date = $data['start_date'];
+        $slide->end_date = $data['end_date'];
+        $slide->created_by = "Admin";
+        $slide->save();
 
-        $post->occassion = $data['occassion'];
-        $post->url = $data['url'];
-        $post->slider_img = $data['slider_img'];
-        $post->alt_tag = $data['alt_tag'];
-        $post->start_date = $data['start_date'];
-        $post->end_date = $data['end_date'];
-        // $post->created_date = date('Y-m-d H:i:s');
-        $post->created_by = "Admin";
-
-        $post->save();
-
-        return $post->fresh();
+        return $slide->fresh();
     }
 
-    /**
-     * Update slider
-     *
-     * @param $data
-     * @return Slider
-     */
     public function update($data, $id)
     {
-        
-        $post = $this->slider->find($id);
-
-        $post->occassion = $data['occassion'];
-        $post->url = $data['url'];
-        $post->slider_img = $data['slider_img'];
-        $post->alt_tag = $data['alt_tag'];
-        $post->start_date = $data['start_date'];
-        $post->end_date = $data['end_date'];
-
-        $post->update();
-
-        return $post;
+        $slide = $this->slider->find($id);
+        $slide->slider = $data['slider'];
+        $slide->occassion = $data['occassion'];
+        $slide->url = $data['url'];
+        $slide->slider_img = $data['slider_img'];
+        $slide->alt_tag = $data['alt_tag'];
+        $slide->start_date = $data['start_date'];
+        $slide->end_date = $data['end_date'];
+        $slide->update();
+        return $slide;
     }
 
-    /**
-     * Update slider
-     *
-     * @param $data
-     * @return Slider
-     */
     public function delete($id)
     {
-        
-        $post = $this->slider->find($id);
-        $post->status = 2;
-        $post->update();
+        $slide = $this->slider->find($id);
+        $slide->status = 2;
+        $slide->update();
 
-        return $post;
+        return $slide;
     }
 
 }

@@ -9,8 +9,7 @@ class Slider extends Model
 {
     use HasFactory;
     protected $table = 'slider';
-    // public $timestamps = false;
     protected $fillable = [
-        'occassion', 'url', 'slider_img','alt_tag','start_date','end_date'
+       'slider', 'occassion','category','url', 'slider_img','alt_tag','start_date','end_date'
     ];
 }

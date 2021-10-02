@@ -3,112 +3,88 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Slider;
-
 use App\Services\SliderService;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\Config;
+use InvalidArgumentException;
+use App\AppValidator\SliderValidator;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 
 class SliderController extends Controller
 {
-     /**
-     * @var sliderService
-     */
+    use ApiResponser;  
     protected $sliderService;
+    protected $sliderValidator;
 
-    /**
-     * PostController Constructor
-     *
-     * @param SliderService $sliderService
-     *
-     */
-    public function __construct(SliderService $sliderService)
+    public function __construct(SliderService $sliderService, SliderValidator $sliderValidator)
     {
         $this->sliderService = $sliderService;
+        $this->sliderValidator = $sliderValidator;
     }
 
-
-
     public function getAllSlider() {
-        $prod = $this->sliderService->getAll();;
-        $output ['status']=1;
-        $output ['message']='All Data Fetched Successfully';
-        $output ['result']=$prod;
-        return response($output, 200);
+        $slider = $this->sliderService->getAllSlider();
+        return $this->successResponse($slider,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function getData(Request $request)
+    {
+        $sliderData = $this->sliderService->getData($request);
+        return $this->successResponse($sliderData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function createSlider(Request $request) {
         $data = $request->only([
-            'occassion', 'url', 'slider_img','alt_tag','start_date','end_date',
-          
+            'slider','occassion','category','url', 'slider_img','alt_tag','start_date','end_date',
         ]);
-        
-        $sliderRules = [
-            'occassion' => 'required',
-            'url' => 'required',
-            'slider_img' => 'required',
-            'alt_tag' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required'
-          ];
-        
-          $sliderValidation = Validator::make($data, $sliderRules);
-          
-          if ($sliderValidation->fails()) {
-            $errors = $sliderValidation->errors();
-            return $errors->toJson();
-          }
-        $this->sliderService->savePostData($data);
-    
-        $output ['status']=1;
-        $output ['message']='Data Added Successfully';
-        return response($output, 200);
-	
+        // $sliderValidation = $this->sliderValidation->validate($data);
+        // if ($sliderValidation->fails()) {
+        //   $errors = $sliderValidation->errors();
+        //   return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        // }
+        try {
+          $response = $this->sliderService->save($data);
+          return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+      }
+      catch(Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }	
     } 
 
     public function updateSlider(Request $request, $id) {
+      
         $data = $request->only([
-            'occassion', 'url', 'slider_img','alt_tag','start_date','end_date',
-          
+            'slider','occassion','category', 'url', 'slider_img','alt_tag','start_date','end_date',
         ]);
-        $sliderRules = [
-            'occassion' => 'required',
-            'url' => 'required',
-            'slider_img' => 'required',
-            'alt_tag' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required'
-        ];
-        
-        $sliderValidation = Validator::make($data, $sliderRules);
-          
-        if ($sliderValidation->fails()) {
-            $errors = $sliderValidation->errors();
-            return $errors->toJson();
+        try {
+          $response = $this->sliderService->update($data, $id);
+          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+
+      } catch (Exception $e) {
+          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+      }
+    }
+    public function deleteSlider($id) {
+        try{
+          $response = $this->sliderService->deleteById($id);
+          return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
         }
-        $this->sliderService->updatePost($data, $id);
-        $output ['status']=1;
-        $output ['message']='Data updated successfully';
-        return response($output, 200);
-        
-    }
-
-    public function deleteSlider ($id) {
-      $this->sliderService->deleteById($id);
-      $output ['status']=1;
-      $output ['message']='Data Deleted successfully';
-      return response($output, 200);
-    }
-
-    public function getSlider($id) {
-      $ame= $this->sliderService->getById($id);
-      $output ['status']=1;
-      $output ['message']='Single Data Fetched Successfully';
-      $output ['result']=$ame;
-      return response($output, 200);
-
-
-  	}
+        catch (Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        } 
+      }
+      public function getSlider($id) { 
+        try{
+          $slider= $this->sliderService->getById($id);
+        }
+        catch (Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse($slider, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
+      }
 }

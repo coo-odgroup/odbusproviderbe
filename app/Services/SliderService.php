@@ -9,113 +9,63 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Config;
+use Symfony\Component\HttpFoundation\Response;
 
 class SliderService
 {
-    /**
-     * @var $sliderRepository
-     */
+   
     protected $sliderRepository;
 
-    /**
-     * SliderService constructor.
-     *
-     * @param SliderRepository $sliderRepository
-     */
     public function __construct(SliderRepository $sliderRepository)
     {
         $this->sliderRepository = $sliderRepository;
     }
 
-    /**
-     * Delete  by id.
-     *
-     * @param $id
-     * @return String
-     */
+    public function getAllSlider()
+    {
+        return $this->sliderRepository->getAllSlider();
+    }
+    
+    public function getData($request)
+    {
+        return $this->sliderRepository->getData($request);
+    }
     public function deleteById($id)
     {
-        DB::beginTransaction();
-
         try {
-            $post = $this->sliderRepository->delete($id);
-
+            $slider = $this->sliderRepository->delete($id);
         } catch (Exception $e) {
-            DB::rollBack();
             Log::info($e->getMessage());
-
-            throw new InvalidArgumentException('Unable to delete post data');
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
-
-        DB::commit();
-
-        return $post;
-
+        return $slider;
     }
 
-    /**
-     * Get all Data.
-     *
-     * @return String
-     */
-    public function getAll()
-    {
-        return $this->sliderRepository->getAll();
-    }
-
-    /**
-     * Get  by id.
-     *
-     * @param $id
-     * @return String
-     */
     public function getById($id)
     {
         return $this->sliderRepository->getById($id);
     }
-
-    /**
-     * Update  data
-     * Store to DB if there are no errors.
-     *
-     * @param array $data
-     * @return String
-     */
-    public function updatePost($data, $id)
-    {
-        
-
-        DB::beginTransaction();
-
+    public function save($data)
+    {   
         try {
-            $post = $this->sliderRepository->update($data, $id);
-
+            $slider = $this->sliderRepository->save($data);
         } catch (Exception $e) {
-            DB::rollBack();
             Log::info($e->getMessage());
-
-            throw new InvalidArgumentException('Unable to update post data');
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-
-        DB::commit();
-
-        return $post;
-
+        return $slider;
     }
-
-    /**
-     * Validate  data.
-     * Store to DB if there are no errors.
-     *
-     * @param array $data
-     * @return String
-     */
-    public function savePostData($data)
+    public function update($data, $id)
     {
-
-        $result = $this->sliderRepository->save($data);
-
-        return $result;
+        try {
+            $slider = $this->sliderRepository->update($data, $id);
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+        }
+        return $slider;
     }
 
+    
 }
