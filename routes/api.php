@@ -78,6 +78,9 @@ use App\Http\Controllers\FailledTransactionReportController;
 use App\Http\Controllers\CouponUsedUserReportController;
 use App\Http\Controllers\CancelTicketReportController;
 
+// SettingController 
+use App\Http\Controllers\SocialMediaController;
+
 
 
 
@@ -236,6 +239,7 @@ Route::post('seatblockreport',[SeatBlockReportController::class,'getData']);
 
 ///ExtraSeatOpenReport////
 Route::get('extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
+
 ///CompleteReport////
 Route::get('completereport',[CompleteReportController::class,'getAll']);
 
@@ -264,6 +268,14 @@ Route::get('couponuseduserreport',[CouponUsedUserReportController::class,'getAll
 Route::get('cancelticketreport',[CancelTicketReportController::class,'getAll']);
 
 Route::post('cancelticketreport',[CancelTicketReportController::class,'getData']);
+
+//Setting  SocialMediaController
+
+Route::get('socialmedia',[SocialMediaController::class,'getAll']);
+
+Route::put('socialmedia',[SocialMediaController::class,'updateData']);
+
+
 
 
 
