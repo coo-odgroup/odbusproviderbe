@@ -80,9 +80,7 @@ use App\Http\Controllers\CancelTicketReportController;
 
 // SettingController 
 use App\Http\Controllers\SocialMediaController;
-
-
-
+use App\Http\Controllers\PageContentController;
 
 
 
@@ -274,6 +272,13 @@ Route::post('cancelticketreport',[CancelTicketReportController::class,'getData']
 Route::get('socialmedia',[SocialMediaController::class,'getAll']);
 
 Route::put('socialmedia',[SocialMediaController::class,'updateData']);
+
+//Page Content
+Route::get('/pagecontent',[PageContentController::class,'getAllpagecontent']);
+Route::post('pagecontent',[PageContentController::class,'addpagecontent']);
+Route::put('pagecontent/{id}',[PageContentController::class,'updatepagecontent']);
+Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);
+
 
 
 

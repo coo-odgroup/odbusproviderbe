@@ -36,9 +36,6 @@ class SocialMediaController extends Controller
     public function updateData(Request $request)
     {
     	// Log::info($request);
-     //    $buscancel = $this->socialmediaService->updateData($request);
-     //    return $this->successResponse($buscancel,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-
         $data = $request->only([
           'facebook_link',
           'twitter_link',
