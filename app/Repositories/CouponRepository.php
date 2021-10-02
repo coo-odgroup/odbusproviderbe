@@ -38,7 +38,6 @@ class CouponRepository
         $coupons->max_discount_price = $data['max_discount_price'];
         $coupons->min_tran_amount = $data['min_tran_amount'];
         $coupons->max_redeem = $data['max_redeem'];
-        $coupons->max_use_limit = $data['max_use_limit'];
         $coupons->category = $data['category'];
         $coupons->from_date = $data['from_date'];
         $coupons->to_date = $data['to_date'];
@@ -64,7 +63,6 @@ class CouponRepository
         $coupons->max_discount_price = $data['max_discount_price'];
         $coupons->min_tran_amount = $data['min_tran_amount'];
         $coupons->max_redeem = $data['max_redeem'];
-        $coupons->max_use_limit = $data['max_use_limit'];
         $coupons->category = $data['category'];
         $coupons->from_date = $data['from_date'];
         $coupons->to_date = $data['to_date'];
