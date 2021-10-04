@@ -81,6 +81,7 @@ use App\Http\Controllers\CancelTicketReportController;
 // SettingController 
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\PageContentController;
+use App\Http\Controllers\TestimonialController;
 
 
 
@@ -278,6 +279,15 @@ Route::get('/pagecontent',[PageContentController::class,'getAllpagecontent']);
 Route::post('pagecontent',[PageContentController::class,'addpagecontent']);
 Route::put('pagecontent/{id}',[PageContentController::class,'updatepagecontent']);
 Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);
+
+
+//Testimonial
+Route::post('/gettestimonial',[TestimonialController::class,'getAlltestimonial']);
+Route::post('testimonial',[TestimonialController::class,'addtestimonial']);
+Route::put('testimonial/{id}',[TestimonialController::class,'updatetestimonial']);
+Route::delete('testimonial/{id}', [TestimonialController::class, 'deletetestimonial']);
+Route::put('/changetestimonialStatus/{id}', [TestimonialController::class, 'changeStatus']);
+
 
 
 

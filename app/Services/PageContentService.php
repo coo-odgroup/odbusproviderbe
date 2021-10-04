@@ -22,18 +22,6 @@ class PageContentService
     {
         $this->pagecontentRepository = $pagecontentRepository;
     }
-
-   
-    // public function deleteById($id)
-    // {
-    //     try {
-    //         $pagecontent = $this->pagecontentRepository->delete($id);
-    //     } catch (Exception $e) {
-    //         Log::info($e->getMessage());
-    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-    //     }
-    //     return $pagecontent;
-    // }
     
     public function getAll()
     {      
@@ -51,10 +39,6 @@ class PageContentService
     public function deletepagecontent($id)
     {
         return $this->pagecontentRepository->deletepagecontent($id);
-    } 
-
-
-
-   
+    }   
 
 }
