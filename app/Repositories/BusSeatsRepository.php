@@ -52,7 +52,7 @@ class BusSeatsRepository
         //Find Value for Seat ID
         $busseats->ticket_price_id = $data['ticket_price_id'];
         $busseats->duration = $data['duration'];
-        $busseats->status = $data['status'];
+        $busseats->status = '1';
         $busseats->created_by = "Admin";
         return $busseats;
     }
