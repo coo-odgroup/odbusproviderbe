@@ -10,10 +10,10 @@ class TestimonialValidator
     public function validate($data) { 
         
         $rules = [
-            'posted_by'=>'required',
-            'testinmonial_content '=>'required',
-            'location'=>'required',
-            'designation '=>'required',
+            // 'posted_by'=>'required',
+            // 'testinmonial_content '=>'required',
+            // 'location'=>'required',
+            // 'designation '=>'required',
         ];      
       
         $testimonialValidator = Validator::make($data, $rules);

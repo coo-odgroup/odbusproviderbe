@@ -31,7 +31,8 @@ class TestimonialRepository
       {
         $data = $data->where('posted_by','like', '%' . $content . '%')
                      ->orWhere('testinmonial_content','like', '%' . $content . '%')
-                     ->orWhere('location','like', '%' . $content . '%');
+                     ->orWhere('location','like', '%' . $content . '%')
+                     ->orWhere('designation','like', '%' . $content . '%');
       }
       return $data->get();
         // return $this->testimonial->where('status','!=',2)->get();
