@@ -66,6 +66,16 @@ class SliderService
         }
         return $slider;
     }
+    public function changeStatus($id)
+    {
+        try {
+            $slider = $this->sliderRepository->changeStatus($id);
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+        }
+        return $slider;
+    }
 
     
 }

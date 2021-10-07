@@ -18,13 +18,26 @@ class SliderRepository
     }
     public function getData($request)
     {
-        $paginate = $request['paginate'];
+        $paginate = $request['per_page'];
         $searchBy = $request['searchBy']; 
         $status = $request['status'];
+        //return $request->all();
+       
+        if($searchBy!='' && $status!=''){
+            $list = $this->slider->where('occassion', 'like', '%' .$searchBy . '%')->where('status', $status)
+                                 ->whereNotIn('status', [2])->orderBy('id','desc');
+        }elseif($searchBy!='' && $status==''){
+            $list = $this->slider->where('occassion', $searchBy)
+                                 ->whereNotIn('status', [2])->orderBy('id','desc');
+        }elseif($searchBy=='' && $status!=''){
+            $list = $this->slider->where('status', $status)
+                                 ->whereNotIn('status', [2])->orderBy('id','desc');
+        }else{
+            $list = $this->slider->whereNotIn('status', [2])->orderBy('id','desc');    
+        }
 
-        $list = $this->slider->where('slider', 'like', '%' .$searchBy . '%')->where('status', $status)->orderBy('id','desc');
         $list =  $list->paginate($paginate);
-
+        //return $list;
         $response = array(
             "count" => $list->count(), 
             "total" => $list->total(),
@@ -43,14 +56,15 @@ class SliderRepository
     public function save($data)
     {
         $slide = new $this->slider;
-        $slide->slider = $data['slider'];
         $slide->occassion = $data['occassion'];
         $slide->category = $data['category'];
         $slide->url = $data['url'];
         $slide->slider_img = $data['slider_img'];
         $slide->alt_tag = $data['alt_tag'];
         $slide->start_date = $data['start_date'];
+        $slide->start_time = $data['start_time'];
         $slide->end_date = $data['end_date'];
+        $slide->end_time = $data['end_time'];
         $slide->created_by = "Admin";
         $slide->save();
 
@@ -60,13 +74,14 @@ class SliderRepository
     public function update($data, $id)
     {
         $slide = $this->slider->find($id);
-        $slide->slider = $data['slider'];
         $slide->occassion = $data['occassion'];
         $slide->url = $data['url'];
         $slide->slider_img = $data['slider_img'];
         $slide->alt_tag = $data['alt_tag'];
         $slide->start_date = $data['start_date'];
+        $slide->start_time = $data['start_time'];
         $slide->end_date = $data['end_date'];
+        $slide->end_time = $data['end_time'];
         $slide->update();
         return $slide;
     }
@@ -77,6 +92,17 @@ class SliderRepository
         $slide->status = 2;
         $slide->update();
 
+        return $slide;
+    }
+    public function changeStatus($id)
+    {
+        $slide = $this->slider->find($id);
+        if($slide->status==0){
+            $slide->status = 1;
+        }elseif($slide->status==1){
+            $slide->status = 0;
+        }
+        $slide->update();
         return $slide;
     }
 

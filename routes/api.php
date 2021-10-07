@@ -199,6 +199,7 @@ Route::put('/slider/{id}', [SliderController::class, 'updateSlider']);
 Route::delete('/slider/{id}', [SliderController::class, 'deleteSlider']);
 Route::get('/slider/{id}', [SliderController::class, 'getSlider']);
 Route::post('sliderDataTable',[SliderController::class,'getData']);
+Route::put('/changeStatusSlider/{id}', [SliderController::class, 'changeStatus']);
 
 Route::post('/test/Dummy/{dummy}', [DummyController::class, 'save']);
 

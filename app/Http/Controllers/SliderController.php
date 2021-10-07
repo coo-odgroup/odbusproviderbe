@@ -39,14 +39,13 @@ class SliderController extends Controller
     }
 
     public function createSlider(Request $request) {
-        $data = $request->only([
-            'slider','occassion','category','url', 'slider_img','alt_tag','start_date','end_date',
-        ]);
-        // $sliderValidation = $this->sliderValidation->validate($data);
-        // if ($sliderValidation->fails()) {
-        //   $errors = $sliderValidation->errors();
-        //   return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        // }
+
+        $data = $request->all();
+        $sliderValidation = $this->sliderValidator->validate($data);
+        if ($sliderValidation->fails()) {
+          $errors = $sliderValidation->errors();
+          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }
         try {
           $response = $this->sliderService->save($data);
           return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
@@ -58,9 +57,12 @@ class SliderController extends Controller
 
     public function updateSlider(Request $request, $id) {
       
-        $data = $request->only([
-            'slider','occassion','category', 'url', 'slider_img','alt_tag','start_date','end_date',
-        ]);
+         $data = $request->all();
+         $sliderValidation = $this->sliderValidator->validate($data);
+         if ($sliderValidation->fails()) {
+           $errors = $sliderValidation->errors();
+           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+         }
         try {
           $response = $this->sliderService->update($data, $id);
           return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
@@ -86,5 +88,15 @@ class SliderController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse($slider, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
+      }
+      public function changeStatus ($id) {
+        try{
+          $response = $this->sliderService->changeStatus($id);
+          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        }
+        catch (Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+       
       }
 }
