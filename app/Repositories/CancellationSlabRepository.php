@@ -82,6 +82,7 @@ class CancellationSlabRepository
     {
         $cSlab->api_id = $data['api_id'];
         $cSlab->rule_name = $data['rule_name'];
+        $cSlab->cancellation_policy_desc = $data['cancellation_policy_desc'];
         //$cSlab->duration = $data['duration'];
         //$cSlab->deduction = $data['deduction'];
         $cSlab->status =0;

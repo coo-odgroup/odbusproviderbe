@@ -129,7 +129,9 @@ class BusRepository
         $bus->has_return_bus ="0";        
         $bus->cancelation_points = $data['cancelation_points'];      
         $bus->cancellationslabs_id = $data['cancellationslabs_id'];    
-        $bus->created_by = $data['created_by'];       
+        $bus->created_by = $data['created_by'];   
+        // $bus->cancellation_policy_desc= $data['cancellation_policy_desc']; 
+        // $bus->travel_policy_desc= $data['travel_policy_desc'];     
         return $bus;
     }
     public function save($data)
