@@ -77,6 +77,7 @@ use App\Http\Controllers\BusCancellationReportController;
 use App\Http\Controllers\FailledTransactionReportController;
 use App\Http\Controllers\CouponUsedUserReportController;
 use App\Http\Controllers\CancelTicketReportController;
+use App\Http\Controllers\ContactReportController;
 
 // SettingController 
 use App\Http\Controllers\SocialMediaController;
@@ -215,6 +216,7 @@ Route::delete('/customerQuery/{id}', [CustomerQueryController::class, 'deleteCus
 Route::get('/customerQuery/{id}', [CustomerQueryController::class, 'getCustomerQuery']);
 
 Route::post('/busGallery', [BusGalleryController::class, 'addBusGallery']);
+// Route::post('/busGallerydata', [BusGalleryController::class, 'viewBusGallery']);
 Route::get('/busGallery', [BusGalleryController::class, 'getAllBusGallery']);
 Route::delete('/busGallery/{id}', [BusGalleryController::class, 'deleteBusGallery']);
 Route::get('/busGallery/{id}', [BusGalleryController::class, 'getBusGallery']);
@@ -268,6 +270,16 @@ Route::get('couponuseduserreport',[CouponUsedUserReportController::class,'getAll
 Route::get('cancelticketreport',[CancelTicketReportController::class,'getAll']);
 
 Route::post('cancelticketreport',[CancelTicketReportController::class,'getData']);
+
+
+//ContactReport
+	
+Route::get('contactreport',[ContactReportController::class,'getAll']);
+
+Route::post('contactreport',[ContactReportController::class,'getData']);
+	
+Route::delete('contactreport/{id}',[ContactReportController::class,'deleteData']);
+
 
 //Setting  SocialMediaController
 

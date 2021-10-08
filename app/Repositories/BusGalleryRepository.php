@@ -30,7 +30,10 @@ class BusGalleryRepository
      */
     public function getAll()
     {
-        return $this->busGallery->whereNotIn('status', [2])->get();
+        return $this->busGallery
+                    ->with('bus')
+                    ->whereNotIn('status', [2])
+                    ->get();
     }
 
     /**

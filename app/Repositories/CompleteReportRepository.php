@@ -107,6 +107,9 @@ class CompleteReportRepository
         {
             $paginate = Config::get('constants.ALL_RECORDS');
         }
+        elseif ($paginate== null) {
+            $paginate = 10 ;
+        }
 
         if(!empty($bus_operator_id))
         {

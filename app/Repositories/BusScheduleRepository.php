@@ -34,6 +34,7 @@ class BusScheduleRepository
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
+
         if(!is_numeric($rowperpage))
         {
             $rowperpage=Config::get('constants.ALL_RECORDS');
@@ -58,7 +59,8 @@ class BusScheduleRepository
         ->whereHas('bus', function ($query) use ($searchValue){
          $query->where('name', 'like', '%' .$searchValue . '%')
          ->groupBy('bus_id');                   
-     })
+     })       
+
         ->skip($start)
         ->take($rowperpage)
         ->whereNotIn('status', [2])
@@ -87,16 +89,15 @@ class BusScheduleRepository
                 );
              }  
              $data_arr[$key]['entryDates']=$entry_dates;
-             foreach($bStoppages as $bStoppage){                          
-                $sourceId = $bStoppage->source_id;
-                $destinationId = $bStoppage->destination_id;
-                $stoppageName = $this->location->whereIn('id', array($sourceId, $destinationId))->get('name');
+            
+            $sourceId = $bStoppages[0]->source_id;
+                $destinationId = $bStoppages[0]->destination_id;
+                $stoppageName = $this->location->whereIn('id', array($sourceId, $destinationId))->orderBy('id','ASC')->get('name');
                 $bus_stoppage[] = array(
                     "sourceName" => $stoppageName,
                     "destinationName" => $stoppageName,
                 );
-                $routesdata =  $stoppageName[0]['name']."-".$stoppageName[1]['name'];
-            } 
+                $routesdata =  $stoppageName[1]['name']."-".$stoppageName[0]['name'];
              $data_arr[$key]['routes']=$routesdata; 
      }
         $response = array(
