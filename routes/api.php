@@ -8,7 +8,6 @@ use App\Http\Controllers\SafetyController;
 use App\Http\Controllers\AmenitiesController;
 use App\Http\Controllers\AppDownloadController;
 use App\Http\Controllers\BusSeatLayoutController;
-use App\Http\Controllers\SliderController;
 use App\Http\Controllers\DummyController;
 use App\Http\Controllers\CustomerQueryController;
 use App\Http\Controllers\CustomerQueryCategoryController;
@@ -82,7 +81,8 @@ use App\Http\Controllers\CancelTicketReportController;
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\TestimonialController;
-
+use App\Http\Controllers\SliderController;
+use App\Http\Controllers\BannerController;
 
 
 
@@ -200,6 +200,14 @@ Route::delete('/slider/{id}', [SliderController::class, 'deleteSlider']);
 Route::get('/slider/{id}', [SliderController::class, 'getSlider']);
 Route::post('sliderDataTable',[SliderController::class,'getData']);
 Route::put('/changeStatusSlider/{id}', [SliderController::class, 'changeStatus']);
+
+Route::post('/banner', [BannerController::class, 'createBanner']);
+Route::get('/banner', [BannerController::class, 'getAllBanner']);
+Route::put('/banner/{id}', [BannerController::class, 'updateBanner']);
+Route::delete('/banner/{id}', [BannerController::class, 'deleteBanner']);
+Route::get('/banner/{id}', [BannerController::class, 'getBanner']);
+Route::post('bannerDataTable',[BannerController::class,'getData']);
+Route::put('/changeStatusBanner/{id}', [BannerController::class, 'changeStatus']);
 
 Route::post('/test/Dummy/{dummy}', [DummyController::class, 'save']);
 
