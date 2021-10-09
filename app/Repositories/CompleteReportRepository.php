@@ -107,7 +107,7 @@ class CompleteReportRepository
         {
             $paginate = Config::get('constants.ALL_RECORDS');
         }
-        elseif ($paginate== null) {
+        elseif ($paginate == null) {
             $paginate = 10 ;
         }
 

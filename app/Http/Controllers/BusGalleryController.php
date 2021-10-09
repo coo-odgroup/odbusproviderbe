@@ -36,10 +36,17 @@ class BusGalleryController extends Controller
     }
     public function getAllBusGallery() {
         $busGallery = $this->busGalleryService->getAll();;
-        $output ['status']=1;
-        $output ['message']='All Data Fetched Successfully';
-        $output ['result']=$busGallery;
-        return response($output, 200);
+        return $this->successResponse($busGallery, Config::get('constants.RECORD_FETCHED'), Response::HTTP_CREATED);
+    }
+    public function viewBusGallery(Request $request) {
+
+        $data = $request->only([
+            'bus_id',
+            'rows_number',
+          ]);
+        $busGallery = $this->busGalleryService->viewBusGallery($data);
+
+         return $this->successResponse($busGallery, Config::get('constants.RECORD_FETCHED'), Response::HTTP_CREATED);
     }
 
     public function addBusGallery(Request $request)

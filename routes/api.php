@@ -224,7 +224,8 @@ Route::delete('/customerQuery/{id}', [CustomerQueryController::class, 'deleteCus
 Route::get('/customerQuery/{id}', [CustomerQueryController::class, 'getCustomerQuery']);
 
 Route::post('/busGallery', [BusGalleryController::class, 'addBusGallery']);
-// Route::post('/busGallerydata', [BusGalleryController::class, 'viewBusGallery']);
+Route::post('/busGalleryData', [BusGalleryController::class, 'viewBusGallery']);
+
 Route::get('/busGallery', [BusGalleryController::class, 'getAllBusGallery']);
 Route::delete('/busGallery/{id}', [BusGalleryController::class, 'deleteBusGallery']);
 Route::get('/busGallery/{id}', [BusGalleryController::class, 'getBusGallery']);

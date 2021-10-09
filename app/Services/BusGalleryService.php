@@ -53,6 +53,11 @@ class BusGalleryService
         return $this->busGalleryRepository->getAll();
     }
 
+    public function viewBusGallery($data)
+    {
+        return $this->busGalleryRepository->viewBusGallery($data);
+    }
+
     /**
      * Get  by id.
      *

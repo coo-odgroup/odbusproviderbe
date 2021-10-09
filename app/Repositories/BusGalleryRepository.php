@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\BusGallery;
 use Storage;
+use Illuminate\Support\Facades\Log;
 
 
 class BusGalleryRepository
@@ -53,6 +54,33 @@ class BusGalleryRepository
         return $this->busGallery->whereNotIn('status', [2])
             ->where('bus_id', $bid)
             ->get();
+    }
+
+    public function viewBusGallery($data)
+    {    
+        $paginate = $data['rows_number'] ;
+        $bus_id = $data['bus_id'] ;
+
+        $data= $this->busGallery->with('bus')
+                     ->whereNotIn('status', [2])
+                     ->orderBy('id','DESC');
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($bus_id!=null)
+        {
+            $data=$data->where('bus_id', $bus_id);
+        }
+        $data=$data->paginate($paginate);
+
+        return $data;
     }
 
     /**
