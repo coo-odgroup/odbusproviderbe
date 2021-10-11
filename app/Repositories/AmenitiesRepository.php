@@ -15,6 +15,41 @@ class AmenitiesRepository
     {
         return $this->amenities->whereNotIn('status', [2])->get();
     }
+
+    public function getAmenitiesData($request)
+    {
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+       
+
+        $data= $this->amenities->whereNotIn('status', [2])
+                             ->orderBy('id','DESC');
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data=$data->where('name', $name);
+        } 
+      
+
+        $data=$data->paginate($paginate);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;
+        
+    }
     public function getDatatable($request)
     {
         $draw = $request->get('draw');

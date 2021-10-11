@@ -35,6 +35,11 @@ class BusSittingController extends Controller
     public function getAllBusSitting(Request $request) {
         $busSitting = $this->busSittingService->getAll($request);
         return $this->successResponse($busSitting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    } 
+
+    public function BusSittingData(Request $request) {
+        $busSitting = $this->busSittingService->BusSittingData($request);
+        return $this->successResponse($busSitting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
     public function createBusSitting(Request $request) {

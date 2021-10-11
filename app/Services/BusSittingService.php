@@ -108,6 +108,11 @@ class BusSittingService
     public function getAllBusSittingDT($request)
     {
         return $this->busSittingRepository->getAllBusSittingDT($request);
+    } 
+
+    public function BusSittingData($request)
+    {
+        return $this->busSittingRepository->BusSittingData($request);
     }
     public function changeStatus($id)
     {

@@ -70,6 +70,11 @@ class SafetyService
     {
         return $this->safetyRepository->getDatatable($request);
     }
+
+    public function getAllData($request)
+    {
+        return $this->safetyRepository->getAllData($request);
+    }
     /**
      * Get  by id.
      *

@@ -26,6 +26,42 @@ class BusSittingRepository
     {
         return $this->busSitting->whereNotIn('status', [2])->get();
     }
+
+      public function BusSittingData($request)
+    {
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+       
+
+        $data= $this->busSitting->whereNotIn('status', [2])
+                             ->orderBy('id','DESC');
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data=$data->where('name', $name);
+        } 
+      
+
+        $data=$data->paginate($paginate);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;
+        
+    }
+
     /**
      * Get busSitting by id
      *
@@ -78,6 +114,8 @@ class BusSittingRepository
         $busSitting->update();
         return $busSitting;
     }
+
+
     ///////BusSittingType Data Table/////////////////////////
     public function getAllBusSittingDT($request)
     {

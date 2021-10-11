@@ -26,6 +26,47 @@ class BusTypeRepository
         return $this->busType->get();
 
     }
+
+    public function getAllBusTypeData($request)
+    {
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+        $bus_type = $request['bus_type'] ;
+
+        $data= $this->busType->with('BusClass')
+                             ->whereNotIn('status', [2])
+                             ->orderBy('id','DESC');
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data=$data->where('name', $name);
+        } 
+        if($bus_type!=null)
+        {
+            $data=$data->where('bus_class_id', $bus_type);
+        }
+
+        $data=$data->paginate($paginate);
+        // Log::info($data);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;
+
+       
+    }
     public function getModel($data, BusType $busType)
     {
         $busType->bus_class_id = $data['type'];

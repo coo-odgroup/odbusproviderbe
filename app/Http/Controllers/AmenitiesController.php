@@ -42,6 +42,11 @@ class AmenitiesController extends Controller
     {
       $amenities = $this->amenitiesService->dataTable($request);
       return $this->successResponse($amenities,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+    public function AmenitiesData(Request $request)
+    {
+      $amenities = $this->amenitiesService->AmenitiesData($request);
+      return $this->successResponse($amenities,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     
     public function createAmenities(Request $request) {

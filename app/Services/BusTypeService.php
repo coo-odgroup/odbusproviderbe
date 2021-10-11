@@ -44,6 +44,11 @@ class BusTypeService
     {
         return $this->busTypeRepository->getAll($request);
     }
+
+    public function getAllBusTypeData($request)
+    {
+        return $this->busTypeRepository->getAllBusTypeData($request);
+    }
     /**
      * Get  by id.
      *

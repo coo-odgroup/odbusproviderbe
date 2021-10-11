@@ -114,6 +114,7 @@ Route::get('/customer/{id}', [UserController::class, 'getCustomerInformation']);
 Route::post('/login', [UserController::class, 'Login']);
 
 Route::post('/BusSitting', [BusSittingController::class, 'createBusSitting']);
+Route::post('/BusSittingData', [BusSittingController::class, 'BusSittingData']);
 Route::get('/BusSitting', [BusSittingController::class, 'getAllBusSitting']);
 Route::put('/BusSitting/{id}', [BusSittingController::class, 'updateBusSitting']);
 Route::delete('/BusSitting/{id}', [BusSittingController::class, 'deleteBusSitting']);
@@ -149,6 +150,7 @@ Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeSt
 
 
 Route::post('/BusType', [BusTypeController::class, 'createBusType']);
+Route::post('/BusTypeData', [BusTypeController::class, 'getAllBusTypeData']);
 Route::get('/BusType', [BusTypeController::class, 'getAllBusType']);
 Route::put('/BusType/{id}', [BusTypeController::class, 'updateBusType']);
 Route::delete('/BusType/{id}', [BusTypeController::class, 'deleteBusType']);
@@ -158,6 +160,7 @@ Route::put('/changeStatusBusType/{id}', [BusTypeController::class, 'changeStatus
 
 
 Route::post('/Amenities', [AmenitiesController::class, 'createAmenities']);
+Route::post('/AmenitiesData', [AmenitiesController::class, 'AmenitiesData']);
 Route::post('/AmenitiesDT', [AmenitiesController::class, 'getAllAmenitiesDT']);
 Route::get('/Amenities', [AmenitiesController::class, 'getAll']);
 Route::put('/Amenities/{id}', [AmenitiesController::class, 'updateAmenities']);
@@ -167,6 +170,7 @@ Route::put('/changeStatusAmenities/{id}', [AmenitiesController::class, 'changeSt
 
 
 Route::post('/Safety', [SafetyController::class, 'save']);
+Route::post('/getAllData', [SafetyController::class, 'getAllData']);
 Route::post('/SafetyDT', [SafetyController::class, 'getSafetyDT']);
 Route::get('/Safety', [SafetyController::class, 'getAll']);
 Route::put('/Safety/{id}', [SafetyController::class, 'update']);

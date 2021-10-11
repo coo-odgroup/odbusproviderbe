@@ -53,6 +53,12 @@ class SafetyController extends Controller
       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     
+    public function getAllData(Request $request)
+    {
+      $result = $this->safetyService->getAllData($request);
+      return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    
     public function save(Request $request) {
         $data = $request->only([
           'name','created_by','icon'

@@ -69,6 +69,11 @@ class AmenitiesService
     public function dataTable($request)
     {
         return $this->amenitiesRepository->getDatatable($request);
+    } 
+
+    public function AmenitiesData($request)
+    {
+        return $this->amenitiesRepository->getAmenitiesData($request);
     }
     /**
      * Get  by id.
