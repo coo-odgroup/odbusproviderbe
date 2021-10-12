@@ -82,6 +82,11 @@ class BusOperatorService
     public function datafilter($request)
     {
         return $this->busOperatorRepository->filter($request);
+    } 
+
+    public function BusbyOperatorData($request)
+    {
+        return $this->busOperatorRepository->BusbyOperatorData($request);
     }
     /**
      * Get  by id.

@@ -49,6 +49,11 @@ class CancellationSlabService
     public function getCancellationSlabDT($request)
     {
         return $this->cancellationSlabRepository->getCancellationSlabDT($request);
+    } 
+
+    public function cancellationslabData($request)
+    {
+        return $this->cancellationSlabRepository->cancellationslabData($request);
     }
     /**
      * Get  by id.

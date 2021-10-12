@@ -81,6 +81,51 @@ class SeatOpenRepository
          return $seatopen;        
     }
 
+
+    public function seatopenData($request)
+    {
+
+
+         $paginate = $request['rows_number'] ;
+         $name = $request['name'] ;
+       
+
+        $data= $this->seatOpen->with('seatOpenSeats.seats')
+                               ->with('bus.busOperator')
+                               ->whereNotIn('status', [2]);
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $data->whereHas('bus', function ($query) use ($name){
+                $query->where('name', 'like', '%' .$name . '%');               
+            })
+            
+
+            ->orWhereHas('bus.busOperator', function ($query) use ($name){
+                $query->where('operator_name', 'like', '%' .$name . '%');
+            });
+            
+        }     
+
+        $data=$data->paginate($paginate);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;
+
+    }
     // public function updateseatopen($data)
     // {
     //      Log::info($data);

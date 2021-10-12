@@ -32,6 +32,12 @@ class BusScheduleController extends Controller
     public function getAllBusScheduleDT(Request $request) {
         $busSchedule = $this->busScheduleService->dataTable($request);
         return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+
+    public function busSchedulerData(Request $request) {
+        $busSchedule = $this->busScheduleService->busSchedulerData($request);
+        return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function createBusSchedule(Request $request) {

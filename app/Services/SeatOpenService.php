@@ -70,6 +70,11 @@ class SeatOpenService
     {
         return $this->seatopenRepository->getseatopenDT($request);
     }
+
+    public function seatopenData($request)
+    {
+        return $this->seatopenRepository->seatopenData($request);
+    }
    
     
     public function getById($id)

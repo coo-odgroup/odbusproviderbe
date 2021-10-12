@@ -24,7 +24,7 @@ class TestimonialRepository
     public function getAll($request)
     {
       $content = $request->searchvalue;
-      Log::info($request);
+      // Log::info($request);
 
       $data = $this->testimonial->where('status','!=',2);
       if($content!= null)

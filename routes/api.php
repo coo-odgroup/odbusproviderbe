@@ -137,6 +137,7 @@ Route::post('/seatopen',[SeatOpenController::class,'addseatopen']);
 Route::put('/seatopen/{id}',[SeatOpenController::class,'updateseatopen']);
 Route::delete('/seatopen/{id}', [SeatOpenController::class, 'deleteseatopen']);
 Route::post('/getseatopenDT', [SeatOpenController::class, 'getseatopenDT']);
+Route::post('/seatopenData', [SeatOpenController::class, 'seatopenData']);
 Route::put('/changeseatopenStatus/{id}', [SeatOpenController::class, 'changeStatus']);
 
 ////////////SEAT BLOCK//////
@@ -145,6 +146,7 @@ Route::post('/seatblock',[SeatBlockController::class,'addseatblock']);
 Route::put('/seatblock/{id}',[SeatBlockController::class,'updateseatblock']);
 Route::delete('/seatblock/{id}', [SeatBlockController::class, 'deleteseatblock']);
 Route::post('/getseatblockDT', [SeatBlockController::class, 'getseatblockDT']);
+Route::post('/seatblockData', [SeatBlockController::class, 'seatblockData']);
 Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeStatus']);
 
 
@@ -189,6 +191,7 @@ Route::get('/appdownload/{id}', [AppDownloadController::class, 'getAppDownload']
 
 Route::get('/BusSeatLayoutRecord/{id}', [BusSeatLayoutController::class, 'getSeatLayoutRecord']);
 Route::post('/BusSeatLayout', [BusSeatLayoutController::class, 'save']);
+Route::post('/BusSeatLayoutData', [BusSeatLayoutController::class, 'BusSeatLayoutData']);
 Route::get('/BusSeatLayout', [BusSeatLayoutController::class, 'getAll']);
 Route::put('BusSeatLayout/{id}', [BusSeatLayoutController::class, 'update']);
 Route::delete('/BusSeatLayout/{id}', [BusSeatLayoutController::class, 'deleteById']);
@@ -487,6 +490,7 @@ Route::post('/busCancelledDT', [BusCancelledController::class, 'getBusCancelledD
 Route::put('/changeStatusBusCancelled/{id}', [BusCancelledController::class, 'changeStatus']);
 
 Route::post('/busScheduleDT', [BusScheduleController::class, 'getAllBusScheduleDT']);
+Route::post('/busSchedulerData', [BusScheduleController::class, 'busSchedulerData']);
 Route::get('/busSchedule', [BusScheduleController::class, 'getAllBusSchedule']);
 Route::post('/busSchedule', [BusScheduleController::class, 'createBusSchedule']);
 Route::put('/busSchedule/{id}', [BusScheduleController::class, 'updateBusSchedule']);
@@ -542,6 +546,8 @@ Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'getBookingDe
 
 Route::post('/cancellationslabsDT', [CancellationSlabController::class, 'getCancellationSlabDT']);
 Route::post('/cancellationslab', [CancellationSlabController::class, 'createCancellationSlab']);
+
+Route::post('/cancellationslabData', [CancellationSlabController::class, 'cancellationslabData']);
 Route::put('/cancellationslab/{id}', [CancellationSlabController::class, 'updateCancellationSlab']);
 Route::get('/cancellationslabs', [CancellationSlabController::class, 'getAllCancellationSlab']);
 Route::delete('/cancellationslab/{id}', [CancellationSlabController::class, 'deleteCancellationSlab']);
@@ -566,6 +572,7 @@ Route::get('/extclosinghour/{id}', [ExtendedBusClosingHoursController::class, 'g
 
 Route::post('/busoperatorsDT', [BusOperatorController::class, 'getAllBusOperatorsDT']);
 Route::post('/busoperator', [BusOperatorController::class, 'createBusOperator']);
+Route::post('/BusbyOperatorData', [BusOperatorController::class, 'BusbyOperatorData']);
 Route::put('/busoperator/{id}', [BusOperatorController::class, 'updateBusOperator']);
 Route::get('/busoperator', [BusOperatorController::class, 'getAllBusOperators']);
 Route::delete('/busoperator/{id}', [BusOperatorController::class, 'deleteBusOperator']);

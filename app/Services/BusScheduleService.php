@@ -51,6 +51,11 @@ class BusScheduleService
     {
         return $this->busScheduleRepository->getDatatable($request);
     }
+
+     public function busSchedulerData($request)
+    {
+        return $this->busScheduleRepository->busSchedulerData($request);
+    }
     /**
      * Get  by id.
      *

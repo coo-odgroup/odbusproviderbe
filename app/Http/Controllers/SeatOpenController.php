@@ -57,6 +57,13 @@ class SeatOpenController extends Controller
         
       }
 
+      public function seatopenData(Request $request) {      
+        
+        $seatopen = $this->seatopenService->seatopenData($request);
+        return $this->successResponse($seatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        
+      }
+
       public function changeStatus ($id) {
     
         try{

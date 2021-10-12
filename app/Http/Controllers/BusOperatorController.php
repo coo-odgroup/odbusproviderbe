@@ -39,6 +39,12 @@ class BusOperatorController extends Controller
       return $this->successResponse($BusOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function BusbyOperatorData(Request $request)
+    {
+      $BusOperators = $this->busOperatorService->BusbyOperatorData($request);
+      return $this->successResponse($BusOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
     public function getAllBusOperators() {
         $prod = $this->busOperatorService->getAll();;
         return $this->successResponse($prod,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);

@@ -116,7 +116,14 @@ class BusSeatLayoutService
     public function getAllBusSeatLayoutDT($request)
     {
         return $this->busSeatLayoutRepository->getAllBusSeatLayoutDT($request);
+    } 
+
+    public function BusSeatLayoutData($request)
+    {
+        return $this->busSeatLayoutRepository->BusSeatLayoutData($request);
     }
+
+    
     public function changeStatus($id)
     {
         try {

@@ -69,6 +69,11 @@ class SeatBlockService
         return $this->seatblockRepository->getseatblockDT($request);
     }
    
+    public function seatblockData($request)
+    {
+        return $this->seatblockRepository->seatblockData($request);
+    }
+   
     
     public function getById($id)
     {

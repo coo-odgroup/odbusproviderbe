@@ -107,6 +107,13 @@ class BusSeatLayoutController extends Controller
       $busSeatLayout = $this->busSeatLayoutService->getAllBusSeatLayoutDT($request);
       return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
+
+    public function BusSeatLayoutData(Request $request) {      
+      $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutData($request);
+      return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    }
+
+    
     public function changeStatus($id) {
       try{
         $this->busSeatLayoutService->changeStatus($id);
