@@ -59,6 +59,12 @@ class FestivalFareService
     {
         
         return $this->festivalFareRepository->getDatatable($request);
+    } 
+
+    public function festivalFareData($request)
+    {
+        
+        return $this->festivalFareRepository->festivalFareData($request);
     }
     /**
      * Get  by id.

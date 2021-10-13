@@ -36,7 +36,13 @@ class BookingSeizedController extends Controller
 
         $bookingseized = $this->bookingseizedService->updateSeized($request);
             return $this->successResponse($bookingseized,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }  
 
+     public function bookingseizedData(Request $request)
+    {
+
+        $bookingseized = $this->bookingseizedService->bookingseizedData($request);
+            return $this->successResponse($bookingseized,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }   
 
     public function changeStatus($id) 

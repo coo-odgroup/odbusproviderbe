@@ -39,7 +39,15 @@ class BusSpecialFareController extends Controller
         $current_timestamp = Carbon::now()->timestamp/1000;
         //Log::info("getBusSpecialFareDT End Time". $current_timestamp);
          return $this->successResponse($busSpecialFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      } 
+
+    public function busSpecialFareData(Request $request) {
+     
+         $busSpecialFare = $this->busSpecialFareService->busSpecialFareData($request);
+         return $this->successResponse($busSpecialFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
+
+
 
     public function createBusSpecialFare(Request $request) {
         $data = $request->only([

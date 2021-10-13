@@ -57,6 +57,12 @@ class BusOwnerFareService
     {
         
         return $this->busOwnerFareRepository->getDatatable($request);
+    } 
+
+    public function busOwnerFareData($request)
+    {
+        
+        return $this->busOwnerFareRepository->busOwnerFareData($request);
     }
     /**
      * Get  by id.

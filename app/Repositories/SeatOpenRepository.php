@@ -84,7 +84,7 @@ class SeatOpenRepository
 
     public function seatopenData($request)
     {
-
+        // Log::info($request);
 
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
@@ -110,7 +110,7 @@ class SeatOpenRepository
             })
             
 
-            ->orWhereHas('bus.busOperator', function ($query) use ($name){
+             ->orWhereHas('bus.busOperator', function ($query) use ($name){
                 $query->where('operator_name', 'like', '%' .$name . '%');
             });
             

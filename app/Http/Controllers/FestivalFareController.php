@@ -36,6 +36,12 @@ class FestivalFareController extends Controller
 
         $busOwnerFare = $this->festivalFareService->dataTable($request);
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function festivalFareData(Request $request) {      
+
+        $busOwnerFare = $this->festivalFareService->festivalFareData($request);
+        return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
 
       public function createFestivalFare(Request $request) {

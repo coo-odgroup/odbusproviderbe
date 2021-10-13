@@ -17,13 +17,13 @@ class BookingSeizedService
     protected $bookingseizedRepository;
 
     
-   
+
     public function __construct(BookingSeizedRepository $bookingseizedRepository)
     {
         $this->bookingseizedRepository = $bookingseizedRepository;
     }
 
-   
+
     
     
     public function getAll()
@@ -31,7 +31,7 @@ class BookingSeizedService
         return $this->bookingseizedRepository->getAll();
     }
 
-  
+
     
     public function updateSeized($data)
     { 
@@ -45,28 +45,35 @@ class BookingSeizedService
     }
 
 
+    public function bookingseizedData($data)
+    { 
 
-    public function changeStatus($id)
-    {
-        try {
-            $post = $this->bookingseizedRepository->changeStatus($id);
+       return $seized = $this->bookingseizedRepository->bookingseizedData($data);
+   }
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
-        }
-        return $post;
+
+
+   public function changeStatus($id)
+   {
+    try {
+        $post = $this->bookingseizedRepository->changeStatus($id);
+
+    } catch (Exception $e) {
+        throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
     }
+    return $post;
+}
 
-   
-    public function savePostData($data)
-    {   
-        try {
-            $amenity = $this->bookingseizedRepository->save($data);
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $amenity;
+
+public function savePostData($data)
+{   
+    try {
+        $amenity = $this->bookingseizedRepository->save($data);
+    } catch (Exception $e) {
+        Log::info($e->getMessage());
+        throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
     }
+    return $amenity;
+}
 
 }

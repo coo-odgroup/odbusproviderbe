@@ -59,6 +59,11 @@ class BusSpecialFareService
     {
         return $this->busSpecialFareRepository->getDatatable($request);
     }
+
+    public function busSpecialFareData($request)
+    {
+        return $this->busSpecialFareRepository->busSpecialFareData($request);
+    }
     /**
      * Get  by id.
      *

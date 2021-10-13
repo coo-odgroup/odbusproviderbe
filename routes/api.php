@@ -126,6 +126,7 @@ Route::put('/changeStatusBusSitting/{id}', [BusSittingController::class, 'change
 
 Route::get('/bookingseized',[BookingSeizedController::class,'getAllseized']);
 Route::post('/bookingseized',[BookingSeizedController::class,'updateSeized']);
+Route::post('/bookingseizedData',[BookingSeizedController::class,'bookingseizedData']);
 Route::put('/changebookingseizedStatus/{id}', [BookingSeizedController::class, 'changeStatus']);
 
 
@@ -584,6 +585,7 @@ Route::post('/getOperatorPhone', [BusOperatorController::class, 'getOperatorPhon
 
 Route::get('/busSpecialFare', [BusSpecialFareController::class, 'getAllBusSpecialFare']);
 Route::post('/busSpecialFare', [BusSpecialFareController::class, 'createBusSpecialFare']);
+Route::post('/busSpecialFareData', [BusSpecialFareController::class, 'busSpecialFareData']);
 Route::put('/busSpecialFare/{id}', [BusSpecialFareController::class, 'updateBusSpecialFare']);
 Route::delete('/busSpecialFare/{id}', [BusSpecialFareController::class, 'deleteBusSpecialFare']);
 Route::get('/busSpecialFare/{id}', [BusSpecialFareController::class, 'getBusSpecialFare']);
@@ -593,6 +595,7 @@ Route::get('/relations/{id}', [BusSpecialFareController::class, 'getPivotData'])
 
 Route::get('/busOwnerFare', [BusOwnerFareController::class, 'getAllBusOwnerFare']);
 Route::post('/busOwnerFare', [BusOwnerFareController::class, 'createBusOwnerFare']);
+Route::post('/busOwnerFareData', [BusOwnerFareController::class, 'busOwnerFareData']);
 Route::put('/busOwnerFare/{id}', [BusOwnerFareController::class, 'updateBusOwnerFare']);
 Route::delete('/busOwnerFare/{id}', [BusOwnerFareController::class, 'deleteBusOwnerFare']);
 Route::get('/busOwnerFare/{id}', [BusOwnerFareController::class, 'getBusOwnerFare']);
@@ -603,6 +606,7 @@ Route::put('/changeStatusbusOwnerFare/{id}', [BusOwnerFareController::class, 'ch
 
 Route::get('/festivalFare', [FestivalFareController::class, 'getAllFestivalFare']);
 Route::post('/festivalFare', [FestivalFareController::class, 'createFestivalFare']);
+Route::post('/festivalFareData', [FestivalFareController::class, 'festivalFareData']);
 Route::put('/festivalFare/{id}', [FestivalFareController::class, 'updateFestivalFare']);
 Route::delete('/festivalFare/{id}', [FestivalFareController::class, 'deleteFestivalFare']);
 Route::get('/festivalFare/{id}', [FestivalFareController::class, 'getFestivalFare']);

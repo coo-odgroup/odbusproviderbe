@@ -38,6 +38,12 @@ class BusOwnerFareController extends Controller
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
 
+    public function busOwnerFareData(Request $request) {      
+
+        $busOwnerFare = $this->busOwnerFareService->busOwnerFareData($request);
+        return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }
+
       public function createBusOwnerFare(Request $request) {
         $data = $request->only([
         

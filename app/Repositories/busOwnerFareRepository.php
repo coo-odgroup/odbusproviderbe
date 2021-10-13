@@ -28,6 +28,45 @@ class BusOwnerFareRepository
     {
         return $this->ownerFare->whereNotIn('status', [2])->get();
     }
+
+    public function busOwnerFareData($request)
+    {
+
+         $paginate = $request['rows_number'] ;
+         $name = $request['name'] ;
+       
+
+        $data= $this->ownerFare->with('bus')
+                    ->whereNotIn('status', [2]);
+
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $data->where('date', 'like', '%' .$name . '%')
+                         ->orWhereHas('bus', function ($query) use ($name){
+                            $query->where('name', 'like', '%' .$name . '%');
+                                 });                        
+        }     
+
+        $data=$data->paginate($paginate);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;  
+
+    }
     
     public function getDatatable($request)
     {
