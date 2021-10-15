@@ -30,6 +30,10 @@ class CouponService
     {
         return $this->couponRepository->getAll();
     }
+     public function getData($request)
+    {
+        return $this->couponRepository->getData($request);
+    }
     public function getById($id)
     {
         return $this->couponRepository->getById($id);

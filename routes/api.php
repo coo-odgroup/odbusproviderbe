@@ -510,6 +510,7 @@ Route::post('/coupon', [CouponController::class, 'createCoupon']);
 Route::put('/coupon/{id}', [CouponController::class, 'updateCoupon']);
 Route::delete('/coupon/{id}', [CouponController::class, 'deleteCoupon']);
 Route::get('/coupon/{id}', [CouponController::class, 'getBusCoupon']);
+Route::post('/getData', [CouponController::class, 'getData']);
 
 Route::get('/couponAssignedBus', [CouponAssignedBusController::class, 'getAllCouponAssignedBus']);
 Route::post('/couponAssignedBus', [CouponAssignedBusController::class, 'createCouponAssignedBus']);

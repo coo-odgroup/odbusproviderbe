@@ -18,7 +18,7 @@ class CouponRepository
     
     public function getAll()
     {
-        return $this->coupon->get();
+        return $this->coupon->where('status','!=',2)->get();
     }
 
     
@@ -74,6 +74,30 @@ class CouponRepository
         $coupons->update();
 
         return $coupons;
+    }
+
+    public function getData($request)
+    {
+        // Log:: info($request);
+        $start_date="";
+        $end_date="";
+        $paginate = $request->rows_number;
+        $data= $this->coupon->orderBy('id','DESC');
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) {
+            $paginate = 10 ;
+        }
+        $data=$data->paginate($paginate);       
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;      
+
     }
 
     

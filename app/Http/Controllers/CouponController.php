@@ -121,6 +121,13 @@ class CouponController extends Controller
       $output ['message']='Single Data Fetched Successfully';
       $output ['result']=$coupon;
       return response($output, 200);
-    }      
+    }    
+
+    public function getData(Request $request)
+    {
+        $coupon = $this->couponService->getData($request);
+        return $this->successResponse($coupon,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+    }  
 	     
 }
