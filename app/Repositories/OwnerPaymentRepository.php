@@ -22,8 +22,7 @@ class OwnerPaymentRepository
     
     public function getDatatable($request)
     {
-
-         $draw = $request->get('draw');
+        $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
         if(!is_numeric($rowperpage))
@@ -98,5 +97,45 @@ class OwnerPaymentRepository
         return $ownerPayment;
     }
     
+
+    public function ownerpaymentData($request)
+    {
+         $paginate = $request['rows_number'] ;
+         $name = $request['name'] ;
+
+        $data= $this->ownerPayment->with('busOperator')
+                    ->whereNotIn('status', [2]);
+
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $data->where('transaction_id', 'like', '%' .$name . '%')
+                         ->orWhere('payment_date', 'like', '%' .$name . '%')
+                         ->orWhere('amount', 'like', '%' .$name . '%')
+                         ->orWhere('remark', 'like', '%' .$name . '%')
+                         ->orWhereHas('busOperator', function ($query) use ($name){
+                            $query->where('operator_name', 'like', '%' .$name . '%');
+                            });                        
+        }     
+
+        $data=$data->paginate($paginate);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;  
+
+    }
  
 }

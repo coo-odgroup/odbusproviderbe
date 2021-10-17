@@ -32,6 +32,12 @@ class OwnerPaymentService
     {
         
         return $this->ownerPaymentRepository->getDatatable($request);
+    } 
+
+    public function ownerpaymentData($request)
+    {
+        
+        return $this->ownerPaymentRepository->ownerpaymentData($request);
     }
         
     public function savePostData($data)

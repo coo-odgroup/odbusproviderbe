@@ -113,6 +113,13 @@ class BoardingDropingController extends Controller
         $boardingDroping = $this->boardingDropingService->getBoardingDropingDT($request);
         return $this->successResponse($boardingDroping,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
+
+    public function boardingData(Request $request) {     
+        
+        $boardingDroping = $this->boardingDropingService->boardingData($request);
+        return $this->successResponse($boardingDroping,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }
+      
       public function createBoarding(Request $request) 
       {      
         $data = $request->only([

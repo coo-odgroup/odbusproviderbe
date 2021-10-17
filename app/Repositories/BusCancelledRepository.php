@@ -9,6 +9,7 @@ use App\Models\BusStoppage;
 use App\Models\Location;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+
 class BusCancelledRepository
 {
     
@@ -121,6 +122,60 @@ class BusCancelledRepository
             "aaData" => $data_arr
         ); 
         return ($response);
+    }
+
+    public function busCancelledData($request)
+    {
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+
+        $data= $this->busCancelled->with('bus.busOperator','bus.busstoppage')
+                    ->whereNotIn('status', [2]);
+
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $data->WhereHas('bus', function ($query) use ($name){
+                            $query->where('name', 'like', '%' .$name . '%');
+                            })
+                          ->orWhereHas('bus', function ($query) use ($name){
+                            $query->where('bus_number', 'like', '%' .$name . '%');
+                            })
+                         ->orWhereHas('bus.busOperator', function ($query) use ($name){
+                            $query->where('operator_name', 'like', '%' .$name . '%');
+                            });                        
+        }     
+
+        $data=$data->paginate($paginate);
+
+        // Log::info($data['bus']['busstoppage']);
+
+        // if($data){
+        //     foreach($data as $key=>$v){
+        //             Log::info($v->bus->bus_operator);
+        //         // foreach ($v->bus->bus_stoppage as $e) {
+        //         //     Log::info($e);
+                    
+        //         // }
+        //         }
+        //     }
+
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;  
     }
     /**
      * Get Bus Cancelled by id

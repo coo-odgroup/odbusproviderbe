@@ -96,6 +96,13 @@ class LocationController extends Controller
         $locations = $this->locationService->getAllLocationDT($request);
         return $this->successResponse($locations,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
         
+      } 
+
+      public function locationsData(Request $request) {      
+        
+        $locations = $this->locationService->locationsData($request);
+        return $this->successResponse($locations,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        
       }
 
     public function addLocation(Request $request) {

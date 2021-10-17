@@ -114,6 +114,11 @@ class BoardingDropingService
         return $this->boardingDropingRepository->getBoardingDropingDT($request);
     }
 
+    public function boardingData($request)
+    {
+        return $this->boardingDropingRepository->boardingData($request);
+    }
+
     public function createBoarding($request)
     {
         return $this->boardingDropingRepository->create($request);

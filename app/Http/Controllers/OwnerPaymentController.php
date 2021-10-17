@@ -37,6 +37,12 @@ class OwnerPaymentController extends Controller
         return $this->successResponse($ownerpayment,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function ownerpaymentData(Request $request) 
+    {      
+        $ownerpayment = $this->ownerPaymentService->ownerpaymentData($request);
+        return $this->successResponse($ownerpayment,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
     public function createOwnerPayment(Request $request) 
     {
         // Log::info($request);

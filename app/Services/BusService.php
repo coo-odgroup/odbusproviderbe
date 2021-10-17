@@ -81,6 +81,16 @@ class BusService
     {
         return $this->busRepository->getAllBusDT($request);
     }
+
+    public function busSeatsFareData($request)
+    {
+        return $this->busRepository->busSeatsFareData($request);
+    } 
+
+    public function busupdatesequenceData($request)
+    {
+        return $this->busRepository->busupdatesequenceData($request);
+    }
     public function changeStatus($id)
     {
         try {

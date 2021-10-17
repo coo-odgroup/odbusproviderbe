@@ -55,6 +55,11 @@ class BusCancelledService
     {
         return $this->busCancelledRepository->getBusCancelledDT($request);
     }
+
+    public function busCancelledData($request)
+    {
+        return $this->busCancelledRepository->busCancelledData($request);
+    }
     /**
      * Get  by id.
      *

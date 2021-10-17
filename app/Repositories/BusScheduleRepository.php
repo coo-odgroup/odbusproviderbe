@@ -124,10 +124,9 @@ class BusScheduleRepository
     {
       // Log::info($request);
           $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;
-       
+         $name = $request['name'] ;     
 
-        $data= $this->busSchedule->with('bus.busOperator')->whereNotIn('status', [2])
+        $data= $this->busSchedule->with('busScheduleDate')->with('bus.busOperator')->whereNotIn('status', [2])
                              ->orderBy('id','DESC');
 
         if($paginate=='all') 

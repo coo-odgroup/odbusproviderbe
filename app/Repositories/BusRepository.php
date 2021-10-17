@@ -234,6 +234,82 @@ class BusRepository
         return $response;
         
     }
+
+    public function busSeatsFareData( $request)
+    {
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+
+        $data= $this->bus->whereNotIn('status', [2]);
+
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $data->where('name', 'like', '%' .$name . '%') 
+                         ->orWhere('bus_number', 'like', '%' .$name . '%');;
+                                             
+        }     
+
+        $data=$data->paginate($paginate);
+        
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response; 
+        
+        
+    } 
+
+
+    public function busupdatesequenceData( $request)
+    {
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+
+        $data= $this->bus->whereNotIn('status', [2]);
+
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $data->where('name', 'like', '%' .$name . '%')
+                         ->orWhere('bus_number', 'like', '%' .$name . '%');
+                                             
+        }     
+
+        $data=$data->paginate($paginate);
+        
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response; 
+        
+        
+    }
+
+
+
     public function changeStatus($id)
     {
         $post = $this->bus->find($id);

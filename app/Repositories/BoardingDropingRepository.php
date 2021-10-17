@@ -146,6 +146,41 @@ class BoardingDropingRepository
         return $response;
         
     }
+
+
+    public function boardingData($request)   
+    {
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+
+        $data= $this->location->with('boardingDropping')->whereNotIn('status', [2]);
+
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $data->where('name', 'like', '%' .$name . '%')
+                         ->orWhereHas('boardingDropping', function ($query) use ($name) {$query->where('boarding_point', 'like', '%' .$name . '%');});                       
+        }     
+
+        $data=$data->paginate($paginate);
+        
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response; 
+        
+    }
     public function changeStatus($id)
     {
         $boardingdroping = $this->boardingDroping->find($id);

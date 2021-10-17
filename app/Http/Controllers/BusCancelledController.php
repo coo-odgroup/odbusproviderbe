@@ -35,7 +35,12 @@ class BusCancelledController extends Controller
     public function getBusCancelledDT(Request $request) {
         $buscancelled = $this->busCancelledService->getBusCancelledDT($request);
         return $this->successResponse($buscancelled,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      }
+      } 
+    public function busCancelledData(Request $request) 
+    {
+        $buscancelled = $this->busCancelledService->busCancelledData($request);
+        return $this->successResponse($buscancelled,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
 
     public function createBusCancelled(Request $request) {
         $data = $request->only([

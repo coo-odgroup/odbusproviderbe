@@ -652,4 +652,14 @@ Route::post('/getownerpaymentDT', [OwnerPaymentController::class, 'getOwnerPayme
 
 
 
+Route::post('/locationsData', [locationController::class, 'locationsData']);
+Route::post('/boardingData', [BoardingDropingController::class, 'boardingData']);
+Route::post('/busSeatsFareData', [BusController::class, 'busSeatsFareData']);
+Route::post('/busupdatesequenceData', [BusController::class, 'busupdatesequenceData']);
+Route::post('/busCancelledData', [BusCancelledController::class, 'busCancelledData']);
+Route::post('/ownerpaymentData', [OwnerPaymentController::class, 'ownerpaymentData']);
+
+
+
+
 //});

@@ -155,6 +155,12 @@ class LocationService
     public function getAllLocationDT($request)
     {
         return $this->LocationRepository->getAllLocationDT($request);
+    } 
+
+
+    public function locationsData($request)
+    {
+        return $this->LocationRepository->locationsData($request);
     }
 
 
