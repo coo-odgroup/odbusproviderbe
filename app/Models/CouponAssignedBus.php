@@ -10,7 +10,6 @@ use App\Models\Coupon;
 class CouponAssignedBus extends Model
 {
     use HasFactory;
-    use HasFactory;
     protected $table = 'coupon_assigned_bus';
     protected $fillable = ['bus_id','coupon_id','created_by'];
     public function bus()

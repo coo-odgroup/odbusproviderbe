@@ -3,16 +3,17 @@
 namespace App\Repositories;
 
 use App\Models\Coupon;
-
+use App\Models\CouponAssignedBus;
 class CouponRepository
 {
     
     protected $coupon;
-
+    protected $couponAssignedBus;
     
-    public function __construct(Coupon $coupon)
+    public function __construct(Coupon $coupon, CouponAssignedBus $couponAssignedBus)
     {
         $this->coupon = $coupon;
+        $this->couponAssignedBus = $couponAssignedBus;
     }
 
     
@@ -27,7 +28,15 @@ class CouponRepository
         return $this->coupon ->where('id', $id)->get();
     }
 
-    
+    public function saveCouponBus($data)
+    {
+        $couponBus = new $this->couponAssignedBus;
+        $couponBus->coupon_id = $data['coupon_id'];
+        $couponBus->bus_id = $data['bus_id'];
+        $couponBus->created_by = $data['created_by'];
+        $couponBus->save();
+        return $couponBus->fresh();
+    }
     public function save($data)
     {
         $coupons = new $this->coupon;
@@ -49,6 +58,8 @@ class CouponRepository
 
         return $coupons->fresh();
     }
+
+
 
     
     public function update($data, $id)

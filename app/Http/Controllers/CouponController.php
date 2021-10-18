@@ -24,6 +24,19 @@ class CouponController extends Controller
         $coupon = $this->couponService->getAll();
         return $this->successResponse($coupon,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    public function createCouponBus(Request $request)
+    {
+        $data = $request->only([
+            'bus_id','coupon_id','created_by'
+        ]);
+        try {
+            $this->couponService->saveBusCouponData($data);
+        } 
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+    }
     public function createCoupon(Request $request) {
         $data = $request->only([
 

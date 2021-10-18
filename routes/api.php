@@ -512,11 +512,15 @@ Route::delete('/coupon/{id}', [CouponController::class, 'deleteCoupon']);
 Route::get('/coupon/{id}', [CouponController::class, 'getBusCoupon']);
 Route::post('/getData', [CouponController::class, 'getData']);
 
-Route::get('/couponAssignedBus', [CouponAssignedBusController::class, 'getAllCouponAssignedBus']);
-Route::post('/couponAssignedBus', [CouponAssignedBusController::class, 'createCouponAssignedBus']);
-Route::put('/couponAssignedBus/{id}', [CouponAssignedBusController::class, 'updateCouponAssignedBus']);
-Route::delete('/couponAssignedBus/{id}', [CouponAssignedBusController::class, 'deleteCouponAssignedBus']);
-Route::get('/couponAssignedBus/{id}', [CouponAssignedBusController::class, 'getCouponAssignedBus']);
+//coupon_assigned_bus 
+Route::post('/couponBus', [CouponController::class, 'createCouponBus']);
+
+
+// Route::get('/couponAssignedBus', [CouponAssignedBusController::class, 'getAllCouponAssignedBus']);
+// Route::post('/couponAssignedBus', [CouponAssignedBusController::class, 'createCouponAssignedBus']);
+// Route::put('/couponAssignedBus/{id}', [CouponAssignedBusController::class, 'updateCouponAssignedBus']);
+// Route::delete('/couponAssignedBus/{id}', [CouponAssignedBusController::class, 'deleteCouponAssignedBus']);
+// Route::get('/couponAssignedBus/{id}', [CouponAssignedBusController::class, 'getCouponAssignedBus']);
 
 Route::get('/preBooking', [PreBookingController::class, 'getAllPreBooking']);
 Route::post('/preBooking', [PreBookingController::class, 'createPreBooking']);

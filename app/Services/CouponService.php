@@ -53,5 +53,9 @@ class CouponService
         $result = $this->couponRepository->save($data);
         return $result;
     }
-
+    public function saveBusCouponData($data)
+    {
+        $result = $this->couponRepository->saveCouponBus($data);
+        return $result;
+    }
 }
