@@ -37,6 +37,32 @@ class CouponController extends Controller
         }
         return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
     }
+    public function createCouponRoute(Request $request)
+    {
+        $data = $request->only([
+            'source_id','destination_id','coupon_id','created_by'
+        ]);
+        try {
+            $this->couponService->saveRouteCouponData($data);
+        } 
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+    }
+    public function createCouponOperator(Request $request)
+    {
+        $data = $request->only([
+            'operator_id','coupon_id','created_by'
+        ]);
+        try {
+            $this->couponService->saveOperatorCouponData($data);
+        } 
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+    }
     public function createCoupon(Request $request) {
         $data = $request->only([
 

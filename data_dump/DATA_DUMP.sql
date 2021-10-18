@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 18, 2021 at 11:08 AM
+-- Generation Time: Oct 18, 2021 at 12:45 PM
 -- Server version: 10.2.39-MariaDB
 -- PHP Version: 7.2.30
 
@@ -5802,7 +5802,8 @@ ALTER TABLE `coupon_assigned_bus`
 --
 ALTER TABLE `coupon_operator`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `coupon_id` (`coupon_id`);
+  ADD KEY `coupon_id` (`coupon_id`),
+  ADD KEY `operator_id` (`operator_id`);
 
 --
 -- Indexes for table `coupon_route`
@@ -6763,7 +6764,8 @@ ALTER TABLE `coupon_assigned_bus`
 -- Constraints for table `coupon_operator`
 --
 ALTER TABLE `coupon_operator`
-  ADD CONSTRAINT `coupon_operator_ibfk_1` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`);
+  ADD CONSTRAINT `coupon_operator_ibfk_1` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`),
+  ADD CONSTRAINT `coupon_operator_ibfk_2` FOREIGN KEY (`operator_id`) REFERENCES `bus_operator` (`id`);
 
 --
 -- Constraints for table `coupon_route`

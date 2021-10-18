@@ -53,9 +53,23 @@ class CouponService
         $result = $this->couponRepository->save($data);
         return $result;
     }
+
+    //COUPON ADD FOR BUS, ROUTE AND OPERATOR STARTS
     public function saveBusCouponData($data)
     {
         $result = $this->couponRepository->saveCouponBus($data);
         return $result;
     }
+    public function saveRouteCouponData($data)
+    {
+        $result = $this->couponRepository->saveCouponRoute($data);
+        return $result;
+    }
+    public function saveOperatorCouponData($data)
+    {
+        $result = $this->couponRepository->saveCouponOperator($data);
+        return $result;
+    }
+    //COUPON ADD FOR BUS, ROUTE AND OPERATOR ENDS HERE
+    
 }

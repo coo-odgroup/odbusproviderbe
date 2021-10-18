@@ -4,16 +4,22 @@ namespace App\Repositories;
 
 use App\Models\Coupon;
 use App\Models\CouponAssignedBus;
+use App\Models\CouponRoute;
+use App\Models\CouponOperator;
 class CouponRepository
 {
     
     protected $coupon;
     protected $couponAssignedBus;
+    protected $couponRoute;
+    protected $couponOperator;
     
-    public function __construct(Coupon $coupon, CouponAssignedBus $couponAssignedBus)
+    public function __construct(Coupon $coupon, CouponAssignedBus $couponAssignedBus, CouponRoute $couponRoute, CouponOperator $couponOperator)
     {
         $this->coupon = $coupon;
         $this->couponAssignedBus = $couponAssignedBus;
+        $this->couponRoute = $couponRoute;
+        $this->couponOperator = $couponOperator;
     }
 
     
@@ -30,13 +36,37 @@ class CouponRepository
 
     public function saveCouponBus($data)
     {
-        $couponBus = new $this->couponAssignedBus;
-        $couponBus->coupon_id = $data['coupon_id'];
-        $couponBus->bus_id = $data['bus_id'];
-        $couponBus->created_by = $data['created_by'];
-        $couponBus->save();
-        return $couponBus->fresh();
+        $couponBusData = new $this->couponAssignedBus;
+        $couponBusData->coupon_id = $data['coupon_id'];
+        $couponBusData->bus_id = $data['bus_id'];
+        $couponBusData->created_by = $data['created_by'];
+        $couponBusData->save();
+        return $couponBusData->fresh();
     }
+
+    public function saveCouponRoute($data)
+    {
+        $couponRouteData = new $this->couponRoute;
+        $couponRouteData->coupon_id = $data['coupon_id'];
+        $couponRouteData->source_id = $data['source_id'];
+        $couponRouteData->destination_id = $data['destination_id'];
+        $couponRouteData->created_by = $data['created_by'];
+        $couponRouteData->save();
+        return $couponRouteData->fresh();
+    }
+
+    public function saveCouponOperator($data)
+    {
+        $couponOperatorRecord = new $this->couponOperator;
+        $couponOperatorRecord->coupon_id = $data['coupon_id'];
+        $couponOperatorRecord->operator_id = $data['operator_id'];
+        $couponOperatorRecord->created_by = $data['created_by'];
+        $couponOperatorRecord->save();
+        return $couponOperatorRecord->fresh();
+    }
+
+
+
     public function save($data)
     {
         $coupons = new $this->coupon;
