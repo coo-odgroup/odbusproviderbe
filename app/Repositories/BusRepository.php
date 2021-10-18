@@ -309,13 +309,55 @@ class BusRepository
     }
 
 
+    public function BusData( $request)
+    {
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;       
+
+        $data= $this->bus->whereNotIn('status', [2]);
+
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $data->where('name', 'like', '%' .$name . '%')
+                         ->orWhere('bus_number', 'like', '%' .$name . '%')
+                         ->orWhere('via', 'like', '%' .$name . '%');
+                                             
+        }     
+
+        $data=$data->paginate($paginate);
+        
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response; 
+        
+        
+    }
+
 
     public function changeStatus($id)
     {
         $post = $this->bus->find($id);
-        if($post->status==0){
+        // Log::info($post);
+
+        if($post->status==0)
+        {
             $post->status = 1;
-        }elseif($post->status==1){
+        }
+        elseif($post->status==1)
+        {
             $post->status = 0;
         }
         $post->update();

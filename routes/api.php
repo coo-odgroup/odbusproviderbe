@@ -81,6 +81,7 @@ use App\Http\Controllers\ContactReportController;
 // SettingController 
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\PageContentController;
+use App\Http\Controllers\SeoSettingController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\BannerController;
@@ -92,6 +93,14 @@ use App\Http\Controllers\BannerController;
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
 
+
+//Seo Setting
+Route::get('/seosetting',[SeoSettingController::class,'getAllseosetting']);
+Route::post('seosetting',[SeoSettingController::class,'addseosetting']);
+Route::put('seosetting/{id}',[SeoSettingController::class,'updateseosetting']);
+Route::delete('seosetting/{id}', [SeoSettingController::class, 'deleteseosetting']);
+
+Route::post('/BusData', [BusController::class, 'BusData']);
 
 Route::get('/dashboarddata',[DashboardController::class,'getAll']);
 Route::get('/toproutedata',[DashboardController::class,'getRoute']);

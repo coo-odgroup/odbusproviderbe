@@ -204,6 +204,12 @@ class BusController extends Controller
         $buses = $this->busService->busupdatesequenceData($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function BusData(Request $request) {      
+        
+        $buses = $this->busService->BusData($request);
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
     public function busContactInfo(Request $request)
     {
         $data=$request;

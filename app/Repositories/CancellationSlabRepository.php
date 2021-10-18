@@ -40,7 +40,7 @@ class CancellationSlabRepository
 
         if($name!=null)
         {
-            $data = $data->where('rule_name', $name);
+            $data = $data->where('rule_name','like', '%' .$name . '%');
         } 
       
 

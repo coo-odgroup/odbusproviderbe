@@ -91,6 +91,12 @@ class BusService
     {
         return $this->busRepository->busupdatesequenceData($request);
     }
+
+    public function BusData($request)
+    {
+        return $this->busRepository->BusData($request);
+    }
+    
     public function changeStatus($id)
     {
         try {
