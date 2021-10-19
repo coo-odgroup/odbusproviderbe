@@ -100,6 +100,8 @@ Route::post('seosetting',[SeoSettingController::class,'addseosetting']);
 Route::put('seosetting/{id}',[SeoSettingController::class,'updateseosetting']);
 Route::put('changeStatusseosetting/{id}',[SeoSettingController::class,'changeStatusseosetting']);
 Route::delete('seosetting/{id}', [SeoSettingController::class, 'deleteseosetting']);
+Route::post('seosettingData',[SeoSettingController::class,'seosettingData']);
+
 
 Route::post('/BusData', [BusController::class, 'BusData']);
 

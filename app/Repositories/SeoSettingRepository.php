@@ -44,6 +44,43 @@ class SeoSettingRepository
        return $seosetting;
 
     }
+
+    public function seosettingData($request)
+    {        
+      
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+       
+
+        $data= $this->seosetting->whereNotIn('status', [2])
+                                ->orderBy('id','DESC');
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data=$data->where('page_url', $name);
+        } 
+      
+
+        $data=$data->paginate($paginate);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;
+
+    }
+
     public function updateseosetting($data, $id)
     {
     	// Log::info($id);

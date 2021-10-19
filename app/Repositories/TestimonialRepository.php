@@ -23,19 +23,37 @@ class TestimonialRepository
     }    
     public function getAll($request)
     {
-      $content = $request->searchvalue;
       // Log::info($request);
+      $paginate = $request['rows_number'] ;
+      $name = $request['name'] ;
+
 
       $data = $this->testimonial->where('status','!=',2);
-      if($content!= null)
+      if($paginate=='all') 
       {
-        $data = $data->where('posted_by','like', '%' . $content . '%')
-                     ->orWhere('testinmonial_content','like', '%' . $content . '%')
-                     ->orWhere('location','like', '%' . $content . '%')
-                     ->orWhere('designation','like', '%' . $content . '%');
+          $paginate = Config::get('constants.ALL_RECORDS');
       }
-      return $data->get();
-        // return $this->testimonial->where('status','!=',2)->get();
+      elseif ($paginate == null) 
+      {
+          $paginate = 10 ;
+      }
+
+      if($name!= null)
+      {
+        $data = $data->where('posted_by','like', '%' . $name . '%')
+                     ->orWhere('testinmonial_content','like', '%' . $name . '%')
+                     ->orWhere('location','like', '%' . $name . '%')
+                     ->orWhere('designation','like', '%' . $name . '%');
+      }
+       $data=$data->paginate($paginate);
+       
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;
 
     }
     public function getModel($data, Testimonial $testimonial)

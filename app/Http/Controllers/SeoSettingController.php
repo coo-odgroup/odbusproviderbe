@@ -35,6 +35,13 @@ class SeoSettingController extends Controller
         return $this->successResponse($seosetting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function seosettingData(Request $request)
+    {
+
+        $seosetting = $this->seosettingService->seosettingData($request);
+        return $this->successResponse($seosetting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
      public function addseosetting(Request $request)
      {
      	 $data = $request->only([

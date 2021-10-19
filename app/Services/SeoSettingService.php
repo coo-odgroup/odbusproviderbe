@@ -32,6 +32,11 @@ class SeoSettingService
     {
         return $this->seosettingRepository->addseosetting($request);
     } 
+
+    public function seosettingData($request)
+    {
+        return $this->seosettingRepository->seosettingData($request);
+    } 
     public function updateseosetting($request,$id)
     {
         return $this->seosettingRepository->updateseosetting($request,$id);
