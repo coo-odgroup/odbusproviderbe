@@ -31,8 +31,8 @@ class SeoSettingController extends Controller
     public function getAllseosetting()
     {
 
-        $pagecontent = $this->seosettingService->getAll();
-        return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $seosetting = $this->seosettingService->getAll();
+        return $this->successResponse($seosetting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
      public function addseosetting(Request $request)
@@ -46,15 +46,15 @@ class SeoSettingController extends Controller
           'canonical_url'
         ]);
 
-    	 $pagecontent = $this->seosettingValidator->validate($data);
+    	 $seosetting = $this->seosettingValidator->validate($data);
 
 
-      if ($pagecontent->fails()) {
-        $errors = $pagecontent->errors();
+      if ($seosetting->fails()) {
+        $errors = $seosetting->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }      
       try {
-        $this->seosettingService->addpagecontent($request);
+        $this->seosettingService->addseosetting($request);
         return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
       }
       catch(Exception $e){
@@ -75,15 +75,15 @@ class SeoSettingController extends Controller
           'canonical_url'
         ]);
 
-    	 $pagecontent = $this->seosettingValidator->validate($data);
+    	 $seosetting = $this->seosettingValidator->validate($data);
 
 
-      if ($pagecontent->fails()) {
-        $errors = $pagecontent->errors();
+      if ($seosetting->fails()) {
+        $errors = $seosetting->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }      
       try {
-        $this->seosettingService->updatepagecontent($request, $id);
+        $this->seosettingService->updateseosetting($request, $id);
         return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
       }
       catch(Exception $e){
@@ -95,8 +95,14 @@ class SeoSettingController extends Controller
 
      public function deleteseosetting($id)
      {
-     	$pagecontent = $this->seosettingService->deletepagecontent($id);
-        return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+     	$seosetting = $this->seosettingService->deleteseosetting($id);
+        return $this->successResponse($seosetting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+     }
+     public function changeStatusseosetting($id)
+     {
+      $seosetting = $this->seosettingService->changeStatusseosetting($id);
+        return $this->successResponse($seosetting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
      }
 

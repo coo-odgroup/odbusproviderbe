@@ -28,17 +28,21 @@ class SeoSettingService
         return $this->seosettingRepository->getAll();
     }
 
-    public function addpagecontent($request)
+    public function addseosetting($request)
     {
-        return $this->seosettingRepository->addpagecontent($request);
+        return $this->seosettingRepository->addseosetting($request);
     } 
-    public function updatepagecontent($request,$id)
+    public function updateseosetting($request,$id)
     {
-        return $this->seosettingRepository->updatepagecontent($request,$id);
+        return $this->seosettingRepository->updateseosetting($request,$id);
     }
-    public function deletepagecontent($id)
+    public function deleteseosetting($id)
     {
-        return $this->seosettingRepository->deletepagecontent($id);
+        return $this->seosettingRepository->deleteseosetting($id);
+    }   
+    public function changeStatusseosetting($id)
+    {
+        return $this->seosettingRepository->changeStatusseosetting($id);
     }   
 
 }

@@ -98,6 +98,7 @@ use App\Http\Controllers\BannerController;
 Route::get('/seosetting',[SeoSettingController::class,'getAllseosetting']);
 Route::post('seosetting',[SeoSettingController::class,'addseosetting']);
 Route::put('seosetting/{id}',[SeoSettingController::class,'updateseosetting']);
+Route::put('changeStatusseosetting/{id}',[SeoSettingController::class,'changeStatusseosetting']);
 Route::delete('seosetting/{id}', [SeoSettingController::class, 'deleteseosetting']);
 
 Route::post('/BusData', [BusController::class, 'BusData']);

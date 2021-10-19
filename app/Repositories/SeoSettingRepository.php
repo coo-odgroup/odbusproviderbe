@@ -2,13 +2,8 @@
 
 namespace App\Repositories;
 
-// use App\Models\Bus;
 use App\Models\SeoSetting;
-// use App\Models\SeatOpenSeats;
-
-// use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Support\Facades\Config;
 
 
@@ -27,7 +22,7 @@ class SeoSettingRepository
     public function getAll()
     {
 
-        return $this->seosetting->where('status', 1)->get();
+        return $this->seosetting->whereNotIn('status', [2])->get();
 
     }
 
@@ -74,6 +69,20 @@ class SeoSettingRepository
 
     	return $seosetting;
     }
+
+
+     public function changeStatusseosetting($id)
+    {
+        $seosetting = $this->seosetting->find($id);
+        if($seosetting->status==0){
+            $seosetting->status = 1;
+        }elseif($seosetting->status==1){
+            $seosetting->status = 0;
+        }
+        $seosetting->update();
+        return $seosetting;
+    }
+
 
 
 }
