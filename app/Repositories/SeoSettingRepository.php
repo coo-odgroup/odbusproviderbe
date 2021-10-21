@@ -33,6 +33,7 @@ class SeoSettingRepository
 
        $seosetting = new $this->seosetting;
        $seosetting->page_url =$data['page_url'];
+       $seosetting->url_description =$data['url_description'];
        $seosetting->meta_title =$data['meta_title'];
        $seosetting->meta_keyword =$data['meta_keyword'];
        $seosetting->meta_description =$data['meta_description'];
@@ -83,9 +84,9 @@ class SeoSettingRepository
 
     public function updateseosetting($data, $id)
     {
-    	// Log::info($id);
-       $seosetting = $this->seosetting->find($id);       
+     $seosetting = $this->seosetting->find($id);       
 	   $seosetting->page_url =$data['page_url'];
+     $seosetting->url_description =$data['url_description'];
 	   $seosetting->meta_title =$data['meta_title'];
 	   $seosetting->meta_keyword =$data['meta_keyword'];
 	   $seosetting->meta_description =$data['meta_description'];

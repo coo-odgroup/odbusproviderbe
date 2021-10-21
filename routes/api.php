@@ -251,12 +251,11 @@ Route::delete('/busGallery/{id}', [BusGalleryController::class, 'deleteBusGaller
 Route::get('/busGallery/{id}', [BusGalleryController::class, 'getBusGallery']);
 Route::get('/busGalleryByBusId/{bid}', [BusGalleryController::class, 'getBusGalleryBus']);
 
-Route::post('/review', [ReviewController::class, 'createReview']);
-Route::get('/review', [ReviewController::class, 'getAllReview']);
-Route::put('/review/{id}', [ReviewController::class, 'updateReview']);
-Route::delete('/review/{id}', [ReviewController::class, 'deleteReview']);
-Route::get('/review/{id}', [ReviewController::class, 'getReview']);
-Route::get('/getreview/{bid}', [ReviewController::class, 'getReviewByBid']);
+
+Route::get('/review', [ReviewController::class, 'getAll']);
+Route::post('/review', [ReviewController::class, 'getData']);
+Route::put('/review/{id}', [ReviewController::class, 'changeStatus']);
+Route::delete('/review/{id}', [ReviewController::class, 'deleteData']);
 
 
 ////SeatOpenReport/////

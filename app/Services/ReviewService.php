@@ -27,100 +27,24 @@ class ReviewService
         $this->reviewRepository = $reviewRepository;
     }
 
-    /**
-     * Delete  by id.
-     *
-     * @param $id
-     * @return String
-     */
-    public function deleteById($id)
-    {
-        DB::beginTransaction();
-
-        try {
-            $post = $this->reviewRepository->delete($id);
-
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
-
-            throw new InvalidArgumentException('Unable to delete post data');
-        }
-
-        DB::commit();
-
-        return $post;
-
-    }
-
-    /**
-     * Get all Data.
-     *
-     * @return String
-     */
     public function getAll()
     {
         return $this->reviewRepository->getAll();
     }
-
-    /**
-     * Get  by id.
-     *
-     * @param $id
-     * @return String
-     */
-    public function getById($id)
+    
+    public function getData($request)
     {
-        return $this->reviewRepository->getById($id);
+        return $this->reviewRepository->getData($request);
+    }
+    public function deleteData($id)
+    {
+        return $this->reviewRepository->deleteData($id);
     }
 
-    public function getreviewBid($bid)
-    {
-        return $this->reviewRepository->getreviewBid($bid);
-    }
-    /**
-     * Update  data
-     * Store to DB if there are no errors.
-     *
-     * @param array $data
-     * @return String
-     */
-    public function updatePost($data, $id)
-    {
-        
-
-        DB::beginTransaction();
-
-        try {
-            $post = $this->reviewRepository->update($data, $id);
-
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
-
-            throw new InvalidArgumentException('Unable to update post data');
-        }
-
-        DB::commit();
-
-        return $post;
-
+    public function changeStatus($id)
+    {    
+        return $this->reviewRepository->changeStatus($id);
     }
 
-    /**
-     * Validate  data.
-     * Store to DB if there are no errors.
-     *
-     * @param array $data
-     * @return String
-     */
-    public function savePostData($data)
-    {
-        
-
-        $result = $this->reviewRepository->save($data);
-
-        return $result;
-    }
 
 }

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Review;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class ReviewRepository
 {
@@ -24,109 +25,90 @@ class ReviewRepository
         $this->user = $user;
     }
 
-    /**
-     * Get all review.
-     *
-     * @return Review $review
-     */
-    public function getAll()
+     public function getAll()
     {
-        return $this->review->whereNotIn('status', [2])->get();
+        $data = $this->review->where('status', 1)->orderBy('id',"DESC")->get() ;
+       
+        return $data;     
     }
 
-    /**
-     * Get review by id
-     *
-     * @param $id
-     * @return mixed
-     */
-    public function getById($id)
+
+    public function getData($request)
     {
-        return $this->review
-            ->where('id', $id)
-            ->get();
+        // Log::info($request);
+        $paginate = $request->rows_number; 
+        $rangeFromDate  =  $request->rangeFromDate;
+        $rangeToDate  =  $request->rangeToDate;    
+        if(!empty($rangeFromDate))
+        {
+            if(strlen($rangeFromDate['month'])==1)
+            {
+                $rangeFromDate['month']="0".$rangeFromDate['month'];
+            }
+            if(strlen($rangeFromDate['day'])==1)
+            {
+                $rangeFromDate['day']="0".$rangeFromDate['day'];
+            }
+
+            $start_date = $rangeFromDate['year'].'-'.$rangeFromDate['month'].'-'.$rangeFromDate['day'] ;     
+        }
+         if(!empty($rangeToDate))
+        {
+            if(strlen($rangeToDate['month'])==1)
+            {
+                $rangeToDate['month']="0".$rangeToDate['month'];
+            }
+            if(strlen($rangeToDate['day'])==1)
+            {
+                $rangeToDate['day']="0".$rangeToDate['day'];
+            }
+
+            $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
+        }
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        $data= $this->review->with('bus')->where('status','!=' ,2)
+                             ->orderBy('id',"DESC");
+
+        if (!empty($start_date) && !empty($end_date)) {
+            $data = $data->whereBetween('created_at', [$start_date, $end_date]);
+            
+        }
+
+                 $data=$data->paginate($paginate); 
+
+           return $data;
+
+    } 
+
+    public function deleteData($id)
+    {
+        $review = $this->review->find($id);
+        $review->status = 2;
+        $review->update();
+
+        return $review;      
+
     }
-    public function getreviewBid($bid)
+
+    public function changeStatus($id)
     {
-        return $this->review::addSelect(['cname' => $this->user::select('first_name')
-        ->whereColumn('Review.customer_id', 'id')])
-        // ->addSelect(['Average Rating' => $this->review->avg('rating_overall')])
-        ->whereNotIn('status', [2])
-        ->where('bus_id', $bid)
-        ->orderBy('id', 'desc')
-        ->limit(10)
-        ->get();
-
-        // return $this->review->avg('rating_overall');
-    }
-    /**
-     * Save review
-     *
-     * @param $data
-     * @return Review
-     */
-    public function save($data)
-    {
-        $post = new $this->review;
-
-        $post->pnr = $data['pnr'];
-        $post->bus_id  = $data['bus_id'];
-        $post->customer_id = $data['customer_id'];
-        $post->reference_key = $data['reference_key'];
-        $post->rating_overall = $data['rating_overall'];
-        $post->rating_comfort = $data['rating_comfort'];
-        $post->rating_clean = $data['rating_clean'];
-        $post->rating_behavior = $data['rating_behavior'];
-        $post->rating_timing = $data['rating_timing'];
-        $post->comments = $data['comments'];
-        // $post->created_date = date('Y-m-d H:i:s');
-        $post->created_by = "Admin";
-
-        $post->save();
-
-        return $post->fresh();
-    }
-
-    /**
-     * Update review
-     *
-     * @param $data
-     * @return Review
-     */
-    public function update($data, $id)
-    {
-        
         $post = $this->review->find($id);
-
-        $post->pnr = $data['pnr'];
-        $post->bus_id  = $data['bus_id'];
-        $post->customer_id = $data['customer_id'];
-        $post->reference_key = $data['reference_key'];
-        $post->rating_overall = $data['rating_overall'];
-        $post->rating_comfort = $data['rating_comfort'];
-        $post->rating_clean = $data['rating_clean'];
-        $post->rating_behavior = $data['rating_behavior'];
-        $post->rating_timing = $data['rating_timing'];
-        $post->comments = $data['comments'];
+        if($post->status==0){
+            $post->status = 1;
+        }elseif($post->status==1){
+            $post->status = 0;
+        }
         $post->update();
-
         return $post;
     }
-
-    /**
-     * Update review
-     *
-     * @param $data
-     * @return Review
-     */
-    public function delete($id)
-    {
-        
-        $post = $this->review->find($id);
-        $post->status = 2;
-        $post->update();
-
-        return $post;
-    }
+    
 
 }

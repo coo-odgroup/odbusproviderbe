@@ -41,9 +41,12 @@ class TestimonialController extends Controller
      	 $data = $request->only([
             'posted_by',
             'testinmonial_content',
-            'location',
+            'travel_date',
+            'operator',
+            'destination',
+            'source',
             'designation'
-        ]);
+        ]); 
 
     	 $testimonial = $this->testimonialValidator->validate($data);
 
@@ -66,9 +69,12 @@ class TestimonialController extends Controller
      {
 
      	 $data = $request->only([
-            'posted_by',
+             'posted_by',
             'testinmonial_content',
-            'location',
+            'travel_date',
+            'operator',
+            'destination',
+            'source',
             'designation'
         ]);
 

@@ -46,6 +46,7 @@ class SeoSettingController extends Controller
      {
      	 $data = $request->only([
           'page_url',
+          'url_description',
           'meta_title',
           'meta_keyword',
           'meta_description',
@@ -75,6 +76,7 @@ class SeoSettingController extends Controller
 
      	 $data = $request->only([
           'page_url',
+          'url_description',
           'meta_title',
           'meta_keyword',
           'meta_description',
