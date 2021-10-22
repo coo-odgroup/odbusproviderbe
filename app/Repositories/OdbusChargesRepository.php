@@ -36,6 +36,7 @@ class OdbusChargesRepository
         $odbusCharges->mobile_no_2 = $data['mobile_no_2'];
         $odbusCharges->mobile_no_3 = $data['mobile_no_3'];
         $odbusCharges->mobile_no_4 = $data['mobile_no_4'];
+        $odbusCharges->logo = $data['logo'];
         $odbusCharges->created_by = $data['created_by'];
         return $odbusCharges;
     }
@@ -60,7 +61,7 @@ class OdbusChargesRepository
      */
     public function update($data, $id)
     {
-        Log::info($data);
+        // Log::info($data);
         $odbusCharges = $this->odbusCharges->find($id);
         $odbusCharges=$this->getModel($data,$odbusCharges);
         $odbusCharges->update();
