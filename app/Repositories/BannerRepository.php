@@ -10,12 +10,13 @@ class BannerRepository
     public function __construct(Banner $banner)
     {
         $this->banner = $banner;
+        $this->bus_operator_id = Config::get('constants.BUS_OPERATOR_ID');
     }
 
     public function getAllBanner()
     {
         return $this->banner->whereNotIn('status', [2])
-                            ->where('bus_operator_id',Config::get('constants.BUS_OPERATOR_ID'))
+                            ->where('bus_operator_id',$this->bus_operator_id)
                             ->get();
     }
     public function getData($request)
@@ -25,16 +26,16 @@ class BannerRepository
         $status = $request['status'];
        
         if($searchBy!='' && $status!=''){
-            $list = $this->banner->where('occassion', 'like', '%' .$searchBy . '%')->where('bus_operator_id',Config::get('constants.BUS_OPERATOR_ID'))->where('status', $status)
+            $list = $this->banner->where('occassion', 'like', '%' .$searchBy . '%')->where('bus_operator_id',$this->bus_operator_id)->where('status', $status)
                                  ->whereNotIn('status', [2])->orderBy('id','desc');
         }elseif($searchBy!='' && $status==''){
             $list = $this->banner->where('occassion', $searchBy)
-                                 ->whereNotIn('status', [2])->where('bus_operator_id',Config::get('constants.BUS_OPERATOR_ID'))->orderBy('id','desc');
+                                 ->whereNotIn('status', [2])->where('bus_operator_id',$this->bus_operator_id)->orderBy('id','desc');
         }elseif($searchBy=='' && $status!=''){
             $list = $this->banner->where('status', $status)
-                                 ->whereNotIn('status', [2])->where('bus_operator_id',Config::get('constants.BUS_OPERATOR_ID'))->orderBy('id','desc');
+                                 ->whereNotIn('status', [2])->where('bus_operator_id',$this->bus_operator_id)->orderBy('id','desc');
         }else{
-            $list = $this->banner->whereNotIn('status', [2])->where('bus_operator_id',Config::get('constants.BUS_OPERATOR_ID'))->orderBy('id','desc');    
+            $list = $this->banner->whereNotIn('status', [2])->where('bus_operator_id',$this->bus_operator_id)->orderBy('id','desc');    
         }
 
         $list =  $list->paginate($paginate);
@@ -51,7 +52,7 @@ class BannerRepository
     {
         return $this->banner
             ->where('id', $id)
-            ->where('bus_operator_id',Config::get('constants.BUS_OPERATOR_ID'))
+            ->where('bus_operator_id',$this->bus_operator_id)
             ->get();
     }
 
@@ -68,7 +69,7 @@ class BannerRepository
         $bann->end_date = $data['end_date'];
         $bann->end_time = $data['end_time'];
         $bann->created_by = "Admin";
-        $bann->bus_operator_id = Config::get('constants.BUS_OPERATOR_ID');
+        $bann->bus_operator_id = $this->bus_operator_id;
         $bann->save();
 
         return $bann->fresh();
@@ -77,7 +78,7 @@ class BannerRepository
     public function update($data, $id)
     {
         $bann = $this->banner->find($id);
-        $bann->bus_operator_id = Config::get('constants.BUS_OPERATOR_ID');
+        $bann->bus_operator_id = $this->bus_operator_id;
         $bann->occassion = $data['occassion'];
         $bann->url = $data['url'];
         $bann->banner_img = $data['banner_img'];
@@ -92,7 +93,7 @@ class BannerRepository
 
     public function delete($id)
     {
-        $bann = $this->banner->where('bus_operator_id',Config::get('constants.BUS_OPERATOR_ID'))->find($id);
+        $bann = $this->banner->where('bus_operator_id',$this->bus_operator_id)->find($id);
         $bann->status = 2;
         $bann->update();
 
@@ -100,7 +101,7 @@ class BannerRepository
     }
     public function changeStatus($id)
     {
-        $bann = $this->banner->where('bus_operator_id',Config::get('constants.BUS_OPERATOR_ID'))->find($id);
+        $bann = $this->banner->where('bus_operator_id',$this->bus_operator_id)->find($id);
         if($bann->status==0){
             $bann->status = 1;
         }elseif($bann->status==1){
