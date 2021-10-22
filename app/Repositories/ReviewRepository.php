@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Config;
 class ReviewRepository
 {
     /**
@@ -75,16 +75,13 @@ class ReviewRepository
         }
 
         $data= $this->review->with('bus')->where('status','!=' ,2)
-                             ->orderBy('id',"DESC");
-
+                            ->orderBy('id',"DESC");
         if (!empty($start_date) && !empty($end_date)) {
             $data = $data->whereBetween('created_at', [$start_date, $end_date]);
             
         }
-
-                 $data=$data->paginate($paginate); 
-
-           return $data;
+        $data=$data->paginate($paginate); 
+        return $data;
 
     } 
 

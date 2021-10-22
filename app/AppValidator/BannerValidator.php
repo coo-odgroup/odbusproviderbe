@@ -9,6 +9,7 @@ class BannerValidator
     public function validate($data) { 
 
         $rules = [
+            'bus_operator_id' => 'required',
             'occassion' => 'required',
             'banner_img' => 'required',
             'alt_tag' => 'required',
