@@ -9,5 +9,6 @@ return [
     'RECORD_NOT_FOUND' => 'Record Not Found',
     'INVALID_ARGUMENT_PASSED' => 'Invalid Argument Passed',
     'UNABLE_CHANGE_STATUS' => 'Unable to Change Status',
-    'ALL_RECORDS'=>10000
+    'ALL_RECORDS'=>10000,
+    'BUS_OPERATOR_ID'=>1
 ];
