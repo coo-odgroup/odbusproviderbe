@@ -56,6 +56,7 @@ class SliderRepository
     public function save($data)
     {
         $slide = new $this->slider;
+        $slide->bus_operator_id = $data['bus_operator_id'];
         $slide->occassion = $data['occassion'];
         $slide->category = $data['category'];
         $slide->url = $data['url'];
@@ -74,6 +75,7 @@ class SliderRepository
     public function update($data, $id)
     {
         $slide = $this->slider->find($id);
+        $slide->bus_operator_id = $data['bus_operator_id'];
         $slide->occassion = $data['occassion'];
         $slide->url = $data['url'];
         $slide->slider_img = $data['slider_img'];
