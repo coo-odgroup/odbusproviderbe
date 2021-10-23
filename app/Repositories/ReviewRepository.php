@@ -35,7 +35,8 @@ class ReviewRepository
 
     public function getData($request)
     {
-        // Log::info($request);
+        Log::info($request);
+        $operator_id = $request->bus_operator_id ;
         $paginate = $request->rows_number; 
         $rangeFromDate  =  $request->rangeFromDate;
         $rangeToDate  =  $request->rangeToDate;    
@@ -74,12 +75,18 @@ class ReviewRepository
             $paginate = 10 ;
         }
 
-        $data= $this->review->with('bus')->where('status','!=' ,2)
+        $data= $this->review->with('bus','BusOperator')->where('status','!=' ,2)
                             ->orderBy('id',"DESC");
         if (!empty($start_date) && !empty($end_date)) {
             $data = $data->whereBetween('created_at', [$start_date, $end_date]);
             
         }
+        if($operator_id!= null)
+        {
+          $data = $data->Where('bus_operator_id', $operator_id);
+        }
+
+
         $data=$data->paginate($paginate); 
         return $data;
 
