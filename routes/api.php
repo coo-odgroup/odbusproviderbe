@@ -317,6 +317,7 @@ Route::put('socialmedia',[SocialMediaController::class,'updateData']);
 
 //Page Content
 Route::get('/pagecontent',[PageContentController::class,'getAllpagecontent']);
+Route::post('pagecontentData',[PageContentController::class,'getAllData']);
 Route::post('pagecontent',[PageContentController::class,'addpagecontent']);
 Route::put('pagecontent/{id}',[PageContentController::class,'updatepagecontent']);
 Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);

@@ -28,6 +28,11 @@ class PageContentService
         return $this->pagecontentRepository->getAll();
     }
 
+    public function getAllData($request)
+    {
+        return $this->pagecontentRepository->getAllData($request);
+    }
+
     public function addpagecontent($request)
     {
         return $this->pagecontentRepository->addpagecontent($request);
