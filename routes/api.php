@@ -324,6 +324,7 @@ Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecont
 
 
 //Testimonial
+
 Route::post('/gettestimonial',[TestimonialController::class,'getAlltestimonial']);
 Route::post('testimonial',[TestimonialController::class,'addtestimonial']);
 Route::put('testimonial/{id}',[TestimonialController::class,'updatetestimonial']);

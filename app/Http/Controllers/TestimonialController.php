@@ -57,7 +57,7 @@ class TestimonialController extends Controller
       }      
       try {
         $this->testimonialService->addtestimonial($request);
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+        return $this->successResponse(null, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
       }
       catch(Exception $e){
       	// Log::info($e);
@@ -98,14 +98,15 @@ class TestimonialController extends Controller
 
      public function deletetestimonial($id)
      {
+
      	$testimonial = $this->testimonialService->deletetestimonial($id);
-        return $this->successResponse($testimonial,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($testimonial,Config::get('constants.RECORD_REMOVED'),Response::HTTP_OK);
 
      } 
      public function changeStatus($id)
      {
       $testimonial = $this->testimonialService->changeStatus($id);
-        return $this->successResponse($testimonial,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($testimonial,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK);
 
      }
 
