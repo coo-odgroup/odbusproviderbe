@@ -311,9 +311,14 @@ Route::delete('contactreport/{id}',[ContactReportController::class,'deleteData']
 
 //Setting  SocialMediaController
 
-Route::get('socialmedia',[SocialMediaController::class,'getAll']);
+// Route::get('socialmedia',[SocialMediaController::class,'getAll']);
 
-Route::put('socialmedia',[SocialMediaController::class,'updateData']);
+// Route::put('socialmedia',[SocialMediaController::class,'updateData']);
+Route::get('/socialmedia',[SocialMediaController::class,'getAllsocialmedia']);
+Route::post('socialmediaData',[SocialMediaController::class,'getAllData']);
+Route::post('socialmedia',[SocialMediaController::class,'addsocialmedia']);
+Route::put('socialmedia/{id}',[SocialMediaController::class,'updatesocialmedia']);
+Route::delete('socialmedia/{id}', [SocialMediaController::class, 'deletesocialmedia']);
 
 //Page Content
 Route::get('/pagecontent',[PageContentController::class,'getAllpagecontent']);
