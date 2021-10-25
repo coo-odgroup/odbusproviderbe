@@ -29,10 +29,11 @@ class SeoSettingRepository
 
     public function addseosetting($data)
     {        
-       // Log::info($data);
+       // Log::info($data);exit;
 
        $seosetting = new $this->seosetting;
        $seosetting->page_url =$data['page_url'];
+       $seosetting->bus_operator_id =$data['bus_operator_id'];
        $seosetting->url_description =$data['url_description'];
        $seosetting->meta_title =$data['meta_title'];
        $seosetting->meta_keyword =$data['meta_keyword'];
@@ -51,9 +52,10 @@ class SeoSettingRepository
       
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
+        $operator_id = $request['bus_operator_id'] ;
        
 
-        $data= $this->seosetting->whereNotIn('status', [2])
+        $data= $this->seosetting->with('BusOperator')->whereNotIn('status', [2])
                                 ->orderBy('id','DESC');
 
         if($paginate=='all') 
@@ -69,7 +71,11 @@ class SeoSettingRepository
         {
             $data=$data->where('page_url', $name);
         } 
-      
+
+        if($operator_id!= null)
+        {
+        $data = $data->Where('bus_operator_id', $operator_id);
+        }
 
         $data=$data->paginate($paginate);
 
@@ -85,6 +91,7 @@ class SeoSettingRepository
     public function updateseosetting($data, $id)
     {
      $seosetting = $this->seosetting->find($id);       
+     $seosetting->bus_operator_id =$data['bus_operator_id'];
 	   $seosetting->page_url =$data['page_url'];
      $seosetting->url_description =$data['url_description'];
 	   $seosetting->meta_title =$data['meta_title'];

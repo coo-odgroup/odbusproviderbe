@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\BusOperator;
 use App\Models\Bus;
 
 
@@ -17,4 +18,8 @@ class Review extends Model
     {
     	return $this->belongsTo(Bus::class);
     }
+    public function BusOperator()
+	{        
+		return $this->belongsTo(BusOperator::class);        
+	} 
 }

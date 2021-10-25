@@ -26,9 +26,10 @@ class TestimonialRepository
       // Log::info($request);
       $paginate = $request['rows_number'] ;
       $name = $request['name'] ;
+      $operator_id = $request['bus_operator_id'] ;
 
 
-      $data = $this->testimonial->where('status','!=',2)->orderBy('id','DESC');
+      $data = $this->testimonial->with('BusOperator')->where('status','!=',2)->orderBy('id','DESC');
       if($paginate=='all') 
       {
           $paginate = Config::get('constants.ALL_RECORDS');
@@ -40,13 +41,16 @@ class TestimonialRepository
 
       if($name!= null)
       {
-        $data = $data->where('posted_by','like', '%' . $name . '%')
+        $data = $data->where('posted_by','like', '%' . $name . '%')                    
                      ->orWhere('testinmonial_content','like', '%' . $name . '%')
-                     ->orWhere('operator','like', '%' . $name . '%')
                      ->orWhere('destination','like', '%' . $name . '%')
                      ->orWhere('source','like', '%' . $name . '%')
                      ->orWhere('travel_date','like', '%' . $name . '%')
                      ->orWhere('designation','like', '%' . $name . '%');
+      } 
+      if($operator_id!= null)
+      {
+        $data = $data->Where('bus_operator_id', $operator_id);
       }
        $data=$data->paginate($paginate);
        
@@ -65,7 +69,7 @@ class TestimonialRepository
        $testimonial->posted_by =$data['posted_by'];
        $testimonial->testinmonial_content =$data['testinmonial_content'];
        $testimonial->travel_date =$data['travel_date'];
-       $testimonial->operator =$data['operator'];
+       $testimonial->bus_operator_id =$data['operator'];
        $testimonial->destination =$data['destination'];
        $testimonial->source =$data['source'];
        $testimonial->designation =$data['designation'];
@@ -77,7 +81,6 @@ class TestimonialRepository
 
     public function addtestimonial($data)
     {        
-       // Log::info($data);
        $testimonial = new $this->testimonial;
        $testimonial=$this->getModel($data,$testimonial);
        $testimonial->save();

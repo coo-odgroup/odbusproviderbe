@@ -29,9 +29,14 @@ class ContactReportRepository
 
     public function getData($request)
     {
-        $paginate = $request->rows_number; 
+     // Log::info($request);
+        $paginate = $request->rows_number;
+        $operator_id = $request->bus_operator_id ;
         $rangeFromDate  =  $request->rangeFromDate;
-        $rangeToDate  =  $request->rangeToDate;    
+        $rangeToDate  =  $request->rangeToDate; 
+
+
+
         if(!empty($rangeFromDate))
         {
             if(strlen($rangeFromDate['month'])==1)
@@ -66,24 +71,24 @@ class ContactReportRepository
         {
             $paginate = 10 ;
         }
+        
 
-        $data= $this->contact->where('status', 1)
+        $data= $this->contact->with('BusOperator')->where('status', 1)
                              ->orderBy('id',"DESC");
 
         if (!empty($start_date) && !empty($end_date)) {
             $data = $data->whereBetween('created_at', [$start_date, $end_date]);
             
         }
+        
+        if($operator_id!= null)
+        {
+           $data = $data->Where('bus_operator_id', $operator_id);
+        }
 
                  $data=$data->paginate($paginate); 
 
-        // $response = array(
-        //      "count" => $data->count(), 
-        //      "total" => $data->total(),
-        //     "data" => $data
-        //    ); 
-
-           // Log::info($response);     
+   
            return $data;
 
     } 

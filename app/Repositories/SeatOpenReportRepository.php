@@ -5,12 +5,11 @@ namespace App\Repositories;
 // use App\Models\Bus;
 use App\Models\SeatOpen;
 use App\Models\SeatOpenSeats;
-
-// use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Config;
 use App\Models\Location;
+
 
 
 
@@ -27,43 +26,12 @@ class SeatOpenReportRepository
     {
         $this->seatOpen = $seatOpen;
         $this->seatOpenSeats = $seatsOpenSeats;
-        $this->location = $location;        
+        $this->location = $location; 
+        $this->bus_operator_id = Config::get('constants.BUS_OPERATOR_ID');       
 
        
     }    
-    // public function getAll()
-    // {
-    //     $data = $this->seatOpen ->with('seatOpenSeats.seats')->with('bus','bus.busOperator','bus.ticketPrice')
-    //     ->where('status','1')
-    //     ->get();
-
-    //     $data_arr = array();
-    //     foreach ($data as $key => $v)
-    //     {
-    //         $data_arr[]=$v->toArray(); 
-    //         $data_arr[$key]['date_applied']=date('j M Y',strtotime($v->date_applied));
-    //         foreach ($data_arr as $e) 
-    //         {
-    //             $counter=0;
-    //             foreach ($e['bus']['ticket_price'] as $sub=>$a) 
-    //             {
-    //                 $counter++;
-    //                 if($counter==1)
-    //                 {
-    //                     $data_arr[$key]['base_from_location']=$this->location->where('id', $a['source_id'])->get();
-
-    //                     $data_arr[$key]['base_to_location']=$this->location->where('id', $a['destination_id'])->get();
-    //                 }
-    //                 $data_arr[$key]['from_location'][$sub]=$this->location->where('id', $a['source_id'])->get();
-
-    //                 $data_arr[$key]['to_location'][$sub]=$this->location->where('id', $a['destination_id'])->get();
-    //             }                           
-    //         }           
-    //     }
-    //     return $data_arr;
-
-    // }
-
+  
 
     public function getData($request)
     {

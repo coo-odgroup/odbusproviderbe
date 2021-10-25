@@ -35,10 +35,18 @@ class PageContentController extends Controller
         return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function getAllData(Request $request)
+    {
+
+        $pagecontent = $this->pagecontentService->getAllData($request);
+        return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
      public function addpagecontent(Request $request)
      {
      	 $data = $request->only([
           'page_name',
+          'bus_operator_id',
           'page_url',
           'page_description',
           'meta_title',
@@ -70,6 +78,7 @@ class PageContentController extends Controller
 
      	 $data = $request->only([
           'page_name',
+          'bus_operator_id',
           'page_url',
           'page_description',
           'meta_title',

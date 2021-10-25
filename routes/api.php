@@ -311,18 +311,25 @@ Route::delete('contactreport/{id}',[ContactReportController::class,'deleteData']
 
 //Setting  SocialMediaController
 
-Route::get('socialmedia',[SocialMediaController::class,'getAll']);
+// Route::get('socialmedia',[SocialMediaController::class,'getAll']);
 
-Route::put('socialmedia',[SocialMediaController::class,'updateData']);
+// Route::put('socialmedia',[SocialMediaController::class,'updateData']);
+Route::get('/socialmedia',[SocialMediaController::class,'getAllsocialmedia']);
+Route::post('socialmediaData',[SocialMediaController::class,'getAllData']);
+Route::post('socialmedia',[SocialMediaController::class,'addsocialmedia']);
+Route::put('socialmedia/{id}',[SocialMediaController::class,'updatesocialmedia']);
+Route::delete('socialmedia/{id}', [SocialMediaController::class, 'deletesocialmedia']);
 
 //Page Content
 Route::get('/pagecontent',[PageContentController::class,'getAllpagecontent']);
+Route::post('pagecontentData',[PageContentController::class,'getAllData']);
 Route::post('pagecontent',[PageContentController::class,'addpagecontent']);
 Route::put('pagecontent/{id}',[PageContentController::class,'updatepagecontent']);
 Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);
 
 
 //Testimonial
+
 Route::post('/gettestimonial',[TestimonialController::class,'getAlltestimonial']);
 Route::post('testimonial',[TestimonialController::class,'addtestimonial']);
 Route::put('testimonial/{id}',[TestimonialController::class,'updatetestimonial']);

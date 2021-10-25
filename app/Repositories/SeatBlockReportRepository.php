@@ -14,7 +14,7 @@ class SeatBlockReportRepository
     {
         $this->seatBlock = $seatBlock;
         $this->seatBlockSeats = $seatsBlockSeats;
-        $this->location = $location;        
+        $this->location = $location;            
     }    
      public function getAll()
     {
