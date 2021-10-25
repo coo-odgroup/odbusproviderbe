@@ -10,6 +10,7 @@ class SocialMediaValidator
     public function validate($data) { 
         
         $rules = [
+            'bus_operator_id' => 'required',
             'facebook_link' => 'required',
             'twitter_link' => 'required',
             'instagram_link' => 'required',

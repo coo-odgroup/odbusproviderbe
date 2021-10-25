@@ -23,13 +23,27 @@ class SocialMediaService
         $this->socialmediaRepository = $socialmediaRepository;
     }      
     
-    public function getAll()
-    {
-        return $this->socialmediaRepository->getAll();
+    public function getAll($request)
+    {      
+        return $this->socialmediaRepository->getAll($request);
     }
-    public function updateData($request)
+
+    public function addsocialmedia($request)
     {
-        return $this->socialmediaRepository->updateData($request);
+        return $this->socialmediaRepository->addsocialMedia($request);
+    } 
+    public function updatesocialmedia($request,$id)
+    {
+        return $this->socialmediaRepository->updatesocialMedia($request,$id);
     }
+    public function deletesocialmedia($id)
+    {
+        return $this->socialmediaRepository->deletesocialMedia($id);
+    } 
+    public function changeStatus($id)
+    {
+        return $this->socialmediaRepository->changeStatus($id);
+    } 
+
 
 }

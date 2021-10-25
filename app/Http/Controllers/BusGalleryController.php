@@ -42,6 +42,7 @@ class BusGalleryController extends Controller
 
         $data = $request->only([
             'bus_id',
+            'bus_operator_id',
             'rows_number',
           ]);
         $busGallery = $this->busGalleryService->viewBusGallery($data);
@@ -54,7 +55,7 @@ class BusGalleryController extends Controller
 
         $data = $request->only([
             'bus_id',
-            'icon',
+            'icon','bus_operator_id',
             'created_by',
           ]);
           $busGalleryValidation = $this->busGalleryValidator->validate($data);

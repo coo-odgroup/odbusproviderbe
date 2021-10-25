@@ -17,48 +17,99 @@ use App\AppValidator\SocialMediaValidator;
 
 class SocialMediaController extends Controller
 {
-    use ApiResponser;
-   
-    protected $socialmediaService;    
-    protected $socialmediaValidator;    
+  use ApiResponser;
+  
+  protected $socialmediaService;    
+  protected $socialmediaValidator;    
+  
+  public function __construct(SocialMediaService $socialmediaService,SocialMediaValidator $socialmediaValidator)
+  {
+    $this->socialmediaService = $socialmediaService;        
+    $this->socialmediaValidator = $socialmediaValidator;        
+  }
+
+  public function getAllsocialmedia(Request $request)
+  {
+      // Log::info($request);
     
-    public function __construct(SocialMediaService $socialmediaService,SocialMediaValidator $socialmediaValidator)
-    {
-        $this->socialmediaService = $socialmediaService;        
-        $this->socialmediaValidator = $socialmediaValidator;        
-    }
+    $socialmedia = $this->socialmediaService->getAll($request);
+    return $this->successResponse($socialmedia,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+  }
 
-    public function getAll()
-    {
-        $extraseatopen = $this->socialmediaService->getAll();
-        return $this->successResponse($extraseatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
-    public function updateData(Request $request)
-    {
-    	// Log::info($request);
-        $data = $request->only([
-          'facebook_link',
-          'twitter_link',
-          'instagram_link',
-          'googleplus_link',
-          'linkedin_link',
-        ]);
+  public function addsocialmedia(Request $request)
+  {
+   $data = $request->only([
+    'bus_operator_id',
+    'facebook_link',
+    'twitter_link',
+    'instagram_link',
+    'googleplus_link',
+    'linkedin_link',
+  ]); 
 
-    	 $socialmediaValidation = $this->socialmediaValidator->validate($data);
+   $socialmedia = $this->socialmediaValidator->validate($data);
 
 
-      if ($socialmediaValidation->fails()) {
-        $errors = $socialmediaValidation->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      }      
-      try {
-        $this->socialmediaService->updateData($request);
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-      	// Log::info($e);
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }  
-    }
+   if ($socialmedia->fails()) {
+    $errors = $socialmedia->errors();
+    return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+  }      
+  try {
+    $this->socialmediaService->addsocialmedia($request);
+    return $this->successResponse(null, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+  }
+  catch(Exception $e){
+        // Log::info($e);
+    return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+  }  
+
+}
+public function updatesocialmedia(Request $request , $id)
+{
+
+ $data = $request->only([
+   'bus_operator_id',
+   'facebook_link',
+   'twitter_link',
+   'instagram_link',
+   'googleplus_link',
+   'linkedin_link',
+ ]);
+
+ $socialmedia = $this->socialmediaValidator->validate($data);
+
+
+ if ($socialmedia->fails()) {
+  $errors = $socialmedia->errors();
+  return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+}      
+try {
+  $this->socialmediaService->updatesocialmedia($request, $id);
+  return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+}
+catch(Exception $e){
+        // Log::info($e);
+  return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+}  
+
+}
+
+public function deletesocialmedia($id)
+{
+
+  $socialmedia = $this->socialmediaService->deletesocialmedia($id);
+  return $this->successResponse($socialmedia,Config::get('constants.RECORD_REMOVED'),Response::HTTP_OK);
+
+} 
+public function changeStatus($id)
+{
+  $socialmedia = $this->socialmediaService->changeStatus($id);
+  return $this->successResponse($socialmedia,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK);
+
+}
+
+
+
+
 
 }

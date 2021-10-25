@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
+use App\Models\BusOperator;
 
 
 class BusGallery extends Model
@@ -17,4 +18,9 @@ class BusGallery extends Model
     {
     	return $this->belongsTo(Bus::class);
     }
+    public function busOperator()
+    {
+        return $this->belongsTo(BusOperator::class);
+    }
+    
 }

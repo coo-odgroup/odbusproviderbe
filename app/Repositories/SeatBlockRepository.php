@@ -222,7 +222,8 @@ class SeatBlockRepository
         $data= $this->seatBlock->with('seatBlockSeats.seats')
                                ->with('bus.busOperator')
                                //->with('seats')
-                               ->whereNotIn('status', [2]);
+                               ->whereNotIn('status', [2])
+                                ->orderBy('id','DESC');
 
         if($paginate=='all') 
         {

@@ -32,7 +32,7 @@ class BusGalleryRepository
     public function getAll()
     {
         return $this->busGallery
-                    ->with('bus')
+                    ->with('bus','busOperator')
                     ->whereNotIn('status', [2])
                     ->get();
     }
@@ -60,8 +60,9 @@ class BusGalleryRepository
     {    
         $paginate = $data['rows_number'] ;
         $bus_id = $data['bus_id'] ;
+        $bus_operator_id = $data['bus_operator_id'] ;
 
-        $data= $this->busGallery->with('bus')
+        $data= $this->busGallery->with('bus','busOperator')
                      ->whereNotIn('status', [2])
                      ->orderBy('id','DESC');
 
@@ -77,6 +78,10 @@ class BusGalleryRepository
         if($bus_id!=null)
         {
             $data=$data->where('bus_id', $bus_id);
+        } 
+        if($bus_operator_id!=null)
+        {
+            $data=$data->where('bus_operator_id', $bus_operator_id);
         }
         $data=$data->paginate($paginate);
 
@@ -92,6 +97,7 @@ class BusGalleryRepository
     public function getModel($data, BusGallery $busGallery)
     {
         $busGallery->bus_id = $data['bus_id'];
+        $busGallery->bus_operator_id = $data['bus_operator_id'];
         $busGallery->image = $data['icon'];
         $busGallery->created_by = $data['created_by'];
         return $busGallery;

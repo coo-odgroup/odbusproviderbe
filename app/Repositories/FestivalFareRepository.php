@@ -36,8 +36,8 @@ class FestivalFareRepository
          $name = $request['name'] ;
        
 
-        $data= $this->festivalFare->with('bus')
-                    ->whereNotIn('status', [2]);
+        $data= $this->festivalFare->with('bus','bus.busOperator')
+                    ->whereNotIn('status', [2]) ->orderBy('id','DESC');
 
 
         if($paginate=='all') 
@@ -54,7 +54,9 @@ class FestivalFareRepository
             $data = $data->where('date', 'like', '%' .$name . '%')
                          ->orWhereHas('bus', function ($query) use ($name){
                             $query->where('name', 'like', '%' .$name . '%');
-                                 });                        
+                                 })  
+                         ->orWhereHas('bus.busOperator', function ($query) use ($name){
+                             $query->where('operator_name', 'like', '%' .$name . '%');});                       
         }     
 
         $data=$data->paginate($paginate);

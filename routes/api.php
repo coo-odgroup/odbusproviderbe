@@ -93,6 +93,13 @@ use App\Http\Controllers\BannerController;
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
 
+// Route::put('socialmedia',[SocialMediaController::class,'updateData']);
+// Route::get('/socialmedia',[SocialMediaController::class,'getAllsocialmedia']);
+Route::post('socialmediaData',[SocialMediaController::class,'getAllsocialmedia']);
+Route::post('socialmedia',[SocialMediaController::class,'addsocialmedia']);
+Route::put('socialmedia/{id}',[SocialMediaController::class,'updatesocialmedia']);
+Route::delete('socialmedia/{id}', [SocialMediaController::class, 'deletesocialmedia']);
+Route::put('/changeStatus/{id}', [SocialMediaController::class, 'changeStatus']);
 
 //Seo Setting
 Route::get('/seosetting',[SeoSettingController::class,'getAllseosetting']);
