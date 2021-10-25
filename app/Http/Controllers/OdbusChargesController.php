@@ -32,19 +32,19 @@ class OdbusChargesController extends Controller
     {
         $this->odbusChargesService = $odbusChargesService;
         $this->odbusChargesValidator = $odbusChargesValidator;
-
+    }
+    public function getData(Request $request)
+    {
+        $result = $this->odbusChargesService->getData($request);
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function getAll() {
       $result = $this->odbusChargesService->getAll();;
       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
    
-    
-    
     public function save(Request $request) {
-        $data = $request->only([
-          'payment_gateway_charges','email_sms_charges','odbus_gst_charges'
-        ]);
+      $data = $request->all();
         $odbusChargesValidation = $this->odbusChargesValidator->validate($data);
         if ($odbusChargesValidation->fails()) {
           $errors = $odbusChargesValidation->errors();
@@ -61,9 +61,7 @@ class OdbusChargesController extends Controller
 
     public function update(Request $request, $id) {
      
-        $data = $request->only([
-          'payment_gateway_charges','email_sms_charges','odbus_gst_charges','advance_days_show','support_email','booking_email','request_email','other_email','mobile_no_1','mobile_no_2','mobile_no_3','mobile_no_4','created_by','logo'
-        ]);
+      $data = $request->all();
         $odbusChargesValidation = $this->odbusChargesValidator->validate($data);
         if ($odbusChargesValidation->fails()) {
           $errors = $odbusChargesValidation->errors();
@@ -78,8 +76,6 @@ class OdbusChargesController extends Controller
       }
     }
 
-    
-
     public function getById($id) { 
       try{
         $result= $this->odbusChargesService->getById($id);
@@ -89,6 +85,24 @@ class OdbusChargesController extends Controller
       }
       return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
     }
-    
+    public function delete($id) {
+      try{
+        $response = $this->odbusChargesService->deleteById($id);
+        return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      } 
+    } 
+    public function changeStatus($id) {
+      try{
+        $response = $this->odbusChargesService->changeStatus($id);
+        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }
+     
+    }  
    
 }

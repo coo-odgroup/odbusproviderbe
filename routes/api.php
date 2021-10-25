@@ -654,10 +654,13 @@ Route::post('/testMe', [ArticleController::class, 'testMe']);
 Route::put('/updateOneToMany', [ArticleController::class, 'updateOneToMany']);
 
 
-
-Route::get('/odbus_charges/{id}',[OdbusChargesController::class,'getById']);
-Route::put('/odbus_charges/{id}',[OdbusChargesController::class,'update']);
-
+Route::get('/odbusCharges',[OdbusChargesController::class,'getAll']);
+Route::get('/odbusCharges/{id}',[OdbusChargesController::class,'getById']);
+Route::post('/odbusCharges', [OdbusChargesController::class, 'save']);
+Route::put('/odbusCharges/{id}',[OdbusChargesController::class,'update']);
+Route::delete('/odbusCharges/{id}', [OdbusChargesController::class, 'delete']);
+Route::post('odbusChargesData',[OdbusChargesController::class,'getData']);
+Route::put('/changeStatus/{id}', [OdbusChargesController::class, 'changeStatus']);
 
 Route::post('/offersDT', [OffersController::class, 'getOffersDT']);
 

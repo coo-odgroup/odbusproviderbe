@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Models\Bus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\OdbusCharges;
 
 class BusOperator extends Model
 {
@@ -16,5 +17,10 @@ class BusOperator extends Model
     public function bus()
     {        
         return $this->hasMany(Bus::class);        
+    } 
+    public function odbusCharges()
+    {
+        return $this->hasMany(OdbusCharges::class);
+        
     } 
 }

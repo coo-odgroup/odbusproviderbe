@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 use App\Models\OdbusCharges;
+use App\Models\BusOperator;
 use Illuminate\Support\Facades\Log;
 class OdbusChargesRepository 
 {
@@ -10,9 +11,38 @@ class OdbusChargesRepository
     {
         $this->odbusCharges = $odbusCharges;
     }
+    public function getData($request)
+    {
+        $paginate = $request['per_page'] ;
+        $name = $request['name'] ;
+
+        $data= OdbusCharges::with('busOperator')->whereNotIn('status', [2])->orderBy('id','desc');
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+        if($name!=null)
+        {
+            $data = $data->WhereHas('busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%');});                       
+        }     
+        $data=$data->paginate($paginate);
+        
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+             "data" => $data
+           );   
+           return $response; 
+    }
+
     public function getAll()
     {
-        return $this->safety->whereNotIn('status', [2])->get();
+        return $this->odbusCharges->whereNotIn('status', [2])->get();
     }
     
     public function getById($id)
@@ -24,6 +54,7 @@ class OdbusChargesRepository
     
     public function getModel($data, OdbusCharges $odbusCharges)
     {
+        $odbusCharges->bus_operator_id = $data['bus_operator_id'];
         $odbusCharges->payment_gateway_charges = $data['payment_gateway_charges'];
         $odbusCharges->email_sms_charges = $data['email_sms_charges'];
         $odbusCharges->odbus_gst_charges = $data['odbus_gst_charges'];
@@ -61,13 +92,30 @@ class OdbusChargesRepository
      */
     public function update($data, $id)
     {
-        // Log::info($data);
         $odbusCharges = $this->odbusCharges->find($id);
         $odbusCharges=$this->getModel($data,$odbusCharges);
         $odbusCharges->update();
         return $odbusCharges;
     }
+    public function delete($id)
+    {
+        $charges = $this->odbusCharges->find($id);
+        $charges->status = 2;
+        $charges->update();
 
+        return $charges;
+    }
+    public function changeStatus($id)
+    {
+        $charges = $this->odbusCharges->find($id);
+        if($charges->status==0){
+            $charges->status = 1;
+        }elseif($charges->status==1){
+            $charges->status = 0;
+        }
+        $charges->update();
+        return $charges;
+    }
 
 
 }

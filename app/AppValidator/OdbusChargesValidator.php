@@ -10,6 +10,7 @@ class OdbusChargesValidator
     public function validate($data) { 
         
         $rules = [
+            'bus_operator_id' => 'required',
             'payment_gateway_charges' => 'required',
             'email_sms_charges' => 'required',
             'odbus_gst_charges' => 'required',
@@ -17,11 +18,10 @@ class OdbusChargesValidator
             'support_email' => 'required',
             'booking_email' => 'required',
             'request_email' => 'required',
-            //'other_email' => 'required',
             'mobile_no_1' => 'required',
             'mobile_no_2' => 'required',
             'mobile_no_3' => 'required',
-            //'mobile_no_4' => 'required'
+            'logo' => 'required',
 
         ];      
       

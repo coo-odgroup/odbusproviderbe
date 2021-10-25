@@ -28,7 +28,10 @@ class OdbusChargesService
     {
         $this->odbusChargesRepository = $odbusChargesRepository;
     }
-
+    public function getData($request)
+    {
+        return $this->odbusChargesRepository->getData($request);
+    }
     
     public function getAll()
     {
@@ -46,7 +49,6 @@ class OdbusChargesService
     {
         return $this->odbusChargesRepository->getById($id);
     }
-   
     /**
      * Update  data
      * Store to DB if there are no errors.
@@ -57,12 +59,12 @@ class OdbusChargesService
     public function updatePost($data, $id)
     {
         try {
-            $odbusChargesRepository = $this->odbusChargesRepository->update($data, $id);
+            $charges = $this->odbusChargesRepository->update($data, $id);
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
-        return $odbusChargesRepository;
+        return $charges;
     }
 
     /**
@@ -75,12 +77,33 @@ class OdbusChargesService
     public function savePostData($data)
     {   
         try {
-            $odbusChargesRepository = $this->odbusChargesRepository->save($data);
+            $charges = $this->odbusChargesRepository->save($data);
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $odbusChargesRepository;
+        return $charges;
     }
+    public function deleteById($id)
+    {
+        try {
+            $charges = $this->odbusChargesRepository->delete($id);
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+        }
+        return $charges;
+    }
+    public function changeStatus($id)
+    {
+        try {
+            $charges = $this->odbusChargesRepository->changeStatus($id);
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+        }
+        return $charges;
+    }
+
 
 }
