@@ -142,10 +142,10 @@ class SafetyRepository
      */
     public function update($data, $id)
     {
-        Log::info($data);
+        // Log::info($data);
         $safety = $this->safety->find($id);
         $safety=$this->getModel($data,$safety);
-        Log::info($safety);
+        // Log::info($safety);
         $safety->update();
         return $safety;
     }
