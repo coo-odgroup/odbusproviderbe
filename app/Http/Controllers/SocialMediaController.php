@@ -30,7 +30,7 @@ class SocialMediaController extends Controller
 
   public function getAllsocialmedia(Request $request)
   {
-      // Log::info($request);
+      
     
     $socialmedia = $this->socialmediaService->getAll($request);
     return $this->successResponse($socialmedia,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);

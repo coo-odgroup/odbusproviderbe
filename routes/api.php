@@ -99,7 +99,7 @@ Route::post('socialmediaData',[SocialMediaController::class,'getAllsocialmedia']
 Route::post('socialmedia',[SocialMediaController::class,'addsocialmedia']);
 Route::put('socialmedia/{id}',[SocialMediaController::class,'updatesocialmedia']);
 Route::delete('socialmedia/{id}', [SocialMediaController::class, 'deletesocialmedia']);
-Route::put('/changeStatus/{id}', [SocialMediaController::class, 'changeStatus']);
+Route::put('/changeStatussocialmedia/{id}', [SocialMediaController::class, 'changeStatus']);
 
 //Seo Setting
 Route::get('/seosetting',[SeoSettingController::class,'getAllseosetting']);
@@ -316,16 +316,6 @@ Route::post('contactreport',[ContactReportController::class,'getData']);
 Route::delete('contactreport/{id}',[ContactReportController::class,'deleteData']);
 
 
-//Setting  SocialMediaController
-
-// Route::get('socialmedia',[SocialMediaController::class,'getAll']);
-
-// Route::put('socialmedia',[SocialMediaController::class,'updateData']);
-Route::get('/socialmedia',[SocialMediaController::class,'getAllsocialmedia']);
-Route::post('socialmediaData',[SocialMediaController::class,'getAllData']);
-Route::post('socialmedia',[SocialMediaController::class,'addsocialmedia']);
-Route::put('socialmedia/{id}',[SocialMediaController::class,'updatesocialmedia']);
-Route::delete('socialmedia/{id}', [SocialMediaController::class, 'deletesocialmedia']);
 
 //Page Content
 Route::get('/pagecontent',[PageContentController::class,'getAllpagecontent']);
