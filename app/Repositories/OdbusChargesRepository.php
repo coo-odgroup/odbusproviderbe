@@ -70,6 +70,7 @@ class OdbusChargesRepository
         $odbusCharges->mobile_no_3 = $data['mobile_no_3'];
         $odbusCharges->mobile_no_4 = $data['mobile_no_4'];
         $odbusCharges->logo = $data['logo'];
+        $odbusCharges->favIcon = $data['favIcon'];
         $odbusCharges->created_by = $data['created_by'];
         return $odbusCharges;
     }

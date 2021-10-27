@@ -22,16 +22,21 @@ class BannerRepository
         $status = $request['status'];
        
         if($searchBy!='' && $status!=''){
-            $list = $this->banner->where('occassion', 'like', '%' .$searchBy . '%')->where('status', $status)
-                                 ->whereNotIn('status', [2])->orderBy('id','desc');
+            $list = $this->banner->with('busOperator')
+                                 ->where('occassion', 'like', '%' .$searchBy . '%')
+                                 ->where('status', $status) ->orWhereHas('busOperator', function ($query) use ($searchBy){$query->where('operator_name', 'like', '%' .$searchBy . '%');
+                            })->whereNotIn('status', [2])->orderBy('id','desc');
+
         }elseif($searchBy!='' && $status==''){
-            $list = $this->banner->where('occassion', $searchBy)
-                                 ->whereNotIn('status', [2])->orderBy('id','desc');
+            $list = $this->banner->with('busOperator')->where('occassion', $searchBy)
+                                 ->orWhereHas('busOperator', function ($query) use ($searchBy){
+                                    $query->where('operator_name', 'like', '%' .$searchBy . '%');
+                                   })->whereNotIn('status', [2])->orderBy('id','desc');
         }elseif($searchBy=='' && $status!=''){
-            $list = $this->banner->where('status', $status)
+            $list = $this->banner->with('busOperator')->where('status', $status)
                                  ->whereNotIn('status', [2])->orderBy('id','desc');
         }else{
-            $list = $this->banner->whereNotIn('status', [2])->orderBy('id','desc');    
+            $list = $this->banner->with('busOperator')->whereNotIn('status', [2])->orderBy('id','desc');    
         }
 
         $list =  $list->paginate($paginate);
