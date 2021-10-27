@@ -28,7 +28,9 @@ class OdbusChargesRepository
         }
         if($name!=null)
         {
-            $data = $data->WhereHas('busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%');});                       
+            $data = $data->WhereHas('busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%');})
+                        ->orWhereHas('busOperator', function ($query) use ($name) {$query->where('contact_number', 'like', '%' .$name . '%');})
+                        ->orWhereHas('busOperator', function ($query) use ($name) {$query->where('email_id', 'like', '%' .$name . '%');});                       
         }     
         $data=$data->paginate($paginate);
         
