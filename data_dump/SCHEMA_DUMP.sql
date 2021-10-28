@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 25, 2021 at 06:15 AM
+-- Generation Time: Oct 28, 2021 at 10:58 AM
 -- Server version: 10.2.39-MariaDB
 -- PHP Version: 7.2.30
 
@@ -73,6 +73,31 @@ CREATE TABLE `appversion` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `banner`
+--
+
+CREATE TABLE `banner` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
+  `heading` text DEFAULT NULL,
+  `occassion` varchar(250) NOT NULL,
+  `category` int(11) DEFAULT NULL COMMENT '0-main banner 1-adv-banner-1  2-adv-banner-2, 3-adv-banner-3',
+  `url` varchar(250) DEFAULT NULL,
+  `banner_img` longblob DEFAULT NULL,
+  `alt_tag` varchar(250) NOT NULL,
+  `start_date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_date` date NOT NULL,
+  `end_time` time NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(50) NOT NULL,
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0:block, 1:active'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -207,7 +232,9 @@ CREATE TABLE `bus` (
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `sequence` int(11) NOT NULL DEFAULT 1000,
-  `max_seat_book` int(11) NOT NULL DEFAULT 6
+  `max_seat_book` int(11) NOT NULL DEFAULT 6,
+  `cancellation_policy_desc` longtext DEFAULT NULL,
+  `travel_policy_desc` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -350,6 +377,7 @@ CREATE TABLE `bus_festival_fare` (
 
 CREATE TABLE `bus_gallery` (
   `id` int(10) UNSIGNED NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
   `bus_id` int(10) UNSIGNED NOT NULL,
   `image` mediumblob NOT NULL,
   `alt_tag` varchar(250) DEFAULT NULL,
@@ -623,6 +651,7 @@ CREATE TABLE `cancellationslabs` (
   `id` int(11) NOT NULL,
   `api_id` int(11) DEFAULT NULL,
   `rule_name` varchar(250) NOT NULL,
+  `cancellation_policy_desc` text DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 0,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -684,20 +713,41 @@ CREATE TABLE `city_closing_extended` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `contacts`
+--
+
+CREATE TABLE `contacts` (
+  `id` int(11) NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
+  `name` varchar(150) DEFAULT NULL,
+  `email` varchar(200) DEFAULT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `service` varchar(255) DEFAULT NULL,
+  `message` text DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `status` int(11) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `coupon`
 --
 
 CREATE TABLE `coupon` (
   `id` int(10) UNSIGNED NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
+  `valid_by` varchar(250) NOT NULL,
   `coupon_title` varchar(254) DEFAULT NULL,
   `coupon_code` varchar(25) DEFAULT NULL,
-  `type` enum('Percent','CutOff') NOT NULL,
+  `type` enum('1','2') NOT NULL,
   `amount` double(8,2) DEFAULT NULL COMMENT 'in % or in cash',
+  `percentage` double(8,2) NOT NULL,
   `max_discount_price` double(8,2) DEFAULT NULL COMMENT 'incase of % deduction',
   `min_tran_amount` double(8,2) DEFAULT NULL,
   `max_redeem` int(11) DEFAULT NULL,
-  `max_use_limit` int(11) DEFAULT NULL,
-  `category` int(11) DEFAULT NULL COMMENT '0-booking date 1-journey date',
+  `category` int(11) DEFAULT NULL COMMENT '1-booking date 2-journey date',
   `from_date` datetime DEFAULT NULL,
   `to_date` datetime DEFAULT NULL,
   `short_desc` varchar(200) NOT NULL,
@@ -722,6 +772,39 @@ CREATE TABLE `coupon_assigned_bus` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `coupon_operator`
+--
+
+CREATE TABLE `coupon_operator` (
+  `id` int(11) NOT NULL,
+  `coupon_id` int(10) UNSIGNED NOT NULL,
+  `operator_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `coupon_route`
+--
+
+CREATE TABLE `coupon_route` (
+  `id` int(11) NOT NULL,
+  `coupon_id` int(10) UNSIGNED NOT NULL,
+  `source_id` int(10) UNSIGNED NOT NULL,
+  `destination_id` int(10) UNSIGNED NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -756,7 +839,10 @@ CREATE TABLE `customer_payment` (
   `payment_done` int(11) NOT NULL DEFAULT 0 COMMENT '0:payment not done, 1:payment done, 2:refunded ',
   `refund_id` varchar(120) NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp()
+  `updated_at` datetime DEFAULT current_timestamp(),
+  `razorpay_status` varchar(250) DEFAULT NULL,
+  `razorpay_status_updated_at` datetime DEFAULT NULL,
+  `failed_reason` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -928,9 +1014,20 @@ CREATE TABLE `locationcode` (
 
 CREATE TABLE `odbus_charges` (
   `id` int(11) NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
   `payment_gateway_charges` double(8,2) NOT NULL COMMENT 'Value in %',
   `email_sms_charges` double(8,2) NOT NULL,
   `odbus_gst_charges` double(8,2) NOT NULL COMMENT 'Value in %',
+  `advance_days_show` int(11) NOT NULL,
+  `support_email` varchar(50) NOT NULL,
+  `booking_email` varchar(50) NOT NULL,
+  `request_email` varchar(50) NOT NULL,
+  `other_email` varchar(50) DEFAULT NULL,
+  `mobile_no_1` bigint(20) NOT NULL,
+  `mobile_no_2` bigint(20) NOT NULL,
+  `mobile_no_3` bigint(20) NOT NULL,
+  `mobile_no_4` bigint(20) DEFAULT NULL,
+  `logo` longblob NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(250) NOT NULL,
@@ -1011,6 +1108,29 @@ CREATE TABLE `owner_payment` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `page_content`
+--
+
+CREATE TABLE `page_content` (
+  `id` int(11) NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
+  `page_name` varchar(250) NOT NULL,
+  `page_url` varchar(250) NOT NULL,
+  `page_description` text NOT NULL,
+  `meta_title` text DEFAULT NULL,
+  `meta_keyword` text DEFAULT NULL,
+  `meta_description` text DEFAULT NULL,
+  `extra_meta` text DEFAULT NULL,
+  `canonical_url` text DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `pre_booking`
 --
 
@@ -1077,16 +1197,17 @@ CREATE TABLE `reason` (
 
 CREATE TABLE `review` (
   `id` int(10) UNSIGNED NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
   `pnr` varchar(60) NOT NULL,
   `bus_id` int(10) UNSIGNED NOT NULL,
-  `users_id` int(11) NOT NULL,
-  `title` varchar(120) NOT NULL,
+  `users_id` int(10) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
   `reference_key` varchar(250) NOT NULL COMMENT 'link for email',
-  `rating_overall` varchar(25) NOT NULL COMMENT 'out of 5',
-  `rating_comfort` varchar(25) NOT NULL COMMENT 'out of 5',
-  `rating_clean` varchar(25) NOT NULL COMMENT 'out of 5',
-  `rating_behavior` varchar(25) NOT NULL COMMENT 'out of 5',
-  `rating_timing` varchar(25) NOT NULL COMMENT 'out of 5',
+  `rating_overall` float NOT NULL DEFAULT 0 COMMENT 'out of 5',
+  `rating_comfort` float NOT NULL DEFAULT 0 COMMENT 'out of 5',
+  `rating_clean` float NOT NULL DEFAULT 0 COMMENT 'out of 5',
+  `rating_behavior` float NOT NULL DEFAULT 0 COMMENT 'out of 5',
+  `rating_timing` float NOT NULL DEFAULT 0 COMMENT 'out of 5',
   `comments` varchar(2500) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
@@ -1214,6 +1335,27 @@ CREATE TABLE `seat_open_seats` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `seo_setting`
+--
+
+CREATE TABLE `seo_setting` (
+  `id` int(11) NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
+  `page_url` varchar(250) NOT NULL,
+  `meta_title` text DEFAULT NULL,
+  `meta_keyword` text DEFAULT NULL,
+  `meta_description` text DEFAULT NULL,
+  `extra_meta` text DEFAULT NULL,
+  `canonical_url` text DEFAULT NULL,
+  `status` int(11) NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `site_master`
 --
 
@@ -1251,17 +1393,40 @@ CREATE TABLE `site_master` (
 
 CREATE TABLE `slider` (
   `id` int(10) UNSIGNED NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
   `occassion` varchar(250) NOT NULL,
   `category` int(11) DEFAULT NULL COMMENT '0-main slider 1-adv-slider1 2-adv-slider 2, 3-adv-slider-3',
   `url` varchar(250) DEFAULT NULL,
-  `slider_img` varchar(254) NOT NULL,
+  `slider_img` longblob DEFAULT NULL,
   `alt_tag` varchar(250) NOT NULL,
-  `start_date` datetime NOT NULL,
-  `end_date` datetime NOT NULL,
+  `start_date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_date` date NOT NULL,
+  `end_time` time NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
-  `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+  `status` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '0:block, 1:active'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `social_link`
+--
+
+CREATE TABLE `social_link` (
+  `id` int(11) NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
+  `facebook_link` varchar(250) NOT NULL,
+  `twitter_link` varchar(250) NOT NULL,
+  `instagram_link` varchar(250) NOT NULL,
+  `googleplus_link` varchar(250) NOT NULL,
+  `linkedin_link` varchar(250) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) NOT NULL,
+  `status` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -1283,6 +1448,27 @@ CREATE TABLE `special_fare` (
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL,
   `status` int(10) UNSIGNED NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `testimonial`
+--
+
+CREATE TABLE `testimonial` (
+  `id` int(11) NOT NULL,
+  `posted_by` varchar(250) NOT NULL,
+  `testinmonial_content` text NOT NULL,
+  `travel_date` date NOT NULL,
+  `bus_operator_id` int(11) NOT NULL,
+  `destination` varchar(250) NOT NULL,
+  `source` varchar(250) NOT NULL,
+  `designation` varchar(250) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(50) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -1401,18 +1587,19 @@ CREATE TABLE `users` (
   `name` varchar(120) NOT NULL,
   `email` varchar(120) DEFAULT '',
   `phone` varchar(40) DEFAULT '',
-  `pincode` varchar(255) DEFAULT NULL,
-  `street` varchar(255) DEFAULT NULL,
-  `district` varchar(255) DEFAULT NULL,
-  `address` text DEFAULT NULL,
-  `profile_image` blob DEFAULT NULL,
   `password` varchar(100) DEFAULT '',
   `otp` varchar(50) DEFAULT '',
+  `token` varchar(200) DEFAULT NULL,
   `is_verified` int(11) NOT NULL DEFAULT 0,
   `msg_id` varchar(50) DEFAULT '',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `created_by` varchar(50) DEFAULT ''
+  `created_by` varchar(50) DEFAULT '',
+  `pincode` varchar(255) DEFAULT NULL,
+  `street` varchar(255) DEFAULT NULL,
+  `district` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `profile_image` longblob DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -1456,6 +1643,13 @@ ALTER TABLE `appdownload`
 --
 ALTER TABLE `appversion`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `banner`
+--
+ALTER TABLE `banner`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
 
 --
 -- Indexes for table `boarding_droping`
@@ -1510,14 +1704,14 @@ ALTER TABLE `booking_sequence`
 --
 ALTER TABLE `bus`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `bus_number` (`bus_number`) USING BTREE,
   ADD KEY `bus_operator_FK` (`bus_operator_id`),
   ADD KEY `bus_type_fk` (`bus_type_id`),
   ADD KEY `bus_sitting_fk` (`bus_sitting_id`),
   ADD KEY `cancellation_slab_fk` (`cancellationslabs_id`),
   ADD KEY `bus_seatlayout_id_fk` (`bus_seat_layout_id`),
   ADD KEY `name` (`name`),
-  ADD KEY `via` (`via`);
+  ADD KEY `via` (`via`),
+  ADD KEY `bus_number` (`bus_number`) USING BTREE;
 
 --
 -- Indexes for table `bus_amenities`
@@ -1583,7 +1777,8 @@ ALTER TABLE `bus_festival_fare`
 --
 ALTER TABLE `bus_gallery`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `bus_id` (`bus_id`);
+  ADD KEY `bus_id` (`bus_id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
 
 --
 -- Indexes for table `bus_location_sequence`
@@ -1738,10 +1933,18 @@ ALTER TABLE `city_closing_extended`
   ADD KEY `city_closing_extended_location_fk` (`location_id`);
 
 --
+-- Indexes for table `contacts`
+--
+ALTER TABLE `contacts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
+
+--
 -- Indexes for table `coupon`
 --
 ALTER TABLE `coupon`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
 
 --
 -- Indexes for table `coupon_assigned_bus`
@@ -1750,6 +1953,23 @@ ALTER TABLE `coupon_assigned_bus`
   ADD PRIMARY KEY (`id`),
   ADD KEY `bus_id` (`bus_id`),
   ADD KEY `coupon_assigned_id_fk` (`coupon_id`);
+
+--
+-- Indexes for table `coupon_operator`
+--
+ALTER TABLE `coupon_operator`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `coupon_id` (`coupon_id`),
+  ADD KEY `operator_id` (`operator_id`);
+
+--
+-- Indexes for table `coupon_route`
+--
+ALTER TABLE `coupon_route`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `source_id` (`source_id`),
+  ADD KEY `destination_id` (`destination_id`),
+  ADD KEY `coupon_id` (`coupon_id`);
 
 --
 -- Indexes for table `credentials`
@@ -1830,7 +2050,8 @@ ALTER TABLE `locationcode`
 -- Indexes for table `odbus_charges`
 --
 ALTER TABLE `odbus_charges`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
 
 --
 -- Indexes for table `offers`
@@ -1855,6 +2076,13 @@ ALTER TABLE `owner_fare`
 -- Indexes for table `owner_payment`
 --
 ALTER TABLE `owner_payment`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
+
+--
+-- Indexes for table `page_content`
+--
+ALTER TABLE `page_content`
   ADD PRIMARY KEY (`id`),
   ADD KEY `bus_operator_id` (`bus_operator_id`);
 
@@ -1889,7 +2117,8 @@ ALTER TABLE `review`
   ADD PRIMARY KEY (`id`),
   ADD KEY `bus_id` (`bus_id`),
   ADD KEY `users_id` (`users_id`),
-  ADD KEY `pnr` (`pnr`);
+  ADD KEY `pnr` (`pnr`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
 
 --
 -- Indexes for table `safety`
@@ -1949,6 +2178,13 @@ ALTER TABLE `seat_open_seats`
   ADD KEY `seat_open_id` (`seat_open_id`);
 
 --
+-- Indexes for table `seo_setting`
+--
+ALTER TABLE `seo_setting`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
+
+--
 -- Indexes for table `site_master`
 --
 ALTER TABLE `site_master`
@@ -1958,7 +2194,15 @@ ALTER TABLE `site_master`
 -- Indexes for table `slider`
 --
 ALTER TABLE `slider`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
+
+--
+-- Indexes for table `social_link`
+--
+ALTER TABLE `social_link`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bus_operator_id` (`bus_operator_id`);
 
 --
 -- Indexes for table `special_fare`
@@ -1968,6 +2212,13 @@ ALTER TABLE `special_fare`
   ADD KEY `special_fare_operator_fk` (`bus_operator_id`),
   ADD KEY `special_fare_source_fk` (`source_id`),
   ADD KEY `special_fare_destination_fk` (`destination_id`);
+
+--
+-- Indexes for table `testimonial`
+--
+ALTER TABLE `testimonial`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `operator` (`bus_operator_id`);
 
 --
 -- Indexes for table `ticket_cancelation`
@@ -2046,6 +2297,12 @@ ALTER TABLE `appdownload`
 --
 ALTER TABLE `appversion`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `banner`
+--
+ALTER TABLE `banner`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `boarding_droping`
@@ -2246,6 +2503,12 @@ ALTER TABLE `city_closing_extended`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `contacts`
+--
+ALTER TABLE `contacts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `coupon`
 --
 ALTER TABLE `coupon`
@@ -2256,6 +2519,18 @@ ALTER TABLE `coupon`
 --
 ALTER TABLE `coupon_assigned_bus`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `coupon_operator`
+--
+ALTER TABLE `coupon_operator`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `coupon_route`
+--
+ALTER TABLE `coupon_route`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `credentials`
@@ -2354,6 +2629,12 @@ ALTER TABLE `owner_payment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `page_content`
+--
+ALTER TABLE `page_content`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `pre_booking`
 --
 ALTER TABLE `pre_booking`
@@ -2420,6 +2701,12 @@ ALTER TABLE `seat_open_seats`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `seo_setting`
+--
+ALTER TABLE `seo_setting`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `site_master`
 --
 ALTER TABLE `site_master`
@@ -2432,10 +2719,22 @@ ALTER TABLE `slider`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `social_link`
+--
+ALTER TABLE `social_link`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `special_fare`
 --
 ALTER TABLE `special_fare`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `testimonial`
+--
+ALTER TABLE `testimonial`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `ticket_cancelation`
@@ -2482,6 +2781,12 @@ ALTER TABLE `user_bank_details`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `banner`
+--
+ALTER TABLE `banner`
+  ADD CONSTRAINT `banner_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
 
 --
 -- Constraints for table `boarding_droping`
@@ -2560,7 +2865,8 @@ ALTER TABLE `bus_festival_fare`
 -- Constraints for table `bus_gallery`
 --
 ALTER TABLE `bus_gallery`
-  ADD CONSTRAINT `bus_gallery_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`);
+  ADD CONSTRAINT `bus_gallery_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
+  ADD CONSTRAINT `bus_gallery_ibfk_2` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
 
 --
 -- Constraints for table `bus_location_sequence`
@@ -2644,11 +2950,38 @@ ALTER TABLE `city_closing_extended`
   ADD CONSTRAINT `city_closing_extended_location_fk` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`);
 
 --
+-- Constraints for table `contacts`
+--
+ALTER TABLE `contacts`
+  ADD CONSTRAINT `contacts_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
+
+--
+-- Constraints for table `coupon`
+--
+ALTER TABLE `coupon`
+  ADD CONSTRAINT `coupon_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
+
+--
 -- Constraints for table `coupon_assigned_bus`
 --
 ALTER TABLE `coupon_assigned_bus`
   ADD CONSTRAINT `coupon_assigned_bus_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
   ADD CONSTRAINT `coupon_assigned_id_fk` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`);
+
+--
+-- Constraints for table `coupon_operator`
+--
+ALTER TABLE `coupon_operator`
+  ADD CONSTRAINT `coupon_operator_ibfk_1` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`),
+  ADD CONSTRAINT `coupon_operator_ibfk_2` FOREIGN KEY (`operator_id`) REFERENCES `bus_operator` (`id`);
+
+--
+-- Constraints for table `coupon_route`
+--
+ALTER TABLE `coupon_route`
+  ADD CONSTRAINT `coupon_route_ibfk_1` FOREIGN KEY (`source_id`) REFERENCES `location` (`id`),
+  ADD CONSTRAINT `coupon_route_ibfk_2` FOREIGN KEY (`destination_id`) REFERENCES `location` (`id`),
+  ADD CONSTRAINT `coupon_route_ibfk_3` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`);
 
 --
 -- Constraints for table `customer_payment`
@@ -2669,6 +3002,12 @@ ALTER TABLE `locationcode`
   ADD CONSTRAINT `locationcode_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`);
 
 --
+-- Constraints for table `odbus_charges`
+--
+ALTER TABLE `odbus_charges`
+  ADD CONSTRAINT `odbus_charges_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
+
+--
 -- Constraints for table `offers`
 --
 ALTER TABLE `offers`
@@ -2679,6 +3018,12 @@ ALTER TABLE `offers`
 --
 ALTER TABLE `owner_payment`
   ADD CONSTRAINT `owner_payment_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
+
+--
+-- Constraints for table `page_content`
+--
+ALTER TABLE `page_content`
+  ADD CONSTRAINT `page_content_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
 
 --
 -- Constraints for table `pre_booking`
@@ -2698,7 +3043,8 @@ ALTER TABLE `pre_booking_detail`
 --
 ALTER TABLE `review`
   ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
-  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `review_ibfk_3` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
 
 --
 -- Constraints for table `seats`
@@ -2735,12 +3081,36 @@ ALTER TABLE `seat_open_seats`
   ADD CONSTRAINT `seat_open_seats_ibfk_2` FOREIGN KEY (`seat_open_id`) REFERENCES `seat_open` (`id`);
 
 --
+-- Constraints for table `seo_setting`
+--
+ALTER TABLE `seo_setting`
+  ADD CONSTRAINT `seo_setting_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
+
+--
+-- Constraints for table `slider`
+--
+ALTER TABLE `slider`
+  ADD CONSTRAINT `slider_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
+
+--
+-- Constraints for table `social_link`
+--
+ALTER TABLE `social_link`
+  ADD CONSTRAINT `social_link_ibfk_1` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
+
+--
 -- Constraints for table `special_fare`
 --
 ALTER TABLE `special_fare`
   ADD CONSTRAINT `special_fare_destination_fk` FOREIGN KEY (`destination_id`) REFERENCES `location` (`id`),
   ADD CONSTRAINT `special_fare_operator_fk` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`),
   ADD CONSTRAINT `special_fare_source_fk` FOREIGN KEY (`source_id`) REFERENCES `location` (`id`);
+
+--
+-- Constraints for table `testimonial`
+--
+ALTER TABLE `testimonial`
+  ADD CONSTRAINT `operator` FOREIGN KEY (`bus_operator_id`) REFERENCES `bus_operator` (`id`);
 
 --
 -- Constraints for table `ticket_cancelation_rule`
