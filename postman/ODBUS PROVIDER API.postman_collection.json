@@ -2825,7 +2825,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"coupon_title\":\"zzzz\",\r\n    \"coupon_code\":\"od01zz\",\r\n    \"type\":\"1\",\r\n    \"amount\":\"100\",\r\n    \"max_discount_price\":\"50\",\r\n    \"min_tran_amount\":\"10\",\r\n    \"max_redeem\":\"5\",\r\n    \"max_use_limit\":\"2\",\r\n    \"category\":\"2\",\r\n    \"from_date\":\"2020-11-01 14:20:55 \",\r\n    \"to_date\":\"2020-11-01 14:20:55\",\r\n    \"short_desc\":\"checked\",\r\n    \"full_desc\":\"yes\",\r\n    \"created_by\":\"admin\"\r\n            \r\n}",
+							"raw": "{\r\n    \"bus_operator_id\":\"1\",\r\n    \"coupon_title\":\"zzzz\",\r\n    \"coupon_code\":\"od01zz\",\r\n    \"type\":\"1\",\r\n    \"amount\":\"10\",\r\n    \"valid_by\":\"1\",\r\n    \"percentage\":40,\r\n    \"max_discount_price\":\"\",\r\n    \"min_tran_amount\":\"\",\r\n    \"max_redeem\":\"5\",\r\n    \"max_use_limit\":\"20\",\r\n    \"category\":\"2\",\r\n    \"from_date\":\"2020-10-01 14:20:55 \",\r\n    \"to_date\":\"2020-11-01 14:20:55\",\r\n    \"short_desc\":\"some info goes here\",\r\n    \"full_desc\":\"Full info goes here\",\r\n    \"created_by\":\"admin\"\r\n            \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2881,7 +2881,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"coupon_title\":\"extra\",\r\n    \"coupon_code\":\"od01zz\",\r\n    \"type\":\"1\",\r\n    \"amount\":\"100\",\r\n    \"max_discount_price\":\"50\",\r\n    \"min_tran_amount\":\"10\",\r\n    \"max_redeem\":\"5\",\r\n    \"max_use_limit\":\"2\",\r\n    \"category\":\"2\",\r\n    \"from_date\":\"2020-11-01 14:20:55 \",\r\n    \"to_date\":\"2020-11-01 14:20:55\",\r\n    \"short_desc\":\"checked\",\r\n    \"full_desc\":\"yes\",\r\n    \"created_by\":\"admin\"\r\n            \r\n}",
+							"raw": "{\r\n    \"bus_operator_id\":\"1\",\r\n    \"coupon_title\":\"zzzz\",\r\n    \"coupon_code\":\"od01zz\",\r\n    \"type\":\"1\",\r\n    \"amount\":\"10\",\r\n    \"valid_by\":\"1\",\r\n    \"percentage\":40,\r\n    \"max_discount_price\":\"\",\r\n    \"min_tran_amount\":\"\",\r\n    \"max_redeem\":\"5\",\r\n    \"max_use_limit\":\"20\",\r\n    \"category\":\"2\",\r\n    \"from_date\":\"2020-10-01 14:20:55 \",\r\n    \"to_date\":\"2020-11-01 14:20:55\",\r\n    \"short_desc\":\"some info goes here\",\r\n    \"full_desc\":\"Full info goes here\",\r\n    \"created_by\":\"admin\"\r\n            \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2958,38 +2958,6 @@
 							"path": [
 								"api",
 								"couponRoute"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "ADD COUPON TO OPERATOR",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n\t\"operator_id\":\"1\",\r\n\t\"coupon_id\":\"1\",\r\n\t\"created_by\":\"admin\"\r\n}\t",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://127.0.0.1:8000/api/couponOperator",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"api",
-								"couponOperator"
 							]
 						}
 					},
