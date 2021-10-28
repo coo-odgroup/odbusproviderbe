@@ -17,14 +17,8 @@ class CouponService
     {
         $this->couponRepository = $couponRepository;
     }
-    public function deleteById($id)
-    {
-        try {
-            $post = $this->couponRepository->delete($id);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException('Unable to delete post data');
-        }
-        return $post;
+    public function delete($id)
+    { return $this->couponRepository->delete($id);
     }
     public function getAll()
     {
@@ -44,7 +38,7 @@ class CouponService
             $post = $this->couponRepository->update($data, $id);
 
         } catch (Exception $e) {
-            throw new InvalidArgumentException('Unable to update post data');
+            throw new InvalidArgumentException($e->getMessage());
         }
         return $post;
     }

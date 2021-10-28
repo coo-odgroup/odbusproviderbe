@@ -6,6 +6,7 @@ use App\Models\Coupon;
 use App\Models\CouponAssignedBus;
 use App\Models\CouponRoute;
 use App\Models\CouponOperator;
+use Illuminate\Support\Facades\Log;
 class CouponRepository
 {
     
@@ -72,17 +73,33 @@ class CouponRepository
         $coupons = new $this->coupon;
         $coupons->coupon_title = $data['coupon_title'];
         $coupons->coupon_code = $data['coupon_code'];
+        $coupons->bus_operator_id = $data['bus_operator_id'];
         $coupons->type = $data['type'];
-        $coupons->amount = $data['amount'];
-        $coupons->max_discount_price = $data['max_discount_price'];
-        $coupons->min_tran_amount = $data['min_tran_amount'];
+        $coupons->valid_by = $data['valid_by'];
+        if($coupons->type==1)
+        {
+            $coupons->percentage = $data['percentage'];
+            $coupons->max_discount_price = $data['max_discount_price'];
+            $coupons->amount = 0;
+            $coupons->min_tran_amount = 0;
+           
+        }
+        else
+        {
+            $coupons->amount = $data['amount'];
+            $coupons->min_tran_amount = $data['min_tran_amount'];
+            $coupons->percentage = 0;
+            $coupons->max_discount_price = 0;
+        }
+        
+        
         $coupons->max_redeem = $data['max_redeem'];
-        $coupons->category = $data['category'];
         $coupons->from_date = $data['from_date'];
         $coupons->to_date = $data['to_date'];
         $coupons->short_desc = $data['short_desc'];
         $coupons->full_desc = $data['full_desc'];
         $coupons->created_by = $data['created_by'];
+        $coupons->status = 1;
         
         $coupons->save();
 
@@ -94,17 +111,32 @@ class CouponRepository
     
     public function update($data, $id)
     {
-        
         $coupons = $this->coupon->find($id);
-
+        
+        // Log::info($data);
         $coupons->coupon_title = $data['coupon_title'];
         $coupons->coupon_code = $data['coupon_code'];
+        $coupons->bus_operator_id = $data['bus_operator_id'];
         $coupons->type = $data['type'];
-        $coupons->amount = $data['amount'];
-        $coupons->max_discount_price = $data['max_discount_price'];
-        $coupons->min_tran_amount = $data['min_tran_amount'];
+        $coupons->valid_by = $data['valid_by'];
+        if($coupons->type==1)
+        {
+            $coupons->percentage = $data['percentage'];
+            $coupons->max_discount_price = $data['max_discount_price'];
+            $coupons->amount = 0;
+            $coupons->min_tran_amount = 0;
+           
+        }
+        else
+        {
+            $coupons->amount = $data['amount'];
+            $coupons->min_tran_amount = $data['min_tran_amount'];
+            $coupons->percentage = 0;
+            $coupons->max_discount_price = 0;
+        }
+        
+        
         $coupons->max_redeem = $data['max_redeem'];
-        $coupons->category = $data['category'];
         $coupons->from_date = $data['from_date'];
         $coupons->to_date = $data['to_date'];
         $coupons->short_desc = $data['short_desc'];
@@ -120,10 +152,9 @@ class CouponRepository
     public function getData($request)
     {
         // Log:: info($request);
-        $start_date="";
-        $end_date="";
+        $name=$request->name;
         $paginate = $request->rows_number;
-        $data= $this->coupon->orderBy('id','DESC');
+        $data= $this->coupon->with("BusOperator")->where('status','!=',2)->orderBy('id','DESC');
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
@@ -131,7 +162,14 @@ class CouponRepository
         elseif ($paginate == null) {
             $paginate = 10 ;
         }
-        $data=$data->paginate($paginate);       
+
+        if(!empty($name))
+        {
+           $data=$data->whereHas('busOperator', function ($query) use ($name) {$query->where('operator_name', $name );});
+        }
+
+        $data=$data->paginate($paginate);     
+
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
@@ -143,12 +181,16 @@ class CouponRepository
 
     
     public function delete($id)
-    {
-        
+    {       
         $coupons = $this->coupon->find($id);
-        $coupons->delete();
+        $coupons->status = 2;
+        
+
+        $coupons->update();
 
         return $coupons;
+
+       
     }
 
 }

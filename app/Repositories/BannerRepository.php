@@ -24,7 +24,8 @@ class BannerRepository
         if($searchBy!='' && $status!=''){
             $list = $this->banner->with('busOperator')
                                  ->where('occassion', 'like', '%' .$searchBy . '%')
-                                 ->where('status', $status) ->orWhereHas('busOperator', function ($query) use ($searchBy){$query->where('operator_name', 'like', '%' .$searchBy . '%');
+                                 ->where('status', $status) 
+                                 ->orWhereHas('busOperator', function ($query) use ($searchBy){$query->where('operator_name', 'like', '%' .$searchBy . '%');
                             })->whereNotIn('status', [2])->orderBy('id','desc');
 
         }elseif($searchBy!='' && $status==''){
@@ -62,6 +63,7 @@ class BannerRepository
         $bann->occassion = $data['occassion'];
         $bann->category = $data['category'];
         $bann->url = $data['url'];
+        $bann->heading = $data['heading'];
         $bann->banner_img = $data['banner_img'];
         $bann->alt_tag = $data['alt_tag'];
         $bann->start_date = $data['start_date'];
@@ -80,6 +82,7 @@ class BannerRepository
         $bann = $this->banner->find($id);
         $bann->bus_operator_id = $data['bus_operator_id'];
         $bann->occassion = $data['occassion'];
+        $bann->heading = $data['heading'];
         $bann->url = $data['url'];
         $bann->banner_img = $data['banner_img'];
         $bann->alt_tag = $data['alt_tag'];

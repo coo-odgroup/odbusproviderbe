@@ -11,6 +11,8 @@ use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
+
 class CouponController extends Controller
 {
     use ApiResponser;
@@ -64,26 +66,27 @@ class CouponController extends Controller
         return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
     }
     public function createCoupon(Request $request) {
+        // Log::info($request);exit;
         $data = $request->only([
 
                              'coupon_title','coupon_code','type','amount', 
                             'max_discount_price','min_tran_amount','max_redeem',
-                            'category','from_date','to_date','short_desc','full_desc',
-                            'created_by'
+                            'from_date','to_date','short_desc','full_desc',
+                            'created_by','bus_operator_id','valid_by','percentage'
             
           ]);
         
           $couponRules = [
            
             'coupon_title' => 'required',
+            'bus_operator_id' => 'required',
             'coupon_code' => 'required',
             'type' => 'required',
+            'valid_by' => 'required',
             'max_redeem' => 'required',
-            'category' => 'required',
+            // 'category' => 'required',
             'from_date' => 'required',
             'to_date' => 'required',
-            'short_desc' => 'required',
-            'full_desc' => 'required',
             'created_by' => 'required',
         ];
         
@@ -102,26 +105,31 @@ class CouponController extends Controller
     } 
 
     public function updateCoupon(Request $request, $id) {
+
+        // Log::info($request);
+        // exit;
+
         $data = $request->only([
+                            'id',
                              'coupon_title','coupon_code','type','amount', 
                             'max_discount_price','min_tran_amount','max_redeem',
-                            'category','from_date','to_date','short_desc','full_desc',
-                            'created_by'
+                           'from_date','to_date','short_desc','full_desc',
+                            'created_by','bus_operator_id','valid_by','percentage'
         ]);
         $couponRules = [
             
             'coupon_title' => 'required',
             'coupon_code' => 'required',
             'type' => 'required',
-            'amount' => 'required',
-            'max_discount_price' => 'required',
-            'min_tran_amount' => 'required',
+            'valid_by' => 'required',
+            'bus_operator_id' => 'required',
+            // 'amount' => 'required',
+            // 'max_discount_price' => 'required',
+            // 'min_tran_amount' => 'required',
             'max_redeem' => 'required',
-            'category' => 'required',
+            // 'category' => 'required',
             'from_date' => 'required',
             'to_date' => 'required',
-            'short_desc' => 'required',
-            'full_desc' => 'required',
             'created_by' => 'required',
         ];
         $couponValidation = Validator::make($data, $couponRules);
@@ -141,17 +149,9 @@ class CouponController extends Controller
     }
 
     public function deleteCoupon ($id) {
-      $result = ['status' => 200];
+     $coupon = $this->couponService->delete($id);
+        return $this->successResponse($coupon,Config::get('constants.RECORD_REMOVED'),Response::HTTP_OK);
 
-      try {
-          $result['data'] = $this->couponService->deleteById($id);
-      } catch (Exception $e) {
-          $result = [
-              'status' => 500,
-              'error' => $e->getMessage()
-          ];
-      }
-      return response()->json($result, $result['status']);
     }
 
     public function getBusCoupon($id) {

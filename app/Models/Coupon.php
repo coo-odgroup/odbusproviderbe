@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\BusOperator;
 
 class Coupon extends Model
 {
@@ -14,5 +15,10 @@ class Coupon extends Model
                             'max_use_limit','category','from_date','to_date','short_desc','full_desc',
                             'created_by'];
  
+
+ 	public function BusOperator()
+	{        
+		return $this->belongsTo(BusOperator::class);        
+	}
 
 }

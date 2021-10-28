@@ -10,6 +10,7 @@ class BannerValidator
 
         $rules = [
             'bus_operator_id' => 'required',
+            'heading' => 'required',
             'occassion' => 'required',
             'banner_img' => 'required',
             'alt_tag' => 'required',
