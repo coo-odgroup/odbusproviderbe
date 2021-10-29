@@ -70,6 +70,7 @@ class CouponRepository
 
     public function save($data)
     {
+        // Log::info($data);
         $coupons = new $this->coupon;
         $coupons->coupon_title = $data['coupon_title'];
         $coupons->coupon_code = $data['coupon_code'];

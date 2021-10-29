@@ -255,7 +255,8 @@ class BusRepository
         if($name!=null)
         {
             $data = $data->where('name', 'like', '%' .$name . '%') 
-                         ->orWhere('bus_number', 'like', '%' .$name . '%');;
+                         ->orWhere('bus_number', 'like', '%' .$name . '%')
+                         ->orWhere('via', 'like', '%' .$name . '%');
                                              
         }     
 
@@ -292,7 +293,8 @@ class BusRepository
         if($name!=null)
         {
             $data = $data->where('name', 'like', '%' .$name . '%')
-                         ->orWhere('bus_number', 'like', '%' .$name . '%');
+                         ->orWhere('bus_number', 'like', '%' .$name . '%')
+                         ->orWhere('via', 'like', '%' .$name . '%');
                                              
         }     
 

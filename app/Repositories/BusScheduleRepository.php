@@ -140,7 +140,9 @@ class BusScheduleRepository
 
         if($name!=null)
         {
-            $data = $data->where('rule_name', $name);
+            $data=$data->whereHas('bus.busOperator', function ($query) use ($name) {$query->where('operator_name', $name );})
+                       ->orWhereHas('bus', function ($query) use ($name) {$query->where('name', $name);})
+                       ->orWhereHas('bus', function ($query) use ($name) {$query->where('bus_number', $name );});
         }     
 
         $data=$data->paginate($paginate);
