@@ -24,9 +24,9 @@ class DashboardService
     }  
     
     
-    public function getAll()
+    public function getAll($request)
     {
-        return $this->dashboardRepository->getAll();
+        return $this->dashboardRepository->getAll($request);
     } 
 
     public function getRoute()

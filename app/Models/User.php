@@ -26,8 +26,8 @@ class User extends Model
    // protected $hidden = ['password', 'remember_token' ];
     
 
-    // public function role()
-    // {
-    //     return $this->hasOne(Role::class);
-    // }
+    public function role()
+    {
+        return $this->hasOne(Role::class);
+    }
 }

@@ -24,9 +24,9 @@ class DashboardController extends Controller
         $this->deshboardService = $deshboardService;        
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
-        $dashboarddata = $this->deshboardService->getAll();
+        $dashboarddata = $this->deshboardService->getAll($request);
         return $this->successResponse($dashboarddata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

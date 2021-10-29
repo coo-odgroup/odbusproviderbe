@@ -19,7 +19,7 @@ class Role extends Model
      *
      * @var array
      */
-    protected $table = 'roe';
+    protected $table = 'role';
     // public $timestamps = false;
     protected $fillable = [];
 

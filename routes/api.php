@@ -112,7 +112,7 @@ Route::post('seosettingData',[SeoSettingController::class,'seosettingData']);
 
 Route::post('/BusData', [BusController::class, 'BusData']);
 
-Route::get('/dashboarddata',[DashboardController::class,'getAll']);
+Route::post('/dashboarddata',[DashboardController::class,'getAll']);
 Route::get('/toproutedata',[DashboardController::class,'getRoute']);
 Route::get('/operatordata',[DashboardController::class,'getOperator']);
 Route::get('/ticketstaticsdata',[DashboardController::class,'getticketstatics']);

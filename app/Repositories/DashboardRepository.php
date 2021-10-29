@@ -32,59 +32,77 @@ class DashboardRepository
         $this->busoperator = $busoperator ;   
     }   
 
-    public function getAll()
+    public function getAll($request)
     {
         $dt_month = date('Y-m-d', strtotime('today - 30 days'));
         $dt_week = date('Y-m-d', strtotime('today - 7 days'));
-        
+        $current_month=date('Y-m');
         $data_arr = array();
-        
         $current_date =date('Y-m-d');
-        $today_data = $this->booking->where('status','1')->where('created_at','Like',$current_date.'%')->get() ;         
-        $today_data =count($today_data);
+        $today_data = $this->booking->where('status','1');
+        $upcoming_data = $this->booking->where('status','1');
+        $bus_data = $this->bus->where('status','1');
+        $operator_data = $this->busoperator->where('status','1');
+        $booking_data=$this->booking->selectRaw('sum(odbus_charges) as odbus_amount')->where('status','1');
+        $sales_data=$this->booking->selectRaw('sum(owner_fare) as today_amount')->where('status','1');
 
-        $upcoming_data = $this->booking->where('status','1')->where('journey_dt','>',$current_date)->get() ;
-        $upcoming_data = count($upcoming_data);
-
-        $bus_data = $this->bus->where('status','1')->get() ;
+        switch ($request['rangeFor']) {
+            case 'This Month':
+                $today_data = $today_data->where('created_at','Like',$current_month.'%')->get();
+                $upcoming_data = $upcoming_data->where('journey_dt','Like',$current_month.'%')->get();
+                $bus_data = $bus_data->where('created_at','Like',$current_month.'%')->get();
+                $operator_data = $operator_data->where('created_at','Like',$current_month.'%')->get();
+                $booking_data = $booking_data->where('created_at','Like',$current_month.'%');
+                $sales_data = $sales_data->where('created_at','Like',$current_month.'%');
+                break;
+            
+            case 'This Week':
+                $today_data = $today_data->whereBetween('created_at',[$dt_week,$current_date])->get();
+                $upcoming_data = $upcoming_data->where('journey_dt',[$dt_week,$current_date])->get();
+                $bus_data = $bus_data->where('created_at',[$dt_week,$current_date])->get();
+                $operator_data = $operator_data->where('created_at',[$dt_week,$current_date])->get();
+                $booking_data = $booking_data->where('created_at',[$dt_week,$current_date]);
+                $sales_data = $sales_data->where('created_at',[$dt_week,$current_date]);
+                break;
+            
+            case 'Today':
+                $today_data = $today_data->where('created_at','Like',$current_date.'%')->get();
+                $upcoming_data = $upcoming_data->where('journey_dt','Like',$current_date.'%')->get();
+                $bus_data = $bus_data->where('created_at','Like',$current_date.'%')->get();
+                $operator_data = $operator_data->where('created_at','Like',$current_date.'%')->get();
+                $booking_data = $booking_data->where('created_at','Like',$current_date.'%');
+                $sales_data = $sales_data->where('created_at','Like',$current_date.'%');
+                break;
+            
+            case 'Custom Range':
+                $today_data = $today_data->whereBetween('created_at',[$request['rangeFrom'],$request['rangeTo']])->get();
+                $upcoming_data = $upcoming_data->whereBetween('journey_dt',[$request['rangeFrom'],$request['rangeTo']])->get();
+                $bus_data = $bus_data->where('created_at',[$request['rangeFrom'],$request['rangeTo']])->get();
+                $operator_data = $operator_data->where('created_at',[$request['rangeFrom'],$request['rangeTo']])->get();
+                $booking_data = $booking_data->where('created_at',[$request['rangeFrom'],$request['rangeTo']]);
+                $sales_data = $sales_data->where('created_at',[$request['rangeFrom'],$request['rangeTo']]);
+                break;    
+            
+            default:
+                $today_data = $today_data->get();
+                $upcoming_data = $upcoming_data->get();
+                $bus_data = $bus_data->get();
+                $operator_data = $operator_data->get();
+                $booking_data = $booking_data;
+                $sales_data = $sales_data;
+                break;
+        }
+        $today_data =count($today_data);        
+        $upcoming_data = count($upcoming_data);        
         $active_bus_data = count($bus_data);
-
-        $operator_data = $this->busoperator->where('status','1')->get() ;
         $active_operator_data = count($operator_data);
-        
-        
         $data_arr['today_pnr'] = $today_data;
         $data_arr['upcoming_pnr'] = $upcoming_data;
         $data_arr['active_bus'] = $active_bus_data;
         $data_arr['active_operator'] = $active_operator_data;
-
-        $data_arr['booking_profit'] = $this->booking                         
-                                        ->selectRaw('sum(odbus_charges) as odbus_amount')
-                                        ->where('created_at','>',$dt_month)
-                                        ->where('status','1')
-                                        ->get();
-
-        $data_arr['cancellation_profit'] = 1641 ;
-
-
-        $data_arr['sales_today'] = $this->booking                         
-                                        ->selectRaw('sum(owner_fare) as today_amount')
-                                        ->where('journey_dt',$current_date)
-                                        ->where('status','1')
-                                        ->get(); 
-
-        $data_arr['sales_this_week'] = $this->booking                         
-                                        ->selectRaw('sum(owner_fare) as weak_amount')
-                                        ->where('journey_dt','>',$dt_week)
-                                        ->where('status','1')
-                                        ->get();
-                                        
-        $data_arr['sales_this_month'] = $this->booking                         
-                                        ->selectRaw('sum(owner_fare) as month_amount')
-                                        ->where('journey_dt','>',$dt_month)
-                                        ->where('status','1')
-                                        ->get();
-
+        $data_arr['booking_profit'] = $booking_data->get();
+        $data_arr['cancellation_profit'] = 1641 ; //MADE STATIC
+        $data_arr['sales_data']=$sales_data->get();
         return $data_arr;     
     }
 
