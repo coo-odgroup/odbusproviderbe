@@ -130,7 +130,7 @@ Route::post('/user', [UserController::class, 'createUser'])->middleware('log.rou
 Route::get('/user/{id}', [UserController::class, 'getUserbyID']);
 
 Route::get('/customer/{id}', [UserController::class, 'getCustomerInformation']);
-Route::post('/login', [UserController::class, 'Login']);
+//Route::post('/login', [UserController::class, 'Login']);
 
 Route::post('/BusSitting', [BusSittingController::class, 'createBusSitting']);
 Route::post('/BusSittingData', [BusSittingController::class, 'BusSittingData']);
@@ -684,6 +684,9 @@ Route::post('/busCancelledData', [BusCancelledController::class, 'busCancelledDa
 Route::post('/ownerpaymentData', [OwnerPaymentController::class, 'ownerpaymentData']);
 
 
+
+
+Route::get('/login', [UserController::class, 'login']);
 
 
 //});

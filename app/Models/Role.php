@@ -7,27 +7,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class Role extends Model
 {
-    use HasFactory;
+    
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $table = 'user';    
-    //protected $fillable = ['name', 'email','phone','password','created_by'];
+    protected $table = 'roe';
+    // public $timestamps = false;
+    protected $fillable = [];
 
-    protected $fillable = ['name', 'email'];
-   // protected $hidden = ['password', 'remember_token' ];
+    
     
 
-    // public function role()
-    // {
-    //     return $this->hasOne(Role::class);
-    // }
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }
