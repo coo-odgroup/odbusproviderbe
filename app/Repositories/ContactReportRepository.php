@@ -19,14 +19,7 @@ class ContactReportRepository
     {              
         $this->contact = $contact;       
     }    
-    public function getAll()
-    {
-        $data = $this->contact->where('status', 1)->orderBy('id',"DESC")->get() ;
-       
-        return $data;     
-    }
-
-
+    
     public function getData($request)
     {
      // Log::info($request);
@@ -34,8 +27,6 @@ class ContactReportRepository
         $operator_id = $request->bus_operator_id ;
         $rangeFromDate  =  $request->rangeFromDate;
         $rangeToDate  =  $request->rangeToDate; 
-
-
 
         if(!empty($rangeFromDate))
         {
@@ -71,14 +62,12 @@ class ContactReportRepository
         {
             $paginate = 10 ;
         }
-        
 
         $data= $this->contact->with('BusOperator')->where('status', 1)
                              ->orderBy('id',"DESC");
 
         if (!empty($start_date) && !empty($end_date)) {
-            $data = $data->whereBetween('created_at', [$start_date, $end_date]);
-            
+            $data = $data->whereBetween('created_at', [$start_date, $end_date]);            
         }
         
         if($operator_id!= null)
@@ -86,10 +75,9 @@ class ContactReportRepository
            $data = $data->Where('bus_operator_id', $operator_id);
         }
 
-                 $data=$data->paginate($paginate); 
+        $data=$data->paginate($paginate); 
 
-   
-           return $data;
+        return $data;
 
     } 
 

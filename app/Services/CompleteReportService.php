@@ -16,19 +16,9 @@ class CompleteReportService
 {
     protected $completereportRepository;
 
-    
-   
     public function __construct(CompleteReportRepository $completereportRepository)
     {
         $this->completereportRepository = $completereportRepository;
-    }
-
-   
-    
-    
-    public function getAll()
-    {
-        return $this->completereportRepository->getAll();
     }
     
     public function getData($request)

@@ -22,14 +22,6 @@ class CancelTicketReportService
     {
         $this->cancelticketreportRepository = $cancelticketreportRepository;
     }
-
-   
-    
-    
-    public function getAll()
-    {
-        return $this->cancelticketreportRepository->getAll();
-    }
     public function getData($request)
     {
         return $this->cancelticketreportRepository->getData($request);

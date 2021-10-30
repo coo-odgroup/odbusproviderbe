@@ -7,29 +7,18 @@ use App\Repositories\ContactReportRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 
 
 class ContactReportService
 {
-    protected $contactreportRepository;
-
-    
+    protected $contactreportRepository;   
    
     public function __construct(ContactReportRepository $contactreportRepository)
     {
         $this->contactreportRepository = $contactreportRepository;
-    }
-
-   
-    
-    
-    public function getAll()
-    {
-        return $this->contactreportRepository->getAll();
-    }
+    }  
     
     public function getData($request)
     {

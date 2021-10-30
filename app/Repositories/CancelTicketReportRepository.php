@@ -24,39 +24,9 @@ class CancelTicketReportRepository
         $this->location = $location;       
         $this->bus = $bus;       
     }    
-        // public function getAll()
-        // {
-        //     $data= $this->booking->with('BookingDetail.BusSeats.seats',
-        //                                 'BookingDetail.BusSeats.ticketPrice',
-        //                                 'Bus','Users','CustomerPayment')
-        //                          ->with('bus.busstoppage')
-        //                          ->where('status', '2')
-        //                          // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
-        //                          ->get() ; 
-
-        //     $data_arr = array();
-        //     foreach($data as $key=>$v)
-        //     {
-        //         $data_arr[]=$v->toArray();
-        //         $data_arr[$key]['from_location']=$this->location->where('id', $v->source_id)->get();
-        //         $data_arr[$key]['to_location']=$this->location->where('id', $v->destination_id)->get();
-
-        //         $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-                          
-        //         foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-        //         {                          
-        //             $data_arr[$key]['source'][$k]=$this->location->where('id', $a['source_id'])->get();
-        //             $data_arr[$key]['destination'][$k]=$this->location->where('id', $a['destination_id'])->get(); 
-        //         }
-        //     } 
-        //    // log::info($data_arr);
-        //     return $data_arr;     
-        // }
-
 
     public function getData($request)
     {
-
         // Log:: info($request); exit;
         $start_date="";
         $end_date="";
@@ -97,16 +67,13 @@ class CancelTicketReportRepository
             }
 
             $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
-        }
-        
-
-
+        }       
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->where('status', 2);
-                            
+
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
@@ -128,10 +95,7 @@ class CancelTicketReportRepository
          if(!empty($source_id) && !empty($destination_id))
         {
             $data=$data->where('source_id',$source_id)->where('destination_id',$destination_id);
-        }
-
-
-        
+        }        
         if($date_type == 'booking' && $start_date == null && $end_date == null)
         {
             $data =$data->orderBy('created_at','DESC');
@@ -151,10 +115,8 @@ class CancelTicketReportRepository
                         ->orderBy('journey_dt','DESC');
         }     
 
+        $data=$data->paginate($paginate); 
 
-        
-         $data=$data->paginate($paginate); 
-        
         if($data){
             foreach($data as $key=>$v){
 
@@ -172,15 +134,12 @@ class CancelTicketReportRepository
                 $v['destination']= $stoppages['destination'];
             }
         }
-
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
             "data" => $data
            ); 
 
-           return $response;      
-
+           return $response;    
     }
-
 }

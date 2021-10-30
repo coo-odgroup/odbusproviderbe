@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\FailledTransactionReportService;
-
-use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -24,15 +22,7 @@ class FailledTransactionReportController extends Controller
         $this->failledtransactionreportService = $failledtransactionreportService;
         
     }
-
-
-    public function getAll()
-    {
-        $Data = $this->failledtransactionreportService->getAll();
-        return $this->successResponse($Data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
-
-     public function getData(Request $request)
+    public function getData(Request $request)
     {
         $failledtransactionData = $this->failledtransactionreportService->getData($request);
         return $this->successResponse($failledtransactionData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);

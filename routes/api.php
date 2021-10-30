@@ -266,53 +266,27 @@ Route::delete('/review/{id}', [ReviewController::class, 'deleteData']);
 
 
 ////SeatOpenReport/////
-Route::get('seatopenreport',[SeatOpenReportController::class,'getAllseatopen']);
-
 Route::post('seatopenreport',[SeatOpenReportController::class,'getData']);
 ////SeatBlockReport/////
-Route::get('seatblockreport',[SeatBlockReportController::class,'getAllseatblock']);
-
 Route::post('seatblockreport',[SeatBlockReportController::class,'getData']);
-
 ///ExtraSeatOpenReport////
 Route::get('extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
-
 ///CompleteReport////
-Route::get('completereport',[CompleteReportController::class,'getAll']);
-
 Route::post('completereport',[CompleteReportController::class,'getData']);
 ///FailledTransactionReport////
-Route::get('failledtransactionreport',[FailledTransactionReportController::class,'getAll']);
-
 Route::post('failledtransactionreport',[FailledTransactionReportController::class,'getData']);
 ///BusCancellationReport////
-Route::get('buscancellationreport',[BusCancellationReportController::class,'getAll']);
-
 Route::post('buscancellationreport',[BusCancellationReportController::class,'getData']);
-
 ////OwnerPaymentReport/////
-Route::get('ownerpaymentreport',[OwnerPaymentReportController::class,'getAll']);
-
 Route::post('ownerpaymentreport',[OwnerPaymentReportController::class,'getData']);
-
 // ClearTransactionReport //
 Route::get('cleartransactionreport',[ClearTransactionReportController::class,'getAll']);
-
 //CouponUsedUserReportController//
 Route::get('couponuseduserreport',[CouponUsedUserReportController::class,'getAll']);
-
 //CancelTicketReport
-Route::get('cancelticketreport',[CancelTicketReportController::class,'getAll']);
-
 Route::post('cancelticketreport',[CancelTicketReportController::class,'getData']);
-
-
 //ContactReport
-	
-Route::get('contactreport',[ContactReportController::class,'getAll']);
-
-Route::post('contactreport',[ContactReportController::class,'getData']);
-	
+Route::post('contactreport',[ContactReportController::class,'getData']);	
 Route::delete('contactreport/{id}',[ContactReportController::class,'deleteData']);
 
 

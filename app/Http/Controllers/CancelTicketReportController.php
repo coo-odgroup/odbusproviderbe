@@ -23,13 +23,6 @@ class CancelTicketReportController extends Controller
     {
         $this->cancelticketreportService = $cancelticketreportService;
         
-    }
-
-
-    public function getAll()
-    {
-        $cancelticketData = $this->cancelticketreportService->getAll();
-        return $this->successResponse($cancelticketData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
      public function getData(Request $request)
     {

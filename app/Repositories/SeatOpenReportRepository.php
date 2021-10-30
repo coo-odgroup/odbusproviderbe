@@ -15,21 +15,15 @@ use App\Models\Location;
 
 /*Priyadarshi to Review*/
 class SeatOpenReportRepository
-{
-    
+{    
     protected $seatOpen;
     protected $location;
 
-
-    
     public function __construct(SeatOpen $seatOpen , SeatOpenSeats $seatsOpenSeats , Location $location)
     {
         $this->seatOpen = $seatOpen;
         $this->seatOpenSeats = $seatsOpenSeats;
-        $this->location = $location; 
-        $this->bus_operator_id = Config::get('constants.BUS_OPERATOR_ID');       
-
-       
+        $this->location = $location;     
     }    
   
 
@@ -60,7 +54,7 @@ class SeatOpenReportRepository
             $start_date = $rangeFromDate['year'].'-'.$rangeFromDate['month'].'-'.$rangeFromDate['day'] ;     
         }
 
-         if(!empty($rangeToDate))
+        if(!empty($rangeToDate))
         {
             if(strlen($rangeToDate['month'])==1)
             {
@@ -100,7 +94,6 @@ class SeatOpenReportRepository
             $data = $data->whereBetween('date_applied', [$start_date, $end_date]);
             
         }  
-
          $data=$data->paginate($paginate); 
          foreach ($data as $key => $v)
         {
@@ -131,16 +124,7 @@ class SeatOpenReportRepository
              "count" => $data->count(), 
              "total" => $data->total(),
             "data" => $data
-           ); 
-
-           // Log::info($response);     
-           return $response;  
-
-
-
+           );    
+           return $response; 
     }
-    
-    
-   
-
 }

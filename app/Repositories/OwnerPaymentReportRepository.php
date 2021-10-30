@@ -4,11 +4,7 @@ namespace App\Repositories;
 
 
 use App\Models\OwnerPayment;
-
-
-// use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Support\Facades\Config;
 
 
@@ -21,22 +17,13 @@ class OwnerPaymentReportRepository
         $this->ownerPayment = $ownerPayment;
     }   
 
-  
-    public function getAll()
-    {
-    	return $this->ownerPayment->with('busOperator')->get();   
-
-    }
     public function getData($request)
-    {
-    	
+    {    	
     	// Log::info($request);
         $start_date="";
         $end_date="";
-
     	$paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
-        
         $rangeFromDate  =  $request->rangeFromDate;
         $rangeToDate  =  $request->rangeToDate;
 
@@ -80,14 +67,10 @@ class OwnerPaymentReportRepository
 
 	    if(!empty($start_date) && !empty($end_date))
 	    {
-
 	    	$data =$data->whereBetween('payment_date', [$start_date, $end_date]);
 	    }
-
-
 	    $data=$data->paginate($paginate);
-
-	     $response = array(
+	    $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
             "data" => $data

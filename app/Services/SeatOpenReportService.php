@@ -14,21 +14,11 @@ use Illuminate\Support\Facades\Config;
 
 class SeatOpenReportService
 {
-    protected $seatopenreportRepository;
-
+    protected $seatopenreportRepository;   
     
-   
     public function __construct(SeatOpenReportRepository $seatopenreportRepository)
     {
         $this->seatopenreportRepository = $seatopenreportRepository;
-    }
-
-   
-    
-    
-    public function getAll()
-    {
-        return $this->seatopenreportRepository->getAll();
     }
     public function getData($request)
     {

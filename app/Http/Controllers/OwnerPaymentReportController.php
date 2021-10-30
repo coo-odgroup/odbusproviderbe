@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\OwnerPaymentReportService;
-
-use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -15,8 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OwnerPaymentReportController extends Controller
 {
-    use ApiResponser;
-    
+    use ApiResponser;   
    
     protected $ownerpaymentreportService;    
     
@@ -25,11 +22,6 @@ class OwnerPaymentReportController extends Controller
         $this->ownerpaymentreportService = $ownerpaymentreportService;        
     }
 
-    public function getAll()
-    {
-        $extraseatopen = $this->ownerpaymentreportService->getAll();
-        return $this->successResponse($extraseatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
     public function getData(Request $request)
     {
         $ownerpayment = $this->ownerpaymentreportService->getData($request);

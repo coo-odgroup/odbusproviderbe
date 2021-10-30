@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\ContactReportService;
-
-use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -23,16 +21,7 @@ class ContactReportController extends Controller
     
     public function __construct(ContactReportService $contactreportService)
     {
-        $this->contactreportService = $contactreportService;
-
-        
-    }
-
-
-    public function getAll()
-    {
-        $contactData = $this->contactreportService->getAll();
-        return $this->successResponse($contactData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $this->contactreportService = $contactreportService;        
     }
 
     public function getData(Request $request)
@@ -42,7 +31,6 @@ class ContactReportController extends Controller
     }
     public function deleteData($id)
     {    
-        // Log::info($request);exit;
         $contactData = $this->contactreportService->deleteData($id);
         return $this->successResponse($contactData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }

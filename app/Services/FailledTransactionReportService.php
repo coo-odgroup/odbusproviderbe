@@ -7,7 +7,6 @@ use App\Repositories\FailledTransactionReportRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 
@@ -21,16 +20,8 @@ class FailledTransactionReportService
     public function __construct(FailledTransactionReportRepository $failledtransactionreportrepository)
     {
         $this->failledtransactionreportrepository = $failledtransactionreportrepository;
-    }
-
-   
+    }  
     
-    
-    public function getAll()
-    {
-        return $this->failledtransactionreportrepository->getAll();
-    }
-
     public function getData($request)
     {
         return $this->failledtransactionreportrepository->getData($request);
