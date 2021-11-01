@@ -12,6 +12,7 @@ use App\Traits\ApiResponser;
 use InvalidArgumentException;
 use App\AppValidator\BusSeatLayoutValidator;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 class BusSeatLayoutController extends Controller
 {
@@ -56,11 +57,15 @@ class BusSeatLayoutController extends Controller
         return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
     } 
     public function update(Request $request, $id) {
+      // Log::info($request);
+      // Log::info($id);
+
         $data = $request->only([
           'name',
           'layout_data',
         ]);
         $busSeatLayoutValidation = $this->busSeatLayoutValidator->validate($data);
+
         if ($busSeatLayoutValidation->fails()) {
           $errors = $busSeatLayoutValidation->errors();
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
@@ -69,10 +74,11 @@ class BusSeatLayoutController extends Controller
             $this->busSeatLayoutService->update($data, $id);   
         }
         catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse($data,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK); 
     }
+
     public function deleteById($id) {
       try {
       $this->busSeatLayoutService->deleteById($id);

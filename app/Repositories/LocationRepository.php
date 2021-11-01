@@ -67,7 +67,7 @@ class LocationRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->location->whereNotIn('status', [2]);
+        $data= $this->location->whereNotIn('status', [2])->orderBy('id','DESC');
 
 
         if($paginate=='all') 
@@ -81,10 +81,11 @@ class LocationRepository
 
         if($name!=null)
         {
-            $data = $data->where('name', 'like', '%' .$name . '%')
-                         ->orWhere('synonym', 'like', '%' .$name . '%');                       
+            $data = $data->where(function($query) use ($name) {
+                        $query->where('name','like', '%' .$name . '%')
+                        ->orWhere('synonym','like', '%' .$name . '%');
+                    });                             
         }     
-
         $data=$data->paginate($paginate);
         
         $response = array(

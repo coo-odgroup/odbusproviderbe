@@ -153,9 +153,8 @@ class BoardingDropingRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->location->with('boardingDropping')->whereNotIn('status', [2]);
-
-
+        $data= $this->location->with('boardingDropping')->whereNotIn('status', [2])->orderBy('id','DESC');
+        
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
@@ -164,11 +163,12 @@ class BoardingDropingRepository
         {
             $paginate = 10 ;
         }
-
         if($name!=null)
-        {
-            $data = $data->where('name', 'like', '%' .$name . '%')
-                         ->orWhereHas('boardingDropping', function ($query) use ($name) {$query->where('boarding_point', 'like', '%' .$name . '%');});                       
+        { 
+            $data = $data->where(function($query) use ($name) {
+                        $query->where('name','like', '%' .$name . '%')
+                        ->orWhereHas('boardingDropping', function ($query) use ($name) {$query->where('boarding_point', 'like', '%' .$name . '%');});
+                    });                       
         }     
 
         $data=$data->paginate($paginate);

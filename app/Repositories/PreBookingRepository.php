@@ -57,7 +57,6 @@ class PreBookingRepository
         $prebooking->customer_id = $data['customer_id'];
         $prebooking->created_by = $data['created_by'];
         
-
         $prebooking->save();
         foreach($data['preBookingDetail'] as $preBooking_Detail){
             $preBookingDetailRecord = new $this->preBookingDetail;   

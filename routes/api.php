@@ -279,15 +279,18 @@ Route::post('failledtransactionreport',[FailledTransactionReportController::clas
 Route::post('buscancellationreport',[BusCancellationReportController::class,'getData']);
 ////OwnerPaymentReport/////
 Route::post('ownerpaymentreport',[OwnerPaymentReportController::class,'getData']);
-// ClearTransactionReport //
-Route::get('cleartransactionreport',[ClearTransactionReportController::class,'getAll']);
-//CouponUsedUserReportController//
-Route::get('couponuseduserreport',[CouponUsedUserReportController::class,'getAll']);
 //CancelTicketReport
 Route::post('cancelticketreport',[CancelTicketReportController::class,'getData']);
 //ContactReport
 Route::post('contactreport',[ContactReportController::class,'getData']);	
 Route::delete('contactreport/{id}',[ContactReportController::class,'deleteData']);
+
+
+// ClearTransactionReport //
+Route::get('cleartransactionreport',[ClearTransactionReportController::class,'getAll']);
+//CouponUsedUserReportController//
+Route::get('couponuseduserreport',[CouponUsedUserReportController::class,'getAll']);
+
 
 
 

@@ -14,7 +14,7 @@ class BusSeatLayoutRepository
      * @var BusSeatLayout
      */
     protected $busSeatLayout;
-    protected $Seats;
+    protected $seats;
     protected $busSeats;
 
     /**
@@ -22,11 +22,11 @@ class BusSeatLayoutRepository
      *
      * @param BusSeatLayout $busSeatLayout
      */
-    public function __construct(BusSeatLayout $busSeatLayout, Bus $bus, Seats $Seats, BusSeats $busSeats)
+    public function __construct(BusSeatLayout $busSeatLayout, Bus $bus, Seats $seats, BusSeats $busSeats)
     {
         $this->busSeatLayout = $busSeatLayout;
         $this->bus = $bus;
-        $this->Seats = $Seats;
+        $this->seats = $seats;
         $this->busSeats= $busSeats;
     }
 
@@ -49,6 +49,7 @@ class BusSeatLayoutRepository
        
 
         $data= $this->busSeatLayout->whereNotIn('status', [2])
+
                              ->orderBy('id','DESC');
 
         if($paginate=='all') 
@@ -84,7 +85,7 @@ class BusSeatLayoutRepository
      */
     public function getRowCol($id,$type)
     {
-        return $this->Seats->selectRaw("COUNT('colNumber') as tCol")
+        return $this->seats->selectRaw("COUNT('colNumber') as tCol")
         ->groupBy('rowNumber')
         ->where('bus_seat_layout_id', $id)
         ->where('berthType', $type)
@@ -96,30 +97,34 @@ class BusSeatLayoutRepository
     {
         $seatData=[];
 
-        $lowerBerth=$this->Seats->with('BusSeats')
+        $lowerBerth=$this->seats->with('BusSeats')
         ->where('bus_seat_layout_id',$id)
         ->where('berthType',1)
+        ->where('status',1)
         ->get();
 
         foreach($lowerBerth as $key=>$rows)
         {
-            $row_data=$this->Seats
+            $row_data=$this->seats
             ->where('rowNumber',$rows->rowNumber)
             ->where('berthType', '1')
+            ->where('status',1)
             ->where('bus_seat_layout_id', $id)
             ->orderBy('colNumber')->get();
             $seatData['lowerBerth'][$rows->rowNumber]=$row_data;
         }
 
-        $upperBerth=$this->Seats->with('BusSeats')
+        $upperBerth=$this->seats->with('BusSeats')
         ->where('bus_seat_layout_id',$id)
         ->where('berthType',2)
+        ->where('status',1)
         ->get();
         foreach($upperBerth as $key=>$rows)
         {
-            $row_data=$this->Seats->where('rowNumber',$rows->rowNumber)
+            $row_data=$this->seats->where('rowNumber',$rows->rowNumber)
             ->where('berthType', '2')
             ->where('bus_seat_layout_id', $id)
+            ->where('status',1)
             ->orderBy('colNumber')->get();
             $seatData['upperBerth'][$rows->rowNumber]=$row_data;
         }
@@ -130,7 +135,7 @@ class BusSeatLayoutRepository
        
         return $this->busSeatLayout->with('seats')
             ->where('id', $id)
-            
+            ->where('status', 1)
             ->get();
         
     }
@@ -170,15 +175,26 @@ class BusSeatLayoutRepository
      */
     public function update($data, $id)
     {
+         $sLayoutContent=json_decode($data['layout_data'],true);
+
+        
         $busSeatLayout = $this->busSeatLayout->find($id);
-        $busSeatLayout = $this->getModel($data,$busSeatLayout);
+        $busSeatLayout = $this->getModel($data,$busSeatLayout);  
         $busSeatLayout->update();
-        $this->Seats->where('bus_seat_layout_id',$id)->delete();
+
+
+        $records=$this->seats->where('bus_seat_layout_id',$id)->get();
+        foreach ($records as $seat) {
+            $seat->status = '2';
+            $seat->save();
+        }
+
 
         $sLayoutContent=json_decode($data['layout_data'],true);
-        $seatRecords = [];
+
+      
         foreach ($sLayoutContent as $ind_records) {
-            $ind_records['seat_class_id']=$ind_records['seatType'];
+            $ind_records['seat_class_id']=$ind_records['berthType'];
             $seatRecords[] =new Seats($ind_records);
         }
         $busSeatLayout->seats()->saveMany($seatRecords);
