@@ -35,7 +35,7 @@ class BookingSeizedController extends Controller
     {
 
         $bookingseized = $this->bookingseizedService->updateSeized($request);
-            return $this->successResponse($bookingseized,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+            return $this->successResponse($bookingseized,"Booking Seized Updated",Response::HTTP_OK);
     }  
 
      public function bookingseizedData(Request $request)
@@ -54,7 +54,7 @@ class BookingSeizedController extends Controller
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse(null, "Booking Seized Status Updated", Response::HTTP_ACCEPTED);
     }
 
 }

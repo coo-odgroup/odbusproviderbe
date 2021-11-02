@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Models\Role;
+use App\Models\BusOperator;
 use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
@@ -30,4 +31,11 @@ class User extends Model
     {
         return $this->hasOne(Role::class);
     }
+
+      public function BusOperator()
+    {        
+        return $this->belongsTo(BusOperator::class);        
+    } 
 }
+
+

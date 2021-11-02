@@ -52,7 +52,7 @@ class OdbusChargesController extends Controller
         }
         try {
           $response = $this->odbusChargesService->savePostData($data);
-          return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+          return $this->successResponse($response, "Master Settings Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -69,7 +69,7 @@ class OdbusChargesController extends Controller
         }
         try {
           $response = $this->odbusChargesService->updatePost($data, $id);
-          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+          return $this->successResponse($response,"Master Settings Updated", Response::HTTP_CREATED);
 
       } catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -88,7 +88,7 @@ class OdbusChargesController extends Controller
     public function delete($id) {
       try{
         $response = $this->odbusChargesService->deleteById($id);
-        return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response, "Master Settings Deleted", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -97,7 +97,7 @@ class OdbusChargesController extends Controller
     public function changeStatus($id) {
       try{
         $response = $this->odbusChargesService->changeStatus($id);
-        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response, "Master Settings Status Updated", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

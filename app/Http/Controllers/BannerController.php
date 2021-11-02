@@ -48,7 +48,7 @@ class BannerController extends Controller
         }
         try {
           $response = $this->bannerService->save($data);
-          return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+          return $this->successResponse($response, "Banner Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -65,7 +65,7 @@ class BannerController extends Controller
          }
         try {
           $response = $this->bannerService->update($data, $id);
-          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+          return $this->successResponse($response, "Banner Updated", Response::HTTP_CREATED);
 
       } catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -74,7 +74,7 @@ class BannerController extends Controller
     public function deleteBanner($id) {
         try{
           $response = $this->bannerService->deleteById($id);
-          return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+          return $this->successResponse($response, "Banner Deleted", Response::HTTP_ACCEPTED);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -92,7 +92,7 @@ class BannerController extends Controller
       public function changeStatus ($id) {
         try{
           $response = $this->bannerService->changeStatus($id);
-          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+          return $this->successResponse($response, "Banner Status Updated", Response::HTTP_ACCEPTED);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

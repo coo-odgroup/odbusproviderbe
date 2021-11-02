@@ -65,7 +65,7 @@ class BusGalleryController extends Controller
           }
           try {
             $response = $this->busGalleryService->savePostData($data);
-            return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+            return $this->successResponse($response, "Bus Gallery Image Added", Response::HTTP_CREATED);
         }
         catch(Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -75,7 +75,7 @@ class BusGalleryController extends Controller
     public function deleteBusGallery ($id) {
         $this->busGalleryService->deleteById($id);
         $output ['status']=1;
-        $output ['message']='Data Deleted successfully';
+        $output ['message']='Gallery Image Deleted ';
         return response($output, 200);
     }
   

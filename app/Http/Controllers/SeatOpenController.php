@@ -37,7 +37,7 @@ class SeatOpenController extends Controller
 
 
         $seatopen = $this->seatopenService->addseatopen($request);
-            return $this->successResponse($seatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+            return $this->successResponse($seatopen,"Seat Open  Added",Response::HTTP_OK);
 
      }
      public function updateseatopen(Request $request, $id)
@@ -45,7 +45,7 @@ class SeatOpenController extends Controller
 
       // Log::info($request); exit;
         $seatopen = $this->seatopenService->updateseatopen($request, $id);
-            return $this->successResponse($seatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+            return $this->successResponse($seatopen,"Seat Open Updated",Response::HTTP_OK);
 
      }
 
@@ -72,7 +72,7 @@ class SeatOpenController extends Controller
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse(null, "Seat Open  Status Updated", Response::HTTP_ACCEPTED);
       }
 
       public function deleteseatopen ($id) {
@@ -82,7 +82,7 @@ class SeatOpenController extends Controller
       catch (Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+      return $this->successResponse(null, "Seat Open Deleted", Response::HTTP_ACCEPTED);
     }
     
      

@@ -51,7 +51,7 @@ class BusScheduleController extends Controller
         }
         try {
             $response = $this->busScheduleService->savePostData($data);
-            return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+            return $this->successResponse($response,"Bus Schedule Added", Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }
@@ -61,14 +61,10 @@ class BusScheduleController extends Controller
         $data = $request->only([
             'bus_id','entry_date','created_by','running_cycle'   
         ]);
-        // $busScheduleValidation = $this->BusScheduleValidator->validate($data);
-        // if ($busScheduleValidation->fails()) {
-        //     $errors = $busScheduleValidation->errors();
-        //     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        // }
+        
         try {
             $response = $this->busScheduleService->updatePost($data, $id);
-            return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+            return $this->successResponse($response,"Bus Schedule Updated", Response::HTTP_CREATED);
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -78,7 +74,7 @@ class BusScheduleController extends Controller
     public function deleteBusSchedule ($id) {
         try {
             $response = $this->busScheduleService->deleteById($id);
-            return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+            return $this->successResponse($response,"Bus Schedule Deleted", Response::HTTP_ACCEPTED);
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -101,7 +97,7 @@ class BusScheduleController extends Controller
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response,"Bus Schedule Status Updated", Response::HTTP_ACCEPTED);
       }    
 	     
 /////////////

@@ -109,7 +109,7 @@ class BusController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED); 
+      return $this->successResponse($data,"Bus Added",Response::HTTP_CREATED); 
     } 
 
     public function update(Request $request, $id) {
@@ -143,7 +143,7 @@ class BusController extends Controller
             }
         }
 
-        return $this->successResponse($data,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK);
+        return $this->successResponse($data,"Bus Updated",Response::HTTP_OK);
     }
     public function updateBusSequence(Request $request, $id) {
         $data = $request->only([
@@ -163,7 +163,7 @@ class BusController extends Controller
          catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK);
+        return $this->successResponse($data,"Bus Sequence Updated",Response::HTTP_OK);
     }
 
     public function deleteById ($id) {
@@ -173,7 +173,7 @@ class BusController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
       }
-      return $this->successResponse($bus,Config::get('constants.RECORD_REMOVED'),Response::HTTP_ACCEPTED); 
+      return $this->successResponse($bus,"Bus Deleted",Response::HTTP_ACCEPTED); 
     }
 
     public function getById($id) {
@@ -264,7 +264,7 @@ class BusController extends Controller
         }
         
         
-        return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($data, "Bus Contact Added", Response::HTTP_ACCEPTED);
     }
     public function save(Request $request) {
         $data=$request;
@@ -460,7 +460,7 @@ class BusController extends Controller
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($status, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($status,"Bus Status Updated", Response::HTTP_ACCEPTED);
       }
 
       public function getBusbyBuschedule($id) {

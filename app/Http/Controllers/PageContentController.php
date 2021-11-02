@@ -65,7 +65,7 @@ class PageContentController extends Controller
       }      
       try {
         $this->pagecontentService->addpagecontent($request);
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+        return $this->successResponse(null,"Page Content Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
       	// Log::info($e);
@@ -97,7 +97,7 @@ class PageContentController extends Controller
       }      
       try {
         $this->pagecontentService->updatepagecontent($request, $id);
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+        return $this->successResponse(null,"Page Content Updated", Response::HTTP_CREATED);
       }
       catch(Exception $e){
       	// Log::info($e);
@@ -109,7 +109,7 @@ class PageContentController extends Controller
      public function deletepagecontent($id)
      {
      	$pagecontent = $this->pagecontentService->deletepagecontent($id);
-        return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($pagecontent,"Page Content Deleted",Response::HTTP_OK);
 
      }
 

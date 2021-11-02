@@ -38,7 +38,7 @@ class SeatBlockController extends Controller
 
 
         $seatblock = $this->seatblockService->addseatblock($request);
-            return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+            return $this->successResponse($seatblock,"Seat Block Added",Response::HTTP_OK);
 
      }
      public function updateseatblock(Request $request, $id)
@@ -46,7 +46,7 @@ class SeatBlockController extends Controller
 
       // Log::info($request); exit;
         $seatblock = $this->seatblockService->updateseatblock($request, $id);
-            return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+            return $this->successResponse($seatblock,"Seat Block Updated",Response::HTTP_OK);
 
      }
 
@@ -73,7 +73,7 @@ class SeatBlockController extends Controller
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse(null, "Seat Block Status Updated", Response::HTTP_ACCEPTED);
       }
 
       public function deleteseatblock ($id) {
@@ -83,7 +83,7 @@ class SeatBlockController extends Controller
       catch (Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+      return $this->successResponse(null, "Seat Block Deleted", Response::HTTP_ACCEPTED);
     }
 
 }

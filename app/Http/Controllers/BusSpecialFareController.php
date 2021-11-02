@@ -61,7 +61,7 @@ class BusSpecialFareController extends Controller
           }
         try {
           $response = $this->busSpecialFareService->savePostData($request);
-          return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED); 
+          return $this->successResponse($response,"Bus Special Fare Added",Response::HTTP_CREATED); 
         } catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }   
@@ -79,7 +79,7 @@ class BusSpecialFareController extends Controller
           $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by','bus_id',
           ]);
           $response = $this->busSpecialFareService->updatePost($data, $id);
-          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED); 
+          return $this->successResponse($response, "Bus Special Fare Updated",Response::HTTP_CREATED); 
         }
         catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -93,7 +93,7 @@ class BusSpecialFareController extends Controller
           catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }
-          return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+          return $this->successResponse($response, "Bus Special Fare Deleted", Response::HTTP_ACCEPTED);
     }
 
     public function getBusSpecialFare($id) {
@@ -112,7 +112,7 @@ class BusSpecialFareController extends Controller
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response, "Special Fare Status Updated", Response::HTTP_ACCEPTED);
       }
       public function getPivotData($id) {
         try {

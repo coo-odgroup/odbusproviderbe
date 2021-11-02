@@ -37,7 +37,7 @@ class CouponController extends Controller
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+        return $this->successResponse($data,"Coupon Added",Response::HTTP_CREATED);
     }
     public function createCouponRoute(Request $request)
     {
@@ -50,7 +50,7 @@ class CouponController extends Controller
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+        return $this->successResponse($data,"Coupon Added",Response::HTTP_CREATED);
     }
     public function createCouponOperator(Request $request)
     {
@@ -63,7 +63,7 @@ class CouponController extends Controller
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+        return $this->successResponse($data,"Coupon Added",Response::HTTP_CREATED);
     }
     public function createCoupon(Request $request) {
         // Log::info($request);exit;
@@ -101,7 +101,7 @@ class CouponController extends Controller
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+        return $this->successResponse($data,"Coupon Added",Response::HTTP_CREATED);
     } 
 
     public function updateCoupon(Request $request, $id) {
@@ -143,14 +143,14 @@ class CouponController extends Controller
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
+        return $this->successResponse($data,"Coupon Updated",Response::HTTP_CREATED);
 
 
     }
 
     public function deleteCoupon ($id) {
      $coupon = $this->couponService->delete($id);
-        return $this->successResponse($coupon,Config::get('constants.RECORD_REMOVED'),Response::HTTP_OK);
+        return $this->successResponse($coupon,"Coupon Deleted",Response::HTTP_OK);
 
     }
 

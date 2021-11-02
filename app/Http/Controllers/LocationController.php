@@ -63,34 +63,7 @@ class LocationController extends Controller
       }
       return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
     }
-      // public function GetLocations($search_query) {
-      //   $validator = Validator::make(['search_query' => $search_query], [
-      //     'search_query' => 'required|min:3'
-      //   ]);
-    
-      //   if ($validator->fails()) {
-      //     $errors = $validator->errors();
-      //     // return $errors->toJson();
-      //     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      //   }
-
-        // $search = $search_query; 
-        // $ff=$this->locationService->getAll();
-  
-        // $posts =  Location::with('locationcode')->where('id','LIKE',"%{$search}%")
-        //   ->orWhere('name', 'LIKE',"%{$search}%")
-        //   ->orWhere('synonym', 'LIKE',"%{$search}%")
-        //   ->offset(0)
-        //   ->limit(10)
-        //   ->orderBy("id","asc")
-        //   ->get();  
-      //     $posts= $this->locationService->search($search_query);
-      //     $output ['status']=1;
-      //     $output ['message']='All Data Fetched Successfully';
-      //     $output ['result']=$posts;
-      //     return response($output, 200);
-        
-      // }
+      
       public function getLocationDT(Request $request) {      
         
         $locations = $this->locationService->getAllLocationDT($request);
@@ -125,7 +98,7 @@ class LocationController extends Controller
     
         try {
             $this->locationService->addPostData($data);
-            return $this->successResponse(null, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+            return $this->successResponse(null, "Location Added", Response::HTTP_CREATED);
         }
         catch(Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -153,7 +126,7 @@ class LocationController extends Controller
       
       try {
         $this->locationService->editPost($data, $id);
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+        return $this->successResponse(null, "Location Edited", Response::HTTP_CREATED);
       }
       catch(Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -169,7 +142,7 @@ class LocationController extends Controller
     catch (Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
     }
-    return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+    return $this->successResponse(null,"Location Status Updated", Response::HTTP_ACCEPTED);
   }
       
   public function filterLocation(request $request) {

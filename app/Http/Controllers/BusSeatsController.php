@@ -104,7 +104,7 @@ class BusSeatsController extends Controller
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK);
+        return $this->successResponse(null,"Bus Seat Fare Updated",Response::HTTP_OK);
     }
     public function updateBusSeatsExtras(Request $request, $id) {
         try {

@@ -100,7 +100,7 @@ class BusOperatorController extends Controller
         }
         try {
             $this->busOperatorService->savePostData($data);
-            return $this->successResponse(null, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+            return $this->successResponse(null,"Bus Operator Added", Response::HTTP_CREATED);
         }
         catch(Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -136,7 +136,7 @@ class BusOperatorController extends Controller
         }
         try {
             $this->busOperatorService->updatePost($data, $id);
-            return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+            return $this->successResponse(null, "Bus Operator Updated", Response::HTTP_CREATED);
         }
         catch(Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -151,7 +151,7 @@ class BusOperatorController extends Controller
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse(null, "Bus Operator Deleted", Response::HTTP_ACCEPTED);
     }
 
     public function getBusOperator($id) {
@@ -173,7 +173,7 @@ class BusOperatorController extends Controller
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+      return $this->successResponse(null, "Bus Operator Status Updated", Response::HTTP_ACCEPTED);
     }
     
     public function getBusbyOperator($id) {

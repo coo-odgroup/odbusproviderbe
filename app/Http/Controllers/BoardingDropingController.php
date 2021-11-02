@@ -48,7 +48,7 @@ class BoardingDropingController extends Controller
 
         try {
           $response = $this->boardingDropingService->savePostData($data);
-          return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED); 
+          return $this->successResponse($response,"Bus Stoppage Added ", Response::HTTP_CREATED); 
         } catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }  
@@ -70,7 +70,7 @@ class BoardingDropingController extends Controller
           }
         try {
           $response = $this->boardingDropingService->updatePost($data, $id);
-          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+          return $this->successResponse($response, "Bus Stoppage Updated", Response::HTTP_CREATED);
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -80,7 +80,7 @@ class BoardingDropingController extends Controller
     public function deleteBoardingDroping ($id) {
       try {
         $response = $this->boardingDropingService->deleteById($id);
-        return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response, "Bus Stoppage Deleted", Response::HTTP_ACCEPTED);
       } catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
@@ -147,7 +147,7 @@ class BoardingDropingController extends Controller
     
       try{
         $response = $this->boardingDropingService->changeStatus($id);
-        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response, "Bus Stoppage  Status Updated", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

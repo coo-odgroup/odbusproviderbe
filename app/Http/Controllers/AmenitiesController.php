@@ -62,7 +62,7 @@ class AmenitiesController extends Controller
         }
         try {
           $response = $this->amenitiesService->savePostData($data);
-          return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+          return $this->successResponse($response, "Amenities Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -79,7 +79,7 @@ class AmenitiesController extends Controller
         $amenitiesValidation = $this->AmenitiesValidator->validate($data);
         try {
           $response = $this->amenitiesService->updatePost($data, $id);
-          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+          return $this->successResponse($response, "Amenities Updated", Response::HTTP_CREATED);
 
       } catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -90,7 +90,7 @@ class AmenitiesController extends Controller
       
       try{
         $response = $this->amenitiesService->deleteById($id);
-        return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response,  "Amenities Deleted", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -114,7 +114,7 @@ class AmenitiesController extends Controller
       ]);
       try{
         $response = $this->amenitiesService->changeStatus($data,$id);
-        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response,  "Amenities Status Updated", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

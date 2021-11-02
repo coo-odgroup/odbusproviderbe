@@ -41,7 +41,7 @@ class CancellationSlabController extends Controller
     public function deleteCancellationSlab ($id) {
       try {
         $response = $this->cancellationSlabService->deleteById($id);
-        return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response, "Cancellation Slab Deleted", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -72,7 +72,7 @@ class CancellationSlabController extends Controller
       try {
        
         $response = $this->cancellationSlabService->savePostData($data);
-          return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+          return $this->successResponse($response, "Cancellation Slab Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -89,7 +89,7 @@ class CancellationSlabController extends Controller
     }
     try {
       $response = $this->cancellationSlabService->updatePost($data, $id);
-      return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
+      return $this->successResponse($response, "Cancellation Slab Updated",Response::HTTP_CREATED);
     }
     catch(Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -99,7 +99,7 @@ class CancellationSlabController extends Controller
   public function changeStatus ($id) {
     try{
       $response = $this->cancellationSlabService->changeStatus($id);
-      return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+      return $this->successResponse($response, "Cancellation Slab Status Updated", Response::HTTP_ACCEPTED);
     }
     catch (Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

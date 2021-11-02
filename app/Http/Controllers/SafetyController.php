@@ -70,7 +70,7 @@ class SafetyController extends Controller
         }
         try {
           $response = $this->safetyService->savePostData($data);
-          return $this->successResponse($response, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+          return $this->successResponse($response, "Safety Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -85,7 +85,7 @@ class SafetyController extends Controller
         $safetyValidation = $this->safetyValidator->validate($data);
         try {
           $response = $this->safetyService->updatePost($data, $id);
-          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+          return $this->successResponse($response, "Safety Updated", Response::HTTP_CREATED);
 
       } catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -96,7 +96,7 @@ class SafetyController extends Controller
       
       try{
         $response = $this->safetyService->deleteById($id);
-        return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response, "Safety Deleted", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -117,7 +117,7 @@ class SafetyController extends Controller
     
       try{
         $response = $this->safetyService->changeStatus($request,$id);
-        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse($response, "Safety Status Updated", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

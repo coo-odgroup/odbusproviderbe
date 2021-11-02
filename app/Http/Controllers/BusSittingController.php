@@ -62,7 +62,7 @@ class BusSittingController extends Controller
        catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }  
-      return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED); 
+      return $this->successResponse($data,"Sitting Type Added",Response::HTTP_CREATED); 
       
     } 
 
@@ -86,7 +86,7 @@ class BusSittingController extends Controller
          catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);     
+        return $this->successResponse($data,"Sitting Type Updated",Response::HTTP_CREATED);     
     }
 
     public function deleteBusSitting ($id) {
@@ -97,7 +97,7 @@ class BusSittingController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),"404");
       }
-      return $this->successResponse(Null,Config::get('constants.RECORD_REMOVED'),Response::HTTP_ACCEPTED);
+      return $this->successResponse(Null,"Sitting Type Deleted",Response::HTTP_ACCEPTED);
     }
 
     public function getBusSitting($id) {
@@ -125,6 +125,6 @@ class BusSittingController extends Controller
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+      return $this->successResponse(null, "Sitting Type Status Updated", Response::HTTP_ACCEPTED);
     }
 }

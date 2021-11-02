@@ -56,7 +56,7 @@ class SocialMediaController extends Controller
   }      
   try {
     $this->socialmediaService->addsocialmedia($request);
-    return $this->successResponse(null, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+    return $this->successResponse(null, "Social Media Added", Response::HTTP_CREATED);
   }
   catch(Exception $e){
         // Log::info($e);
@@ -85,7 +85,7 @@ public function updatesocialmedia(Request $request , $id)
 }      
 try {
   $this->socialmediaService->updatesocialmedia($request, $id);
-  return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+  return $this->successResponse(null,"Social Media Updated", Response::HTTP_CREATED);
 }
 catch(Exception $e){
         // Log::info($e);
@@ -98,13 +98,13 @@ public function deletesocialmedia($id)
 {
 
   $socialmedia = $this->socialmediaService->deletesocialmedia($id);
-  return $this->successResponse($socialmedia,Config::get('constants.RECORD_REMOVED'),Response::HTTP_OK);
+  return $this->successResponse($socialmedia,"Social Media Deleted",Response::HTTP_OK);
 
 } 
 public function changeStatus($id)
 {
   $socialmedia = $this->socialmediaService->changeStatus($id);
-  return $this->successResponse($socialmedia,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK);
+  return $this->successResponse($socialmedia,"Social Media Status Updated",Response::HTTP_OK);
 
 }
 

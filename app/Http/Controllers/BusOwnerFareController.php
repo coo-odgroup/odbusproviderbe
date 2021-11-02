@@ -61,7 +61,7 @@ class BusOwnerFareController extends Controller
         } catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-      return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED); 
+      return $this->successResponse($data,"Bus Owner Fare Added",Response::HTTP_CREATED); 
     } 
 
 
@@ -77,7 +77,7 @@ class BusOwnerFareController extends Controller
           $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by','bus_id',
           ]);
           $this->busOwnerFareService->updatePost($data, $id);
-          return $this->successResponse($data, Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
+          return $this->successResponse($data, "Bus Owner Fare Updated",Response::HTTP_CREATED);
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -91,7 +91,7 @@ class BusOwnerFareController extends Controller
           catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }
-          return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+          return $this->successResponse(null, "Bus Owner Fare Deleted", Response::HTTP_ACCEPTED);
     }
 
     public function getBusOwnerFare($id) {
@@ -110,7 +110,7 @@ class BusOwnerFareController extends Controller
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+        return $this->successResponse(null, "Owner Fare Status Updated", Response::HTTP_ACCEPTED);
       }
 	     
 }

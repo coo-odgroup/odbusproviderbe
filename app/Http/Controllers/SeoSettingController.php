@@ -64,7 +64,7 @@ class SeoSettingController extends Controller
       }      
       try {
         $this->seosettingService->addseosetting($request);
-        return $this->successResponse(null, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+        return $this->successResponse(null, "SEO Setting Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
       	// Log::info($e);
@@ -94,7 +94,7 @@ class SeoSettingController extends Controller
       }      
       try {
         $this->seosettingService->updateseosetting($request, $id);
-        return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+        return $this->successResponse(null, "SEO Setting Updated", Response::HTTP_CREATED);
       }
       catch(Exception $e){
       	// Log::info($e);
@@ -106,13 +106,13 @@ class SeoSettingController extends Controller
      public function deleteseosetting($id)
      {
      	$seosetting = $this->seosettingService->deleteseosetting($id);
-        return $this->successResponse($seosetting,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK);
+        return $this->successResponse($seosetting,"SEO Setting Deleted",Response::HTTP_OK);
 
      }
      public function changeStatusseosetting($id)
      {
       $seosetting = $this->seosettingService->changeStatusseosetting($id);
-        return $this->successResponse($seosetting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($seosetting,"SEO Setting Status Updated",Response::HTTP_OK);
 
      }
 

@@ -55,7 +55,7 @@ class BusCancelledController extends Controller
          }
         try {
           $data = $this->busCancelledService->savePostData($data);
-           return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+           return $this->successResponse($data, "Bus Cancellation Record Added", Response::HTTP_CREATED);
         } catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }  
@@ -72,7 +72,7 @@ class BusCancelledController extends Controller
         try {
           Log::info("Done");
             $response = $this->busCancelledService->updatePost($data, $id);
-            return $this->successResponse( $response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+            return $this->successResponse( $response, "Bus Cancellation Record Updated", Response::HTTP_CREATED);
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -82,7 +82,7 @@ class BusCancelledController extends Controller
     public function deleteBusCancelled($id) {
         try {
           $response = $this->busCancelledService->deleteById($id);
-          return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+          return $this->successResponse($response, "Bus Cancellation Record Deleted", Response::HTTP_ACCEPTED);
           }
           catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -100,7 +100,7 @@ class BusCancelledController extends Controller
     public function changeStatus ($id) {
         try{
           $response =  $this->busCancelledService->changeStatus($id);
-          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+          return $this->successResponse($response, "Bus Cancellation Status Updated", Response::HTTP_ACCEPTED);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

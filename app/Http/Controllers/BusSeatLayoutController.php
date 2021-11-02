@@ -54,7 +54,7 @@ class BusSeatLayoutController extends Controller
         catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }  
-        return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+        return $this->successResponse($data,"Seat Layout Added",Response::HTTP_CREATED);
     } 
     public function update(Request $request, $id) {
       // Log::info($request);
@@ -76,7 +76,7 @@ class BusSeatLayoutController extends Controller
         catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK); 
+        return $this->successResponse($data,"Seat Layout Updated",Response::HTTP_OK); 
     }
 
     public function deleteById($id) {
@@ -86,7 +86,7 @@ class BusSeatLayoutController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
       }
-      return $this->successResponse(Null,Config::get('constants.RECORD_REMOVED'),Response::HTTP_ACCEPTED); 
+      return $this->successResponse(Null,"Seat Layout Deleted",Response::HTTP_ACCEPTED); 
     }
     public function getById($id) {
       try {
@@ -127,7 +127,7 @@ class BusSeatLayoutController extends Controller
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+      return $this->successResponse(null, "Seat Layout Status Updated", Response::HTTP_ACCEPTED);
     }
 
 }

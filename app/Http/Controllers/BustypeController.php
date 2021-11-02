@@ -63,7 +63,7 @@ class BusTypeController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }   
-      return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED); 
+      return $this->successResponse($data,"Bus Type Added",Response::HTTP_CREATED); 
     } 
 
     public function updateBusType(Request $request, $id) {
@@ -83,7 +83,7 @@ class BusTypeController extends Controller
         
         try {
           $this->busTypeService->update($data, $id);
-          return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
+          return $this->successResponse(null, "Bus Type Updated",Response::HTTP_CREATED);
          
         }
         catch (Exception $e) {
@@ -101,7 +101,7 @@ class BusTypeController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(Null,Config::get('constants.RECORD_REMOVED'),Response::HTTP_ACCEPTED); 
+      return $this->successResponse(Null,"Bus Type Deleted",Response::HTTP_ACCEPTED); 
      
     }
 
@@ -129,7 +129,7 @@ class BusTypeController extends Controller
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_ACCEPTED);
+      return $this->successResponse(null, "Bus Type Status Updated", Response::HTTP_ACCEPTED);
     }
 
 

@@ -57,11 +57,11 @@ class OwnerPaymentController extends Controller
           }
         try {
            $this->ownerPaymentService->savePostData($request);
-
+           return $this->successResponse($data,"Owner Payment Added",Response::HTTP_CREATED);
         } catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED); 
+         
     }  
 	     
 }

@@ -63,7 +63,7 @@ class PageContentRepository
    public function getModel($data, PageContent $pagecontent)
    {
       $pagecontent->page_name =$data['page_name'];
-      $pagecontent->bus_operator_id =$data['bus_operator_id'];
+      // $pagecontent->bus_operator_id =$data['bus_operator_id'];
       $pagecontent->bus_operator_id = $data['bus_operator_id'];
       $pagecontent->page_url =$data['page_url'];
       $pagecontent->page_description =$data['page_description'];

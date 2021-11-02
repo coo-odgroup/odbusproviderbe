@@ -303,13 +303,14 @@ Route::put('pagecontent/{id}',[PageContentController::class,'updatepagecontent']
 Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);
 
 
-//Page Content
+//user Content
 // Route::get('/user',[UserContentController::class,'getAlluser']);
 Route::post('userContentData',[UserContentController::class,'getAllData']);
 Route::post('userContent',[UserContentController::class,'adduser']);
 Route::put('userContent/{id}',[UserContentController::class,'updateuser']);
 Route::delete('userContent/{id}', [UserContentController::class, 'deleteuser']);
-
+Route::put('changePassword/{id}', [UserContentController::class, 'changePassword']);
+Route::put('/changeuserStatus/{id}', [UserContentController::class, 'changeStatus']);
 
 //Testimonial
 
