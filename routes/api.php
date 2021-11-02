@@ -673,7 +673,7 @@ Route::post('/ownerpaymentData', [OwnerPaymentController::class, 'ownerpaymentDa
 
 
 
-Route::get('/login', [UserController::class, 'login']);
+Route::post('/login', [UserController::class, 'login']);
 
 
 //});

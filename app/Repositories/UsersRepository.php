@@ -24,9 +24,9 @@ class UsersRepository
     public function login($request)
     {
 
-        $email = $request['email'] ;
-        return $this->user->with('role')->where('email', $email)->get();
-
+        $email = $request['email'];
+        $password = $request['password'];
+        return $this->user->with('role')->where('email', $email)->where('password', $password)->get();
     }
 
     
