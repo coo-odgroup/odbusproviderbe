@@ -81,6 +81,7 @@ use App\Http\Controllers\ContactReportController;
 // SettingController 
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\PageContentController;
+use App\Http\Controllers\UserContentController;
 use App\Http\Controllers\SeoSettingController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\SliderController;
@@ -300,6 +301,14 @@ Route::post('pagecontentData',[PageContentController::class,'getAllData']);
 Route::post('pagecontent',[PageContentController::class,'addpagecontent']);
 Route::put('pagecontent/{id}',[PageContentController::class,'updatepagecontent']);
 Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);
+
+
+//Page Content
+// Route::get('/user',[UserContentController::class,'getAlluser']);
+Route::post('userContentData',[UserContentController::class,'getAllData']);
+Route::post('userContent',[UserContentController::class,'adduser']);
+Route::put('userContent/{id}',[UserContentController::class,'updateuser']);
+Route::delete('userContent/{id}', [UserContentController::class, 'deleteuser']);
 
 
 //Testimonial
