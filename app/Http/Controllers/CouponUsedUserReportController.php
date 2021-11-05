@@ -24,9 +24,9 @@ class CouponUsedUserReportController extends Controller
         $this->couponuseduserreportService = $couponuseduserreportService;        
     }
 
-    public function getAll()
+    public function getData(Request $request)
     {
-        $couponused = $this->couponuseduserreportService->getAll();
+        $couponused = $this->couponuseduserreportService->getData($request);
         return $this->successResponse($couponused,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

@@ -290,7 +290,7 @@ Route::delete('contactreport/{id}',[ContactReportController::class,'deleteData']
 // ClearTransactionReport //
 Route::get('cleartransactionreport',[ClearTransactionReportController::class,'getAll']);
 //CouponUsedUserReportController//
-Route::get('couponuseduserreport',[CouponUsedUserReportController::class,'getAll']);
+Route::post('couponuseduserreport',[CouponUsedUserReportController::class,'getData']);
 
 
 
