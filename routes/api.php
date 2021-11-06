@@ -88,14 +88,27 @@ use App\Http\Controllers\SliderController;
 use App\Http\Controllers\BannerController;
 
 
+//Agent
+use App\Http\Controllers\AgentWalletController;
+
+
+
 
 	Route::middleware('auth:api')->group( function () {
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
 
-// Route::put('socialmedia',[SocialMediaController::class,'updateData']);
-// Route::get('/socialmedia',[SocialMediaController::class,'getAllsocialmedia']);
+///////////////////////////Agent Start////////////////////////////////////////
+
+// Agent wallet
+Route::post('/agentWallet',[AgentWalletController::class,'addAgentWallet']);
+Route::post('/agentWalletData',[AgentWalletController::class,'getData']);
+Route::put('/changeAgentWalletStatus/{id}',[AgentWalletController::class,'changeStatus']);
+
+
+////////////////////////////Agent End//////////////////////////////////////////
+
 Route::post('socialmediaData',[SocialMediaController::class,'getAllsocialmedia']);
 Route::post('socialmedia',[SocialMediaController::class,'addsocialmedia']);
 Route::put('socialmedia/{id}',[SocialMediaController::class,'updatesocialmedia']);

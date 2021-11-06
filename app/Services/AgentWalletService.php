@@ -1,0 +1,107 @@
+<?php
+namespace App\Services;
+
+use App\Models\BusOwnerFare;
+use App\Repositories\agentWalletRepository;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Validator;
+use InvalidArgumentException;
+
+class AgentWalletService
+{
+    
+    protected $agentWalletRepository;
+
+    
+    public function __construct(AgentWalletRepository $agentWalletRepository)
+    {
+        $this->agentWalletRepository = $agentWalletRepository;
+    } 
+
+    public function getData($request)
+    {
+         $paginate = $request['rows_number'] ;
+         $name = $request['name'] ;
+
+
+          $data= $this->agentWalletRepository->getWalletRecord();
+
+      if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $this->agentWalletRepository->Filter($data, $name);                     
+        }     
+
+        $data= $this->agentWalletRepository->Pagination($data,$paginate); 
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+
+        // Log::info($response);
+           return $response;  
+
+
+        //return $this->agentWalletRepository->getData($request);
+    }
+        
+    public function savePostData($data)
+    {
+        try {
+            $post = $this->agentWalletRepository->save($data);
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $post;
+    }
+   
+   public function changeStatus($data,$id)
+   {
+
+        $otp_status= $this->agentWalletRepository->Otp($id,$data);
+   
+       if(!empty($otp_status))
+       {
+         try {
+            $post = $this->agentWalletRepository->update_Status($id);
+            $user_id = $post->user_id;
+            $prvious_balance = $this->agentWalletRepository->balance($user_id);
+               if($post->transaction_type == "c")
+                {            
+                    $balance=$prvious_balance[0]->balance + (int)$post->amount;
+                }
+                else if($post->transaction_type == "d")
+                {          
+                    $balance=$prvious_balance[0]->balance - (int)$post->amount;
+                } 
+
+                
+                 return $updated_balance =$this->agentWalletRepository->update_balance($id,$balance);   
+
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+         
+       }
+   }
+
+}
+
+ 
