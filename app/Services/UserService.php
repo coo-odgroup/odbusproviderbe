@@ -122,13 +122,27 @@ class UserService
         return $this->userRepository->get($id);
     }
 
-    public function Login($data)
-    {
-        return $this->userRepository->login($data);
-    }
     public function userDetail()
     {
         return $this->userRepository->userDetail();
     }
+
+    /////////////////////Agent registration//////////////////////////////////
+
+    public function Register($data)
+    {   
+        $agent = $this->userRepository->Register($data);
+        return $agent;
+    }
+    public function verifyOtp($data)
+    {   
+        $agent = $this->userRepository->verifyOtp($data);
+        return $agent;
+    }
+    public function login($data)
+    {
+        return $this->userRepository->login($data);
+    }
+
     
 }

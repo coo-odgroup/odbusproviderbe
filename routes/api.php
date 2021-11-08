@@ -671,9 +671,8 @@ Route::post('/busCancelledData', [BusCancelledController::class, 'busCancelledDa
 Route::post('/ownerpaymentData', [OwnerPaymentController::class, 'ownerpaymentData']);
 
 
-
-
-Route::post('/login', [UserController::class, 'login']);
-
+Route::post('/Register', [UserController::class, 'Register']);
+Route::post('/VerifyOtp', [UserController::class, 'verifyOtp']);
+Route::post('/Login', [UserController::class, 'login']);
 
 //});

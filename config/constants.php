@@ -10,6 +10,16 @@ return [
     'INVALID_ARGUMENT_PASSED' => 'Invalid Argument Passed',
     'UNABLE_CHANGE_STATUS' => 'Unable to Change Status',
     'ALL_RECORDS'=>10000,
+    'OTP_GEN' => 'OTP generated',
+    'OTP_NULL' => 'No Value provided in OTP',
+    'OTP_INVALID' => 'Invalid OTP',
+    'OTP_VERIFIED' => 'OTP verification successful',
+    'UNREGISTERED' => 'Agent is not registered',
+    'ROLE_MISMATCH' => 'Role of the agent mismatches',
+    'OTP_NOT_VERIFIED' => 'OTP is not yet validated',
+    'LOGIN_SUCCESSFUL' => 'Login successful',
+
+
 
 
 ];

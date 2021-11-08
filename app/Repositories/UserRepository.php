@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 use Illuminate\Support\Facades\Auth;
-
+use App\Repositories\ChannelRepository;
 use App\Models\User;
 use App\Models\UserBankDetails;
 use Illuminate\Support\Str;
@@ -16,17 +16,17 @@ class UserRepository
      */
     protected $user;
     protected $userBankDetails;
-
+    protected $channelRepository;
     /**
      * PostRepository constructor.
      *
      * @param Post $BusType
      */
-    public function __construct(User $user, UserBankDetails $userBankDetails)
+    public function __construct(User $user, UserBankDetails $userBankDetails,ChannelRepository $channelRepository)
     {
         $this->user = $user;
         $this->userBankDetails = $userBankDetails;
-        
+        $this->channelRepository = $channelRepository; 
     }
 
     
@@ -136,29 +136,29 @@ class UserRepository
     }
     ////////////***//////////////
     //////User Login//////////
-    public function Login($data)
-    {
-       // $accessToken = auth()->$this->user()->createToken('authToken')->accessToken;
+    // public function Login($data)
+    // {
+    //    // $accessToken = auth()->$this->user()->createToken('authToken')->accessToken;
        
-            //Auth::attempt(['email' => $data->email, 'password' => $data->password]);
-           // var_dump($this->user);
-        $user = Auth::user();
-        //$Token = $user->createToken('Token')->accessToken;
+    //         //Auth::attempt(['email' => $data->email, 'password' => $data->password]);
+    //        // var_dump($this->user);
+    //     $user = Auth::user();
+    //     //$Token = $user->createToken('Token')->accessToken;
 
-        //return response([ 'Token' => $accessToken]);
-        $user = User::where('email' ,$data->email)->where( 'password' , $data->password)->first();
-        if($user){
-            $success['token'] =  $user->createToken('Token')->accessToken;
-            return response(['user' => [
-                    'email'=>$data->email
-                ],'Token' => $success['token']], "200");
-        }else{
-            return response(['error'=>'Unauthorised'], 401);
-        }
+    //     //return response([ 'Token' => $accessToken]);
+    //     $user = User::where('email' ,$data->email)->where( 'password' , $data->password)->first();
+    //     if($user){
+    //         $success['token'] =  $user->createToken('Token')->accessToken;
+    //         return response(['user' => [
+    //                 'email'=>$data->email
+    //             ],'Token' => $success['token']], "200");
+    //     }else{
+    //         return response(['error'=>'Unauthorised'], 401);
+    //     }
             
-        //return response(['user' => auth()->user(), 'access_token' => $accessToken]);
+    //     //return response(['user' => auth()->user(), 'access_token' => $accessToken]);
 
-    }
+    // }
     public function userDetail()
     {
         $user = Auth::user();
@@ -170,7 +170,88 @@ class UserRepository
         }
     }
 
+    ///////////////////////////////////////////////Agent Registration////////////////////////////////////////////////////////////
 
+    public function Register($request)
+    {   
+        $query =$this->user->where([
+            ['phone', $request['phone']],
+            ['phone', '<>', null]
+        ]);
+           
+    $registeredAgent = $query->exists();
+    
+    if(!$registeredAgent){
+        $agent = new $this->user; 
+        $otp = $this->sendOtp($request);
+        $agent->name = $request['name'];
+        $agent->phone = $request['phone'];
+        $agent->user_type = $request['user_type'];
+        $agent->created_by = $request['created_by'];
+        $agent->otp = $otp;
+        $agent->save();
+        
+        return $agent;
+    }else{
+           return "Registered User";
+         }
+    
+}
+public function sendOtp($request){
+    $otp = rand(10000, 99999);
+        $sendsms = $this->channelRepository->sendSms($request,$otp);  
+    return  $otp;
+}
+public function verifyOtp($request){
 
+    $rcvOtp = trim($request['otp']);
+    $userId = $request['userId'];
+    $existingOtp = $this->user->where('id', $userId)->get('otp');
+    $existingOtp = $existingOtp[0]['otp'];
+    $user = $this->user->where('id', $userId)->first()->only('name');
+    if(($rcvOtp=="")){
+        return "";
+        }
+    elseif($existingOtp == $rcvOtp){
+
+         $users = $this->user->where('id', $userId)->update(array(
+            'otp' => Null,
+            'status' => '1'
+             ));
+         $usersDetails = $this->user->where('id', $userId)->get();
+        return $usersDetails; 
+    }
+    else{
+        return 'Inval OTP';
+    }
+}
+public function login($request){
+    $query =$this->user->where([
+        ['phone', $request['phone']],
+        ['phone', '<>', null]
+      ]);
+    $existingUser = $query->latest()->exists(); 
+    
+    if($existingUser == true){
+        $verifiedStatus = $query->first()->status; 
+        if($verifiedStatus == 1){
+            $role = $query->first()->user_type;
+            if($role == $request['user_type']){  
+                $name = $query->first()->name;     
+                $request->request->add(['name' => $name]);
+                $otp = $this->sendOtp($request);
+                $user = $query->update(array('otp' => $otp));
+                return $query->first(); 
+            }else{
+                return "agent_role_mismatch";
+            }   
+
+        } else{
+            return "otp_not_verified";
+        }     
+    }else{
+        return "un_registered_agent";
+    }    
+  }
 }
  

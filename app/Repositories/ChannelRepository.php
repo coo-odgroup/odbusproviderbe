@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Repositories;
+use Illuminate\Http\Request;
+use App\Models\Users;
+use App\Models\GatewayInformation;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+use App\Jobs\SendEmailJob;
+use App\Jobs\SendEmailTicketJob;
+use App\Jobs\SendEmailTicketCancelJob;
+use App\Mail\SendEmailOTP;
+use Razorpay\Api\Api;
+use App\Models\CustomerPayment;
+use App\Models\Booking;
+use App\Models\BookingDetail;
+use App\Models\BusSeats;
+use App\Repositories\ViewSeatsRepository;
+use App\Models\Credentials;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+Use hash_hmac;
+use Razorpay\Api\Errors\SignatureVerificationError;
+
+class ChannelRepository
+{
+    protected $users;
+    protected $customerPayment;
+    protected $booking;
+    protected $bookingDetail;
+    protected $busSeats;
+    protected $credentials;
+
+    public function __construct(Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials,BookingDetail $bookingDetail)
+    {
+        $this->users = $users;
+        $this->customerPayment = $customerPayment;
+        $this->booking = $booking;
+        $this->busSeats = $busSeats;
+        $this->credentials = $credentials;
+        $this->bookingDetail = $bookingDetail;
+    } 
+     
+    public function sendSms($data, $otp) {
+
+        $SmsGW = config('services.sms.otpservice');
+        if($SmsGW =='textLocal'){
+
+            //Environment Variables
+            //$apiKey = config('services.sms.textlocal.key');
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.message');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($data['phone']);
+            $name = $data['name'];
+            $message = str_replace("<otp>",$otp,$message);
+            $message = str_replace("<name>",$name,$message);
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);
+             
+            // return $response;
+            //$msgId = $response->messages[0]->id;  // Store msg id in DB
+            //session(['msgId'=> $msgId]);
+
+            // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            // $err = curl_error($ch);
+ 
+            // if ($err) { 
+            //     return "cURL Error #:" . $err;
+            // } 
+
+        }elseif($SmsGW=='IndiaHUB'){
+                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');
+                $otp = $data['otp'];
+                // $IndiaHubApiKey = urlencode( $IndiaHubApiKey);
+                // //$channel = 'transactional';
+                // //$route =  '4';
+                // //$dcs = '0';
+                // //$flashsms = '0';
+                // $smsIndiaUrl = 'http://cloud.smsindiahub.in/vendorsms/pushsms.aspx';
+                // $receiver = urlencode($data['phone']);
+                // $sender_id = urlencode($data['sender']);
+                // $name = $data['name'];
+                // $message = $data['message'];
+                // $message = str_replace("<otp>",$otp,$message);
+                // $message = rawurlencode($message);
+    
+                // $api = "$smsIndiaUrl?APIKey=".$IndiaHubApiKey."&sid=".$sender_id."&msg=".$message."&msisdn=".$receiver."&fl=0&gwid=2";
+    
+                // $response = file_get_contents($api);
+                //return $response;
+
+        }
+      }
+      //public function sendSmsTicket($data){
+      
+      
+
+     
+    
+
+}

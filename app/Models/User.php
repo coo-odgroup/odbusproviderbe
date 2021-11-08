@@ -21,12 +21,9 @@ class User extends Model
      * @var array
      */
     protected $table = 'user';    
-    //protected $fillable = ['name', 'email','phone','password','created_by'];
 
-    protected $fillable = ['name', 'email'];
-   // protected $hidden = ['password', 'remember_token' ];
+    protected $fillable = ['name','phone','user_type'];
     
-
     public function role()
     {
         return $this->hasOne(Role::class);
