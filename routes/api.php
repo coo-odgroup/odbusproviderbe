@@ -94,7 +94,14 @@ use App\Http\Controllers\AgentWalletController;
 use App\Http\Controllers\AgentComissionController;
 use App\Http\Controllers\AgentFeeController;
 
+use App\Http\Controllers\AgentNotificationController;
+//Agent Notification
+Route::post('/agentnotification',[AgentNotificationController::class,'getData']);
 
+Route::post('/agentnotification',[AgentNotificationController::class,'addNotification']);
+
+
+////////////////////////////Agent End//////////////////////////////////////////
 
 
 	Route::middleware('auth:api')->group( function () {
