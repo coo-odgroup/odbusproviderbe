@@ -61,11 +61,16 @@ class AgentWalletRepository
 
     public function balance($id)
     {
-       return $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->offset(1)->limit(1)->get();     
+        $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->offset(1)->limit(1)->get(); 
+        if(sizeof($agentWallet) == 0)
+        {
+             $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get(); 
+        } 
+        return $agentWallet;  
     }
 
     public function getWalletRecord(){
-        return $this->agentWallet->whereNotIn('status', [2]);
+        return $this->agentWallet->where('user_id', 2)->whereNotIn('status', [2]);
     }
 
     public function Pagination($data,$paginate){

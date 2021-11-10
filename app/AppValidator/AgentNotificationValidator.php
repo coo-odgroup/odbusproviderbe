@@ -9,9 +9,8 @@ class AgentNotificationValidator
     public function validate($data) { 
         
         $rules = [
-            'subject' => 'required|unique:agent_wallet,transaction_id',
-            'notification' => 'required',
-            'user_id' => 'required',           
+            'subject' => 'required',
+            'notification' => 'required'           
         ];            
         $agentNotificationValidator = Validator::make($data, $rules);
         return $agentNotificationValidator;

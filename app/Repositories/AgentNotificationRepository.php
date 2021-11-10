@@ -58,14 +58,66 @@ class AgentNotificationRepository
          $notification= $this->getModel($data,$notification) ;
          $notification->save();
 
-         $userNotification[0]=new UserNotification();
-         $userNotification[0]['user_id'] = $data['user_id'];
-         $userNotification[0]['created_by']= "Agent";
+          
+         // Log::info($data['user_id']);
+          foreach ($data['user_id'] as $k=>$v) 
+          { 
+            $userNotificationRecords=new UserNotification();
+             $userNotificationRecords['user_id'] = $v;
+             $userNotificationRecords['created_by']= "Admin"; 
+             $user[] =   $userNotificationRecords;
+          }
+           $notification->userNotification()->saveMany($user);
 
-         $notification->userNotification()->saveMany($userNotification);
-
-        return $agentWallet;
+        return $notification;
     } 
+
+    public function delete($id)
+    { 
+        // Log::info($id);exit;
+         $notification = $this->notification->find($id); 
+         $notification->userNotification()->where('notification_id',$id)->delete();
+         $notification->delete();
+    }
+
+    public function allPushNotification($request)
+    {
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+
+         $data= $this->notification->where('created_by','Admin')
+                                   ->orderBy('id','DESC');
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) {
+            $paginate = 10 ;
+        }
+        if($name!=null)
+        {
+            $data = $data->where('notification_heading', 'like', '%' .$name . '%')
+                       ->orWhere('notification_details', 'like', '%' .$name . '%');
+        }
+        $data=$data->paginate($paginate);
+
+        // Log::info($data);
+
+
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+
+           return $response;  
+
+    }
+
+
+
+
 
 
 }

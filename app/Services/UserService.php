@@ -55,6 +55,11 @@ class UserService
 
     }
 
+    public function getallAgent()
+    {
+       return $this->userRepository->getallAgent();  
+    }
+
     /**
      * Get all post.
      *

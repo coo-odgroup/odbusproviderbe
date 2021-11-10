@@ -36,6 +36,12 @@ class UserRepository
         return $this->user::with('userBankDetails')->get();
     }
 
+    public function getallAgent()
+    {
+         
+        return $this->user->where('user_type','Agent')->where('status',1)->get();
+    }
+
     
     public function getById($id)
     {

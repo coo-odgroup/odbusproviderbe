@@ -72,20 +72,24 @@ class AgentWalletService
    
    public function changeStatus($data,$id)
    {
-
-        $otp_status= $this->agentWalletRepository->Otp($id,$data);
+           $otp_status= $this->agentWalletRepository->Otp($id,$data);
 
        if(sizeof($otp_status)>0)
        {
+       
             $post = $this->agentWalletRepository->update_Status($id);
+           
             $user_id = $post->user_id;
+            
             $prvious_balance = $this->agentWalletRepository->balance($user_id);
+            
                if($post->transaction_type == "c")
-                {            
+                {           
                     $balance=$prvious_balance[0]->balance + (int)$post->amount;
+
                 }
                 else if($post->transaction_type == "d")
-                {          
+                {        
                     $balance=$prvious_balance[0]->balance - (int)$post->amount;
                 } 
                
