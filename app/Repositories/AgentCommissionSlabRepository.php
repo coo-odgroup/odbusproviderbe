@@ -1,8 +1,8 @@
 <?php
 namespace App\Repositories;
 use App\Models\AgentWallet;
-use App\Models\Notification;
-use App\Models\UserNotification;
+use App\Models\AgentCommission;
+use App\Models\AgentFee;
 
 
 use Illuminate\Support\Facades\Log;
@@ -10,25 +10,25 @@ use Illuminate\Support\Facades\Log;
 class AgentCommissionSlabRepository
 {
   
-    protected $agentWallet; 
-    protected $notification;
+    protected $agentFee; 
+    protected $agentCommission;
     
-    public function __construct(AgentWallet $agentWallet,Notification $notification)
+    public function __construct(AgentFee $agentFee,AgentCommission $agentCommission)
     {
-        $this->agentWallet = $agentWallet;
-        $this->notification = $notification;
+        $this->agentFee = $agentFee;
+        $this->agentCommission = $agentCommission;
     }
       
 
     public function agentcommissionslab()
     {
-          return "working agent commission";      
+          return $this->agentCommission->get();      
     }
 
 
     public function customercommissionslab()
     {
-           return "working customer commission";   
+            return $this->agentFee->get();  
     }
    
     
