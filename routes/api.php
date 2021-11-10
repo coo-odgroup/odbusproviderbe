@@ -63,7 +63,7 @@ use App\Http\Controllers\DashboardController;
 
 use App\Http\Middleware\LogRoute;
 use Laravel\Passport\Passport;
-
+use App\Http\Controllers\AgentController;
 
 // ReportController
 use App\Http\Controllers\SeatOpenReportController;
@@ -711,3 +711,9 @@ Route::post('/login', [UserController::class, 'login']);
 
 
 //});
+Route::post('/Agent', [AgentController::class, 'createAgent']);
+Route::post('/AgentData', [AgentController::class, 'getAllAgentData']);
+Route::get('/Agent', [AgentController::class, 'getAllAgent']);
+Route::put('/Agent/{id}', [AgentController::class, 'updateAgent']);
+Route::delete('/Agent/{id}', [AgentController::class, 'deleteAgent']);
+Route::get('/Agent/{id}', [AgentController::class, 'getAgent']);
