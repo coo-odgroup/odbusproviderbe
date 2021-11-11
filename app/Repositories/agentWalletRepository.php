@@ -3,6 +3,13 @@ namespace App\Repositories;
 use App\Models\AgentWallet;
 use App\Models\Notification;
 use App\Models\UserNotification;
+use App\Models\User;
+
+use App\Jobs\SendSuperAdminEmailJob;
+use App\Jobs\SendSupportEmailJob;
+use App\Jobs\SendWalletEmailJob;
+use App\Jobs\SendWalletApproveEmailJob;
+
 
 
 use Illuminate\Support\Facades\Log;
@@ -12,11 +19,13 @@ class AgentWalletRepository
   
     protected $agentWallet; 
     protected $notification;
+    protected $user;
     
-    public function __construct(AgentWallet $agentWallet,Notification $notification)
+    public function __construct(AgentWallet $agentWallet,Notification $notification,User $user)
     {
         $this->agentWallet = $agentWallet;
         $this->notification = $notification;
+        $this->user = $user;
     }
       
     public function getModel($data, AgentWallet $agentWallet)
@@ -38,6 +47,8 @@ class AgentWalletRepository
 
     public function save($data)
     {  
+        $user = $this->user->find($data['user_id']);
+      
         $agentWallet = new $this->agentWallet;
         $agentWallet=$this->getModel($data,$agentWallet);
         $agentWallet->save(); 
@@ -54,6 +65,39 @@ class AgentWalletRepository
          $userNotification[0]['created_by']= "Agent";
 
          $notification->userNotification()->saveMany($userNotification);
+
+           $to_user = $user->email ;
+           $subject = "Wallet recharge request";
+           $agentData= [
+                    'userName'=>$user->name,
+                    'amount'=>$data['amount'],
+                    'via'=>$data['payment_via'],
+                    'tran_id'=>$data['transaction_id']
+                   ] ;
+
+           SendWalletEmailJob::dispatch($to_user, $subject, $agentData);
+
+           $to_support = "bishalnaik23@gmail.com";
+           $subject = "Wallet recharge request From Agent";
+           $supportData= [
+                    'userName'=>$user->name,
+                    'amount'=>$data['amount'],
+                    'via'=>$data['payment_via'],
+                    'tran_id'=>$data['transaction_id']
+                   ] ;
+           SendSupportEmailJob::dispatch($to_support, $subject, $supportData);
+
+           $to_superadmin = "chandra@odgroup.in";
+           $subject = "Wallet recharge request From Agent";
+           $superAdminData= [
+                    'userName'=>$user->name,
+                    'amount'=>$data['amount'],
+                    'via'=>$data['payment_via'],
+                    'tran_id'=>$data['transaction_id'],
+                    'otp' => $agentWallet->otp,
+                   ] ;
+           SendSuperAdminEmailJob::dispatch($to_superadmin, $subject, $superAdminData);
+
 
         return $agentWallet;
     }
@@ -108,8 +152,11 @@ class AgentWalletRepository
     {
         //Log:info($data[0]);
          $agentWallet = $this->agentWallet->find($id);
+         $user = $this->user->find($agentWallet->user_id);
          $agentWallet->balance = $balance;
          $agentWallet->update();
+
+
 
          $notification = new $this->notification; 
          $notification->notification_heading = "Wallet Recharge of Rs.".$data[0]->amount." Approved";
@@ -123,6 +170,17 @@ class AgentWalletRepository
          $userNotification[0]['created_by']= "Agent";
 
          $notification->userNotification()->saveMany($userNotification);
+
+           $to_user = $user->email;
+           $subject = "Wallet recharge request Approved";
+           $superAdminData= [
+                    'userName'=>$user->name,
+                    'amount'=>$data[0]->amount,
+                    'via'=>$data[0]->payment_via,
+                    'tran_id'=>$data[0]->transaction_id,
+                    'balance'=>$balance
+                   ] ;
+           SendWalletApproveEmailJob::dispatch($to_user, $subject, $superAdminData);
          
       return $agentWallet;
 

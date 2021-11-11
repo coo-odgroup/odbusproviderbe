@@ -15,7 +15,8 @@
         "kyslik/column-sortable": "^6.4",
         "laravel/framework": "^8.0",
         "laravel/passport": "^10.1",
-        "laravel/tinker": "^2.0"
+        "laravel/tinker": "^2.0",
+        "mailjet/laravel-mailjet": "^3.0"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

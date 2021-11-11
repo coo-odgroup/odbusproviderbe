@@ -44,6 +44,16 @@ return [
             'timeout' => null,
             'auth_mode' => null,
         ],
+        'mailjet' => [
+            'transport' => 'smtp',
+            'host' => env('MAILJET_HOST'),
+            'port' => env('MAILJET_PORT'),
+            'encryption' => env('MAILJET_ENCRYPTION', 'tls'),
+            'username' => env('MAILJET_APIKEY'),
+            'password' => env('MAILJET_APISECRET'),
+            'timeout' => null,
+            'auth_mode' => null,
+        ],
 
         'ses' => [
             'transport' => 'ses',

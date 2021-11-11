@@ -97,9 +97,11 @@ use App\Http\Controllers\AgentCommissionSlabController;
 use App\Http\Controllers\AgentComissionController;
 use App\Http\Controllers\AgentFeeController;
 use App\Http\Controllers\AgentBookingController;
+use App\Http\Controllers\TestEmailController;
 
 
 
+Route::post('/emailtest', [TestEmailController::class,'emailtest']);
 
 	Route::middleware('auth:api')->group( function () {
     Route::get('/userAuth', [UserController::class, 'userDetail']);
