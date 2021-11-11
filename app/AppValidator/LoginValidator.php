@@ -10,8 +10,9 @@ class LoginValidator
     public function validate($data) { 
         
         $rules = [
-            'phone' => 'required',
-            'user_type' => 'required',
+            // 'email' => 'required',
+            // 'user_type' => 'required',
+            // 'password' => 'required'
         ];      
       
         $loginValidator = Validator::make($data, $rules);

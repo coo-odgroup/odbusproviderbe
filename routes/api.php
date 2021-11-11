@@ -60,7 +60,6 @@ use App\Http\Controllers\OffersController;
 
 use App\Http\Controllers\DashboardController;
 
-
 use App\Http\Middleware\LogRoute;
 use Laravel\Passport\Passport;
 
@@ -93,6 +92,7 @@ use App\Http\Controllers\AgentWalletController;
 
 use App\Http\Controllers\AgentComissionController;
 use App\Http\Controllers\AgentFeeController;
+use App\Http\Controllers\AgentBookingController;
 
 
 
@@ -690,6 +690,10 @@ Route::post('/ownerpaymentData', [OwnerPaymentController::class, 'ownerpaymentDa
 Route::post('/Register', [UserController::class, 'Register']);
 Route::post('/VerifyOtp', [UserController::class, 'verifyOtp']);
 Route::post('/Login', [UserController::class, 'login']);
+Route::get('/GetAllRoles', [UserController::class, 'getRoles']);
+Route::post('/AgentRgestration', [UserController::class, 'agentRegister']);
+
+Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
 
 //});
 

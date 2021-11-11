@@ -17,9 +17,10 @@ return [
     'UNREGISTERED' => 'Agent is not registered',
     'ROLE_MISMATCH' => 'Role of the agent mismatches',
     'OTP_NOT_VERIFIED' => 'OTP is not yet validated',
+    'PWD_MISMATCH' => 'Incorrect Password',
     'LOGIN_SUCCESSFUL' => 'Login successful',
-
-
+    'VERIFIED' => 'otp verification is successful',
+    'REGT_SUCCESS' => 'Registration Successful',
 
 
 ];

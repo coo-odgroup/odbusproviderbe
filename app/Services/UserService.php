@@ -143,6 +143,14 @@ class UserService
     {
         return $this->userRepository->login($data);
     }
-
+    public function getRoles()
+    {
+        return $this->userRepository->getRoles();
+    }
+    public function agentRegister($data)
+    {   
+        $agent = $this->userRepository->agentRegister($data);
+        return $agent;
+    }
     
 }

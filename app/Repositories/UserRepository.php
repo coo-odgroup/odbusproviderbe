@@ -4,9 +4,11 @@ namespace App\Repositories;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\ChannelRepository;
 use App\Models\User;
+use App\Models\Role;
 use App\Models\UserBankDetails;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Hash;
 
 
 class UserRepository
@@ -175,25 +177,33 @@ class UserRepository
     public function Register($request)
     {   
         $query =$this->user->where([
-            ['phone', $request['phone']],
-            ['phone', '<>', null]
+            ['phone', $request['phone']]  
         ]);
+          // ->where('status', '1');
            
     $registeredAgent = $query->exists();
     
     if(!$registeredAgent){
         $agent = new $this->user; 
         $otp = $this->sendOtp($request);
-        $agent->name = $request['name'];
         $agent->phone = $request['phone'];
-        $agent->user_type = $request['user_type'];
-        $agent->created_by = $request['created_by'];
         $agent->otp = $otp;
         $agent->save();
-        
         return $agent;
     }else{
-           return "Registered User";
+        $status = $this->user->where('phone',$request['phone'])->first()->status;
+            switch($status){
+                case '0':
+                    $otp = $this->sendOtp($request);
+                    $this->user->where('phone', $request['phone'])->update(array(
+                        'otp' => $otp
+                         ));
+                    $agent = $this->user->where('phone', $request['phone'])->get();
+                    return $agent[0]; 
+                case '1':
+                    return "Registered Agent";
+            }
+           
          }
     
 }
@@ -214,10 +224,7 @@ public function verifyOtp($request){
         }
     elseif($existingOtp == $rcvOtp){
 
-         $users = $this->user->where('id', $userId)->update(array(
-            'otp' => Null,
-            'status' => '1'
-             ));
+         $users = $this->user->where('id', $userId)->update(array( 'otp' => Null, ));   
          $usersDetails = $this->user->where('id', $userId)->get();
         return $usersDetails; 
     }
@@ -227,31 +234,81 @@ public function verifyOtp($request){
 }
 public function login($request){
     $query =$this->user->where([
-        ['phone', $request['phone']],
-        ['phone', '<>', null]
+        ['email', $request['email']],
+        ['email', '<>', null]
       ]);
     $existingUser = $query->latest()->exists(); 
     
     if($existingUser == true){
-        $verifiedStatus = $query->first()->status; 
-        if($verifiedStatus == 1){
+        $password = $query->first()->password; 
+
+        if(Hash::check($request['password'], $password )){
             $role = $query->first()->user_type;
             if($role == $request['user_type']){  
-                $name = $query->first()->name;     
-                $request->request->add(['name' => $name]);
-                $otp = $this->sendOtp($request);
-                $user = $query->update(array('otp' => $otp));
-                return $query->first(); 
+                switch($role){
+                    case 'AGENT':
+                        //$name = $query->first()->name;     
+                        //$request->request->add(['name' => $name]);
+                        //$otp = $this->sendOtp($request);
+                        // $user = $query->update(array('otp' => $otp));
+                        return $query->first(); 
+                    case 'Admin':
+                        return "Not Supported";
+                    case 'Super Admin':
+                        return "Not Supported";
+                    case 'Super Operator':
+                        return "Not Supported";
+
+                }
+
+
             }else{
                 return "agent_role_mismatch";
             }   
 
         } else{
-            return "otp_not_verified";
+            return "pwd_mismatch";
         }     
     }else{
         return "un_registered_agent";
     }    
   }
+
+  public function getRoles()
+  {
+      return Role::whereNotIn('status', [2])->get();
+  }
+
+  public function agentRegister($request)
+
+    {    
+        $users = $this->user->where('id', $request['userId'])->update(array(
+                            'name' => $request['name'],
+                            'email' => $request['email'],
+                            'password' => bcrypt($request['password']),
+                            'user_type' => 'AGENT',
+                            'location' => $request['location'],
+                            'adhar_no' => $request['adhar_no'],
+                            'pancard_no' => $request['pancard_no'],
+                            'organization_name' => $request['organization_name'],
+                            'address' => $request['address'],
+                            'street' => $request['street'],
+                            'landmark' => $request['landmark'],
+                            'city' => $request['city'],
+                            'pincode' => $request['pincode'],
+                            'name_on_bank_account' => $request['name_on_bank_account'],
+                            'bank_name' => $request['bank_name'],
+                            'ifsc_code' => $request['ifsc_code'],
+                            'bank_account_no' => $request['bank_account_no'],
+                            'branch_name' => $request['branch_name'],
+                            'upi_id' => $request['upi_id'],
+                            'email' => $request['email'],
+                            'status' => "1",
+                            ));
+         $usersDetails = $this->user->where('id',  $request['userId'])->get();
+         return $usersDetails; 
+
+    
+    }
+
 }
- 
