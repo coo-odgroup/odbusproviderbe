@@ -58,7 +58,12 @@ class AgentWalletController extends Controller
     public function changeStatus(Request $request, $id) 
     {       
     	 $data=$this->agentWalletService->changeStatus($request,$id);
-         return $this->successResponse($data,"Wallet request Updated",Response::HTTP_CREATED);
+         if($data=='Invalid OTP'){
+             return $this->errorResponse($data,Response::HTTP_PARTIAL_CONTENT);
+         }else{
+             return $this->successResponse($data,"Wallet request Updated",Response::HTTP_CREATED);
+         }
+        
     }  
 	     
 }

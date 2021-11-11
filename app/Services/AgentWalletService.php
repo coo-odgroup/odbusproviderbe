@@ -2,7 +2,7 @@
 namespace App\Services;
 
 use App\Models\BusOwnerFare;
-use App\Repositories\agentWalletRepository;
+use App\Repositories\AgentWalletRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -72,33 +72,32 @@ class AgentWalletService
    
    public function changeStatus($data,$id)
    {
+           $otp_status= $this->agentWalletRepository->Otp($id,$data);
 
-        $otp_status= $this->agentWalletRepository->Otp($id,$data);
-   
-       if(!empty($otp_status))
+       if(sizeof($otp_status)>0)
        {
-         try {
+       
             $post = $this->agentWalletRepository->update_Status($id);
+           
             $user_id = $post->user_id;
+            
             $prvious_balance = $this->agentWalletRepository->balance($user_id);
+            
                if($post->transaction_type == "c")
-                {            
+                {           
                     $balance=$prvious_balance[0]->balance + (int)$post->amount;
+
                 }
                 else if($post->transaction_type == "d")
-                {          
+                {        
                     $balance=$prvious_balance[0]->balance - (int)$post->amount;
                 } 
-
-                
-                 return $updated_balance =$this->agentWalletRepository->update_balance($id,$balance);   
-
-
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-         
+               
+                 return $updated_balance =$this->agentWalletRepository->update_balance($id,$balance,$otp_status);   
+       }
+       else
+       {
+         return 'Invalid OTP';
        }
    }
 

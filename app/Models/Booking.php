@@ -8,6 +8,7 @@ use App\Models\Users;
 use App\Models\Bus;
 use App\Models\BookingDetail;
 use App\Models\CustomerPayment;
+use App\Models\UserBooking;
 
 
 class Booking extends Model
@@ -37,6 +38,11 @@ class Booking extends Model
       public function CustomerPayment()
       {
             return $this->hasOne(CustomerPayment::class);
+      }  
+
+      public function UserBooking()
+      {
+            return $this->hasOne(UserBooking::class);
       }
 
 }

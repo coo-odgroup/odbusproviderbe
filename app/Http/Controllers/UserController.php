@@ -136,4 +136,9 @@ class UserController extends Controller
     }
 
 
+    public function getallAgent()
+    {
+        $wallet = $this->userService->getallAgent();
+        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    }
 }
