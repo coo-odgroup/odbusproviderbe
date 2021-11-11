@@ -95,6 +95,8 @@ use App\Http\Controllers\AgentCompleteReportController;
 use App\Http\Controllers\AgentCancelTicketReportController;
 use App\Http\Controllers\AgentWalletReportController;
 use App\Http\Controllers\AgentCommissionSlabController;
+use App\Http\Controllers\AgentComissionController;
+use App\Http\Controllers\AgentFeeController;
 
 
 
@@ -105,7 +107,21 @@ use App\Http\Controllers\AgentCommissionSlabController;
 });
 
 ///////////////////////////Agent Start////////////////////////////////////////
+// Agent commission slab
+Route::post('/AgentCommission', [AgentComissionController::class, 'createAgentCommission']);
+Route::post('/AgentCommissionData', [AgentComissionController::class, 'getAllAgentCommissionData']);
+Route::get('/AgentCommission', [AgentComissionController::class, 'getAllAgentCommission']);
+Route::put('/AgentCommission/{id}', [AgentComissionController::class, 'updateAgentCommission']);
+Route::delete('/AgentCommission/{id}', [AgentComissionController::class, 'deleteAgentCommission']);
+Route::get('/AgentCommission/{id}', [AgentComissionController::class, 'getAgentCommission']);
 
+
+Route::post('/AgentFee', [AgentFeeController::class, 'createAgentFee']);
+Route::post('/AgentFeeData', [AgentFeeController::class, 'getAllAgentFeeData']);
+Route::get('/AgentFee', [AgentFeeController::class, 'getAllAgentFee']);
+Route::put('/AgentFee/{id}', [AgentFeeController::class, 'updateAgentFee']);
+Route::delete('/AgentFee/{id}', [AgentFeeController::class, 'deleteAgentFee']);
+Route::get('/AgentFee/{id}', [AgentFeeController::class, 'getAgentFee']); 
 // Agent wallet
 Route::post('/agentWallet',[AgentWalletController::class,'addAgentWallet']);
 Route::post('/agentWalletData',[AgentWalletController::class,'getData']);
