@@ -9,7 +9,7 @@ use App\Models\UserBankDetails;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Log;
 
 class UserRepository
 {
@@ -249,23 +249,25 @@ public function login($request){
         $password = $query->first()->password; 
 
         if(Hash::check($request['password'], $password )){
-            $role = $query->first()->user_type;
+            $role = $query->first()->role_id;
+            Log::info($request);
             if($role == $request['user_type']){  
-                switch($role){
-                    case 'AGENT':
-                        //$name = $query->first()->name;     
-                        //$request->request->add(['name' => $name]);
-                        //$otp = $this->sendOtp($request);
-                        // $user = $query->update(array('otp' => $otp));
-                        return $query->first(); 
-                    case 'Admin':
-                        return "Not Supported";
-                    case 'Super Admin':
-                        return "Not Supported";
-                    case 'Super Operator':
-                        return "Not Supported";
+                return $query->first(); 
+                // switch($role){
+                //     case '3':
+                //         //$name = $query->first()->name;     
+                //         //$request->request->add(['name' => $name]);
+                //         //$otp = $this->sendOtp($request);
+                //         // $user = $query->update(array('otp' => $otp));
+                //         return $query->first(); 
+                //     case '2':
+                //         return "Not Supported";
+                //     case '1':
+                //         return "Not Supported";
+                //     case '4':
+                //         return "Not Supported";
 
-                }
+                // }
 
 
             }else{
@@ -293,6 +295,7 @@ public function login($request){
                             'email' => $request['email'],
                             'password' => bcrypt($request['password']),
                             'user_type' => 'AGENT',
+                            'role_id' => '3',
                             'location' => $request['location'],
                             'adhar_no' => $request['adhar_no'],
                             'pancard_no' => $request['pancard_no'],

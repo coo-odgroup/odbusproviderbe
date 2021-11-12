@@ -65,6 +65,7 @@ class AgentRepository
         $agent->phone = $data['phone'];    
         $agent->password = $data['password'];
         $agent->user_type = "Agent";
+        $agent->role_id = "3";
         $agent->location = $data['location'];
         $agent->adhar_no = $data['adhar_no'];
         $agent->pancard_no = $data['pancard_no'];
