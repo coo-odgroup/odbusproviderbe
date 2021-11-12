@@ -250,7 +250,6 @@ public function login($request){
 
         if(Hash::check($request['password'], $password )){
             $role = $query->first()->role_id;
-            Log::info($request);
             if($role == $request['user_type']){  
                 return $query->first(); 
                 // switch($role){
