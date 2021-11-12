@@ -74,7 +74,7 @@ class BusSeatsService
             $post = $this->busSeatsRepository->updateBusSeatsExtra($data, $id);
 
         } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+            throw new InvalidArgumentException($e->getMessage());
         }
         return $data;
 
