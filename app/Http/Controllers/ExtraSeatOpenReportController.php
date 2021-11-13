@@ -24,9 +24,9 @@ class ExtraSeatOpenReportController extends Controller
         $this->extraseatopenreportService = $extraseatopenreportService;        
     }
 
-    public function getAllextraseatopen()
+    public function getAllextraseatopen(Request $request)
     {
-        $extraseatopen = $this->extraseatopenreportService->getAll();
+        $extraseatopen = $this->extraseatopenreportService->getAll($request);
         return $this->successResponse($extraseatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

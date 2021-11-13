@@ -31,15 +31,42 @@ class ExtraSeatOpenReportRepository
     }   
 
 
-    public function getAll()
+    public function getAll($request)
     {
+        $paginate = $request->rows_number;
+        $bus_operator_id = $request->bus_operator_id;
+        $bus_id = $request->bus_id;
 
-       
-        $bus = $this->bus->with('busSeats.seats')
+        $data= $this->bus->with('busSeats.seats','busOperator')
                     ->whereHas('busSeats', function ($query) {$query->where('duration', '>','0 ');})
-                    ->whereHas('busSeats', function ($query) {$query->where('status', '1');})->get();
+                    ->whereHas('busSeats', function ($query) {$query->where('status', '1');})
+                    ->orderBy('id','DESC');
 
-        return $bus;
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) {
+            $paginate = 10 ;
+        }
+        if($bus_operator_id!=null)
+        {
+           $data=$data->whereHas('busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
+        }
+        if($bus_id!=null)
+        {
+            $data=$data->where('id', $bus_id );
+        }
+
+         $data=$data->paginate($paginate);
+
+
+          $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );    
+           return $response; 
      
 
     }

@@ -23,9 +23,9 @@ class ExtraSeatOpenReportService
         $this->extraseatopenreportRepository = $extraseatopenreportRepository;
     }      
     
-    public function getAll()
+    public function getAll($request)
     {
-        return $this->extraseatopenreportRepository->getAll();
+        return $this->extraseatopenreportRepository->getAll($request);
     }
 
 }
