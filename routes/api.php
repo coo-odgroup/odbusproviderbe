@@ -323,7 +323,7 @@ Route::post('seatopenreport',[SeatOpenReportController::class,'getData']);
 ////SeatBlockReport/////
 Route::post('seatblockreport',[SeatBlockReportController::class,'getData']);
 ///ExtraSeatOpenReport////
-Route::get('extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
+Route::post('extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
 ///CompleteReport////
 Route::post('completereport',[CompleteReportController::class,'getData']);
 ///FailledTransactionReport////

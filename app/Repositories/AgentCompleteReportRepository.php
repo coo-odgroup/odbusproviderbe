@@ -25,7 +25,6 @@ class AgentCompleteReportRepository
     
     public function getData($request)
     {
-        // Log::info($request);
         $start_date="";
         $end_date="";
         $paginate = $request->rows_number;
@@ -68,10 +67,10 @@ class AgentCompleteReportRepository
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users','CustomerPayment')
+                                    'Bus','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
-                             ->whereHas('UserBooking', function ($query) {$query->where('user_id', 2 );})
+                             ->where('user_id', 2 )
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {
@@ -144,6 +143,8 @@ class AgentCompleteReportRepository
              "total" => $data->total(),
             "data" => $data
            );   
+
+      
            return $response;      
 
     }

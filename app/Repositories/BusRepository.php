@@ -240,7 +240,7 @@ class BusRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->bus->whereNotIn('status', [2]);
+        $data= $this->bus->whereNotIn('status', [2])->orderBy('id','DESC');
 
 
         if($paginate=='all') 
@@ -278,7 +278,7 @@ class BusRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->bus->whereNotIn('status', [2]);
+        $data= $this->bus->whereNotIn('status', [2])->orderBy('id','DESC');
 
 
         if($paginate=='all') 
@@ -316,7 +316,7 @@ class BusRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;       
 
-        $data= $this->bus->whereNotIn('status', [2]);
+        $data= $this->bus->whereNotIn('status', [2])->orderBy('id','DESC');
 
 
         if($paginate=='all') 
