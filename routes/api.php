@@ -91,6 +91,7 @@ use App\Http\Controllers\BannerController;
 use App\Http\Controllers\AgentWalletController;
 use App\Http\Controllers\AgentNotificationController;
 use App\Http\Controllers\AgentCompleteReportController;
+use App\Http\Controllers\AgentCommissionReportController;
 use App\Http\Controllers\AgentCancelTicketReportController;
 use App\Http\Controllers\AgentWalletReportController;
 use App\Http\Controllers\AgentCommissionSlabController;
@@ -139,6 +140,7 @@ Route::delete('/deletePushNotification/{id}',[AgentNotificationController::class
 // Agent Report 
 	
 Route::post('/agentcompletereport',[AgentCompleteReportController::class,'getalldata']);
+Route::post('/agentcommissionreport',[AgentCommissionReportController::class,'getalldata']);
 Route::post('/agentcancelticketreport',[AgentCancelTicketReportController::class,'getalldata']);
 Route::post('/agentwalletreport',[AgentWalletReportController::class,'getalldata']);
 Route::get('/agentcommissionslab',[AgentCommissionSlabController::class,'agentcommissionslab']);
