@@ -29,7 +29,7 @@ class AgentWalletService
          $user_id = $request['user_id'] ;
 
 
-          $data= $this->agentWalletRepository->getWalletRecord($user_id);
+          $data= $this->agentWalletRepository->getWalletRecord();
 
       if($paginate=='all') 
         {
@@ -95,7 +95,7 @@ class AgentWalletService
                     $balance=$prvious_balance[0]->balance - (int)$post->amount;
                 } 
                
-                 return $updated_balance =$this->agentWalletRepository->update_balance($id,$balance,$otp_status);   
+                 return $updated_balance =$this->agentWalletRepository->update_balance($id,$balance,$otp_status,$data);   
        }
        else
        {

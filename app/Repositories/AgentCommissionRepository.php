@@ -63,7 +63,7 @@ class AgentCommissionRepository
         $agentCommission->range_from = $data['range_from'];
         $agentCommission->range_to = $data['range_to'];    
         $agentCommission->comission_per_seat = $data['comission_per_seat'];    
-        $agentCommission->created_by = "Admin";
+        $agentCommission->created_by = $data['user_name'];
         $agentCommission->status = 1;
         return $agentCommission;
     }
@@ -89,6 +89,7 @@ class AgentCommissionRepository
      */
     public function update($data, $id)
     {
+        // Log::info($data);exit;
         $agentCommission = $this->agentCommission->find($id);
         $agentCommission=$this->getModel($data,$agentCommission);
         $agentCommission->update();

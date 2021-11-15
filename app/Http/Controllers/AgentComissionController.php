@@ -45,7 +45,9 @@ class AgentComissionController extends Controller
       $data = $request->only([
         'range_from',
         'range_to',
-        'comission_per_seat'
+        'comission_per_seat',
+        'user_name'
+
       ]);
       $agentCommissionValidation = $this->agentCommissionValidator->validate($data);
       
@@ -68,7 +70,7 @@ class AgentComissionController extends Controller
         $data = $request->only([
           'range_from',
           'range_to',
-          'comission_per_seat'
+          'comission_per_seat','user_name'
         ]);
         
         $agentCommissionValidation = $this->agentCommissionValidator->validate($data);

@@ -38,7 +38,7 @@ class AgentWalletRepository
         $agentWallet->remarks = $data['remarks'];
         $agentWallet->user_id = $data['user_id'];
         $agentWallet->transaction_type = $data['transaction_type'];       
-        $agentWallet->created_by = "Agent";
+        $agentWallet->created_by = $data['user_name'];
         $agentWallet->otp = $otp ;
         $agentWallet->status = 0;
 
@@ -47,6 +47,7 @@ class AgentWalletRepository
 
     public function save($data)
     {  
+        // Log::info($data);exit;
         $user = $this->user->find($data['user_id']);
       
         $agentWallet = new $this->agentWallet;
@@ -57,12 +58,12 @@ class AgentWalletRepository
          $notification->notification_heading = "Wallet Recharge of Rs.".$data['amount']." Request";
          $notification->notification_details = " Dear Agent,Your Request of Rs.".$data['amount'].
          " through ".$data['payment_via']." with transaction.id-".$data['transaction_id']." has been received.You will be notified once it will approved.";
-         $notification->created_by = "Agent";
+         $notification->created_by = $data['user_name'];
          $notification->save();
 
          $userNotification[0]=new UserNotification();
          $userNotification[0]['user_id'] = $data['user_id'];
-         $userNotification[0]['created_by']= "Agent";
+         $userNotification[0]['created_by']= $data['user_name'] ;
 
          $notification->userNotification()->saveMany($userNotification);
 
@@ -113,8 +114,8 @@ class AgentWalletRepository
         return $agentWallet;  
     }
 
-    public function getWalletRecord($user_id){
-        return $this->agentWallet->where('user_id', $user_id)->whereNotIn('status', [2]);
+    public function getWalletRecord(){
+        return $this->agentWallet->whereNotIn('status', [2]);
     }
 
     public function Pagination($data,$paginate){
@@ -148,9 +149,8 @@ class AgentWalletRepository
 
     }
 
-    public function update_balance($id,$balance,$data)
+    public function update_balance($id,$balance,$otpdata,$data)
     {
-        //Log:info($data[0]);
          $agentWallet = $this->agentWallet->find($id);
          $user = $this->user->find($agentWallet->user_id);
          $agentWallet->balance = $balance;
@@ -159,15 +159,15 @@ class AgentWalletRepository
 
 
          $notification = new $this->notification; 
-         $notification->notification_heading = "Wallet Recharge of Rs.".$data[0]->amount." Approved";
-         $notification->notification_details = " Dear Agent,Your Request of Rs.".$data[0]->amount.
-         " through ".$data[0]->payment_via." with transaction.id-".$data[0]->transaction_id." has been approved.Your Current balance is".$balance ;
-         $notification->created_by = "Agent";
+         $notification->notification_heading = "Wallet Recharge of Rs.".$otpdata[0]->amount." Approved";
+         $notification->notification_details = " Dear Agent,Your Request of Rs.".$otpdata[0]->amount.
+         " through ".$otpdata[0]->payment_via." with transaction.id-".$otpdata[0]->transaction_id." has been approved.Your Current balance is".$balance ;
+         $notification->created_by = $data->user_name ;
          $notification->save();
 
          $userNotification[0]=new UserNotification();
-         $userNotification[0]['user_id'] = $data[0]->user_id;
-         $userNotification[0]['created_by']= "Agent";
+         $userNotification[0]['user_id'] = $otpdata[0]->user_id;
+         $userNotification[0]['created_by']= $data->user_name ; 
 
          $notification->userNotification()->saveMany($userNotification);
 
@@ -175,9 +175,9 @@ class AgentWalletRepository
            $subject = "Wallet recharge request Approved";
            $superAdminData= [
                     'userName'=>$user->name,
-                    'amount'=>$data[0]->amount,
-                    'via'=>$data[0]->payment_via,
-                    'tran_id'=>$data[0]->transaction_id,
+                    'amount'=>$otpdata[0]->amount,
+                    'via'=>$otpdata[0]->payment_via,
+                    'tran_id'=>$otpdata[0]->transaction_id,
                     'balance'=>$balance
                    ] ;
            SendWalletApproveEmailJob::dispatch($to_user, $subject, $superAdminData);

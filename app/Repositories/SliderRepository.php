@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Slider;
+use Illuminate\Support\Facades\Log;
 
 class SliderRepository
 {
@@ -66,7 +67,7 @@ class SliderRepository
         $slide->start_time = $data['start_time'];
         $slide->end_date = $data['end_date'];
         $slide->end_time = $data['end_time'];
-        $slide->created_by = "Admin";
+        $slide->created_by = $data['created_by'];
         $slide->save();
 
         return $slide->fresh();
@@ -74,6 +75,7 @@ class SliderRepository
 
     public function update($data, $id)
     {
+        // Log::info($data);exit;
         $slide = $this->slider->find($id);
         $slide->bus_operator_id = $data['bus_operator_id'];
         $slide->occassion = $data['occassion'];
@@ -84,6 +86,7 @@ class SliderRepository
         $slide->start_time = $data['start_time'];
         $slide->end_date = $data['end_date'];
         $slide->end_time = $data['end_time'];
+        $slide->created_by = $data['created_by'];
         $slide->update();
         return $slide;
     }
