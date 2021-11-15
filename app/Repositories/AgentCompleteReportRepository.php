@@ -36,6 +36,8 @@ class AgentCompleteReportRepository
 
         $rangeFromDate  =  $request->rangeFromDate;
         $rangeToDate  =  $request->rangeToDate;
+        $user_id  =  $request->user_id;
+
 
         if(!empty($rangeFromDate))
         {
@@ -70,7 +72,7 @@ class AgentCompleteReportRepository
                                     'Bus','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
-                             ->where('user_id', 2 )
+                             ->where('user_id', $user_id )
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {

@@ -16,8 +16,8 @@ class AgentWalletReportRepository
         $this->agentWallet = $agentWallet;
     }
       
-    public function getWalletRecord(){
-        return $this->agentWallet->where('user_id', 2)->whereNotIn('status', [2]);
+    public function getWalletRecord($user_id){
+        return $this->agentWallet->where('user_id',$user_id)->whereNotIn('status', [2]);
     }
 
     public function Pagination($data,$paginate){

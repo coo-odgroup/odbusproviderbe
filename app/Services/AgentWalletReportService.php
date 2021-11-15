@@ -23,11 +23,13 @@ class AgentWalletReportService
 
 	public function getalldata($request)
 	{
+		// Log:info($request);
 		$paginate = $request['rows_number'] ;
 		$name = $request['name'] ;
+		$user_id =$request['user_id'];
 
 
-		$data= $this->agentWalletReportRepository->getWalletRecord();
+		$data= $this->agentWalletReportRepository->getWalletRecord($user_id);
 
 		if($paginate=='all') 
 		{
@@ -49,7 +51,7 @@ class AgentWalletReportService
 			"count" => $data->count(), 
 			"total" => $data->total(),
 			"data" => $data
-		);   
+		);  
 
 		return $response;  
 

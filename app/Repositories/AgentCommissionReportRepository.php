@@ -26,6 +26,7 @@ class AgentCommissionReportRepository
     
     public function getData($request)
     {
+    	// Log::info($request);
         $start_date="";
         $end_date="";
         $paginate = $request->rows_number;
@@ -34,9 +35,10 @@ class AgentCommissionReportRepository
         $date_type = $request->date_type;
         $source_id = $request->source_id;
         $destination_id = $request->destination_id;
-
         $rangeFromDate  =  $request->rangeFromDate;
         $rangeToDate  =  $request->rangeToDate;
+        
+        $user_id  =  $request->user_id;
 
         if(!empty($rangeFromDate))
         {
@@ -71,7 +73,7 @@ class AgentCommissionReportRepository
                                     'Bus','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
-                             ->where('user_id', 2 )
+                             ->where('user_id', $user_id )
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {
