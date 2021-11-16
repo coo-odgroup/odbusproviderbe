@@ -21,6 +21,44 @@ class AgentWalletService
         $this->agentWalletRepository = $agentWalletRepository;
     } 
 
+     public function getAllData($request)
+    {
+      // Log::info($request);
+         $paginate = $request['rows_number'] ;
+         $name = $request['name'] ;
+
+      $data= $this->agentWalletRepository->getAllWalletRecord();
+
+      if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if($name!=null)
+        {
+            $data = $this->agentWalletRepository->Filter($data, $name);                     
+        }     
+
+        $data= $this->agentWalletRepository->Pagination($data,$paginate); 
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+
+        // Log::info($response);
+           return $response;  
+
+
+        //return $this->agentWalletRepository->getData($request);
+    }
+
+
     public function getData($request)
     {
       // Log::info($request);
@@ -29,7 +67,7 @@ class AgentWalletService
          $user_id = $request['user_id'] ;
 
 
-          $data= $this->agentWalletRepository->getWalletRecord();
+          $data= $this->agentWalletRepository->getWalletRecord($user_id);
 
       if($paginate=='all') 
         {

@@ -128,12 +128,12 @@ Route::get('/AgentFee/{id}', [AgentFeeController::class, 'getAgentFee']);
 // Agent wallet
 Route::post('/agentWallet',[AgentWalletController::class,'addAgentWallet']);
 Route::post('/agentWalletData',[AgentWalletController::class,'getData']);
+Route::post('/agentWalletAllData',[AgentWalletController::class,'getAllData']);
 Route::put('/changeAgentWalletStatus/{id}',[AgentWalletController::class,'changeStatus']);
 
 //Agent Notification
 Route::post('/agentnotification',[AgentNotificationController::class,'getData']);
 Route::post('/addPushNotification',[AgentNotificationController::class,'addNotification']);
-// Route::put('/updatePushNotification/{id}',[AgentNotificationController::class,'updateNotification']);
 Route::post('/allPushNotification',[AgentNotificationController::class,'allPushNotification']);
 Route::delete('/deletePushNotification/{id}',[AgentNotificationController::class,'deleteNotification']);
 

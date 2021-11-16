@@ -52,7 +52,8 @@ class SeoSettingController extends Controller
           'meta_keyword',
           'meta_description',
           'extra_meta',
-          'canonical_url'
+          'canonical_url',
+          'created_by'
         ]);
 
     	 $seosetting = $this->seosettingValidator->validate($data);
@@ -82,7 +83,8 @@ class SeoSettingController extends Controller
           'meta_keyword',
           'meta_description',
           'extra_meta',
-          'canonical_url'
+          'canonical_url',
+          'created_by'
         ]);
 
     	 $seosetting = $this->seosettingValidator->validate($data);

@@ -81,7 +81,7 @@ class AgentRepository
         $agent->bank_account_no = $data['bank_account_no'];
         $agent->branch_name = $data['branch_name'];
         $agent->upi_id = $data['upi_id'];
-        $agent->created_by = "Admin";
+        $agent->created_by = $data['created_by'];
         $agent->status = 1;
         return $agent;
     }

@@ -44,7 +44,7 @@ class BusSittingController extends Controller
 
     public function createBusSitting(Request $request) {
         $data = $request->only([
-          'name',
+          'name','created_by'
           
         ]);
         
@@ -68,7 +68,7 @@ class BusSittingController extends Controller
 
     public function updateBusSitting(Request $request, $id) {
         $data = $request->only([
-          'name',
+          'name','created_by'
         ]);
         
         $busSittingValidation =   $this->busSittingValidator->validate($data);

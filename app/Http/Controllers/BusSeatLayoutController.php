@@ -40,7 +40,8 @@ class BusSeatLayoutController extends Controller
     public function save(Request $request) {
         $data = $request->only([
           'name',
-          'layout_data'
+          'layout_data',
+          'created_by'
         ]);
         $busSeatLayoutValidation = $this->busSeatLayoutValidator->validate($data);
         if ($busSeatLayoutValidation->fails()) {
@@ -63,6 +64,7 @@ class BusSeatLayoutController extends Controller
         $data = $request->only([
           'name',
           'layout_data',
+          'created_by'
         ]);
         $busSeatLayoutValidation = $this->busSeatLayoutValidator->validate($data);
 

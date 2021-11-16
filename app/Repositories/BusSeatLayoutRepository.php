@@ -142,7 +142,7 @@ class BusSeatLayoutRepository
     public function getModel($data, BusSeatLayout $busSeatLayout)
     {
         $busSeatLayout->name = $data['name'];
-        $busSeatLayout->created_by = "Admin";
+        $busSeatLayout->created_by =  $data['created_by'];
         return $busSeatLayout;
     }
     /**

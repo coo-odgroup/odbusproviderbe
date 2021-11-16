@@ -40,7 +40,7 @@ class SeoSettingRepository
        $seosetting->meta_description =$data['meta_description'];
        $seosetting->extra_meta =$data['extra_meta'];
        $seosetting->canonical_url =$data['canonical_url'];
-       $seosetting->created_by ="Admin";
+       $seosetting->created_by = $data['created_by'];
        $seosetting->save();
 
        return $seosetting;
@@ -99,7 +99,7 @@ class SeoSettingRepository
 	   $seosetting->meta_description =$data['meta_description'];
 	   $seosetting->extra_meta =$data['extra_meta'];
 	   $seosetting->canonical_url =$data['canonical_url'];
-	   $seosetting->created_by ="Admin";
+	   $seosetting->created_by =$data['created_by'];
 	   $seosetting->update();
 
        return $seosetting;

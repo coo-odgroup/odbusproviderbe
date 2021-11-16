@@ -66,14 +66,14 @@ class AgentCompleteReportRepository
 
             $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
         }
-
+        Log::info( $user_id);
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','CustomerPayment')
                              ->with('bus.busstoppage')
-                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
                              ->where('user_id', $user_id )
-                             ->orderBy('id','DESC');
+                             ->where('user_id', '!=','' )
+                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})->orderBy('id','DESC');
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');

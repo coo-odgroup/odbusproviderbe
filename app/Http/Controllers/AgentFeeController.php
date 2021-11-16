@@ -45,7 +45,8 @@ class AgentFeeController extends Controller
       $data = $request->only([
         'price_from',
         'price_to',
-        'max_comission'
+        'max_comission',
+        'created_by'
       ]);
       $agentFeeValidation = $this->agentFeeValidator->validate($data);
       
@@ -68,7 +69,8 @@ class AgentFeeController extends Controller
         $data = $request->only([
           'price_from',
           'price_to',
-          'max_comission'
+          'max_comission',
+          'created_by'
         ]);
         
         $agentFeeValidation = $this->agentFeeValidator->validate($data);

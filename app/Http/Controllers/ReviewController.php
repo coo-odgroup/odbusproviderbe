@@ -35,7 +35,7 @@ class ReviewController extends Controller
         return $this->successResponse($reviewData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    public function inclued_get_data()(Request $request)
+    public function getData(Request $request)
     {    
         $reviewData = $this->reviewService->getData($request);
         return $this->successResponse($reviewData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);

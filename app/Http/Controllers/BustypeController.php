@@ -46,7 +46,8 @@ class BusTypeController extends Controller
       $data = $request->only([
         'type',
         'name',
-        'status'
+        'status',
+        'created_by'
       ]);
       $busTypeValidation = $this->busTypeValidator->validate($data);
       
@@ -70,7 +71,8 @@ class BusTypeController extends Controller
         $data = $request->only([
           'type',
           'name',
-          'status'
+          'status',
+          'created_by'
         ]);
         
         $busTypeValidation = $this->busTypeValidator->validate($data);

@@ -71,7 +71,7 @@ class BusTypeRepository
     {
         $busType->bus_class_id = $data['type'];
         $busType->name = $data['name'];    
-        $busType->created_by = "Admin";
+        $busType->created_by = $data['created_by'];
         $busType->status = 0;
         return $busType;
     }

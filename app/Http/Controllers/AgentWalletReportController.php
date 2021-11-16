@@ -26,6 +26,7 @@ class AgentWalletReportController extends Controller
 
     public function getalldata(Request $request)
     {
+        // Log::info($request);
         $completeData = $this->agentwalletreportService->getalldata($request);
         return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }

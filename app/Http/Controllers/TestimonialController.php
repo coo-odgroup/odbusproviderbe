@@ -45,7 +45,8 @@ class TestimonialController extends Controller
             'operator',
             'destination',
             'source',
-            'designation'
+            'designation',
+            'created_by'
         ]); 
 
     	 $testimonial = $this->testimonialValidator->validate($data);
@@ -75,7 +76,8 @@ class TestimonialController extends Controller
             'operator',
             'destination',
             'source',
-            'designation'
+            'designation',
+            'created_by'
         ]);
 
     	 $testimonial = $this->testimonialValidator->validate($data);

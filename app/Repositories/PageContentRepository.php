@@ -72,7 +72,7 @@ class PageContentRepository
       $pagecontent->meta_description =$data['meta_description'];
       $pagecontent->extra_meta =$data['extra_meta'];
       $pagecontent->canonical_url =$data['canonical_url'];
-      $pagecontent->created_by ="Admin";
+      $pagecontent->created_by =$data['created_by'];
       return $pagecontent;
    }
    public function addpagecontent($data)

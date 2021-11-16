@@ -26,6 +26,7 @@ class AgentCommissionReportController extends Controller
 
     public function getalldata(Request $request)
     {
+       
         $completeData = $this->agentcommissionreportService->getalldata($request);
         return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }

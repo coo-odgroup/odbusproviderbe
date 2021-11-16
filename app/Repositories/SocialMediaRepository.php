@@ -63,11 +63,10 @@ class SocialMediaRepository
        $socialMedia->bus_operator_id =$data['bus_operator_id'];
        $socialMedia->googleplus_link =$data['googleplus_link'];
        $socialMedia->linkedin_link =$data['linkedin_link'];
-       $socialMedia->created_by ="Admin";
+       $socialMedia->created_by =$data['created_by'];
        $socialMedia->status = 0;
         return $socialMedia;
     }
-
 
     public function addsocialMedia($data)
     {    

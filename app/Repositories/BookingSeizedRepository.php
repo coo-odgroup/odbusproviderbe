@@ -44,12 +44,13 @@ class BookingSeizedRepository
 
     public function update($seizedData)
     {   
-
+        // Log::info($seizedData);exit;
 
         foreach($seizedData['busSeized'] as $record)
         {
             $seized = $this->bookingSeized->find($record['id']); 
-            $seized->seize_booking_minute = $record['time'];        
+            $seized->seize_booking_minute = $record['time']; 
+            $seized->created_by = $seizedData['created_by'];        
             $seized->update();
         }
         return $seizedData;

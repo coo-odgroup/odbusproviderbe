@@ -72,8 +72,8 @@ class TestimonialRepository
        $testimonial->bus_operator_id =$data['operator'];
        $testimonial->destination =$data['destination'];
        $testimonial->source =$data['source'];
-       $testimonial->designation =$data['designation'];
-       $testimonial->created_by ="Admin";
+       $testimonial->designation = $data['designation'];
+       $testimonial->created_by = $data['created_by'];
        $testimonial->status = 0;
         return $testimonial;
     }

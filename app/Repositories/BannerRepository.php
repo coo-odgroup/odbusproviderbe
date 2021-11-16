@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Banner;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+
 class BannerRepository
 {
     
@@ -70,7 +72,7 @@ class BannerRepository
         $bann->start_time = $data['start_time'];
         $bann->end_date = $data['end_date'];
         $bann->end_time = $data['end_time'];
-        $bann->created_by = "Admin";
+        $bann->created_by =  $data['created_by'];
         $bann->bus_operator_id = $data['bus_operator_id'];
         $bann->save();
 
@@ -79,6 +81,7 @@ class BannerRepository
 
     public function update($data, $id)
     {
+        // Log::info($data);
         $bann = $this->banner->find($id);
         $bann->bus_operator_id = $data['bus_operator_id'];
         $bann->occassion = $data['occassion'];
@@ -90,6 +93,7 @@ class BannerRepository
         $bann->start_time = $data['start_time'];
         $bann->end_date = $data['end_date'];
         $bann->end_time = $data['end_time'];
+        $bann->created_by =  $data['created_by'];
         $bann->update();
         return $bann;
     }

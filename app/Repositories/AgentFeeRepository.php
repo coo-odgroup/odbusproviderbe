@@ -63,7 +63,7 @@ class AgentFeeRepository
         $agentFee->price_from = $data['price_from'];
         $agentFee->price_to = $data['price_to'];    
         $agentFee->max_comission = $data['max_comission'];    
-        $agentFee->created_by = "Admin";
+        $agentFee->created_by = $data['created_by'];
         $agentFee->status = 1;
         return $agentFee;
     }

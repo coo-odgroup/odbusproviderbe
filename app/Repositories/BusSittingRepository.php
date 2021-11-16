@@ -82,7 +82,7 @@ class BusSittingRepository
     {
         $busSitting = new $this->busSitting;
         $busSitting->name = $data['name'];
-        $busSitting->created_by = "Admin";
+        $busSitting->created_by = $data['created_by'] ;
         $busSitting->save();
 
         return $busSitting->fresh();
@@ -98,6 +98,7 @@ class BusSittingRepository
     {
         $busSitting = $this->busSitting->find($id);
         $busSitting->name = $data['name'];
+         $busSitting->created_by = $data['created_by'] ;
         $busSitting->update();
         return $busSitting;
     }

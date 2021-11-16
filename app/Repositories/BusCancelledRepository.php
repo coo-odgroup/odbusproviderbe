@@ -202,7 +202,7 @@ class BusCancelledRepository
         {          
             $this->busCancelled = new BusCancelled();
             $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
-            $this->busCancelled->cancelled_by = $data['cancelled_by'];
+            $this->busCancelled->created_by = $data['cancelled_by'];
             $this->busCancelled->status = 0;
             $this->busCancelled->month = $data['month'];
             $this->busCancelled->year = $data['year'];
@@ -218,6 +218,7 @@ class BusCancelledRepository
                     {
                         $busCanceledDate = new BusCancelledDate();
                         $busCanceledDate->cancelled_date = date('Y-m-d',strtotime($busDateLists['entryDates'])) ;
+                        $busCanceledDate->created_by = $data['cancelled_by'] ;
                         $busCanceledDateModels[] =  $busCanceledDate;
                     }
             }
@@ -241,7 +242,7 @@ class BusCancelledRepository
                 $this->busCancelled = $this->busCancelled->find($id);
         
                 $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
-                $this->busCancelled->cancelled_by = $data['cancelled_by'];
+                $this->busCancelled->created_by = $data['cancelled_by'];
                 $this->busCancelled->status = 0;
                 $this->busCancelled->reason = $data['reason'];
                 $this->busCancelled->bus_id = $bus['bus_id'];
@@ -254,6 +255,7 @@ class BusCancelledRepository
                     {
                         $busCanceledDate = new BusCancelledDate();
                         $busCanceledDate->cancelled_date = date('Y-m-d',strtotime($busDateLists['entryDates'])) ;
+                        $busCanceledDate->created_by = $data['cancelled_by'] ;
                         $busCanceledDateModels[] =  $busCanceledDate;
                     }
                 }

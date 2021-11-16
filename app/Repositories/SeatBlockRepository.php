@@ -37,7 +37,7 @@ class SeatBlockRepository
         $seatBlock->operator_id = $data['bus_operator_id'];
         $seatBlock->reason = $data['reason'];
         $seatBlock->date_applied = $data['date'];
-        $seatBlock->created_by = "Admin";
+        $seatBlock->created_by = $data['created_by'];
         $seatBlock->save();
         $seats = [];
         foreach ($data['bus_seat_layout_data'] as $slayout)
@@ -51,7 +51,7 @@ class SeatBlockRepository
                     if($lberth["seatChecked"] == true)
                     {
                         $seat['seats_id'] = $lberth['seatId'];
-                        $seat['created_by'] = "Admin";
+                        $seat['created_by'] = $data['created_by'];
                        
                         $seats[]=$seat;
                     }
@@ -69,7 +69,7 @@ class SeatBlockRepository
                     if($uberth["seatChecked"] == true)
                     {
                         $seat['seats_id'] = $uberth['seatId'];
-                        $seat['created_by'] = "Admin";
+                        $seat['created_by'] = $data['created_by'];
 
                         $seats[]=$seat;
                     }
@@ -94,7 +94,7 @@ class SeatBlockRepository
         $seatBlock->operator_id = $data['bus_operator_id'];
         $seatBlock->reason = $data['reason'];
         $seatBlock->date_applied = $data['date'];
-        $seatBlock->created_by = "Admin";
+        $seatBlock->created_by = $data['created_by'];
         $seatBlock->save();
         $seats = [];
         foreach ($data['bus_seat_layout_data'] as $slayout)
@@ -107,7 +107,7 @@ class SeatBlockRepository
                     if($lberth["seatChecked"] == 'true')
                     {
                         $seat['seats_id'] = $lberth['seatId'];
-                        $seat['created_by'] = "Admin";
+                        $seat['created_by'] = $data['created_by'];
                         $seats[]=$seat;
                     }
                 }
@@ -123,7 +123,7 @@ class SeatBlockRepository
                     if($uberth["seatChecked"] == 'true')
                     {
                         $seat['seats_id'] = $uberth['seatId'];
-                        $seat['created_by'] = "Admin";
+                        $seat['created_by'] = $data['created_by'];
                         $seats[]=$seat;
                     }
                 }
