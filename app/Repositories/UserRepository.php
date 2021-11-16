@@ -239,6 +239,7 @@ public function verifyOtp($request){
     }
 }
 public function login($request){
+    Log::info($request);
     $query =$this->user->where([
         ['email', $request['email']],
         ['email', '<>', null]
@@ -250,25 +251,16 @@ public function login($request){
 
         if(Hash::check($request['password'], $password )){
             $role = $query->first()->role_id;
+            
             if($role == $request['user_type']){  
-                return $query->first(); 
-                // switch($role){
-                //     case '3':
-                //         //$name = $query->first()->name;     
-                //         //$request->request->add(['name' => $name]);
-                //         //$otp = $this->sendOtp($request);
-                //         // $user = $query->update(array('otp' => $otp));
-                //         return $query->first(); 
-                //     case '2':
-                //         return "Not Supported";
-                //     case '1':
-                //         return "Not Supported";
-                //     case '4':
-                //         return "Not Supported";
-
-                // }
-
-
+                if($request['user_type']==4)
+                {
+                    return $query->with('UserBusOperator.BusOperator')->first();
+                }
+                else{
+                    return $query->first();
+                }
+                
             }else{
                 return "agent_role_mismatch";
             }   

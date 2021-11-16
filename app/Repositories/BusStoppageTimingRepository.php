@@ -3,17 +3,20 @@
 namespace App\Repositories;
 
 use App\Models\BusStoppageTiming;
+use App\Models\BusLocationSequence;
 use App\Models\Location;
-
-class busStoppageTimingRepository
+use Illuminate\Support\Facades\Log;
+class BusStoppageTimingRepository
 {
     
     protected $busStoppageTiming;
+    protected $busLocationSequence;
     protected $location;
 
     
-    public function __construct(BusStoppageTiming $busStoppageTiming, Location $location)
+    public function __construct(BusStoppageTiming $busStoppageTiming, Location $location, BusLocationSequence $busLocationSequence)
     {
+        $this->busLocationSequence = $busLocationSequence;
         $this->busStoppageTiming = $busStoppageTiming;
         $this->location = $location;
     }
@@ -35,7 +38,12 @@ class busStoppageTimingRepository
         $result['stoppage_timing']=$this->busStoppageTiming->where('bus_id', $bus_id)->get();
 
         $result['routes']=$this->busStoppageTiming->select('location_id')->groupBy('location_id')->where('bus_id', $bus_id)->get();
-        
+        $result['sequence']=[];
+        foreach($result['routes'] as $routeInfo)
+        {
+            $result['sequence'][]=$this->busLocationSequence->where('bus_id',$bus_id)->where('location_id',$routeInfo->location_id)->get();
+        }
+       
         //return $this->location->with('busStoppageTiming')->get();
         return $result;
     }

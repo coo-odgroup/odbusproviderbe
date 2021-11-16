@@ -310,15 +310,17 @@ class BusRepository
         
     }
 
-
+   
     public function BusData( $request)
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;       
 
         $data= $this->bus->whereNotIn('status', [2])->orderBy('id','DESC');
-
-
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
+        }
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');

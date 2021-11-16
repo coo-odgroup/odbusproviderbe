@@ -7,11 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use App\Models\Role;
-use App\Models\UserBusOperator;
+use App\Models\BusOperator;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class UserBusOperator extends Model
 {
     use HasFactory;
 
@@ -20,18 +19,12 @@ class User extends Model
      *
      * @var array
      */
-    protected $table = 'user';    
+    protected $table = 'user_bus_operator';    
 
-    protected $fillable = ['name','phone','user_type'];
-    
-    public function role()
-    {
-        return $this->hasOne(Role::class);
-    }
-
-    public function UserBusOperator()
+    protected $fillable = ['user_id','bus_operator_id'];
+    public function BusOperator()
     {        
-        return $this->hasOne(UserBusOperator::class);        
+        return $this->belongsTo(BusOperator::class);        
     } 
 }
 
