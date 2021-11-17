@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Repositories;
+use Illuminate\Http\Request;
 use App\Models\Amenities;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File; 
+
 class AmenitiesRepository 
 //extends AbstractRepository
 {
@@ -122,8 +125,31 @@ class AmenitiesRepository
      */
     public function save($data)
     {
+        //Log::info($data->file('icon'));
         $amenity = new $this->amenities;
         $amenity=$this->getModel($data,$amenity);
+
+        //if ($data->hasFile('icon'))
+        if ($data->file('icon')!=null)
+        {
+              $file      = $data->file('icon');
+              $filename  = $file->getClientOriginalName();
+              $extension = $file->getClientOriginalExtension();
+              $picture   = date('His').'-'.$filename;
+              $amenity->amenities_image = $picture;
+              $file->move(Config::get('constants.UPLOAD_PATH').'amenities', $picture);
+
+            //   if($userDetails[0]->profile_image!=''){
+            //     $image_path =Config::get('constants.UPLOAD_PATH').'profile/'.$userDetails[0]->profile_image;
+                
+            //     if (File::exists($image_path)) {
+            //       //File::delete($image_path);
+            //       unlink($image_path);
+            //     }              
+            //   }    
+        } 
+
+
         $amenity->save();
         return $amenity;
     }

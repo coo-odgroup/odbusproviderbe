@@ -21,6 +21,6 @@ return [
     'LOGIN_SUCCESSFUL' => 'Login successful',
     'VERIFIED' => 'otp verification is successful',
     'REGT_SUCCESS' => 'Registration Successful',
-
-
+    'UPLOAD_PATH' => '../../odbusconsumerfe/src/assets/uploads/'
 ];
+
