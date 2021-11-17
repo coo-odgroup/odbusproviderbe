@@ -235,7 +235,6 @@ class BusCancelledRepository
      *///////
     public function update($data, $id)
     {
-        Log::info($data);
             $buses = $data['buses'];
             foreach ($buses as $bus)         
             { 

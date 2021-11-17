@@ -105,7 +105,6 @@ class ArticleController extends Controller
             $busCancelled->bus_id = $busId;
             
            // $busCancelled->save();
-            //Log::info("Save called");
         }
         return $busCancelled;
 

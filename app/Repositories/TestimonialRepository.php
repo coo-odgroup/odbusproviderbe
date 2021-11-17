@@ -23,7 +23,6 @@ class TestimonialRepository
     }    
     public function getAll($request)
     {
-      // Log::info($request);
       $paginate = $request['rows_number'] ;
       $name = $request['name'] ;
       $operator_id = $request['bus_operator_id'] ;
@@ -90,7 +89,6 @@ class TestimonialRepository
     }
     public function updatetestimonial($data, $id)
     {
-    	// Log::info($id);
        $testimonial = $this->testimonial->find($id);
        $testimonial=$this->getModel($data,$testimonial);
   	   $testimonial->update();

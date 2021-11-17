@@ -95,7 +95,6 @@ class BoardingDropingService
      */
     public function savePostData($data)
     {
-        Log::info($data);
         try {
             $boardingDropping = $this->boardingDropingRepository->save($data);
         } 

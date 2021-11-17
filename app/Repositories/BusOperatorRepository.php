@@ -243,7 +243,6 @@ class BusOperatorRepository
          $busData = array();
          foreach($operatorWithBuses as $operatorWithBus){
              $buses = $operatorWithBus->bus;
-             Log::info($buses);
             foreach($buses as $bus)
             {
                 //if($bus->status!='1')continue;
@@ -251,7 +250,6 @@ class BusOperatorRepository
                 if(count($bStoppages)==0)continue;
                 //Log::info($bStoppages);
                 foreach($bStoppages as $bStoppage){
-                    Log::info("inner Loop");
                     $sourceId = $bStoppage->source_id;
                     $destinationId = $bStoppage->destination_id;
                     $stoppageName = $this->location->whereIn('id', array($sourceId, $destinationId))->get('name');
@@ -260,11 +258,9 @@ class BusOperatorRepository
                     "id" => $bus->id,
                     "name" => $bus->name."[".$bus->bus_number."]"."[".$stoppageName[0]['name']."-".$stoppageName[1]['name']."]"  
                 );  
-                Log::info($busData);
             }          
             
          }
-         Log::info($busData);
          return $busData;
 
     }

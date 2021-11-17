@@ -156,6 +156,10 @@ class CouponRepository
         $name=$request->name;
         $paginate = $request->rows_number;
         $data= $this->coupon->with("BusOperator")->where('status','!=',2)->orderBy('id','DESC');
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
+        }
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');

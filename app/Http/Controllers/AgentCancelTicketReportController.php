@@ -26,7 +26,6 @@ class AgentCancelTicketReportController extends Controller
 
     public function getalldata(Request $request)
     {
-         // Log::info($request);
         $completeData = $this->agentCancelTicketReportService->getalldata($request);
         return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }

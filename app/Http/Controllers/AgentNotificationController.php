@@ -29,7 +29,6 @@ class AgentNotificationController extends Controller
 
     public function getData(Request $request) 
     {      
-        // Log::info($request);exit;
         $data = $this->agentnotificationService->getData($request);
         return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }

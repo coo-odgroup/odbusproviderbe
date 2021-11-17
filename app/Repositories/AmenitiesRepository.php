@@ -135,7 +135,6 @@ class AmenitiesRepository
      */
     public function update($data, $id)
     {
-        Log::info($data);
         $amenity = $this->amenities->find($id);
         $amenity=$this->getModel($data,$amenity);
         $amenity->update();
