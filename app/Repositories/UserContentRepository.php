@@ -75,7 +75,6 @@ class UserContentRepository
    }
    public function updateusercontent($data, $id)
    {
-    	// Log::info($id);
       $usercontent = $this->usercontent->find($id);
       $usercontent->name =$data['name'];
       $usercontent->bus_operator_id =$data['bus_operator_id'];
@@ -88,7 +87,6 @@ class UserContentRepository
 
    public function changePassword($data, $id)
    {
-      // Log::info($data);
       $usercontent = $this->usercontent->find($id);
       $usercontent->password =$data['password'];
       $usercontent->update();

@@ -42,7 +42,6 @@ class AgentWalletController extends Controller
 
     public function addAgentWallet(Request $request) 
     {       
-    	// Log::info($request);exit; 
         $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
 
         $agentWalletValidator = $this->agentWalletValidator->validate($data);
@@ -63,7 +62,6 @@ class AgentWalletController extends Controller
 
     public function changeStatus(Request $request, $id) 
     {       
-        // Log::info($id);exit; 
     	 $data=$this->agentWalletService->changeStatus($request,$id);
          if($data=='Invalid OTP'){
              return $this->errorResponse($data,Response::HTTP_PARTIAL_CONTENT);

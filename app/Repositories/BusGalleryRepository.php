@@ -56,16 +56,22 @@ class BusGalleryRepository
             ->get();
     }
 
-    public function viewBusGallery($data)
+    public function viewBusGallery($request)
     {    
-        $paginate = $data['rows_number'] ;
-        $bus_id = $data['bus_id'] ;
-        $bus_operator_id = $data['bus_operator_id'] ;
+        $paginate = $request['rows_number'] ;
+        $bus_id = $request['bus_id'] ;
+        $bus_operator_id = $request['bus_operator_id'] ;
 
         $data= $this->busGallery->with('bus','busOperator')
                      ->whereNotIn('status', [2])
                      ->orderBy('id','DESC');
-
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
+        }
+                     
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');

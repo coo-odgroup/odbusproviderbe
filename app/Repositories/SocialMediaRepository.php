@@ -70,7 +70,6 @@ class SocialMediaRepository
 
     public function addsocialMedia($data)
     {    
-     Log::info($data);
 
        $socialMedia = new $this->socialMedia;
        $socialMedia=$this->getModel($data,$socialMedia);

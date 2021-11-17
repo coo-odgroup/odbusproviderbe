@@ -34,7 +34,6 @@ class BusSittingService
      */
     public function deleteById($id)
     {
-        Log::info($id);
         try {
             $busSitting = $this->busSittingRepository->delete($id);
         } catch (Exception $e) {

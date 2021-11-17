@@ -44,6 +44,7 @@ class BusGalleryController extends Controller
             'bus_id',
             'bus_operator_id',
             'rows_number',
+            'USER_BUS_OPERATOR_ID'
           ]);
         $busGallery = $this->busGalleryService->viewBusGallery($data);
 

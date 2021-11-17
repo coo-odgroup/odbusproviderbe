@@ -239,7 +239,6 @@ public function verifyOtp($request){
     }
 }
 public function login($request){
-    Log::info($request);
     $query =$this->user->where([
         ['email', $request['email']],
         ['email', '<>', null]

@@ -224,6 +224,12 @@ class SeatBlockRepository
                                //->with('seats')
                                ->whereNotIn('status', [2])
                                 ->orderBy('id','DESC');
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
+        }                              
 
         if($paginate=='all') 
         {

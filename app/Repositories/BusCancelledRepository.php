@@ -131,7 +131,10 @@ class BusCancelledRepository
 
         $data= $this->busCancelled->with('bus.busOperator','bus.busstoppage')
                     ->whereNotIn('status', [2]);
-
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
+        }
 
         if($paginate=='all') 
         {
@@ -235,7 +238,6 @@ class BusCancelledRepository
      *///////
     public function update($data, $id)
     {
-        Log::info($data);
             $buses = $data['buses'];
             foreach ($buses as $bus)         
             { 

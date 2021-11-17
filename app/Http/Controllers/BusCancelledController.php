@@ -70,7 +70,6 @@ class BusCancelledController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-          Log::info("Done");
             $response = $this->busCancelledService->updatePost($data, $id);
             return $this->successResponse( $response, "Bus Cancellation Record Updated", Response::HTTP_CREATED);
 

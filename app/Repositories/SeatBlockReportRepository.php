@@ -92,7 +92,12 @@ class SeatBlockReportRepository
                     ->orderBy('id','DESC');
 
                     // $this->seatBlock ->with('seatBlockSeats.seats')->with('bus','bus.busOperator','bus.ticketPrice')
-
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
+        }
         if($paginate=='all') 
         {
             $paginate = "";
