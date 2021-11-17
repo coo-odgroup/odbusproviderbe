@@ -133,8 +133,6 @@ class BusScheduleRepository
             $data=$data->whereHas('bus', function ($query) use ($request){
                $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
            });
-
-            //WhereHas('bus',$request['USER_BUS_OPERATOR_ID']);
         }
 
         if($paginate=='all') 

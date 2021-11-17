@@ -73,6 +73,12 @@ class SeatOpenReportRepository
                     ->with('bus','bus.busOperator','bus.ticketPrice')
                     ->where('status','1')
                     ->orderBy('id','DESC');
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
+        }                     
 
         if($paginate=='all') 
         {

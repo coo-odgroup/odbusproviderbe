@@ -93,6 +93,12 @@ class SeatOpenRepository
         $data= $this->seatOpen->with('seatOpenSeats.seats')
                                ->with('bus.busOperator')
                                ->whereNotIn('status', [2]);
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
+        }                                 
 
         if($paginate=='all') 
         {

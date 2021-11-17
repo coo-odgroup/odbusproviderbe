@@ -68,7 +68,11 @@ class BusCancellationReportRepository
                      ->where('status', 1)
                      ->orderBy('id','DESC');
 
-
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
+        }
+        
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
