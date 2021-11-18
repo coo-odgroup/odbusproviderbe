@@ -3,7 +3,10 @@
 namespace App\Repositories;
 use App\Models\Safety;
 use App\Models\BusSafety;
+use Illuminate\Support\Facades\File; 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+
 class SafetyRepository 
 {
     protected $safety;
@@ -117,7 +120,7 @@ class SafetyRepository
     public function getModel($data, Safety $safety)
     {
         $safety->name = $data['name'];
-        $safety->icon = $data['icon'];
+        $safety->icon = "";
         $safety->created_by = $data['created_by'];
         return $safety;
     }
@@ -129,8 +132,21 @@ class SafetyRepository
      */
     public function save($data)
     {
-        $safety = new $this->safety;
-        $safety=$this->getModel($data,$safety);
+        $picture="";
+        $safetyObject = new $this->safety;
+        $safety=$this->getModel($data,$safetyObject);
+
+        $file = collect($data)->get('icon');     
+        if(($file)!=null){
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture   = $filename;
+            $safety->safety_image = $picture;
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'safety/'.$picture);             
+       }
+
         $safety->save();
         return $safety;
     }
@@ -140,12 +156,39 @@ class SafetyRepository
      * @param $data
      * @return safety
      */
-    public function update($data, $id)
+    public function update($data)
     {
-        // Log::info($data);
+
+        $id = $data['id'] ;
+        $safety_detail  = $this->safety->where('id', $id)->get();
+        $existing_image = $safety_detail[0]->safety_image;
+
         $safety = $this->safety->find($id);
-        $safety=$this->getModel($data,$safety);
-        // Log::info($safety);
+        $file = collect($data)->get('icon');
+// Log::info($data['icon']);exit;
+        if($file !="null")
+        {
+            $safety=$this->getModel($data,$safety);
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture =  rand().'-'.$filename;
+            $safety->safety_image =  $picture;
+       
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'safety/' .$picture);
+
+            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$existing_image;
+            $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'safety/'.$existing_image;
+
+             if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+                    unlink($old_image_path_consumer);
+                    unlink($old_image_path_provider);
+                }        
+        }
+        else
+        {
+             $safety=$this->getModel($data,$safety);
+        }
         $safety->update();
         return $safety;
     }

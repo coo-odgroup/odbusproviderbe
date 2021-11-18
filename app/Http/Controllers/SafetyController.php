@@ -77,14 +77,14 @@ class SafetyController extends Controller
       }	
     } 
 
-    public function update(Request $request, $id) {
+    public function update(Request $request) {
       
         $data = $request->only([
-          'name','created_by','icon'
+          'name','created_by','icon','id'
         ]);
         $safetyValidation = $this->safetyValidator->validate($data);
         try {
-          $response = $this->safetyService->updatePost($data, $id);
+          $response = $this->safetyService->updatePost($data);
           return $this->successResponse($response, "Safety Updated", Response::HTTP_CREATED);
 
       } catch (Exception $e) {

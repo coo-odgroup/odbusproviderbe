@@ -247,16 +247,15 @@ Route::get('/Amenities/{id}', [AmenitiesController::class, 'getAmenities']);
 Route::put('/changeStatusAmenities/{id}', [AmenitiesController::class, 'changeStatus']);
 
 
-Route::post('/Safety', [SafetyController::class, 'save']);
+Route::post('/addSafety', [SafetyController::class, 'save']);
 Route::post('/getAllData', [SafetyController::class, 'getAllData']);
 Route::post('/SafetyDT', [SafetyController::class, 'getSafetyDT']);
 Route::get('/Safety', [SafetyController::class, 'getAll']);
-Route::put('/Safety/{id}', [SafetyController::class, 'update']);
+Route::post('/Safety', [SafetyController::class, 'update']);
 Route::delete('/Safety/{id}', [SafetyController::class, 'delete']);
 Route::get('/Safety/{id}', [SafetyController::class, 'getById']);
 Route::get('/BusSafety/{id}', [SafetyController::class, 'getByBusId']);
 Route::put('/changeStatusSafety/{id}', [SafetyController::class, 'changeStatus']);
-
 
 
 Route::post('/appdownload', [AppDownloadController::class, 'createAppDownload']);
