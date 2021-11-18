@@ -69,16 +69,17 @@ class AmenitiesController extends Controller
       }	
     } 
 
-    public function updateAmenities(Request $request, $id) {
+    public function updateAmenities(Request $request) {
       
         $data = $request->only([
+          'id',
           'name',
           'icon',
           'created_by'
         ]);
         $amenitiesValidation = $this->AmenitiesValidator->validate($data);
         try {
-          $response = $this->amenitiesService->updatePost($data, $id);
+          $response = $this->amenitiesService->updatePost($data);
           return $this->successResponse($response, "Amenities Updated", Response::HTTP_CREATED);
 
       } catch (Exception $e) {

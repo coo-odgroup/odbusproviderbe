@@ -6,6 +6,7 @@ use App\Models\Amenities;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File; 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Arr;
 
 
 class AmenitiesRepository 
@@ -28,7 +29,7 @@ class AmenitiesRepository
        
 
         $data= $this->amenities->whereNotIn('status', [2])
-                             ->orderBy('id','DESC');
+                               ->orderBy('id','DESC');
 
         if($paginate=='all') 
         {
@@ -127,11 +128,8 @@ class AmenitiesRepository
      */
     public function save($data)
     {
-        //Log::info(collect($data)->get('icon'));
         $amenity = new $this->amenities;
         $amenity=$this->getModel($data,$amenity);
-
-        //if (collect($data)->hasFile('icon'))
         $file = collect($data)->get('icon');
         if(($file)!=null){
 
@@ -139,30 +137,9 @@ class AmenitiesRepository
             $extension = $file->getClientOriginalExtension();
             $picture   = $filename;
             $amenity->amenities_image = $picture;
-            $file->move(Config::get('constants.UPLOAD_PATH').'amenities', $picture);
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/' .$picture);
        }
-
-
-        // if ((collect($data)->get('icon'))!=null)
-        // {
-        //       $file      = $data->file('icon');
-        //       $filename  = $file->getClientOriginalName();
-        //       $extension = $file->getClientOriginalExtension();
-        //       $picture   = date('His').'-'.$filename;
-        //       $amenity->amenities_image = $picture;
-        //       $file->move(Config::get('constants.UPLOAD_PATH').'amenities', $picture);
-
-        //     //   if($userDetails[0]->profile_image!=''){
-        //     //     $image_path =Config::get('constants.UPLOAD_PATH').'profile/'.$userDetails[0]->profile_image;
-                
-        //     //     if (File::exists($image_path)) {
-        //     //       //File::delete($image_path);
-        //     //       unlink($image_path);
-        //     //     }              
-        //     //   }    
-        // } 
-
-
         $amenity->save();
         return $amenity;
     }
@@ -172,10 +149,31 @@ class AmenitiesRepository
      * @param $data
      * @return Amenities
      */
-    public function update($data, $id)
+    public function update($data)
     {
-        $amenity = $this->amenities->find($id);
-        $amenity=$this->getModel($data,$amenity);
+        $amentiyId = $data['id'];
+        $amenity_data = $this->amenities->where('id', $amentiyId)->get();
+        $existing_icon = $amenity_data[0]->icon;
+        $amenity = $this->amenities->find($amentiyId); 
+        $file = collect($data)->get('icon');
+
+        if(($file)!='null'){
+            $amenity=$this->getModel($data,$amenity);
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture   = $filename;
+            $amenity->amenities_image = $picture;
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/' .$picture);
+            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'.$amenity_data[0]->amenities_image;
+            $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/'.$amenity_data[0]->amenities_image;
+            if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+                    unlink($old_image_path_consumer);
+                    unlink($old_image_path_provider);
+                }   
+        }else{
+             $amenity=$this->getModel($data,$amenity);
+        }
         $amenity->update();
         return $amenity;
     }

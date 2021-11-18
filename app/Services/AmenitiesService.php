@@ -92,10 +92,10 @@ class AmenitiesService
      * @param array $data
      * @return String
      */
-    public function updatePost($data, $id)
+    public function updatePost($data)
     {
         try {
-            $amenity = $this->amenitiesRepository->update($data, $id);
+            $amenity = $this->amenitiesRepository->update($data);
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
