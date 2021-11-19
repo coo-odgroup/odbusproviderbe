@@ -171,7 +171,7 @@ Route::get('/toproutedata',[DashboardController::class,'getRoute']);
 Route::get('/operatordata',[DashboardController::class,'getOperator']);
 Route::get('/ticketstaticsdata',[DashboardController::class,'getticketstatics']);
 Route::get('/bookingbydevicedata',[DashboardController::class,'getbookingbydevice']);
-Route::get('/pnrstaticsdata',[DashboardController::class,'getpnrstatics']);
+Route::post('/pnrstaticsdata',[DashboardController::class,'getpnrstatics']);
 
 //Route::middleware(['api'])->group(function ($router) {
 
@@ -285,9 +285,11 @@ Route::get('/slider/{id}', [SliderController::class, 'getSlider']);
 Route::post('sliderDataTable',[SliderController::class,'getData']);
 Route::put('/changeStatusSlider/{id}', [SliderController::class, 'changeStatus']);
 
-Route::post('/banner', [BannerController::class, 'createBanner']);
+
+
+Route::post('/addBanner', [BannerController::class, 'createBanner']);
+Route::post('/updateBanner/', [BannerController::class, 'updateBanner']);
 Route::get('/banner', [BannerController::class, 'getAllBanner']);
-Route::put('/banner/{id}', [BannerController::class, 'updateBanner']);
 Route::delete('/banner/{id}', [BannerController::class, 'deleteBanner']);
 Route::get('/banner/{id}', [BannerController::class, 'getBanner']);
 Route::post('bannerDataTable',[BannerController::class,'getData']);
@@ -360,10 +362,10 @@ Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecont
 
 //user Content
 // Route::get('/user',[UserContentController::class,'getAlluser']);
-Route::post('userContentData',[UserContentController::class,'getAllData']);
-Route::post('userContent',[UserContentController::class,'adduser']);
-Route::put('userContent/{id}',[UserContentController::class,'updateuser']);
-Route::delete('userContent/{id}', [UserContentController::class, 'deleteuser']);
+Route::post('BusOperatorData',[UserContentController::class,'getAllData']);
+Route::post('BusOperator',[UserContentController::class,'adduser']);
+Route::put('BusOperator/{id}',[UserContentController::class,'updateuser']);
+Route::delete('BusOperator/{id}', [UserContentController::class, 'deleteuser']);
 Route::put('changePassword/{id}', [UserContentController::class, 'changePassword']);
 Route::put('/changeuserStatus/{id}', [UserContentController::class, 'changeStatus']);
 
@@ -702,11 +704,11 @@ Route::put('/updateOneToMany', [ArticleController::class, 'updateOneToMany']);
 
 Route::get('/odbusCharges',[OdbusChargesController::class,'getAll']);
 Route::get('/odbusCharges/{id}',[OdbusChargesController::class,'getById']);
-Route::post('/odbusCharges', [OdbusChargesController::class, 'save']);
-Route::put('/odbusCharges/{id}',[OdbusChargesController::class,'update']);
 Route::delete('/odbusCharges/{id}', [OdbusChargesController::class, 'delete']);
 Route::post('odbusChargesData',[OdbusChargesController::class,'getData']);
 Route::put('/changeStatus/{id}', [OdbusChargesController::class, 'changeStatus']);
+Route::post('/addOdbusCharges', [OdbusChargesController::class, 'save']);
+Route::post('/updateOdbusCharges',[OdbusChargesController::class,'update']);
 
 Route::post('/offersDT', [OffersController::class, 'getOffersDT']);
 

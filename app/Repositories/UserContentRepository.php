@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 // use App\Models\Bus;
 use App\Models\User;
-
+use App\Models\UserBusOperator;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Config;
@@ -15,16 +15,17 @@ class UserContentRepository
 {
     
    protected $usercontent;
+   protected $userBusOperator;
 
-
-   public function __construct(User $usercontent )
+   public function __construct(User $usercontent, UserBusOperator $userBusOperator )
    {
       $this->usercontent = $usercontent ;
+      $this->userBusOperator = $userBusOperator;
    }    
    public function getAll()
    {
 
-      return $this->usercontent->with('BusOperator')->where('status', 1)->get();
+      return $this->usercontent->with('UserBusOperator')->where('status', 1)->get();
    }
 
    public function getAllData($request)
@@ -33,7 +34,7 @@ class UserContentRepository
       $operator_id = $request['bus_operator_id'] ;
 
 
-      $data = $this->usercontent->with('BusOperator')->where('status','!=',2)->orderBy('id','DESC');
+      $data = $this->usercontent->with('UserBusOperator')->where('status','!=',2)->where('role_id','4')->orderBy('id','DESC');
       if($paginate=='all') 
       {
           $paginate = Config::get('constants.ALL_RECORDS');
@@ -64,12 +65,21 @@ class UserContentRepository
        $usercontent = new $this->usercontent;
        // $usercontent=$this->getModel($data, $usercontent);
        $usercontent->name =$data['name'];
-       $usercontent->bus_operator_id =$data['bus_operator_id'];
+       //$usercontent->bus_operator_id =$data['bus_operator_id'];
        $usercontent->email =$data['email'];
        $usercontent->phone =$data['phone'];
-       $usercontent->password =$data['password'];
+       $usercontent->role_id ='4';
+       $usercontent->status ='1';
+       $usercontent->password =bcrypt($data['password']);
        $usercontent->created_by ="Admin";
        $usercontent->save();
+
+       $BusOperator = new $this->userBusOperator;
+       $BusOperator->user_id=$usercontent->id;
+       $BusOperator->created_by ="Admin";
+       $BusOperator->status ="1";
+       $BusOperator->bus_operator_id=$data['bus_operator_id'];
+       $BusOperator->save();
        return $usercontent;
 
    }
@@ -77,18 +87,18 @@ class UserContentRepository
    {
       $usercontent = $this->usercontent->find($id);
       $usercontent->name =$data['name'];
-      $usercontent->bus_operator_id =$data['bus_operator_id'];
+      //$usercontent->bus_operator_id =$data['bus_operator_id'];
       $usercontent->email =$data['email'];
       $usercontent->phone =$data['phone'];
       $usercontent->created_by ="Admin";
-	    $usercontent->update();
+	  $usercontent->update();
       return $usercontent;
    } 
 
    public function changePassword($data, $id)
    {
       $usercontent = $this->usercontent->find($id);
-      $usercontent->password =$data['password'];
+      $usercontent->password =bcrypt($data['password']);
       $usercontent->update();
       return $usercontent;
    }

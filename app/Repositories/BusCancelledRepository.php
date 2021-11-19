@@ -73,10 +73,10 @@ class BusCancelledRepository
        // Fetch records
     
        $busRecords =  $this->busCancelled->with('busCancelledDate')->with('bus.busOperator','bus.busstoppage')
-       ->orderBy($columnName,$columnSortOrder)
-       ->whereHas('bus', function ($query) use ($searchValue){
-        $query->where('name', 'like', '%' .$searchValue . '%');                   
-    })
+        ->orderBy($columnName,$columnSortOrder)
+        ->whereHas('bus', function ($query) use ($searchValue){
+            $query->where('name', 'like', '%' .$searchValue . '%');                   
+        })
        ->skip($start)
        ->take($rowperpage)
        ->whereNotIn('status', [2])
@@ -114,7 +114,7 @@ class BusCancelledRepository
                 $routesdata =  $stoppageName[0]['name']."-".$stoppageName[1]['name'];
             } 
             $data_arr[$key]['routes']=$routesdata;       
-    }
+        }
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
@@ -160,7 +160,7 @@ class BusCancelledRepository
 
         $data=$data->paginate($paginate);
 
-        
+        Log::info($data);
 
 
         $response = array(

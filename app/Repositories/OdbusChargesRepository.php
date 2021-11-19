@@ -3,6 +3,8 @@
 namespace App\Repositories;
 use App\Models\OdbusCharges;
 use App\Models\BusOperator;
+use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 class OdbusChargesRepository 
 {
@@ -69,8 +71,8 @@ class OdbusChargesRepository
         $odbusCharges->mobile_no_2 = $data['mobile_no_2'];
         $odbusCharges->mobile_no_3 = $data['mobile_no_3'];
         $odbusCharges->mobile_no_4 = $data['mobile_no_4'];
-        $odbusCharges->logo = $data['logo'];
-        $odbusCharges->favIcon = $data['favIcon'];
+        $odbusCharges->operator_slogan = $data['operator_slogan'];
+        $odbusCharges->operator_home_content = $data['operator_home_content'];
         $odbusCharges->created_by = $data['created_by'];
         return $odbusCharges;
     }
@@ -82,8 +84,35 @@ class OdbusChargesRepository
      */
     public function save($data)
     {
-        $odbusCharges = new $this->odbusCharges;
-        $odbusCharges=$this->getModel($data,$odbusCharges);
+        // Log::info($data);exit;
+
+        $odbusChargesObject = new $this->odbusCharges;
+        $odbusCharges=$this->getModel($data,$odbusChargesObject);
+
+        $favIcon_file = collect($data)->get('favicon_image');     
+        if(($favIcon_file)!=null){
+            $filename  = $favIcon_file->getClientOriginalName();
+            $extension = $favIcon_file->getClientOriginalExtension();
+            $favIcon_picture   =  rand().'-'.$filename;
+            $odbusCharges->favicon_image = $favIcon_picture;
+            $favIcon_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/', $favIcon_picture);
+
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/'.$favIcon_picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'favIcon/'.$favIcon_picture);             
+       }
+
+       $logo_file = collect($data)->get('logo_image');     
+        if(($logo_file)!=null){
+
+            $filename  = $logo_file->getClientOriginalName();
+            $extension = $logo_file->getClientOriginalExtension();
+            $logo_picture   =  rand().'-'.$filename;
+
+            $odbusCharges->logo_image = $logo_picture;
+            $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture);
+
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/'.$logo_picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'logo/'.$logo_picture);             
+       }
+
         $odbusCharges->save();
         return $odbusCharges;
     }
@@ -93,12 +122,76 @@ class OdbusChargesRepository
      * @param $data
      * @return Settings
      */
-    public function update($data, $id)
+    public function update($data)
     {
+        // Log::info($data);exit;
+        $id = $data['id'] ;
+        $charges_detail  = $this->odbusCharges->where('id', $id)->get();
+        $existing_favIcon = $charges_detail[0]->favicon_image;
+        $existing_logo = $charges_detail[0]->logo_image;
+
         $odbusCharges = $this->odbusCharges->find($id);
-        $odbusCharges=$this->getModel($data,$odbusCharges);
+
+        $logo_file = collect($data)->get('logo_image');
+        if($logo_file !="")
+        {
+            $odbusCharges=$this->getModel($data,$odbusCharges);
+            $filename  = $logo_file->getClientOriginalName();
+            $extension = $logo_file->getClientOriginalExtension();
+            $logo_picture   =  rand().'-'.$filename;
+
+            $odbusCharges->logo_image = $logo_picture;
+
+            $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture);
+
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/'.$logo_picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'logo/'.$logo_picture);  
+
+            $old_logo_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/'.$existing_logo;
+            $old_logo_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'logo/'.$existing_logo;
+
+            if(isset($existing_logo))
+            {
+                if(File::exists($old_logo_path_consumer) && File::exists($old_logo_path_provider))
+             {
+                    unlink($old_logo_path_consumer);
+                    unlink($old_logo_path_provider);
+             }  
+            }
+                   
+        }
+        $favIcon_file = collect($data)->get('favicon_image'); 
+        if ($favIcon_file!="null" && $favIcon_file!="undefined") 
+        {
+            $filename  = $favIcon_file->getClientOriginalName();
+            $extension = $favIcon_file->getClientOriginalExtension();
+            $favIcon_picture   =  rand().'-'.$filename;
+
+            $odbusCharges->favicon_image = $favIcon_picture;
+
+            $favIcon_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/', $favIcon_picture);
+
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/'.$favIcon_picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'favIcon/'.$favIcon_picture);   
+
+            $old_favIcon_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/'.$existing_favIcon;
+            $old_favIcon_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'favIcon/'.$existing_favIcon;
+
+            if(isset($existing_favIcon))
+            {
+                if(File::exists($old_favIcon_path_consumer) && File::exists($old_favIcon_path_provider))
+             {
+                    unlink($old_favIcon_path_consumer);
+                    unlink($old_favIcon_path_provider);
+             }  
+            }       
+        }
+        else
+        {
+             $odbusCharges=$this->getModel($data,$odbusCharges);;
+        }
+        
         $odbusCharges->update();
         return $odbusCharges;
+  
     }
     public function delete($id)
     {

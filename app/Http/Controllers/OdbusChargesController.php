@@ -44,6 +44,7 @@ class OdbusChargesController extends Controller
     }
    
     public function save(Request $request) {
+      // Log::info($request);exit;
       $data = $request->all();
         $odbusChargesValidation = $this->odbusChargesValidator->validate($data);
         if ($odbusChargesValidation->fails()) {
@@ -59,8 +60,8 @@ class OdbusChargesController extends Controller
       }	
     } 
 
-    public function update(Request $request, $id) {
-     
+    public function update(Request $request) {
+
       $data = $request->all();
         $odbusChargesValidation = $this->odbusChargesValidator->validate($data);
         if ($odbusChargesValidation->fails()) {
@@ -68,7 +69,7 @@ class OdbusChargesController extends Controller
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-          $response = $this->odbusChargesService->updatePost($data, $id);
+          $response = $this->odbusChargesService->updatePost($data);
           return $this->successResponse($response,"Master Settings Updated", Response::HTTP_CREATED);
 
       } catch (Exception $e) {

@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Banner;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File; 
 
 class BannerRepository
 {
@@ -58,44 +59,84 @@ class BannerRepository
             ->where('id', $id)
             ->get();
     }
+     public function getModel($data, Banner $banner)
+    {
+        $banner->occassion = $data['occassion'];
+        // $banner->category = $data['category'];
+        $banner->url = $data['url'];
+        $banner->heading = $data['heading'];
+        $banner->alt_tag = $data['alt_tag'];
+        $banner->start_date = $data['start_date'];
+        $banner->start_time = $data['start_time'];
+        $banner->end_date = $data['end_date'];
+        $banner->end_time = $data['end_time'];
+        $banner->created_by =  $data['created_by'];
+        $banner->bus_operator_id = $data['bus_operator_id'];
+        return $banner;
+    }
 
     public function save($data)
     {
-        $bann = new $this->banner;
-        $bann->occassion = $data['occassion'];
-        $bann->category = $data['category'];
-        $bann->url = $data['url'];
-        $bann->heading = $data['heading'];
-        $bann->banner_img = $data['banner_img'];
-        $bann->alt_tag = $data['alt_tag'];
-        $bann->start_date = $data['start_date'];
-        $bann->start_time = $data['start_time'];
-        $bann->end_date = $data['end_date'];
-        $bann->end_time = $data['end_time'];
-        $bann->created_by =  $data['created_by'];
-        $bann->bus_operator_id = $data['bus_operator_id'];
-        $bann->save();
+        
+        $picture="";
+        $bannerObject = new $this->banner;
+        $banner=$this->getModel($data,$bannerObject);
+        $file = collect($data)->get('banner_img');  
+        if(($file)!=null)
+        {
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture   =  rand().'-'.$filename;
+            $banner->banner_image = $picture;
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'operatorbanner/', $picture);
 
-        return $bann->fresh();
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'operatorbanner/'.$picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'operatorbanner/'.$picture);             
+        }
+
+        $banner->save();
+
+        return $banner ;
     }
 
-    public function update($data, $id)
+    public function update($data)
     {
-        // Log::info($data);
-        $bann = $this->banner->find($id);
-        $bann->bus_operator_id = $data['bus_operator_id'];
-        $bann->occassion = $data['occassion'];
-        $bann->heading = $data['heading'];
-        $bann->url = $data['url'];
-        $bann->banner_img = $data['banner_img'];
-        $bann->alt_tag = $data['alt_tag'];
-        $bann->start_date = $data['start_date'];
-        $bann->start_time = $data['start_time'];
-        $bann->end_date = $data['end_date'];
-        $bann->end_time = $data['end_time'];
-        $bann->created_by =  $data['created_by'];
-        $bann->update();
-        return $bann;
+        $id = $data['id'] ;
+        $banner_detail  = $this->banner->where('id', $id)->get();
+        $existing_image = $banner_detail[0]->banner_image;
+
+        $banner = $this->banner->find($id);
+        $file = collect($data)->get('banner_img');
+        
+        if($file !="null")
+        {
+            $banner=$this->getModel($data,$banner);
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture =  rand().'-'.$filename;
+            $banner->banner_image =  $picture;
+       
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'operatorbanner/', $picture);
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'operatorbanner/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'operatorbanner/' .$picture);
+
+            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'operatorbanner/'.$existing_image;
+            $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'operatorbanner/'.$existing_image;
+
+            if(isset($existing_image))
+            {
+                if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider))
+             {
+                    unlink($old_image_path_consumer);
+                    unlink($old_image_path_provider);
+             }  
+            }
+                   
+        }
+        else
+        {
+             $banner=$this->getModel($data,$banner);
+        }
+        $banner->update();
+        return $banner;
     }
 
     public function delete($id)

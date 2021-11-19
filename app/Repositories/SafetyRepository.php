@@ -140,7 +140,7 @@ class SafetyRepository
         if(($file)!=null){
             $filename  = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
-            $picture   = $filename;
+            $picture   =  rand().'-'.$filename;
             $safety->safety_image = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
 
@@ -158,14 +158,12 @@ class SafetyRepository
      */
     public function update($data)
     {
-
         $id = $data['id'] ;
         $safety_detail  = $this->safety->where('id', $id)->get();
         $existing_image = $safety_detail[0]->safety_image;
 
         $safety = $this->safety->find($id);
         $file = collect($data)->get('icon');
-// Log::info($data['icon']);exit;
         if($file !="null")
         {
             $safety=$this->getModel($data,$safety);
@@ -180,10 +178,15 @@ class SafetyRepository
             $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$existing_image;
             $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'safety/'.$existing_image;
 
-             if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+            if(isset($existing_image))
+            {
+                if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider))
+             {
                     unlink($old_image_path_consumer);
                     unlink($old_image_path_provider);
-                }        
+             }  
+            }
+                   
         }
         else
         {

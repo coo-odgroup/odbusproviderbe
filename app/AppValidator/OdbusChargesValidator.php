@@ -21,8 +21,7 @@ class OdbusChargesValidator
             'mobile_no_1' => 'required',
             'mobile_no_2' => 'required',
             'mobile_no_3' => 'required',
-            'logo' => 'required',
-            'favIcon' =>'required'
+           
 
         ];      
       

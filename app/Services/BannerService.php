@@ -56,10 +56,10 @@ class BannerService
         }
         return $banner;
     }
-    public function update($data, $id)
+    public function update($data)
     {
         try {
-            $banner = $this->bannerRepository->update($data, $id);
+            $banner = $this->bannerRepository->update($data);
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
