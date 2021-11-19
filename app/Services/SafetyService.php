@@ -96,10 +96,10 @@ class SafetyService
      * @param array $data
      * @return String
      */
-    public function updatePost($data, $id)
+    public function updatePost($data)
     {
         try {
-            $safety = $this->safetyRepository->update($data, $id);
+            $safety = $this->safetyRepository->update($data);
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
