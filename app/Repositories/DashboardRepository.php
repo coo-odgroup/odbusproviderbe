@@ -46,10 +46,36 @@ class DashboardRepository
         $booking_data=$this->booking->selectRaw('sum(odbus_charges) as odbus_amount')->where('status','1');
         $sales_data=$this->booking->selectRaw('sum(owner_fare) as today_amount')->where('status','1');
 
+
+
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $busOperatorId=$request['USER_BUS_OPERATOR_ID'];
+            
+            $today_data = $today_data->whereHas('bus', function ($query) use ($busOperatorId){
+               $query->where('bus_operator_id', $busOperatorId);               
+            });
+            $upcoming_data = $upcoming_data->whereHas('bus', function ($query) use ($busOperatorId){
+               $query->where('bus_operator_id', $busOperatorId);               
+            });
+            $bus_data = $bus_data->where('bus_operator_id',$busOperatorId);
+            $operator_data = $operator_data->where('id',$busOperatorId);
+            $booking_data = $booking_data->whereHas('bus', function ($query) use ($busOperatorId){
+               $query->where('bus_operator_id', $busOperatorId);               
+            });
+            $sales_data = $sales_data->whereHas('bus', function ($query) use ($busOperatorId){
+               $query->where('bus_operator_id', $busOperatorId);               
+            });
+        }
         switch ($request['rangeFor']) {
             case 'This Month':
+                $today_web_booking= $today_data->where('created_at','Like',$current_month.'%')->where('app_type','WEB')->get();
+                $today_app_booking= $today_data->where('created_at','Like',$current_month.'%')->where('app_type','ANDROID')->get();
+                $today_mob_booking= $today_data->where('created_at','Like',$current_month.'%')->where('app_type','MOB')->get();
+
+
                 $today_data = $today_data->where('created_at','Like',$current_month.'%')->get();
-                $upcoming_data = $upcoming_data->where('journey_dt','Like',$current_month.'%')->get();
+                $upcoming_data = $upcoming_data->where('journey_dt','>',$current_date)->get();
                 $bus_data = $bus_data->where('created_at','Like',$current_month.'%')->get();
                 $operator_data = $operator_data->where('created_at','Like',$current_month.'%')->get();
                 $booking_data = $booking_data->where('created_at','Like',$current_month.'%');
@@ -57,8 +83,14 @@ class DashboardRepository
                 break;
             
             case 'This Week':
+
+                $today_web_booking= $today_data->whereBetween('created_at',[$dt_week,$current_date])->where('app_type','WEB')->get();
+                $today_app_booking= $today_data->whereBetween('created_at',[$dt_week,$current_date])->where('app_type','ANDROID')->get();
+                $today_mob_booking= $today_data->whereBetween('created_at',[$dt_week,$current_date])->where('app_type','MOB')->get();
+
+
                 $today_data = $today_data->whereBetween('created_at',[$dt_week,$current_date])->get();
-                $upcoming_data = $upcoming_data->where('journey_dt',[$dt_week,$current_date])->get();
+                $upcoming_data = $upcoming_data->where('journey_dt','>',$current_date)->get();
                 $bus_data = $bus_data->where('created_at',[$dt_week,$current_date])->get();
                 $operator_data = $operator_data->where('created_at',[$dt_week,$current_date])->get();
                 $booking_data = $booking_data->where('created_at',[$dt_week,$current_date]);
@@ -66,8 +98,14 @@ class DashboardRepository
                 break;
             
             case 'Today':
+
+                $today_web_booking= $today_data->where('created_at','Like',$current_date.'%')->where('app_type','WEB')->get();
+                $today_app_booking= $today_data->where('created_at','Like',$current_date.'%')->where('app_type','ANDROID')->get();
+                $today_mob_booking= $today_data->where('created_at','Like',$current_date.'%')->where('app_type','MOB')->get();
+
+
                 $today_data = $today_data->where('created_at','Like',$current_date.'%')->get();
-                $upcoming_data = $upcoming_data->where('journey_dt','Like',$current_date.'%')->get();
+                $upcoming_data = $upcoming_data->where('journey_dt','>',$current_date)->get();
                 $bus_data = $bus_data->where('created_at','Like',$current_date.'%')->get();
                 $operator_data = $operator_data->where('created_at','Like',$current_date.'%')->get();
                 $booking_data = $booking_data->where('created_at','Like',$current_date.'%');
@@ -75,6 +113,12 @@ class DashboardRepository
                 break;
             
             case 'Custom Range':
+
+                $today_web_booking= $today_data->whereBetween('created_at',[$request['rangeFrom'],$request['rangeTo']])->where('app_type','WEB')->get();
+                $today_app_booking= $today_data->whereBetween('created_at',[$request['rangeFrom'],$request['rangeTo']])->where('app_type','ANDROID')->get();
+                $today_mob_booking= $today_data->whereBetween('created_at',[$request['rangeFrom'],$request['rangeTo']])->where('app_type','MOB')->get();
+
+
                 $today_data = $today_data->whereBetween('created_at',[$request['rangeFrom'],$request['rangeTo']])->get();
                 $upcoming_data = $upcoming_data->whereBetween('journey_dt',[$request['rangeFrom'],$request['rangeTo']])->get();
                 $bus_data = $bus_data->where('created_at',[$request['rangeFrom'],$request['rangeTo']])->get();
@@ -84,14 +128,22 @@ class DashboardRepository
                 break;    
             
             default:
+                $today_web_booking= $today_data->where('app_type','WEB')->get();
+                $today_app_booking= $today_data->where('app_type','ANDROID')->get();
+                $today_mob_booking= $today_data->where('app_type','MOB')->get();
+                
                 $today_data = $today_data->get();
-                $upcoming_data = $upcoming_data->get();
+                $upcoming_data = $upcoming_data->where('journey_dt','>',$current_date)->get();
                 $bus_data = $bus_data->get();
                 $operator_data = $operator_data->get();
                 $booking_data = $booking_data;
                 $sales_data = $sales_data;
                 break;
         }
+
+       
+
+
         $today_data =count($today_data);        
         $upcoming_data = count($upcoming_data);        
         $active_bus_data = count($bus_data);
@@ -100,6 +152,12 @@ class DashboardRepository
         $data_arr['upcoming_pnr'] = $upcoming_data;
         $data_arr['active_bus'] = $active_bus_data;
         $data_arr['active_operator'] = $active_operator_data;
+
+        $data_arr['web_booking'] = $today_web_booking;
+        $data_arr['app_booking'] = $today_app_booking;
+        $data_arr['mobile_booking'] = $today_mob_booking;
+
+
         $data_arr['booking_profit'] = $booking_data->get();
         $data_arr['cancellation_profit'] = 1641 ; //MADE STATIC
         $data_arr['sales_data']=$sales_data->get();
@@ -185,16 +243,33 @@ class DashboardRepository
     }
 
 
-    public function getpnrstatics()
-    {        
-        $pnr_data = $this->booking
+    public function getpnrstatics($request)
+    {   
+        if($request['USER_BUS_OPERATOR_ID']=="")
+        {
+            $pnr_data = $this->booking
                           ->select('journey_dt')
                           ->selectRaw('count(*) as pnr_count')
                           ->groupBy('journey_dt')
                           ->orderBy('journey_dt','DESC')
                           ->where('status','1')
-                          ->limit('7')
-                          ->get();
+                          ->limit('7');
+        }
+        else
+        {
+            $Operator_id=$request['USER_BUS_OPERATOR_ID'];
+            $pnr_data = $this->booking
+                          ->select('journey_dt')
+                          ->selectRaw('count(*) as pnr_count')
+                          ->groupBy('journey_dt')
+                          ->orderBy('journey_dt','DESC')
+                          ->where('status','1')
+                          ->whereHas('bus', function ($query) use ($Operator_id){
+                               $query->where('bus_operator_id', $Operator_id);               
+                           })
+                          ->limit('7');
+        }
+        $pnr_data = $pnr_data->get();
         $data_arr = array();
 
         $date_arr = array();

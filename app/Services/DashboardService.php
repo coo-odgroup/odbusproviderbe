@@ -47,9 +47,9 @@ class DashboardService
     {
         return $this->dashboardRepository->getbookingbydevice();
     }
-    public function getpnrstatics()
+    public function getpnrstatics($request)
     {
-        return $this->dashboardRepository->getpnrstatics();
+        return $this->dashboardRepository->getpnrstatics($request);
     }
 
 }

@@ -17,46 +17,46 @@ class DashboardController extends Controller
 {
     use ApiResponser;
    
-    protected $deshboardService;    
+    protected $dashboardService;    
     
-    public function __construct(DashboardService $deshboardService)
+    public function __construct(DashboardService $dashboardService)
     {
-        $this->deshboardService = $deshboardService;        
+        $this->dashboardService = $dashboardService;        
     }
 
     public function getAll(Request $request)
     {
-        $dashboarddata = $this->deshboardService->getAll($request);
+        $dashboarddata = $this->dashboardService->getAll($request);
         return $this->successResponse($dashboarddata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function getRoute()
     {
-        $routedata = $this->deshboardService->getRoute();
+        $routedata = $this->dashboardService->getRoute();
         return $this->successResponse($routedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     
     public function getOperator()
     {
-        $operatordata = $this->deshboardService->getOperator();
+        $operatordata = $this->dashboardService->getOperator();
         return $this->successResponse($operatordata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
     public function getticketstatics()
     {
-        $ticketstaticsdata = $this->deshboardService->getticketstatics();
+        $ticketstaticsdata = $this->dashboardService->getticketstatics();
         return $this->successResponse($ticketstaticsdata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function getbookingbydevice()
     {
-        $bookingbydevicedata = $this->deshboardService->getbookingbydevice();
+        $bookingbydevicedata = $this->dashboardService->getbookingbydevice();
         return $this->successResponse($bookingbydevicedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     
-    public function getpnrstatics()
+    public function getpnrstatics(Request $request)
     {
-        $pnrstaticsdata = $this->deshboardService->getpnrstatics();
+        $pnrstaticsdata = $this->dashboardService->getpnrstatics($request);
         return $this->successResponse($pnrstaticsdata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
