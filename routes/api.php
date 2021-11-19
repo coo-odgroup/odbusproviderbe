@@ -277,8 +277,9 @@ Route::put('/changeStatusBusSeatLayout/{id}', [BusSeatLayoutController::class, '
 Route::get('/BusSeatLayoutRC/{id}/{type}', [BusSeatLayoutController::class, 'getRowCol']);
 
 Route::post('/slider', [SliderController::class, 'createSlider']);
+Route::post('/sliderUpdate', [SliderController::class, 'updateSlider']);
 Route::get('/slider', [SliderController::class, 'getAllSlider']);
-Route::put('/slider/{id}', [SliderController::class, 'updateSlider']);
+//Route::put('/slider/{id}', [SliderController::class, 'updateSlider']);
 Route::delete('/slider/{id}', [SliderController::class, 'deleteSlider']);
 Route::get('/slider/{id}', [SliderController::class, 'getSlider']);
 Route::post('sliderDataTable',[SliderController::class,'getData']);

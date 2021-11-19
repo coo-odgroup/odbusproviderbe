@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Slider;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File; 
 
 class SliderRepository
 {
@@ -53,40 +55,64 @@ class SliderRepository
             ->where('id', $id)
             ->get();
     }
-
+    public function getModel($data, Slider $slide)
+    {
+        $slide->bus_operator_id = $data['bus_operator_id'];
+        $slide->occassion = $data['occassion'];
+        $slide->url = $data['url'];
+        $slide->slider_img = $data['slider_img'];
+        $slide->alt_tag = $data['alt_tag'];
+        $slide->start_date = $data['start_date'];
+        $slide->start_time = $data['start_time'];
+        $slide->end_date = $data['end_date'];
+        $slide->end_time = $data['end_time'];
+        $slide->created_by = $data['created_by'];
+        return $slide;
+    }
     public function save($data)
     {
         $slide = new $this->slider;
-        $slide->bus_operator_id = $data['bus_operator_id'];
-        $slide->occassion = $data['occassion'];
-        $slide->category = $data['category'];
-        $slide->url = $data['url'];
-        $slide->slider_img = $data['slider_img'];
-        $slide->alt_tag = $data['alt_tag'];
-        $slide->start_date = $data['start_date'];
-        $slide->start_time = $data['start_time'];
-        $slide->end_date = $data['end_date'];
-        $slide->end_time = $data['end_time'];
-        $slide->created_by = $data['created_by'];
-        $slide->save();
+        $slide = $this->getModel($data,$slide);
+        $file = collect($data)->get('slider_img');
+        //Log::info($file);
+        if(($file)!=null){
 
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture   = $filename;
+            $slide->slider_photo = $picture;
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos', $picture);
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'slider_photos/' .$picture);
+       }
+        $slide->save();
         return $slide->fresh();
     }
 
-    public function update($data, $id)
+    public function update($data)
     {
-        // Log::info($data);exit;
-        $slide = $this->slider->find($id);
-        $slide->bus_operator_id = $data['bus_operator_id'];
-        $slide->occassion = $data['occassion'];
-        $slide->url = $data['url'];
-        $slide->slider_img = $data['slider_img'];
-        $slide->alt_tag = $data['alt_tag'];
-        $slide->start_date = $data['start_date'];
-        $slide->start_time = $data['start_time'];
-        $slide->end_date = $data['end_date'];
-        $slide->end_time = $data['end_time'];
-        $slide->created_by = $data['created_by'];
+        $sliderId = $data['id'];
+        $slider_data = $this->slider->where('id', $sliderId)->get();
+        $existing_image = $slider_data[0]->slider_img;
+        $slide = $this->slider->find($sliderId); 
+        $file = collect($data)->get('slider_img');
+
+        if(($file)!='null'){
+            $slide=$this->getModel($data,$slide);
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture   = $filename;
+            $slide->slider_photo = $picture;
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos', $picture);
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'slider_photos/' .$picture);
+            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'.$slider_data[0]->slider_photo;
+            $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'slider_photos/'.$slider_data[0]->slider_photo;
+            if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+                    unlink($old_image_path_consumer);
+                    unlink($old_image_path_provider);
+                }   
+        }else{
+             $slide=$this->getModel($data,$slide);
+        }
         $slide->update();
         return $slide;
     }

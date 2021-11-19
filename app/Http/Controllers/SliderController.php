@@ -55,7 +55,7 @@ class SliderController extends Controller
       }	
     } 
 
-    public function updateSlider(Request $request, $id) {
+    public function updateSlider(Request $request) {
       
          $data = $request->all();
          $sliderValidation = $this->sliderValidator->validate($data);
@@ -64,7 +64,7 @@ class SliderController extends Controller
            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
          }
         try {
-          $response = $this->sliderService->update($data, $id);
+          $response = $this->sliderService->update($data);
           return $this->successResponse($response, "Special Slider Updated", Response::HTTP_CREATED);
 
       } catch (Exception $e) {

@@ -56,10 +56,10 @@ class SliderService
         }
         return $slider;
     }
-    public function update($data, $id)
+    public function update($data)
     {
         try {
-            $slider = $this->sliderRepository->update($data, $id);
+            $slider = $this->sliderRepository->update($data);
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));

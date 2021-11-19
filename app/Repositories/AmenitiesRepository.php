@@ -131,6 +131,7 @@ class AmenitiesRepository
         $amenity = new $this->amenities;
         $amenity=$this->getModel($data,$amenity);
         $file = collect($data)->get('icon');
+        Log::info($file);
         if(($file)!=null){
 
             $filename  = $file->getClientOriginalName();
