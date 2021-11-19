@@ -56,10 +56,10 @@ class OdbusChargesService
      * @param array $data
      * @return String
      */
-    public function updatePost($data, $id)
+    public function updatePost($data)
     {
         try {
-            $charges = $this->odbusChargesRepository->update($data, $id);
+            $charges = $this->odbusChargesRepository->update($data);
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
@@ -76,6 +76,7 @@ class OdbusChargesService
      */
     public function savePostData($data)
     {   
+        // Log::info($data);exit;
         try {
             $charges = $this->odbusChargesRepository->save($data);
         } catch (Exception $e) {

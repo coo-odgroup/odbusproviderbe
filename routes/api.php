@@ -284,9 +284,11 @@ Route::get('/slider/{id}', [SliderController::class, 'getSlider']);
 Route::post('sliderDataTable',[SliderController::class,'getData']);
 Route::put('/changeStatusSlider/{id}', [SliderController::class, 'changeStatus']);
 
-Route::post('/banner', [BannerController::class, 'createBanner']);
+
+
+Route::post('/addBanner', [BannerController::class, 'createBanner']);
+Route::post('/updateBanner/', [BannerController::class, 'updateBanner']);
 Route::get('/banner', [BannerController::class, 'getAllBanner']);
-Route::put('/banner/{id}', [BannerController::class, 'updateBanner']);
 Route::delete('/banner/{id}', [BannerController::class, 'deleteBanner']);
 Route::get('/banner/{id}', [BannerController::class, 'getBanner']);
 Route::post('bannerDataTable',[BannerController::class,'getData']);
@@ -701,11 +703,11 @@ Route::put('/updateOneToMany', [ArticleController::class, 'updateOneToMany']);
 
 Route::get('/odbusCharges',[OdbusChargesController::class,'getAll']);
 Route::get('/odbusCharges/{id}',[OdbusChargesController::class,'getById']);
-Route::post('/odbusCharges', [OdbusChargesController::class, 'save']);
-Route::put('/odbusCharges/{id}',[OdbusChargesController::class,'update']);
 Route::delete('/odbusCharges/{id}', [OdbusChargesController::class, 'delete']);
 Route::post('odbusChargesData',[OdbusChargesController::class,'getData']);
 Route::put('/changeStatus/{id}', [OdbusChargesController::class, 'changeStatus']);
+Route::post('/addOdbusCharges', [OdbusChargesController::class, 'save']);
+Route::post('/updateOdbusCharges',[OdbusChargesController::class,'update']);
 
 Route::post('/offersDT', [OffersController::class, 'getOffersDT']);
 

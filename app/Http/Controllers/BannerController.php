@@ -55,7 +55,7 @@ class BannerController extends Controller
       }	
     } 
 
-    public function updateBanner(Request $request, $id) {
+    public function updateBanner(Request $request) {
       
          $data = $request->all();
          $bannerValidation = $this->bannerValidator->validate($data);
@@ -64,7 +64,7 @@ class BannerController extends Controller
            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
          }
         try {
-          $response = $this->bannerService->update($data, $id);
+          $response = $this->bannerService->update($data);
           return $this->successResponse($response, "Banner Updated", Response::HTTP_CREATED);
 
       } catch (Exception $e) {
