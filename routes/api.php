@@ -308,7 +308,7 @@ Route::get('/customerQuery/{id}', [CustomerQueryController::class, 'getCustomerQ
 
 Route::post('/busGallery', [BusGalleryController::class, 'addBusGallery']);
 Route::post('/busGalleryData', [BusGalleryController::class, 'viewBusGallery']);
-
+Route::post('/BusGalleryUpdate', [BusGalleryController::class, 'updateGallery']);
 Route::get('/busGallery', [BusGalleryController::class, 'getAllBusGallery']);
 Route::delete('/busGallery/{id}', [BusGalleryController::class, 'deleteBusGallery']);
 Route::get('/busGallery/{id}', [BusGalleryController::class, 'getBusGallery']);

@@ -5,7 +5,8 @@ namespace App\Repositories;
 use App\Models\BusGallery;
 use Storage;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File; 
 
 class BusGalleryRepository
 {
@@ -111,9 +112,18 @@ class BusGalleryRepository
 
     public function save($data)
     {
-
         $busGallery = new $this->busGallery;
         $busGallery=$this->getModel($data,$busGallery);
+        $file = collect($data)->get('icon');
+        if(($file)!=null){
+
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture   = $filename;
+            $busGallery->bus_image = $picture;
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos', $picture);
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'bus_photos/' .$picture);
+       }
         $busGallery->save();
         return $busGallery;
     }
@@ -124,16 +134,37 @@ class BusGalleryRepository
      * @param $data
      * @return BusGallery
      */
-    public function update($data, $id)
+    public function update($data)
     {
         
-        // $post = $this->busGallery->find($id);
+        //$post = $this->busGallery->find($id);
 
-        // $post->mobileno = $data['mobileno'];
+        $busGalleryId = $data['id'];
+        $gallery_data = $this->busGallery->where('id', $busGalleryId)->get();
+        $existing_icon = $gallery_data[0]->icon;
+        $busGallery = $this->busGallery->find($busGalleryId); 
+        $file = collect($data)->get('icon');
 
-        // $post->update();
+        if(($file)!='null'){
+            $busGallery = $this->getModel($data,$busGallery);
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture   = $filename;
+            $busGallery->bus_image = $picture;
+            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos', $picture);
+            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'bus_photos/' .$picture);
+            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'.$gallery_data[0]->bus_image;
+            $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'bus_photos/'.$gallery_data[0]->bus_image;
+            if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+                    unlink($old_image_path_consumer);
+                    unlink($old_image_path_provider);
+                }   
+        }else{
+             $busGallery=$this->getModel($data,$busGallery);
+        }
 
-        // return $post;
+        $busGallery->update();
+        return $busGallery;
     }
 
     /**

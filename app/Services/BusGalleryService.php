@@ -80,10 +80,10 @@ class BusGalleryService
      * @param array $data
      * @return String
      */
-    public function updatePost($data, $id)
+    public function updatePost($data)
     {
         try {
-            $post = $this->busGalleryRepository->update($data, $id);
+            $post = $this->busGalleryRepository->update($data);
 
         } catch (Exception $e) {
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));

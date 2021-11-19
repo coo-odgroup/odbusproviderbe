@@ -94,10 +94,26 @@ class BusGalleryController extends Controller
         $output ['result']=$ame;
         return response($output, 200);
     }
+    public function updateGallery(Request $request) {
+      
+        $data = $request->only([
+          'id',
+          'bus_id',
+          'bus_operator_id',
+          'icon',
+          'created_by'
+        ]);
+        $busGalleryValidation = $this->busGalleryValidator->validate($data);
+        if ($busGalleryValidation->fails()) {
+            $errors = $busGalleryValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+          }
+        try {
+          $response = $this->busGalleryService->updatePost($data);
+          return $this->successResponse($response, "Bus Photos Updated", Response::HTTP_CREATED);
 
-
-
-
-
-
+      } catch (Exception $e) {
+          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+      }
+    }
 }
