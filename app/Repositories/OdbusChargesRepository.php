@@ -90,7 +90,7 @@ class OdbusChargesRepository
         $odbusCharges=$this->getModel($data,$odbusChargesObject);
 
         $favIcon_file = collect($data)->get('favicon_image');     
-        if(($favIcon_file)!=null){
+        if($favIcon_file!="null" && $favIcon_file!="undefined"){
             $filename  = $favIcon_file->getClientOriginalName();
             $extension = $favIcon_file->getClientOriginalExtension();
             $favIcon_picture   =  rand().'-'.$filename;
