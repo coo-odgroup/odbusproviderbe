@@ -29,10 +29,23 @@ class SeoSettingRepository
 
     public function addseosetting($data)
     {        
-       // Log::info($data);exit;
+       // Log::info($data);exit; 
 
        $seosetting = new $this->seosetting;
        $seosetting->page_url =$data['page_url'];
+       $seosetting->seo_type =$data['seo_type'];
+       if($data['seo_type'] == 2)
+       {
+       $seosetting->source_id =null;
+       $seosetting->destination_id = null;
+       $seosetting->url_description ='';
+       }
+       else
+       {
+         $seosetting->source_id =$data['source_id'];
+         $seosetting->destination_id =$data['destination_id'];
+         $seosetting->url_description =$data['url_description'];
+       }  
        $seosetting->bus_operator_id =$data['bus_operator_id'];
        $seosetting->url_description =$data['url_description'];
        $seosetting->meta_title =$data['meta_title'];
@@ -90,16 +103,31 @@ class SeoSettingRepository
 
     public function updateseosetting($data, $id)
     {
-     $seosetting = $this->seosetting->find($id);       
+      
+     $seosetting = $this->seosetting->find($id);   
+     $seosetting->seo_type =$data['seo_type'];
+     if($data['seo_type'] == 2)
+     {
+       $seosetting->source_id =null;
+       $seosetting->destination_id = null;
+       $seosetting->url_description ='';
+     }
+     else
+     {
+       $seosetting->source_id =$data['source_id'];
+       $seosetting->destination_id =$data['destination_id'];
+       $seosetting->url_description =$data['url_description'];
+     }
+         
      $seosetting->bus_operator_id =$data['bus_operator_id'];
-	   $seosetting->page_url =$data['page_url'];
-     $seosetting->url_description =$data['url_description'];
+	   $seosetting->page_url =$data['page_url'];     
 	   $seosetting->meta_title =$data['meta_title'];
 	   $seosetting->meta_keyword =$data['meta_keyword'];
 	   $seosetting->meta_description =$data['meta_description'];
 	   $seosetting->extra_meta =$data['extra_meta'];
 	   $seosetting->canonical_url =$data['canonical_url'];
 	   $seosetting->created_by =$data['created_by'];
+     // Log::info($seosetting);
 	   $seosetting->update();
 
        return $seosetting;

@@ -44,8 +44,12 @@ class SeoSettingController extends Controller
 
      public function addseosetting(Request $request)
      {
+     
      	 $data = $request->only([
           'page_url',
+          'seo_type',
+          'source_id',
+          'destination_id',
           'bus_operator_id',
           'url_description',
           'meta_title',
@@ -77,7 +81,11 @@ class SeoSettingController extends Controller
      {
 
      	 $data = $request->only([
-          'page_url', 'bus_operator_id',
+          'page_url', 
+          'bus_operator_id',
+          'seo_type',
+          'source_id',
+          'destination_id',
           'url_description',
           'meta_title',
           'meta_keyword',
