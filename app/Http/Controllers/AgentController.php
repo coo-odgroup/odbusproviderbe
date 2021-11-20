@@ -54,16 +54,13 @@ class AgentController extends Controller
         'pancard_no',
         'organization_name',
         'address',
-        'street',
         'landmark',
-        'city',
         'pincode',
         'name_on_bank_account',
         'bank_name',
         'ifsc_code',
         'bank_account_no',
-        'branch_name',
-        'upi_id','created_by'
+        'created_by'
       ]);
       $agentValidation = $this->agentValidator->validate($data);
       
@@ -79,7 +76,7 @@ class AgentController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }   
-      return $this->successResponse($data,"Agent Added",Response::HTTP_CREATED); 
+      return $this->successResponse($data,"Agent Created Successfully",Response::HTTP_CREATED); 
     } 
 
     public function updateAgent(Request $request, $id) {
@@ -95,16 +92,13 @@ class AgentController extends Controller
           'pancard_no',
           'organization_name',
           'address',
-          'street',
           'landmark',
-          'city',
           'pincode',
           'name_on_bank_account',
           'bank_name',
           'ifsc_code',
           'bank_account_no',
-          'branch_name',
-          'upi_id','created_by'
+          'created_by'
         ]);
         
         $agentValidation = $this->agentValidator->validate($data);
@@ -116,7 +110,7 @@ class AgentController extends Controller
         
         try {
           $result=$this->agentService->update($data, $id);
-          return $this->successResponse($result, "Agent Updated",Response::HTTP_CREATED);
+          return $this->successResponse($result, "Agent Updated Successfully",Response::HTTP_CREATED);
          
         }
         catch (Exception $e) {
@@ -134,7 +128,7 @@ class AgentController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(Null,"Agent Deleted",Response::HTTP_ACCEPTED); 
+      return $this->successResponse(Null,"Agent has been deleted Successfully",Response::HTTP_ACCEPTED); 
      
     }
 

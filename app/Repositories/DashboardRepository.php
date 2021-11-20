@@ -176,7 +176,7 @@ class DashboardRepository
                           ->orderBy('pnr_count','DESC')
                           ->where('journey_dt','>',$dt)
                           ->where('status','1')
-                          ->limit(5)
+                          ->limit(10)
                           ->get();
 
         $data_arr = array();
@@ -212,6 +212,7 @@ class DashboardRepository
         ->groupBy('bus_id')
         ->where('status','1')
         ->orderBy('count', 'DESC')
+        ->limit(10)
         ->get();
             if($busIds->isEmpty()){
                 return "No booking exist to filter top operator";

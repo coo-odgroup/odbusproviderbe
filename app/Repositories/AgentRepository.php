@@ -63,7 +63,7 @@ class AgentRepository
         $agent->name = $data['name'];
         $agent->email = $data['email'];    
         $agent->phone = $data['phone'];    
-        $agent->password = $data['password'];
+        $agent->password = bcrypt($data['password']);
         $agent->user_type = "Agent";
         $agent->role_id = "3";
         $agent->location = $data['location'];
@@ -71,16 +71,12 @@ class AgentRepository
         $agent->pancard_no = $data['pancard_no'];
         $agent->organization_name = $data['organization_name'];
         $agent->address = $data['address'];
-        $agent->street = $data['street'];
         $agent->landmark = $data['landmark'];
-        $agent->city = $data['city'];
         $agent->pincode = $data['pincode'];
         $agent->name_on_bank_account = $data['name_on_bank_account'];
         $agent->bank_name = $data['bank_name'];
         $agent->ifsc_code = $data['ifsc_code'];
         $agent->bank_account_no = $data['bank_account_no'];
-        $agent->branch_name = $data['branch_name'];
-        $agent->upi_id = $data['upi_id'];
         $agent->created_by = $data['created_by'];
         $agent->status = 1;
         return $agent;
