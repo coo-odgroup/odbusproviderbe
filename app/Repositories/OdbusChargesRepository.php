@@ -90,7 +90,7 @@ class OdbusChargesRepository
         $odbusCharges=$this->getModel($data,$odbusChargesObject);
 
         $favIcon_file = collect($data)->get('favicon_image');     
-        if($favIcon_file!="null" && $favIcon_file!="undefined"){
+        if($favIcon_file!="" ){
             $filename  = $favIcon_file->getClientOriginalName();
             $extension = $favIcon_file->getClientOriginalExtension();
             $favIcon_picture   =  rand().'-'.$filename;
@@ -101,7 +101,7 @@ class OdbusChargesRepository
        }
 
        $logo_file = collect($data)->get('logo_image');     
-        if(($logo_file)!=null){
+        if(($logo_file)!=""){
 
             $filename  = $logo_file->getClientOriginalName();
             $extension = $logo_file->getClientOriginalExtension();
@@ -124,7 +124,6 @@ class OdbusChargesRepository
      */
     public function update($data)
     {
-        // Log::info($data);exit;
         $id = $data['id'] ;
         $charges_detail  = $this->odbusCharges->where('id', $id)->get();
         $odbusCharges = $this->odbusCharges->find($id);
@@ -159,7 +158,7 @@ class OdbusChargesRepository
                    
         }
         $favIcon_file = collect($data)->get('favicon_image'); 
-        if ($favIcon_file!="null" && $favIcon_file!="undefined") 
+        if ($favIcon_file!="" ) 
         {
             $filename  = $favIcon_file->getClientOriginalName();
             $extension = $favIcon_file->getClientOriginalExtension();
