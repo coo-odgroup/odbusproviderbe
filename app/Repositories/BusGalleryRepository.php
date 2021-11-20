@@ -141,9 +141,11 @@ class BusGalleryRepository
 
         $busGalleryId = $data['id'];
         $gallery_data = $this->busGallery->where('id', $busGalleryId)->get();
-        $existing_icon = $gallery_data[0]->icon;
+       
         $busGallery = $this->busGallery->find($busGalleryId); 
         $file = collect($data)->get('icon');
+      
+       
 
         if(($file)!='null'){
             $busGallery = $this->getModel($data,$busGallery);
@@ -152,13 +154,21 @@ class BusGalleryRepository
             $picture   = $filename;
             $busGallery->bus_image = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos', $picture);
+                    
             copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'bus_photos/' .$picture);
-            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'.$gallery_data[0]->bus_image;
-            $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'bus_photos/'.$gallery_data[0]->bus_image;
-            if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
-                    unlink($old_image_path_consumer);
-                    unlink($old_image_path_provider);
-                }   
+          
+            if($gallery_data[0]->bus_image!=''){
+              
+               $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'.$gallery_data[0]->bus_image;
+                $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'bus_photos/'.$gallery_data[0]->bus_image;
+                if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+                        unlink($old_image_path_consumer);
+                        unlink($old_image_path_provider);
+                }
+
+            }
+          
+              
         }else{
              $busGallery=$this->getModel($data,$busGallery);
         }
