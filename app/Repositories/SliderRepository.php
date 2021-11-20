@@ -92,7 +92,6 @@ class SliderRepository
     {
         $sliderId = $data['id'];
         $slider_data = $this->slider->where('id', $sliderId)->get();
-        $existing_image = $slider_data[0]->slider_img;
         $slide = $this->slider->find($sliderId); 
         $file = collect($data)->get('slider_img');
 
@@ -104,12 +103,19 @@ class SliderRepository
             $slide->slider_photo = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos', $picture);
             copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'slider_photos/' .$picture);
-            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'.$slider_data[0]->slider_photo;
-            $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'slider_photos/'.$slider_data[0]->slider_photo;
-            if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+           
+          if($slider_data[0]->slider_photo !=''){
+            
+             $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'.$slider_data[0]->slider_photo;
+             $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'slider_photos/'.$slider_data[0]->slider_photo;
+             if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
                     unlink($old_image_path_consumer);
                     unlink($old_image_path_provider);
-                }   
+                }  
+            
+            
+          }
+            
         }else{
              $slide=$this->getModel($data,$slide);
         }
