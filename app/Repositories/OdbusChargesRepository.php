@@ -83,9 +83,7 @@ class OdbusChargesRepository
      * @return Settings
      */
     public function save($data)
-    {
-       
-
+    {  
         $odbusChargesObject = new $this->odbusCharges;
         $odbusCharges=$this->getModel($data,$odbusChargesObject);
 
@@ -95,9 +93,7 @@ class OdbusChargesRepository
             $extension = $favIcon_file->getClientOriginalExtension();
             $favIcon_picture   =  rand().'-'.$filename;
             $odbusCharges->favicon_image = $favIcon_picture;
-            $favIcon_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/', $favIcon_picture);
-
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/'.$favIcon_picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'favIcon/'.$favIcon_picture);             
+            $favIcon_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/', $favIcon_picture);          
        }
 
        $logo_file = collect($data)->get('logo_image');     
@@ -108,9 +104,7 @@ class OdbusChargesRepository
             $logo_picture   =  rand().'-'.$filename;
 
             $odbusCharges->logo_image = $logo_picture;
-            $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture);
-
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/'.$logo_picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'logo/'.$logo_picture);             
+            $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture); 
        }
 
         $odbusCharges->save();
@@ -138,21 +132,15 @@ class OdbusChargesRepository
 
             $odbusCharges->logo_image = $logo_picture;
 
-            $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture);
-
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/'.$logo_picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'logo/'.$logo_picture);  
-
-           
+            $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture);           
 
             if($charges_detail[0]->logo_image !='')
             {
                $old_logo_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/'.$charges_detail[0]->logo_image;
-               $old_logo_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'logo/'.$charges_detail[0]->logo_image;
-              
-                if(File::exists($old_logo_path_consumer) && File::exists($old_logo_path_provider))
+
+               if(File::exists($old_logo_path_consumer) )
                {
                       unlink($old_logo_path_consumer);
-                      unlink($old_logo_path_provider);
                }  
             }
                    
@@ -168,17 +156,13 @@ class OdbusChargesRepository
 
             $favIcon_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/', $favIcon_picture);
 
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/'.$favIcon_picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'favIcon/'.$favIcon_picture); 
-
             if($charges_detail[0]->favicon_image!='')
             {              
                $old_favIcon_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/'.$charges_detail[0]->favicon_image;
-               $old_favIcon_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'favIcon/'.$charges_detail[0]->favicon_image;
               
-                if(File::exists($old_favIcon_path_consumer) && File::exists($old_favIcon_path_provider))
+                if(File::exists($old_favIcon_path_consumer))
                {
                       unlink($old_favIcon_path_consumer);
-                      unlink($old_favIcon_path_provider);
                }  
             }       
         }
