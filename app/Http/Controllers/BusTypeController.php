@@ -46,6 +46,7 @@ class BusTypeController extends Controller
         'type',
         'name',
         'status',
+        'bus_operator_id',
         'created_by'
       ]);
       $busTypeValidation = $this->busTypeValidator->validate($data);
@@ -71,6 +72,7 @@ class BusTypeController extends Controller
           'type',
           'name',
           'status',
+          'bus_operator_id',
           'created_by'
         ]);
         

@@ -26,8 +26,12 @@ class CancellationSlabRepository
          $name = $request['name'] ;
        
 
-        $data= $this->cancellationSlab->with('SlabInfo')->whereNotIn('status', [2])
+        $data= $this->cancellationSlab->with('SlabInfo')->with('busOperator')->whereNotIn('status', [2])
                              ->orderBy('id','DESC');
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
+        }                        
 
         if($paginate=='all') 
         {
@@ -116,7 +120,7 @@ class CancellationSlabRepository
 
     public function getModel($data, CancellationSlab $cSlab)
     {
-        $cSlab->api_id = $data['api_id'];
+        $cSlab->bus_operator_id = $data['bus_operator_id'];
         $cSlab->rule_name = $data['rule_name'];
         $cSlab->cancellation_policy_desc = $data['cancellation_policy_desc'];
         $cSlab->created_by = $data['created_by'];

@@ -40,7 +40,7 @@ class BusSeatLayoutService
 
         } catch (Exception $e) {
             Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+            throw new InvalidArgumentException($e->getMessage());
         }
         return $post;
 
@@ -89,7 +89,7 @@ class BusSeatLayoutService
             $post = $this->busSeatLayoutRepository->update($data, $id);
 
         } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+            throw new InvalidArgumentException($e->getMessage());
         }
         return $post;
 

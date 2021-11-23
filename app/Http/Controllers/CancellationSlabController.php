@@ -60,7 +60,7 @@ class CancellationSlabController extends Controller
     
     public function createCancellationSlab(Request $request) {
       $data = $request->only([
-          'api_id', 'rule_name','slabs','cancellation_policy_desc','created_by'
+          'bus_operator_id', 'rule_name','slabs','cancellation_policy_desc','created_by'
       ]);
       
       $cSlabValidate = $this->CancellationSlabValidator->validate($data);
@@ -80,7 +80,7 @@ class CancellationSlabController extends Controller
   }
   public function updateCancellationSlab(Request $request, $id) {
     $data = $request->only([
-      'api_id', 'rule_name', 'slabs','cancellation_policy_desc','created_by'
+      'bus_operator_id', 'rule_name', 'slabs','cancellation_policy_desc','created_by'
     ]);
     $cSlabValidate = $this->CancellationSlabValidator->validate($data);
     if ($cSlabValidate->fails()) {

@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Seats;
+use App\Models\BusOperator;
+
 
 class BusSeatLayout extends Model
 {
@@ -17,6 +19,11 @@ class BusSeatLayout extends Model
     public function seats()
     {
         return $this->hasMany(Seats::class);
+        
+    } 
+    public function busOperator()
+    {
+        return $this->belongsTo(BusOperator::class);
         
     } 
 }

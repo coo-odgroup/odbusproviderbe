@@ -41,7 +41,8 @@ class BusSeatLayoutController extends Controller
         $data = $request->only([
           'name',
           'layout_data',
-          'created_by'
+          'created_by',
+          'bus_operator_id'
         ]);
         $busSeatLayoutValidation = $this->busSeatLayoutValidator->validate($data);
         if ($busSeatLayoutValidation->fails()) {
@@ -55,16 +56,16 @@ class BusSeatLayoutController extends Controller
         catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }  
-        return $this->successResponse($data,"Seat Layout Added",Response::HTTP_CREATED);
+        return $this->successResponse($data,"Seat Layout Created",Response::HTTP_CREATED);
     } 
     public function update(Request $request, $id) {
-      // Log::info($request);
       // Log::info($id);
 
         $data = $request->only([
           'name',
           'layout_data',
-          'created_by'
+          'created_by',
+          'bus_operator_id'
         ]);
         $busSeatLayoutValidation = $this->busSeatLayoutValidator->validate($data);
 

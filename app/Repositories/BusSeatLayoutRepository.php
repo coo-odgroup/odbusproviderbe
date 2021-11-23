@@ -48,9 +48,14 @@ class BusSeatLayoutRepository
         $name = $request['name'] ;
        
 
-        $data= $this->busSeatLayout->whereNotIn('status', [2])
+        $data= $this->busSeatLayout->with('busOperator')->whereNotIn('status', [2])
 
                              ->orderBy('id','DESC');
+
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
+        }
 
         if($paginate=='all') 
         {
@@ -103,6 +108,7 @@ class BusSeatLayoutRepository
         ->where('status',1)
         ->get();
 
+
         foreach($lowerBerth as $key=>$rows)
         {
             $row_data=$this->seats
@@ -142,6 +148,7 @@ class BusSeatLayoutRepository
     public function getModel($data, BusSeatLayout $busSeatLayout)
     {
         $busSeatLayout->name = $data['name'];
+        $busSeatLayout->bus_operator_id = $data['bus_operator_id'];
         $busSeatLayout->created_by =  $data['created_by'];
         return $busSeatLayout;
     }

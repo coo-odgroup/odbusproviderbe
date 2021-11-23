@@ -21,8 +21,13 @@ class BusType extends Model
     {
     	return $this->hasOne(Bus::class);
     }
-     public function BusClass()
+    public function BusClass()
     {
         return $this->belongsTo(BusClass::class);
     }
+    public function busOperator()
+    {
+        return $this->belongsTo(BusOperator::class);
+        
+    } 
 }

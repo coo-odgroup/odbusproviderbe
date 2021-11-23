@@ -20,5 +20,10 @@ class CancellationSlab extends Model
     {
     	return $this->hasOne(Bus::class);
     }
+    public function busOperator()
+    {
+        return $this->belongsTo(BusOperator::class);
+        
+    }
 
 }

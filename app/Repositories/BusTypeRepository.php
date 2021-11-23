@@ -33,9 +33,13 @@ class BusTypeRepository
         $name = $request['name'] ;
         $bus_type = $request['bus_type'] ;
 
-        $data= $this->busType->with('BusClass')
+        $data= $this->busType->with('BusClass','busOperator')
                              ->whereNotIn('status', [2])
                              ->orderBy('id','DESC');
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
+        }                             
 
         if($paginate=='all') 
         {
@@ -71,6 +75,7 @@ class BusTypeRepository
     {
         $busType->bus_class_id = $data['type'];
         $busType->name = $data['name'];    
+        $busType->bus_operator_id = $data['bus_operator_id'];
         $busType->created_by = $data['created_by'];
         $busType->status = 0;
         return $busType;
