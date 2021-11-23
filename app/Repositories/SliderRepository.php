@@ -82,7 +82,6 @@ class SliderRepository
             $picture   = $filename;
             $slide->slider_photo = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos', $picture);
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'slider_photos/' .$picture);
        }
         $slide->save();
         return $slide->fresh();
@@ -102,18 +101,13 @@ class SliderRepository
             $picture   = $filename;
             $slide->slider_photo = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos', $picture);
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'slider_photos/' .$picture);
            
           if($slider_data[0]->slider_photo !=''){
             
              $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'.$slider_data[0]->slider_photo;
-             $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'slider_photos/'.$slider_data[0]->slider_photo;
-             if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+             if(File::exists($old_image_path_consumer)){
                     unlink($old_image_path_consumer);
-                    unlink($old_image_path_provider);
-                }  
-            
-            
+                }     
           }
             
         }else{

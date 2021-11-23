@@ -122,7 +122,6 @@ class BusGalleryRepository
             $picture   = $filename;
             $busGallery->bus_image = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos', $picture);
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'bus_photos/' .$picture);
        }
         $busGallery->save();
         return $busGallery;
@@ -145,8 +144,6 @@ class BusGalleryRepository
         $busGallery = $this->busGallery->find($busGalleryId); 
         $file = collect($data)->get('icon');
       
-       
-
         if(($file)!='null'){
             $busGallery = $this->getModel($data,$busGallery);
             $filename  = $file->getClientOriginalName();
@@ -154,25 +151,18 @@ class BusGalleryRepository
             $picture   = $filename;
             $busGallery->bus_image = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos', $picture);
-                    
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'bus_photos/' .$picture);
           
             if($gallery_data[0]->bus_image!=''){
               
                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'.$gallery_data[0]->bus_image;
-                $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'bus_photos/'.$gallery_data[0]->bus_image;
+        
                 if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
                         unlink($old_image_path_consumer);
-                        unlink($old_image_path_provider);
                 }
-
-            }
-          
-              
+            }      
         }else{
              $busGallery=$this->getModel($data,$busGallery);
         }
-
         $busGallery->update();
         return $busGallery;
     }

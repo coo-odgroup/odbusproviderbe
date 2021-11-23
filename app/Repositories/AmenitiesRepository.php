@@ -139,7 +139,7 @@ class AmenitiesRepository
             $picture   = $filename;
             $amenity->amenities_image = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/' .$picture);
+            // copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/' .$picture);
        }
         $amenity->save();
         return $amenity;
@@ -154,7 +154,6 @@ class AmenitiesRepository
     {
         $amentiyId = $data['id'];
         $amenity_data = $this->amenities->where('id', $amentiyId)->get();
-        $existing_icon = $amenity_data[0]->icon;
         $amenity = $this->amenities->find($amentiyId); 
         $file = collect($data)->get('icon');
 
@@ -165,12 +164,11 @@ class AmenitiesRepository
             $picture   = $filename;
             $amenity->amenities_image = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/' .$picture);
+            
             $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'.$amenity_data[0]->amenities_image;
-            $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/'.$amenity_data[0]->amenities_image;
-            if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+            
+            if($amenity_data[0]->amenities_image != ''){
                     unlink($old_image_path_consumer);
-                    unlink($old_image_path_provider);
                 }   
         }else{
              $amenity=$this->getModel($data,$amenity);
