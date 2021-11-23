@@ -144,7 +144,6 @@ class SafetyRepository
             $safety->safety_image = $picture;
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
 
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'safety/'.$picture);             
        }
 
         $safety->save();
@@ -173,17 +172,17 @@ class SafetyRepository
             $safety->safety_image =  $picture;
        
             $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
-            copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'safety/' .$picture);
+         
 
             $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$existing_image;
-            $old_image_path_provider = Config::get('constants.UPLOAD_PATH_PROVIDER').'safety/'.$existing_image;
+         
 
             if(isset($existing_image))
             {
-                if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider))
+                if(File::exists($old_image_path_consumer))
              {
                     unlink($old_image_path_consumer);
-                    unlink($old_image_path_provider);
+                  
              }  
             }
                    

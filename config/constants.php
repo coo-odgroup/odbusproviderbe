@@ -23,7 +23,7 @@ return [
     'REGT_SUCCESS' => 'Registration Successful',
     //'UPLOAD_PATH_CONSUMER' => '/home/neoflix/public_html/assets/uploads/',
     //'UPLOAD_PATH_PROVIDER' => '/home/neoflix/admin.neoflix.in/assets/uploads/',
-    'UPLOAD_PATH_CONSUMER' => '../../odbusconsumerfe/src/assets/uploads/',
-    'UPLOAD_PATH_PROVIDER' => '../../odbusproviderfe/src/assets/uploads/'
+    'UPLOAD_PATH_CONSUMER' => '../../odbusconsumerbe/public/uploads/'
+    
 ];
 
