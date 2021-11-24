@@ -168,7 +168,11 @@ class AmenitiesRepository
             $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'.$amenity_data[0]->amenities_image;
             
             if($amenity_data[0]->amenities_image != ''){
-                    unlink($old_image_path_consumer);
+              
+               if(File::exists($old_image_path_consumer)){
+                unlink($old_image_path_consumer);
+              }
+                    
                 }   
         }else{
              $amenity=$this->getModel($data,$amenity);
