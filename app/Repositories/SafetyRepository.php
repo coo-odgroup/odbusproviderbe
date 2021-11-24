@@ -177,14 +177,14 @@ class SafetyRepository
             $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$existing_image;
          
 
-            if(isset($existing_image))
+           if($safety_detail[0]->safety_image!='')
             {
                 if(File::exists($old_image_path_consumer))
              {
                     unlink($old_image_path_consumer);
                   
              }  
-            }
+            } 
                    
         }
         else
