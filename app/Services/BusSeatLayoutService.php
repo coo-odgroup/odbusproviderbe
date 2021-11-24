@@ -55,6 +55,11 @@ class BusSeatLayoutService
     {
         return $this->busSeatLayoutRepository->getAll();
     }
+    public function BusSeatLayoutOperator($request)
+    {
+        return $this->busSeatLayoutRepository->BusSeatLayoutOperator($request);
+    }
+    
 
     /**
      * Get  by id.

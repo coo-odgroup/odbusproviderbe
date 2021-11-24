@@ -41,7 +41,13 @@ class BusSeatLayoutRepository
         ->whereNotIn('status', [0,2])
         ->get();
     }
-
+    public function BusSeatLayoutOperator($request)
+    {
+        return $this->busSeatLayout
+        ->whereNotIn('status', [0,2])
+        ->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID'])
+        ->get();
+    }
     public function BusSeatLayoutData($request)
     {
         $paginate = $request['rows_number'] ;

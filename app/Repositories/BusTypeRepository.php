@@ -20,7 +20,16 @@ class BusTypeRepository
         $this->busType = $busType;
     }
 
-    
+    public function getBusTypeOperator($request)
+    {
+        
+        $data=$this->busType->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID'])->get();
+        Log::info($request);
+        Log::info($data);
+        return $data;
+
+    }
+
     public function getAll($request)
     {
         return $this->busType->get();
@@ -85,6 +94,7 @@ class BusTypeRepository
     {
         return $this->busType->where('id', $id)->get();
     }
+
     public function save($data)
     {
        

@@ -41,6 +41,11 @@ class CancellationSlabService
     {
         return $this->cancellationSlabRepository->getAll($request);
     }
+    public function cancellationslabsOperator($request)
+    {
+        return $this->cancellationSlabRepository->cancellationslabsOperator($request);
+    }
+
      /**
      * Get all Data in Datatable Format.
      *

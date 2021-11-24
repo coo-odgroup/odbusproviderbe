@@ -28,6 +28,10 @@ class CancellationSlabController extends Controller
       $cSlab = $this->cancellationSlabService->getAll($request);
       return $this->successResponse($cSlab,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    public function cancellationslabsOperator(Request $request) {
+      $cSlab = $this->cancellationSlabService->cancellationslabsOperator($request);
+      return $this->successResponse($cSlab,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
 
     public function getCancellationSlabDT(Request $request) {
       $cSlab = $this->cancellationSlabService->getCancellationSlabDT($request);

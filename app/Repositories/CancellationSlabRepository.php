@@ -17,7 +17,11 @@ class CancellationSlabRepository
     }
     public function getAll($request)
     {
-        return $this->cancellationSlab->with('SlabInfo') ->get();
+        return $this->cancellationSlab->with('SlabInfo')->where('status','1')->get();
+    }
+    public function cancellationslabsOperator($request)
+    {
+        return $this->cancellationSlab->with('SlabInfo')->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID'])->where('status','1')->get();
     }
 
     public function cancellationslabData($request)

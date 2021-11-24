@@ -37,6 +37,10 @@ class BusSeatLayoutController extends Controller
         $busSeatLayout = $this->busSeatLayoutService->getAll();
         return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    public function BusSeatLayoutOperator(Request $request) {
+        $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutOperator($request);
+        return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
     public function save(Request $request) {
         $data = $request->only([
           'name',
