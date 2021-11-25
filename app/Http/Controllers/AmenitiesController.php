@@ -71,22 +71,19 @@ class AmenitiesController extends Controller
       }	
     } 
 
-    public function updateAmenities(Request $request) {
-      
-        $data = $request->only([
-          'id',
-          'name',
-          'icon',
-          'created_by'
-        ]);
-        $amenitiesValidation = $this->AmenitiesValidator->validate($data);
-        try {
-          $response = $this->amenitiesService->updatePost($data);
-          return $this->successResponse($response, "Amenities Updated", Response::HTTP_CREATED);
+    public function updateAmenities(Request $request) {      
 
-      } catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
+       $response =  $this->amenitiesService->updatePost($request);
+
+           if($response=='Amenities Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Amenities Updated", Response::HTTP_CREATED);
+           }
+     
     }
 
     public function deleteAmenities ($id) {

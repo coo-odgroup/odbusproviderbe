@@ -152,33 +152,46 @@ class AmenitiesRepository
      */
     public function update($data)
     {
+        // Log::info($data);exit;
         $amentiyId = $data['id'];
-        $amenity_data = $this->amenities->where('id', $amentiyId)->get();
-        $amenity = $this->amenities->find($amentiyId); 
-        $file = collect($data)->get('icon');
 
-        if(($file)!='null'){
-            $amenity=$this->getModel($data,$amenity);
-            $filename  = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $picture   = $filename;
-            $amenity->amenities_image = $picture;
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
-            
-            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'.$amenity_data[0]->amenities_image;
-            
-            if($amenity_data[0]->amenities_image != ''){
-              
-               if(File::exists($old_image_path_consumer)){
-                unlink($old_image_path_consumer);
-              }
-                    
-                }   
-        }else{
-             $amenity=$this->getModel($data,$amenity);
+        $duplicate_data = $this->amenities
+                               ->where('name',$data['name'])
+                               ->where('id','!=',$amentiyId)
+                               ->get();
+        if(count($duplicate_data)==0)
+        {
+            $amenity_data = $this->amenities->where('id', $amentiyId)->get();
+            $amenity = $this->amenities->find($amentiyId); 
+            $file = collect($data)->get('icon');
+
+            if(($file)!='null'){
+                $amenity=$this->getModel($data,$amenity);
+                $filename  = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $picture   = $filename;
+                $amenity->amenities_image = $picture;
+                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
+                
+                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'.$amenity_data[0]->amenities_image;
+                
+                if($amenity_data[0]->amenities_image != ''){
+                  
+                   if(File::exists($old_image_path_consumer)){
+                    unlink($old_image_path_consumer);
+                  }
+                        
+                    }   
+            }else{
+                 $amenity=$this->getModel($data,$amenity);
+            }
+            $amenity->update();
+            return $amenity;
         }
-        $amenity->update();
-        return $amenity;
+        else
+        {
+            return 'Amenities Already Exist';
+        }        
     }
     /**
      * Update amenities

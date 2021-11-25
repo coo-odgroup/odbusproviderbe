@@ -62,19 +62,16 @@ class OdbusChargesController extends Controller
 
     public function update(Request $request) {
 
-      $data = $request->all();
-        $odbusChargesValidation = $this->odbusChargesValidator->validate($data);
-        if ($odbusChargesValidation->fails()) {
-          $errors = $odbusChargesValidation->errors();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        try {
-          $response = $this->odbusChargesService->updatePost($data);
-          return $this->successResponse($response,"Master Settings Updated", Response::HTTP_CREATED);
+          $response = $this->odbusChargesService->updatePost($request);
 
-      } catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
+           if($response=='Opertaor already taken')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Master Settings Updated", Response::HTTP_CREATED);
+           }
     }
 
     public function getById($id) { 

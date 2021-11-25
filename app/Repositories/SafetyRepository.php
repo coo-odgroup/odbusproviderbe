@@ -157,42 +157,54 @@ class SafetyRepository
      */
     public function update($data)
     {
-        $id = $data['id'] ;
-        $safety_detail  = $this->safety->where('id', $id)->get();
-        $existing_image = $safety_detail[0]->safety_image;
-
-        $safety = $this->safety->find($id);
-        $file = collect($data)->get('icon');
-        if($file !="null")
+        // Log:info($data);
+        $id = $data['id'] ;      
+        $duplicate_data = $this->safety
+                               ->where('name',$data['name'])
+                               ->where('id','!=',$id )
+                               ->get();
+        if(count($duplicate_data)==0)
         {
-            $safety=$this->getModel($data,$safety);
-            $filename  = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $picture =  rand().'-'.$filename;
-            $safety->safety_image =  $picture;
-       
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
-         
+            $safety_detail  = $this->safety->where('id', $id)->get();
+            $existing_image = $safety_detail[0]->safety_image;
 
-            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$existing_image;
-         
-
-           if($safety_detail[0]->safety_image!='')
+            $safety = $this->safety->find($id);
+            $file = collect($data)->get('icon');
+            if($file !="null")
             {
-                if(File::exists($old_image_path_consumer))
-             {
-                    unlink($old_image_path_consumer);
-                  
-             }  
-            } 
-                   
+                $safety=$this->getModel($data,$safety);
+                $filename  = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $picture =  rand().'-'.$filename;
+                $safety->safety_image =  $picture;
+           
+                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+             
+
+                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$existing_image;
+             
+
+               if($safety_detail[0]->safety_image!='')
+                {
+                    if(File::exists($old_image_path_consumer))
+                 {
+                        unlink($old_image_path_consumer);
+                      
+                 }  
+                } 
+                       
+            }
+            else
+            {
+                 $safety=$this->getModel($data,$safety);
+            }
+            $safety->update();
+            return $safety;
         }
         else
         {
-             $safety=$this->getModel($data,$safety);
-        }
-        $safety->update();
-        return $safety;
+            return 'Safety Already Exist';
+        } 
     }
     /**
      * Update safety
