@@ -19,7 +19,7 @@ class Location extends Model
     } 
     public function boardingDropping()
     {
-        return $this->hasMany(BoardingDroping::class);
+        return $this->hasMany(BoardingDroping::class)->where('status','!=',2);
         
     } 
     public function busStoppageTiming()
@@ -30,6 +30,6 @@ class Location extends Model
     protected $hidden = [
         'created_at',
         'updated_at',
-        'created_by',
+        
     ];
 }

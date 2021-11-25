@@ -98,7 +98,7 @@ class LocationController extends Controller
     
         try {
             $this->locationService->addPostData($data);
-            return $this->successResponse(null, "Location Added", Response::HTTP_CREATED);
+            return $this->successResponse(null, "Location Added Successfully. Waiting for Approval", Response::HTTP_CREATED);
         }
         catch(Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

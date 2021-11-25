@@ -51,7 +51,7 @@ class BoardingDropingRepository
         $stoppages=[];
         foreach($data['boarding_point'] as $stoppage)
         {
-            //Log::info($stoppage);
+            
             $boardingdroping = new $this->boardingDroping;
             $boardingdroping->location_id = $data['location_id'];
             $boardingdroping->boarding_point = $stoppage['boarding_point'];
@@ -65,13 +65,12 @@ class BoardingDropingRepository
     public function update($data, $id)
     {
 
-        $this->location=$this->location->find($id);
-        $this->location->boardingDropping()->delete();
-        
+       
+        $this->boardingDroping->where('location_id',$id)->update(['status'=>2]);
+        $this->location=$this->location->find($data['location_id']);
         $stoppages=[];
         foreach($data['boarding_point'] as $stoppage)
         {
-            //Log::info($stoppage);
             $boardingdroping = new $this->boardingDroping;
             $boardingdroping->location_id = $data['location_id'];
             $boardingdroping->boarding_point = $stoppage['boarding_point'];
@@ -153,7 +152,11 @@ class BoardingDropingRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->location->with('boardingDropping')->whereNotIn('status', [2])->orderBy('id','DESC');
+        $data= $this->location->with('boardingDropping')->where('status','!=' ,2)
+                            ->whereHas('boardingDropping', function ($query){
+                                   $query->where('status', '!=','2');               
+                               })
+                               ->orderBy('id','DESC');
         
         if($paginate=='all') 
         {
@@ -166,12 +169,15 @@ class BoardingDropingRepository
         if($name!=null)
         { 
             $data = $data->where(function($query) use ($name) {
-                        $query->where('name','like', '%' .$name . '%')
-                        ->orWhereHas('boardingDropping', function ($query) use ($name) {$query->where('boarding_point', 'like', '%' .$name . '%');});
+                        $query->where('name','like', '%' .$name . '%');
                     });                       
-        }     
+        }
+        
+       
 
         $data=$data->paginate($paginate);
+        
+
         
         $response = array(
              "count" => $data->count(), 

@@ -91,6 +91,7 @@ class LocationRepository
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
+             "test" => "hello",
             "data" => $data
            );   
            return $response; 
