@@ -10,7 +10,7 @@ class OdbusChargesValidator
     public function validate($data) { 
         
         $rules = [
-            'bus_operator_id' => 'required',
+            'bus_operator_id' => 'required|unique:odbus_charges,bus_operator_id',
             'payment_gateway_charges' => 'required',
             'email_sms_charges' => 'required',
             'odbus_gst_charges' => 'required',
@@ -20,9 +20,7 @@ class OdbusChargesValidator
             'request_email' => 'required',
             'mobile_no_1' => 'required',
             'mobile_no_2' => 'required',
-            'mobile_no_3' => 'required',
-           
-
+            'mobile_no_3' => 'required'          
         ];      
       
         $odbusChargesValidation = Validator::make($data, $rules);
