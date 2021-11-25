@@ -50,12 +50,14 @@ class AmenitiesController extends Controller
     }
     
     public function createAmenities(Request $request) {
+      // log::info($request);exit;
         $data = $request->only([
           'name',
           'icon',
           'created_by',
         ]);
         $AmenitiesValidation = $this->AmenitiesValidator->validate($data);
+        
         if ($AmenitiesValidation->fails()) {
           $errors = $AmenitiesValidation->errors();
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
