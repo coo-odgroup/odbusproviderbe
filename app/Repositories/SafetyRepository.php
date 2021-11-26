@@ -133,21 +133,31 @@ class SafetyRepository
     public function save($data)
     {
         $picture="";
-        $safetyObject = new $this->safety;
-        $safety=$this->getModel($data,$safetyObject);
+        $duplicate_data = $this->safety
+                               ->where('name',$data['name'])
+                               ->where('status','!=',2)
+                               ->get();
+        if(count($duplicate_data)==0)
+        {
+            $safetyObject = new $this->safety;
+            $safety=$this->getModel($data,$safetyObject);
 
-        $file = collect($data)->get('icon');     
-        if(($file)!=null){
-            $filename  = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $picture   =  rand().'-'.$filename;
-            $safety->safety_image = $picture;
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+            $file = collect($data)->get('icon');     
+            if(($file)!=null){
+                $filename  = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $picture   =  rand().'-'.$filename;
+                $safety->safety_image = $picture;
+                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+           }
 
-       }
-
-        $safety->save();
-        return $safety;
+            $safety->save();
+            return $safety;
+        }
+        else
+        {
+             return 'Safety Already Exist';
+        }
     }
     /**
      * Update safety

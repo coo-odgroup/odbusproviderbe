@@ -10,7 +10,7 @@ class AmenitiesValidator
     public function validate($data) { 
         
         $rules = [
-            'name' => 'required|max:50|unique:amenities,name',
+            'name' => 'required|max:50',
             'icon' => 'required',
             'created_by' => 'required',
         ];      

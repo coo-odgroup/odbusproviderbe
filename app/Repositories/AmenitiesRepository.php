@@ -128,21 +128,37 @@ class AmenitiesRepository
      */
     public function save($data)
     {
-        $amenity = new $this->amenities;
-        $amenity=$this->getModel($data,$amenity);
-        $file = collect($data)->get('icon');
-       
-        if(($file)!=null){
 
-            $filename  = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $picture   = $filename;
-            $amenity->amenities_image = $picture;
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
-            // copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/' .$picture);
-       }
-        $amenity->save();
-        return $amenity;
+        $duplicate_data = $this->amenities
+                               ->where('name',$data['name'])
+                               ->where('status','!=',2)
+                               ->get();
+        if(count($duplicate_data)==0)
+        {
+            $amenity = new $this->amenities;
+            $amenity=$this->getModel($data,$amenity);
+            $file = collect($data)->get('icon');
+           
+            if(($file)!=null){
+
+                $filename  = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $picture   = $filename;
+                $amenity->amenities_image = $picture;
+                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
+                // copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/' .$picture);
+           }
+            $amenity->save();
+            return $amenity;
+
+        }
+        else
+        {
+            return 'Amenities Already Exist';
+        }
+
+
+        
     }
     /**
      * Update amenities
@@ -152,12 +168,12 @@ class AmenitiesRepository
      */
     public function update($data)
     {
-        // Log::info($data);exit;
         $amentiyId = $data['id'];
 
         $duplicate_data = $this->amenities
                                ->where('name',$data['name'])
                                ->where('id','!=',$amentiyId)
+                               ->where('status','!=',2)
                                ->get();
         if(count($duplicate_data)==0)
         {

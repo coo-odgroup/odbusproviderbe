@@ -84,31 +84,44 @@ class OdbusChargesRepository
      */
     public function save($data)
     {  
-        $odbusChargesObject = new $this->odbusCharges;
-        $odbusCharges=$this->getModel($data,$odbusChargesObject);
+        $duplicate_data = $this->odbusCharges
+                               ->where('bus_operator_id',$data['bus_operator_id'])
+                               ->where('status','!=',2)
+                               ->get();
+        if(count($duplicate_data)==0)
+        {
+            $odbusChargesObject = new $this->odbusCharges;
+            $odbusCharges=$this->getModel($data,$odbusChargesObject);
 
-        $favIcon_file = collect($data)->get('favicon_image');     
-        if($favIcon_file!="" ){
-            $filename  = $favIcon_file->getClientOriginalName();
-            $extension = $favIcon_file->getClientOriginalExtension();
-            $favIcon_picture   =  rand().'-'.$filename;
-            $odbusCharges->favicon_image = $favIcon_picture;
-            $favIcon_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/', $favIcon_picture);          
-       }
+            $favIcon_file = collect($data)->get('favicon_image');     
+            if($favIcon_file!="" ){
+                $filename  = $favIcon_file->getClientOriginalName();
+                $extension = $favIcon_file->getClientOriginalExtension();
+                $favIcon_picture   =  rand().'-'.$filename;
+                $odbusCharges->favicon_image = $favIcon_picture;
+                $favIcon_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/', $favIcon_picture);          
+           }
 
-       $logo_file = collect($data)->get('logo_image');     
-        if(($logo_file)!=""){
+           $logo_file = collect($data)->get('logo_image');     
+            if(($logo_file)!=""){
 
-            $filename  = $logo_file->getClientOriginalName();
-            $extension = $logo_file->getClientOriginalExtension();
-            $logo_picture   =  rand().'-'.$filename;
+                $filename  = $logo_file->getClientOriginalName();
+                $extension = $logo_file->getClientOriginalExtension();
+                $logo_picture   =  rand().'-'.$filename;
 
-            $odbusCharges->logo_image = $logo_picture;
-            $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture); 
-       }
+                $odbusCharges->logo_image = $logo_picture;
+                $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture); 
+           }
 
-        $odbusCharges->save();
-        return $odbusCharges;
+            $odbusCharges->save();
+            return $odbusCharges;
+
+        }
+        else
+        {
+            return 'Opertaor already taken';
+        }
+        
     }
     /**
      * Update Settings
@@ -123,6 +136,7 @@ class OdbusChargesRepository
         $duplicate_data = $this->odbusCharges
                                ->where('bus_operator_id',$data['bus_operator_id'])
                                ->where('id','!=',$id)
+                               ->where('status','!=',2)
                                ->get();
         if(count($duplicate_data)==0)
         {

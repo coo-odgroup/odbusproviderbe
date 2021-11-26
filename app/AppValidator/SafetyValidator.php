@@ -10,7 +10,7 @@ class SafetyValidator
     public function validate($data) { 
         
         $rules = [
-            'name' => 'required|max:50|unique:safety,name'
+            'name' => 'required|max:50'
         ];      
       
         $safetyValidation = Validator::make($data, $rules);

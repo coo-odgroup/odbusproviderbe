@@ -44,25 +44,16 @@ class OdbusChargesController extends Controller
     }
    
     public function save(Request $request) {
-      // Log::info($request);exit;
+
       $data = $request->all();
         $odbusChargesValidation = $this->odbusChargesValidator->validate($data);
         if ($odbusChargesValidation->fails()) {
           $errors = $odbusChargesValidation->errors();
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
-        try {
-          $response = $this->odbusChargesService->savePostData($data);
-          return $this->successResponse($response, "Master Settings Added", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }	
-    } 
-
-    public function update(Request $request) {
-
-          $response = $this->odbusChargesService->updatePost($request);
+         else
+        {
+           $response = $this->odbusChargesService->savePostData($data);
 
            if($response=='Opertaor already taken')
            {
@@ -70,8 +61,32 @@ class OdbusChargesController extends Controller
            }
            else
            {
-               return $this->successResponse($response,"Master Settings Updated", Response::HTTP_CREATED);
+               return $this->successResponse($response,"Master Settings Added", Response::HTTP_CREATED);
            }
+        }
+    } 
+
+    public function update(Request $request) {
+      $data = $request->all();
+
+      $odbusChargesValidation = $this->odbusChargesValidator->validate($data);
+      if ($odbusChargesValidation->fails()) {
+        $errors = $odbusChargesValidation->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      }
+      else
+      {
+        $response = $this->odbusChargesService->updatePost($request);
+
+        if($response=='Opertaor already taken')
+        {
+          return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+        }
+        else
+        {
+         return $this->successResponse($response,"Master Settings Updated", Response::HTTP_CREATED);
+        }
+      }
     }
 
     public function getById($id) { 

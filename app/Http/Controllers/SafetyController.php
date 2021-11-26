@@ -63,24 +63,41 @@ class SafetyController extends Controller
         $data = $request->only([
           'name','created_by','icon'
         ]);
+
         $safetyValidation = $this->safetyValidator->validate($data);
         if ($safetyValidation->fails()) {
           $errors = $safetyValidation->errors();
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
-        try {
-          $response = $this->safetyService->savePostData($data);
-          return $this->successResponse($response, "Safety Added", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }	
+        else
+        {
+          $response =  $this->safetyService->savePostData($request);
+
+           if($response=='Safety Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Safety Added", Response::HTTP_CREATED);
+           }
+        }
     } 
 
     public function update(Request $request) {
-      
-      
-        $response =  $this->safetyService->updatePost($request);
+     
+       $data = $request->only([
+          'name','created_by','icon','id'
+        ]);
+        
+        $safetyValidation = $this->safetyValidator->validate($data);
+        if ($safetyValidation->fails()) {
+          $errors = $safetyValidation->errors();
+          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        else
+        {
+          $response =  $this->safetyService->updatePost($data);
 
            if($response=='Safety Already Exist')
            {
@@ -90,6 +107,8 @@ class SafetyController extends Controller
            {
                return $this->successResponse($response,"Safety Updated", Response::HTTP_CREATED);
            }
+
+        }
     }
 
     public function delete ($id) {

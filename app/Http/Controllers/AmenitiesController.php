@@ -50,7 +50,7 @@ class AmenitiesController extends Controller
     }
     
     public function createAmenities(Request $request) {
-      // log::info($request);exit;
+    
         $data = $request->only([
           'name',
           'icon',
@@ -62,18 +62,44 @@ class AmenitiesController extends Controller
           $errors = $AmenitiesValidation->errors();
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
-        try {
-          $response = $this->amenitiesService->savePostData($data);
-          return $this->successResponse($response, "Amenities Added", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }	
+        else
+        {
+           $response = $this->amenitiesService->savePostData($data);
+
+           if($response=='Amenities Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Amenities Added", Response::HTTP_CREATED);
+           }
+        }
+      //   try {
+      //     $response = $this->amenitiesService->savePostData($data);
+      //     return $this->successResponse($response, "Amenities Added", Response::HTTP_CREATED);
+      // }
+      // catch(Exception $e){
+      //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      // }	
     } 
 
     public function updateAmenities(Request $request) {      
 
-       $response =  $this->amenitiesService->updatePost($request);
+      $data = $request->only([
+          'name',
+          'icon',
+          'created_by','id'
+        ]);
+        $AmenitiesValidation = $this->AmenitiesValidator->validate($data);
+        
+        if ($AmenitiesValidation->fails()) {
+          $errors = $AmenitiesValidation->errors();
+          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        else
+        {
+           $response =  $this->amenitiesService->updatePost($data);
 
            if($response=='Amenities Already Exist')
            {
@@ -83,6 +109,10 @@ class AmenitiesController extends Controller
            {
                return $this->successResponse($response,"Amenities Updated", Response::HTTP_CREATED);
            }
+          
+        }
+
+      
      
     }
 
