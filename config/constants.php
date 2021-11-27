@@ -22,7 +22,8 @@ return [
     'VERIFIED' => 'otp verification is successful',
     'REGT_SUCCESS' => 'Registration Successful',
     //'UPLOAD_PATH_CONSUMER' => '../../odbusconsumerbe/public/uploads/',
-    'UPLOAD_PATH_CONSUMER' => '/home/neoflix/consumer.neoflix.in/public/uploads/',
+    //'UPLOAD_PATH_CONSUMER' => '/home/neoflix/consumer.neoflix.in/public/uploads/',
+    'UPLOAD_PATH_CONSUMER' => '/home/odbusco/consumer.odbus.co.in/public/uploads/',
     
 ];
 
