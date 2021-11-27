@@ -185,6 +185,7 @@ class UserRepository
         $query =$this->user->where([
             ['phone', $request['phone']]  
         ]);
+        $request->request->add(['name' => 'Agent']);
           // ->where('status', '1');
            
     $registeredAgent = $query->exists();
@@ -193,6 +194,7 @@ class UserRepository
         $agent = new $this->user; 
         $otp = $this->sendOtp($request);
         $agent->phone = $request['phone'];
+        $agent->role_id = '3';
         $agent->otp = $otp;
         $agent->save();
         return $agent;
@@ -210,12 +212,12 @@ class UserRepository
                     return "Registered Agent";
             }
            
-         }
-    
+         }   
 }
 public function sendOtp($request){
     $otp = rand(10000, 99999);
-        $sendsms = $this->channelRepository->sendSms($request,$otp);  
+        $sendsms = $this->channelRepository->sendSms($request,$otp); 
+        //return $sendsms; 
     return  $otp;
 }
 public function verifyOtp($request){
