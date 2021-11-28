@@ -67,7 +67,7 @@ class LocationRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->location->whereNotIn('status', [2])->orderBy('id','DESC');
+        $data= $this->location->whereNotIn('status', [2])->orderBy('name','ASC');
 
 
         if($paginate=='all') 

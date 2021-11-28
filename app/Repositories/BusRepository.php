@@ -8,6 +8,7 @@ use App\Models\BusSitting;
 use App\Models\BusStoppage;
 use App\Models\BusAmenities;
 use App\Models\Amenities;
+use App\Models\Location;
 use App\Models\User;
 use App\Models\TicketPrice;
 use App\Models\cancelationSlab;
@@ -24,7 +25,7 @@ class BusRepository
     protected $ticketPrice;
     public function __construct(Bus $bus,BusSchedule $busSchedule, BusType $busType, BusSitting $busSitting,
      BusStoppage $busStoppage, BusAmenities $busAmenities, Amenities $amenities,
-      BoardingDroping $boardingDroping, User $user,BusScheduleDate $busScheduleDate, Seats $seats, TicketPrice $ticketPrice)
+      BoardingDroping $boardingDroping, User $user,BusScheduleDate $busScheduleDate, Seats $seats, TicketPrice $ticketPrice,Location $location)
     {
         $this->bus = $bus;
         $this->busSchedule = $busSchedule;
@@ -38,6 +39,7 @@ class BusRepository
         $this->busScheduleDate = $busScheduleDate;
         $this->Seats = $seats;
         $this->ticketPrice=$ticketPrice;
+        $this->location = $location;       
     }
     public function getAll()
     {
@@ -319,7 +321,8 @@ class BusRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;       
 
-        $data= $this->bus->whereNotIn('status', [2])->orderBy('id','DESC');
+        $data= $this->bus->with('busOperator','busstoppage')->whereNotIn('status', [2])->orderBy('id','DESC');
+
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
             $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
@@ -337,11 +340,17 @@ class BusRepository
         {
             $data = $data->where('name', 'like', '%' .$name . '%')
                          ->orWhere('bus_number', 'like', '%' .$name . '%')
-                         ->orWhere('via', 'like', '%' .$name . '%');
-                                             
+                         ->orWhere('via', 'like', '%' .$name . '%');                                             
         }     
 
         $data=$data->paginate($paginate);
+       
+        if($data){
+            foreach($data as $key=>$v){            
+                    $v['from_location']=$this->location->where('id', $v['busstoppage'][0]['source_id'])->get();
+                    $v['to_location']=$this->location->where('id',$v['busstoppage'][0]['destination_id'])->get();    
+            }
+        }
         
         $response = array(
              "count" => $data->count(), 
