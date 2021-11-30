@@ -135,16 +135,14 @@ class BusGalleryRepository
      */
     public function update($data)
     {
-        
-        //$post = $this->busGallery->find($id);
-
         $busGalleryId = $data['id'];
-        $gallery_data = $this->busGallery->where('id', $busGalleryId)->get();
-       
+        $gallery_data = $this->busGallery->where('id', $busGalleryId)->where('status','1')->get();
+   
         $busGallery = $this->busGallery->find($busGalleryId); 
         $file = collect($data)->get('icon');
       
         if(($file)!='null'){
+            
             $busGallery = $this->getModel($data,$busGallery);
             $filename  = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
@@ -156,7 +154,7 @@ class BusGalleryRepository
               
                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'.$gallery_data[0]->bus_image;
         
-                if(File::exists($old_image_path_consumer) && File::exists($old_image_path_provider)){
+                if(File::exists($old_image_path_consumer)){
                         unlink($old_image_path_consumer);
                 }
             }      
