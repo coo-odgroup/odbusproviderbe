@@ -61,7 +61,7 @@ class SafetyController extends Controller
     
     public function save(Request $request) {
         $data = $request->only([
-          'name','created_by','icon'
+          'name','created_by','icon','android_image'
         ]);
 
         $safetyValidation = $this->safetyValidator->validate($data);
@@ -87,7 +87,7 @@ class SafetyController extends Controller
     public function update(Request $request) {
      
        $data = $request->only([
-          'name','created_by','icon','id'
+          'name','created_by','icon','id','android_image'
         ]);
         
         $safetyValidation = $this->safetyValidator->validate($data);
