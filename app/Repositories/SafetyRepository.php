@@ -176,7 +176,7 @@ class SafetyRepository
      */
     public function update($data)
     {
-        // Log:info($data);
+       
         $id = $data['id'] ;      
         $duplicate_data = $this->safety
                                ->where('name',$data['name'])
@@ -184,14 +184,15 @@ class SafetyRepository
                                ->where('status','!=',2)
                                ->get();
         if(count($duplicate_data)==0)
-        {
+        {  
             $safety_detail  = $this->safety->where('id', $id)->get();
             $existing_image = $safety_detail[0]->safety_image;
 
             $safety = $this->safety->find($id);
             $webfile = collect($data)->get('icon');
-            if($webfile !=null)
+            if($webfile!=null)
             {
+                
                 $safety=$this->getModel($data,$safety);
                 $filename  = $webfile->getClientOriginalName();
                 $extension = $webfile->getClientOriginalExtension();
@@ -215,8 +216,8 @@ class SafetyRepository
                        
             }
             $file = collect($data)->get('android_image');
-            if($file != null)
-            {
+            if($file!= null)
+            {   
                 $safety=$this->getModel($data,$safety);
                 $filename  = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
