@@ -346,7 +346,7 @@ class BusRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;       
 
-        $data= $this->bus->with('busOperator','busstoppage')->whereNotIn('status', [2])->orderBy('id','DESC');
+        $data= $this->bus->with('busOperator','busstoppage','ticketPrice')->whereNotIn('status', [2])->orderBy('id','DESC');
 
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
@@ -369,14 +369,18 @@ class BusRepository
         }     
 
         $data=$data->paginate($paginate);
-       
+        ;
         if($data){
-            foreach($data as $key=>$v){            
-                    $v['from_location']=$this->location->where('id', $v['busstoppage'][0]['source_id'])->get();
-                    $v['to_location']=$this->location->where('id',$v['busstoppage'][0]['destination_id'])->get();    
+            foreach($data as $key=>$v){ 
+          
+                if(isset($v['busstoppage'][0]))
+                {                    
+                     $v['from_location']=$this->location->where('id', $v['busstoppage'][0]['source_id'])->get();
+                    $v['to_location']=$this->location->where('id',$v['busstoppage'][0]['destination_id'])->get();
+                }      
             }
         }
-        
+    
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
