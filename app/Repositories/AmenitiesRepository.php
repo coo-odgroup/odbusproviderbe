@@ -128,6 +128,7 @@ class AmenitiesRepository
      */
     public function save($data)
     {
+        // Log::info($data);exit;
 
         $duplicate_data = $this->amenities
                                ->where('name',$data['name'])
@@ -140,13 +141,21 @@ class AmenitiesRepository
             $file = collect($data)->get('icon');
            
             if(($file)!=null){
-
                 $filename  = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $picture   = $filename;
                 $amenity->amenities_image = $picture;
                 $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
-                // copy(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'. $picture, Config::get('constants.UPLOAD_PATH_PROVIDER').'amenities/' .$picture);
+                
+           }
+             $androidfile = collect($data)->get('android_image');
+           if(($androidfile)!=null){
+                $filename  = $androidfile->getClientOriginalName();
+                $extension = $androidfile->getClientOriginalExtension();
+                $androidpicture   = $filename;
+                $amenity->android_image = $androidpicture;
+                $androidfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $androidpicture);
+                
            }
             $amenity->save();
             return $amenity;
@@ -168,6 +177,9 @@ class AmenitiesRepository
      */
     public function update($data)
     {
+
+        // Log::info($data);exit;
+
         $amentiyId = $data['id'];
 
         $duplicate_data = $this->amenities
@@ -181,7 +193,7 @@ class AmenitiesRepository
             $amenity = $this->amenities->find($amentiyId); 
             $file = collect($data)->get('icon');
 
-            if(($file)!='null'){
+            if(($file)!=null){
                 $amenity=$this->getModel($data,$amenity);
                 $filename  = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
@@ -198,7 +210,30 @@ class AmenitiesRepository
                   }
                         
                     }   
-            }else{
+            }
+
+             $androidfile = collect($data)->get('android_image');
+
+            if(($androidfile)!=null){
+                $amenity=$this->getModel($data,$amenity);
+                $filename  = $androidfile->getClientOriginalName();
+                $extension = $androidfile->getClientOriginalExtension();
+                $androidpicture   = $filename;
+                $amenity->android_image = $androidpicture;
+                $androidfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $androidpicture);
+                
+                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'.$amenity_data[0]->android_image;
+                
+                if($amenity_data[0]->android_image != ''){
+                  
+                   if(File::exists($old_image_path_consumer)){
+                    unlink($old_image_path_consumer);
+                  }
+                        
+                    }   
+            }
+
+            else{
                  $amenity=$this->getModel($data,$amenity);
             }
             $amenity->update();

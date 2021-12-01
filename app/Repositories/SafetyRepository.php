@@ -132,7 +132,8 @@ class SafetyRepository
      */
     public function save($data)
     {
-        $picture="";
+        // Log::info($data);exit;
+   
         $duplicate_data = $this->safety
                                ->where('name',$data['name'])
                                ->where('status','!=',2)
@@ -142,13 +143,21 @@ class SafetyRepository
             $safetyObject = new $this->safety;
             $safety=$this->getModel($data,$safetyObject);
 
-            $file = collect($data)->get('icon');     
-            if(($file)!=null){
-                $filename  = $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
-                $picture   =  rand().'-'.$filename;
-                $safety->safety_image = $picture;
-                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+            $webfile = collect($data)->get('icon');     
+            if(($webfile)!=null){
+                $filename  = $webfile->getClientOriginalName();
+                $extension = $webfile->getClientOriginalExtension();
+                $webPicture   =  rand().'-'.$filename;
+                $safety->safety_image = $webPicture;
+                $webfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $webPicture);
+           }
+           $androidfile = collect($data)->get('android_image');     
+            if(($androidfile)!=null){
+                $filename  = $androidfile->getClientOriginalName();
+                $extension = $androidfile->getClientOriginalExtension();
+                $androidPicture   =  rand().'-'.$filename;
+                $safety->android_image = $androidPicture;
+                $androidfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $androidPicture);
            }
 
             $safety->save();
@@ -167,34 +176,61 @@ class SafetyRepository
      */
     public function update($data)
     {
-        // Log:info($data);
+       
         $id = $data['id'] ;      
         $duplicate_data = $this->safety
                                ->where('name',$data['name'])
                                ->where('id','!=',$id )
+                               ->where('status','!=',2)
                                ->get();
         if(count($duplicate_data)==0)
-        {
+        {  
             $safety_detail  = $this->safety->where('id', $id)->get();
             $existing_image = $safety_detail[0]->safety_image;
 
             $safety = $this->safety->find($id);
-            $file = collect($data)->get('icon');
-            if($file !="null")
+            $webfile = collect($data)->get('icon');
+            if($webfile!=null)
             {
+                
                 $safety=$this->getModel($data,$safety);
-                $filename  = $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
+                $filename  = $webfile->getClientOriginalName();
+                $extension = $webfile->getClientOriginalExtension();
                 $picture =  rand().'-'.$filename;
                 $safety->safety_image =  $picture;
            
-                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+                $webfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
              
 
                 $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$existing_image;
              
 
                if($safety_detail[0]->safety_image!='')
+                {
+                    if(File::exists($old_image_path_consumer))
+                 {
+                        unlink($old_image_path_consumer);
+                      
+                 }  
+                } 
+                       
+            }
+            $file = collect($data)->get('android_image');
+            if($file!= null)
+            {   
+                $safety=$this->getModel($data,$safety);
+                $filename  = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $picture =  rand().'-'.$filename;
+                $safety->android_image =  $picture;
+           
+                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+             
+
+                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$safety_detail[0]->android_image;
+             
+
+               if($safety_detail[0]->android_image!='')
                 {
                     if(File::exists($old_image_path_consumer))
                  {

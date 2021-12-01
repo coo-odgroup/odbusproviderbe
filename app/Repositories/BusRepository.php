@@ -22,7 +22,7 @@ class BusRepository
 {
     protected $bus;
     protected $seats;
-    protected $ticketPrice;
+    protected $ticketPrice; 
     public function __construct(Bus $bus,BusSchedule $busSchedule, BusType $busType, BusSitting $busSitting,
      BusStoppage $busStoppage, BusAmenities $busAmenities, Amenities $amenities,
       BoardingDroping $boardingDroping, User $user,BusScheduleDate $busScheduleDate, Seats $seats, TicketPrice $ticketPrice,Location $location)
@@ -43,9 +43,26 @@ class BusRepository
     }
     public function getAll()
     {
-        return $this->bus->with('cancellationslabs')
+        $data = $this->bus->with('cancellationslabs','ticketPrice')
         ->orderBy('name','ASC')
         ->get(); 
+
+        if($data){
+            foreach($data as $v){ 
+             foreach($v->ticketPrice as $k => $a)
+             {             
+             
+                $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+           }
+               $v['from_location']=$stoppages['source'][0];
+               $v['to_location']=$stoppages['destination'][0];
+       }
+
+   }
+     
+        return $data;
+
     }
     public function getByOperaor($id)
     {
@@ -283,8 +300,8 @@ class BusRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->bus->whereNotIn('status', [2])->orderBy('id','DESC');
-
+        $data= $this->bus->with('busOperator','busstoppage')->whereNotIn('status', [2])->orderBy('id','DESC');
+      
 
         if($paginate=='all') 
         {
@@ -305,12 +322,20 @@ class BusRepository
 
         $data=$data->paginate($paginate);
         
+        if($data){
+            foreach($data as $key=>$v){            
+                    $v['from_location']=$this->location->where('id', $v['busstoppage'][0]['source_id'])->get();
+                    $v['to_location']=$this->location->where('id',$v['busstoppage'][0]['destination_id'])->get();    
+            }
+        }
+        
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
             "data" => $data
            );   
            return $response; 
+          
         
         
     }
