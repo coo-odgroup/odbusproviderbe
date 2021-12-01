@@ -210,8 +210,7 @@ class BusScheduleRepository
             $busScheduledateModels[] =  $busScheduleDate;
         }        
         $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
-        return $busScheduledateModels;
-        
+        return $busScheduledateModels;    
      }
 
     /**
@@ -227,7 +226,7 @@ class BusScheduleRepository
         $this->bus->update(); 
         $this->busSchedule = $this->busSchedule->find($id);
         //TOD Latter,Write Enhanced Query
-        // $this->busSchedule->BusScheduleDate()->delete();  
+         $this->busSchedule->BusScheduleDate()->delete();  
         $busScheduleDateModels = [];
         $entryDate = $data['entry_date'];
         $busScheduleDate= new BusScheduleDate();
