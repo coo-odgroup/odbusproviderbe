@@ -81,7 +81,7 @@ class SliderRepository
             $extension = $file->getClientOriginalExtension();
             $picture   = $filename;
             $slide->slider_photo = $picture;
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos', $picture);
+            $file->move(public_path('uploads/slider_photos/'), $picture);
        }
         $slide->save();
         return $slide->fresh();
@@ -100,11 +100,11 @@ class SliderRepository
             $extension = $file->getClientOriginalExtension();
             $picture   = $filename;
             $slide->slider_photo = $picture;
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos', $picture);
+            $file->move(public_path('uploads/slider_photos/'), $picture);
            
           if($slider_data[0]->slider_photo !=''){
             
-             $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'slider_photos/'.$slider_data[0]->slider_photo;
+             $old_image_path_consumer = public_path('uploads/slider_photos/').$slider_data[0]->slider_photo;
              if(File::exists($old_image_path_consumer)){
                     unlink($old_image_path_consumer);
                 }     

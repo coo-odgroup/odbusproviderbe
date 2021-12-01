@@ -99,7 +99,7 @@ class OdbusChargesRepository
                 $extension = $favIcon_file->getClientOriginalExtension();
                 $favIcon_picture   =  rand().'-'.$filename;
                 $odbusCharges->favicon_image = $favIcon_picture;
-                $favIcon_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/', $favIcon_picture);          
+                $favIcon_file->move(public_path('uploads/favIcon/'), $favIcon_picture);          
            }
 
            $logo_file = collect($data)->get('logo_image');     
@@ -110,7 +110,7 @@ class OdbusChargesRepository
                 $logo_picture   =  rand().'-'.$filename;
 
                 $odbusCharges->logo_image = $logo_picture;
-                $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture); 
+                $logo_file->move(public_path('uploads/logo/'), $logo_picture); 
            }
 
            $footer_logo = collect($data)->get('footer_logo');     
@@ -121,7 +121,7 @@ class OdbusChargesRepository
                 $footer_picture   =  rand().'-'.$filename;
 
                 $odbusCharges->footer_logo = $footer_picture;
-                $footer_logo->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $footer_picture); 
+                $footer_logo->move(public_path('uploads/logo/'), $footer_picture); 
            }
 
             $odbusCharges->save();
@@ -164,11 +164,11 @@ class OdbusChargesRepository
 
                 $odbusCharges->logo_image = $logo_picture;
 
-                $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture);           
+                $logo_file->move(public_path('uploads/logo/'), $logo_picture);           
 
                 if($charges_detail[0]->logo_image !='')
                 {
-                   $old_logo_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/'.$charges_detail[0]->logo_image;
+                   $old_logo_path_consumer = public_path('uploads/logo/').$charges_detail[0]->logo_image;
 
                    if(File::exists($old_logo_path_consumer) )
                    {
@@ -186,11 +186,11 @@ class OdbusChargesRepository
 
                 $odbusCharges->favicon_image = $favIcon_picture;
 
-                $favIcon_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/', $favIcon_picture);
+                $favIcon_file->move(public_path('uploads/favIcon/'), $favIcon_picture);
 
                 if($charges_detail[0]->favicon_image!='')
                 {              
-                   $old_favIcon_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'favIcon/'.$charges_detail[0]->favicon_image;
+                   $old_favIcon_path_consumer = public_path('uploads/favIcon/').$charges_detail[0]->favicon_image;
                   
                     if(File::exists($old_favIcon_path_consumer))
                    {
@@ -207,11 +207,11 @@ class OdbusChargesRepository
 
                 $odbusCharges->footer_logo = $footer_picture;
 
-                $footer_logo->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $footer_picture);
+                $footer_logo->move(public_path('uploads/logo/'), $footer_picture);
 
                 if($charges_detail[0]->footer_logo!='')
                 {              
-                   $old_footIcon_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/'.$charges_detail[0]->footer_logo;
+                   $old_footIcon_path_consumer = public_path('uploads/logo/').$charges_detail[0]->footer_logo;
                   
                     if(File::exists($old_footIcon_path_consumer))
                    {

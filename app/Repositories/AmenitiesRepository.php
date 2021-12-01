@@ -145,7 +145,7 @@ class AmenitiesRepository
                 $extension = $file->getClientOriginalExtension();
                 $picture   = $filename;
                 $amenity->amenities_image = $picture;
-                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
+                $file->move(public_path('uploads/amenities'), $picture);
                 
            }
              $androidfile = collect($data)->get('android_image');
@@ -154,7 +154,7 @@ class AmenitiesRepository
                 $extension = $androidfile->getClientOriginalExtension();
                 $androidpicture   = $filename;
                 $amenity->android_image = $androidpicture;
-                $androidfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $androidpicture);
+                $androidfile->move(public_path('uploads/amenities'), $androidpicture);
                 
            }
             $amenity->save();
@@ -199,9 +199,9 @@ class AmenitiesRepository
                 $extension = $file->getClientOriginalExtension();
                 $picture   = $filename;
                 $amenity->amenities_image = $picture;
-                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $picture);
+                $file->move( public_path('uploads/amenities/'), $picture);
                 
-                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'.$amenity_data[0]->amenities_image;
+                $old_image_path_consumer =  public_path('uploads/amenities/').$amenity_data[0]->amenities_image;
                 
                 if($amenity_data[0]->amenities_image != ''){
                   
@@ -220,9 +220,9 @@ class AmenitiesRepository
                 $extension = $androidfile->getClientOriginalExtension();
                 $androidpicture   = $filename;
                 $amenity->android_image = $androidpicture;
-                $androidfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities', $androidpicture);
+                $androidfile->move(public_path('uploads/amenities/'), $androidpicture);
                 
-                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'amenities/'.$amenity_data[0]->android_image;
+                $old_image_path_consumer =  public_path('uploads/amenities/').$amenity_data[0]->android_image;
                 
                 if($amenity_data[0]->android_image != ''){
                   

@@ -121,7 +121,7 @@ class BusGalleryRepository
             $extension = $file->getClientOriginalExtension();
             $picture   = $filename;
             $busGallery->bus_image = $picture;
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos', $picture);
+            $file->move(public_path('uploads/bus_photos/'), $picture);
        }
         $busGallery->save();
         return $busGallery;
@@ -148,11 +148,11 @@ class BusGalleryRepository
             $extension = $file->getClientOriginalExtension();
             $picture   = $filename;
             $busGallery->bus_image = $picture;
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos', $picture);
+            $file->move(public_path('uploads/bus_photos/'), $picture);
           
             if($gallery_data[0]->bus_image!=''){
               
-               $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'bus_photos/'.$gallery_data[0]->bus_image;
+               $old_image_path_consumer = public_path('uploads/bus_photos/').$gallery_data[0]->bus_image;
         
                 if(File::exists($old_image_path_consumer)){
                         unlink($old_image_path_consumer);

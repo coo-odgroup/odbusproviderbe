@@ -88,7 +88,7 @@ class BannerRepository
             $extension = $file->getClientOriginalExtension();
             $picture   =  rand().'-'.$filename;
             $banner->banner_image = $picture;
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'operatorbanner/', $picture);          
+            $file->move(public_path('uploads/operatorbanner/'), $picture);          
         }
 
         $banner->save();
@@ -113,9 +113,9 @@ class BannerRepository
             $picture =  rand().'-'.$filename;
             $banner->banner_image =  $picture;
        
-            $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'operatorbanner/', $picture);
+            $file->move(public_path('uploads/operatorbanner/'), $picture);
 
-            $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'operatorbanner/'.$existing_image;
+            $old_image_path_consumer = public_path('uploads/operatorbanner/').$existing_image;
             if(isset($existing_image))
             {
                 if(File::exists($old_image_path_consumer))

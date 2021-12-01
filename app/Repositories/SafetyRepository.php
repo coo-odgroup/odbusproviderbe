@@ -149,7 +149,7 @@ class SafetyRepository
                 $extension = $webfile->getClientOriginalExtension();
                 $webPicture   =  rand().'-'.$filename;
                 $safety->safety_image = $webPicture;
-                $webfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $webPicture);
+                $webfile->move(public_path('uploads/safety/'), $webPicture);
            }
            $androidfile = collect($data)->get('android_image');     
             if(($androidfile)!=null){
@@ -157,7 +157,7 @@ class SafetyRepository
                 $extension = $androidfile->getClientOriginalExtension();
                 $androidPicture   =  rand().'-'.$filename;
                 $safety->android_image = $androidPicture;
-                $androidfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $androidPicture);
+                $androidfile->move(public_path('uploads/safety/'), $androidPicture);
            }
 
             $safety->save();
@@ -199,10 +199,10 @@ class SafetyRepository
                 $picture =  rand().'-'.$filename;
                 $safety->safety_image =  $picture;
            
-                $webfile->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+                $webfile->move(public_path('uploads/safety/'), $picture);
              
 
-                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$existing_image;
+                $old_image_path_consumer = public_path('uploads/safety/').$existing_image;
              
 
                if($safety_detail[0]->safety_image!='')
@@ -224,10 +224,10 @@ class SafetyRepository
                 $picture =  rand().'-'.$filename;
                 $safety->android_image =  $picture;
            
-                $file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/', $picture);
+                $file->move(public_path('uploads/safety/'), $picture);
              
 
-                $old_image_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'safety/'.$safety_detail[0]->android_image;
+                $old_image_path_consumer = public_path('uploads/safety/').$safety_detail[0]->android_image;
              
 
                if($safety_detail[0]->android_image!='')
