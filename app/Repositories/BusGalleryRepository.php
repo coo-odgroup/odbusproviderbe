@@ -136,7 +136,7 @@ class BusGalleryRepository
     public function update($data)
     {
         $busGalleryId = $data['id'];
-        $gallery_data = $this->busGallery->where('id', $busGalleryId)->where('status','1')->get();
+        $gallery_data = $this->busGallery->where('id', $busGalleryId)->where('status','!=',2)->get();
    
         $busGallery = $this->busGallery->find($busGalleryId); 
         $file = collect($data)->get('icon');
