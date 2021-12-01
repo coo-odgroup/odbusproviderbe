@@ -20,10 +20,6 @@ return [
     'PWD_MISMATCH' => 'Incorrect Password',
     'LOGIN_SUCCESSFUL' => 'Login successful',
     'VERIFIED' => 'otp verification is successful',
-    'REGT_SUCCESS' => 'Registration Successful',
-    //'UPLOAD_PATH_CONSUMER' => '../../odbusconsumerbe/public/uploads/',
-    //'UPLOAD_PATH_CONSUMER' => '/home/neoflix/consumer.neoflix.in/public/uploads/',
-    'UPLOAD_PATH_CONSUMER' => '/applications/wnagnjmqnq/public_html/public/uploads/',
-    
+    'REGT_SUCCESS' => 'Registration Successful'    
 ];
 
