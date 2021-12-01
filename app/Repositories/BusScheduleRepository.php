@@ -126,8 +126,9 @@ class BusScheduleRepository
           $paginate = $request['rows_number'] ;
          $name = $request['name'] ;     
 
-        $data= $this->busSchedule->with('busScheduleDate')->with('bus.busOperator')->whereNotIn('status', [2])
-                             ->orderBy('id','DESC');
+        $data= $this->busSchedule->with('busScheduleDate','bus.busOperator','bus.busstoppage')
+                                 ->whereNotIn('status', [2])
+                                 ->orderBy('id','DESC');
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
             $data=$data->whereHas('bus', function ($query) use ($request){
@@ -152,6 +153,14 @@ class BusScheduleRepository
         }     
 
         $data=$data->paginate($paginate);
+
+        if($data != ""){
+            foreach($data as $key=>$v){            
+                    $v['from_location']=$this->location->where('id', $v->bus['busstoppage'][0]['source_id'])->get();
+                    $v['to_location']=$this->location->where('id',$v->bus['busstoppage'][0]['destination_id'])->get();    
+            }
+        }
+        
 
         $response = array(
              "count" => $data->count(), 

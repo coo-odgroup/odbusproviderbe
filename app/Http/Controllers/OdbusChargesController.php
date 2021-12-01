@@ -44,7 +44,7 @@ class OdbusChargesController extends Controller
     }
    
     public function save(Request $request) {
-
+      
       $data = $request->all();
         $odbusChargesValidation = $this->odbusChargesValidator->validate($data);
         if ($odbusChargesValidation->fails()) {

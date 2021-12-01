@@ -113,6 +113,17 @@ class OdbusChargesRepository
                 $logo_file->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $logo_picture); 
            }
 
+           $footer_logo = collect($data)->get('footer_logo');     
+            if(($footer_logo)!=""){
+
+                $filename  = $footer_logo->getClientOriginalName();
+                $extension = $footer_logo->getClientOriginalExtension();
+                $footer_picture   =  rand().'-'.$filename;
+
+                $odbusCharges->footer_logo = $footer_picture;
+                $footer_logo->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $footer_picture); 
+           }
+
             $odbusCharges->save();
             return $odbusCharges;
 
@@ -186,6 +197,28 @@ class OdbusChargesRepository
                           unlink($old_favIcon_path_consumer);
                    }  
                 }       
+            }
+            $footer_logo = collect($data)->get('footer_logo');
+            if($footer_logo!="")
+             {
+                $filename  = $footer_logo->getClientOriginalName();
+                $extension = $footer_logo->getClientOriginalExtension();
+                $footer_picture   =  rand().'-'.$filename;
+
+                $odbusCharges->footer_logo = $footer_picture;
+
+                $footer_logo->move(Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/', $footer_picture);
+
+                if($charges_detail[0]->footer_logo!='')
+                {              
+                   $old_footIcon_path_consumer = Config::get('constants.UPLOAD_PATH_CONSUMER').'logo/'.$charges_detail[0]->footer_logo;
+                  
+                    if(File::exists($old_footIcon_path_consumer))
+                   {
+                          unlink($old_footIcon_path_consumer);
+                   }  
+                }       
+
             }
             else
             {
