@@ -31,7 +31,7 @@ class BusExtraFareService
 
         } catch (Exception $e) {
             DB::rollBack();
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
 
             throw new InvalidArgumentException('Unable to delete post data');
         }
@@ -66,7 +66,7 @@ class BusExtraFareService
 
         } catch (Exception $e) {
             DB::rollBack();
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
 
             throw new InvalidArgumentException('Unable to update post data');
         }

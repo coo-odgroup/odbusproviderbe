@@ -38,7 +38,7 @@ class BookingSeizedService
         try {
             $seized = $this->bookingseizedRepository->update($data);
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $seized;
@@ -70,7 +70,7 @@ public function savePostData($data)
     try {
         $amenity = $this->bookingseizedRepository->save($data);
     } catch (Exception $e) {
-        Log::info($e->getMessage());
+        // Log::info($e->getMessage());
         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
     }
     return $amenity;

@@ -27,7 +27,7 @@ class BusClosingHourService
             $post = $this->busClosingHourRepository->delete($id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
 
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
@@ -75,7 +75,7 @@ class BusClosingHourService
             $post = $this->busClosingHourRepository->update($data, $id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
 
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
@@ -95,7 +95,7 @@ class BusClosingHourService
             $post = $this->busClosingHourRepository->save($data);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
 
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }

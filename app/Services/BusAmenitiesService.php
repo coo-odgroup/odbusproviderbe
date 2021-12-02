@@ -34,7 +34,7 @@ class BusAmenitiesService
             $post = $this->busAmenitiesRepository->delete($id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $post;
@@ -75,7 +75,7 @@ class BusAmenitiesService
             $post = $this->busAmenitiesRepository->update($data, $id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $post;
@@ -95,7 +95,7 @@ class BusAmenitiesService
             $post =$this->busAmenitiesRepository->save($data);
         }
         catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
         return $post;

@@ -31,7 +31,7 @@ class BusCancelledService
             $busCancel = $this->busCancelledRepository->delete($id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $busCancel;
@@ -84,7 +84,7 @@ class BusCancelledService
             $busCancel = $this->busCancelledRepository->update($data, $id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $busCancel;
@@ -104,7 +104,7 @@ class BusCancelledService
             $busCancel = $this->busCancelledRepository->save($data);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
         return $busCancel;
@@ -115,7 +115,7 @@ class BusCancelledService
             $busCancel = $this->busCancelledRepository->changeStatus($id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException('Unable to change status');
         }
         return $busCancel;

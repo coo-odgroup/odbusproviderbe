@@ -40,7 +40,7 @@ class AppDownloadService
 
         } catch (Exception $e) {
             DB::rollBack();
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
 
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
@@ -83,7 +83,7 @@ class AppDownloadService
 
         } catch (Exception $e) {
             DB::rollBack();
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
 
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }

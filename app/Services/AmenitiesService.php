@@ -40,7 +40,7 @@ class AmenitiesService
         try {
             $amenity = $this->amenitiesRepository->delete($id);
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $amenity;
@@ -51,7 +51,7 @@ class AmenitiesService
         try {
             $amenity = $this->amenitiesRepository->changeStatus($data, $id);
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
         }
         return $amenity;
@@ -97,7 +97,7 @@ class AmenitiesService
         try {
             $amenity = $this->amenitiesRepository->update($data);
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $amenity;
@@ -115,7 +115,7 @@ class AmenitiesService
         try {
             $amenity = $this->amenitiesRepository->save($data);
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
         return $amenity;

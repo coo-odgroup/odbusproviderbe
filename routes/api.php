@@ -753,3 +753,4 @@ Route::get('/Agent', [AgentController::class, 'getAllAgent']);
 Route::put('/Agent/{id}', [AgentController::class, 'updateAgent']);
 Route::delete('/Agent/{id}', [AgentController::class, 'deleteAgent']);
 Route::get('/Agent/{id}', [AgentController::class, 'getAgent']);
+Route::put('/AgentChangeStatus/{id}', [AgentController::class, 'changeStatus']);

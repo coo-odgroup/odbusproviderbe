@@ -142,5 +142,15 @@ class AgentController extends Controller
       return $this->successResponse($AgentID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
       
     }   
+
+    public function changeStatus($id) {
+        try{
+          $this->agentService->changeStatus($id);
+        }
+        catch (Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
+      }
     
 }

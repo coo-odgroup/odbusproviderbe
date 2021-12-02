@@ -34,7 +34,7 @@ class BoardingDropingService
             $boardingDropping = $this->boardingDropingRepository->delete($id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $boardingDropping;
@@ -79,7 +79,7 @@ class BoardingDropingService
             $boardingDropping = $this->boardingDropingRepository->update($data, $id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $boardingDropping;
@@ -129,7 +129,7 @@ class BoardingDropingService
             $boardingDropping = $this->boardingDropingRepository->changeStatus($locationId);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
         }
         return $boardingDropping;

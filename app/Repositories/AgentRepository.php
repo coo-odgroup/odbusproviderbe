@@ -78,7 +78,7 @@ class AgentRepository
         $agent->ifsc_code = $data['ifsc_code'];
         $agent->bank_account_no = $data['bank_account_no'];
         $agent->created_by = $data['created_by'];
-        $agent->status = 1;
+        $agent->status = 0;
         return $agent;
     }
     
@@ -125,6 +125,7 @@ class AgentRepository
     }
     public function changeStatus($id)
     {
+     
         $post = $this->agent->find($id);
         if($post->status==0){
             $post->status = 1;
