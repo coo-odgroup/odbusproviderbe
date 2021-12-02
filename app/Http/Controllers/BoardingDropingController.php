@@ -143,10 +143,11 @@ class BoardingDropingController extends Controller
     } 
 
 
-    public function changeStatus ($id) {
+    public function changeStatus ($locationId) {
     
       try{
-        $response = $this->boardingDropingService->changeStatus($id);
+        $response = $this->boardingDropingService->changeStatus($locationId);
+       
         return $this->successResponse($response, "Bus Stoppage  Status Updated", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){

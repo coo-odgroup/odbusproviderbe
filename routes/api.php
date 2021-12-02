@@ -420,7 +420,7 @@ Route::get('/boarding/{id}', [BoardingDropingController::class, 'getBoardingDrop
 Route::post('/boardingDT', [BoardingDropingController::class, 'getBoardingDropingDT']);
 Route::post('/boardingDroping', [BoardingDropingController::class, 'createBoardingDroping']);
 Route::get('/boardingLocationId/{id}', [BoardingDropingController::class, 'getBoardingDropingbyLoacationId']);
-Route::put('/changeStatusBoardingDroping/{id}', [BoardingDropingController::class, 'changeStatus']);
+Route::put('/changeStatusBoardingDroping/{locationId}', [BoardingDropingController::class, 'changeStatus']);
 
 
 Route::get('/custompages', [CustomPagesController::class, 'getAllcustomPages']);

@@ -123,10 +123,10 @@ class BoardingDropingService
         return $this->boardingDropingRepository->create($request);
     }
 
-    public function changeStatus($id)
+    public function changeStatus($locationId)
     {
         try {
-            $boardingDropping = $this->boardingDropingRepository->changeStatus($id);
+            $boardingDropping = $this->boardingDropingRepository->changeStatus($locationId);
 
         } catch (Exception $e) {
             Log::info($e->getMessage());
