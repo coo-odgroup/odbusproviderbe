@@ -65,7 +65,6 @@ class BoardingDropingRepository
     public function update($data, $id)
     {
 
-       
         $this->boardingDroping->where('location_id',$id)->update(['status'=>2]);
         $this->location=$this->location->find($data['location_id']);
         $stoppages=[];
@@ -186,7 +185,9 @@ class BoardingDropingRepository
     }
     public function changeStatus($locationId)
     {
-        $boardingdroping = $this->boardingDroping->where('location_id',$locationId)->get();
+        $boardingdroping = $this->boardingDroping->where('location_id',$locationId)
+                                                    ->where('status', '!=', '2')->get();
+                                                    //return $boardingdroping;
         if($boardingdroping[0]->status==0){
             //$boardingdroping->status = 1;
             $this->boardingDroping->where('location_id', $locationId)->update([ 'status' => 1 ]);
