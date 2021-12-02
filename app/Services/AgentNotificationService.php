@@ -100,7 +100,7 @@ class AgentNotificationService
             $post = $this->agentNotificationRepository->save($data);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException("Error");
         }
         return $post;
@@ -113,7 +113,7 @@ class AgentNotificationService
             $post = $this->agentNotificationRepository->delete($id);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
         return $post;
@@ -125,7 +125,7 @@ class AgentNotificationService
             $post = $this->agentNotificationRepository->allPushNotification($request);
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            // Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
         return $post;

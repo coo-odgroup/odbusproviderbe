@@ -66,7 +66,7 @@ class AgentCompleteReportRepository
 
             $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
         }
-        Log::info( $user_id);
+        // Log::info( $user_id);
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','CustomerPayment')

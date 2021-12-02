@@ -24,8 +24,8 @@ class BusTypeRepository
     {
         
         $data=$this->busType->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID'])->get();
-        Log::info($request);
-        Log::info($data);
+        // Log::info($request);
+        // Log::info($data);
         return $data;
 
     }
