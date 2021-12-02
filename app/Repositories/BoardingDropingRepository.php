@@ -172,8 +172,6 @@ class BoardingDropingRepository
                     });                       
         }
         
-       
-
         $data=$data->paginate($paginate);  
         $response = array(
              "count" => $data->count(), 
@@ -187,18 +185,15 @@ class BoardingDropingRepository
     {
         $boardingdroping = $this->boardingDroping->where('location_id',$locationId)
                                                     ->where('status', '!=', '2')->get();
-                                                    //return $boardingdroping;
+                                            
         if($boardingdroping[0]->status==0){
-            //$boardingdroping->status = 1;
-            $this->boardingDroping->where('location_id', $locationId)->update([ 'status' => 1 ]);
+            $this->boardingDroping->where('location_id', $locationId)
+                                    ->where('status', '0')->update([ 'status' => 1 ]);
         }elseif($boardingdroping[0]->status==1){
-            //$boardingdroping->status = 0;
-            $this->boardingDroping->where('location_id', $locationId)->update([ 'status' => 0 ]);
+            $this->boardingDroping->where('location_id', $locationId)
+                                    ->where('status', '1')->update([ 'status' => 0 ]);
         }
-         $bp2 = $this->boardingDroping->where('location_id', $locationId)->get();
-        return $bp2;
-        //$boardingdroping->update();
-        //return $boardingDroping;
+        return $this->boardingDroping->where('location_id', $locationId)->where('status', '!=', '2')->get();
     }
 
 }
