@@ -90,6 +90,8 @@ class BusController extends Controller
     
       //USED WITH auth:api..
     public function createBuses(Request $request) {
+
+        // Log::info();exit;
         $data = $request->only([
             'bus_operator_id','user_id', 'bus_description','cancelation_points', 'name', 'via','bus_number','bus_type_id',
             'bus_sitting_id','amenities_id','cancellationslabs_id','bus_seat_layout_id','running_cycle','has_return_bus','created_by'
@@ -267,9 +269,8 @@ class BusController extends Controller
     }
     public function save(Request $request) {
         $data=$request;
-        
-
-        $NewBus['name']=$data['name'];
+       
+       $NewBus['name']=$data['name'];
         $NewBus['via']=$data['via'];
         $NewBus['bus_description']=$data['bus_description'];
         $NewBus['user_id']=$data['user_id'];
@@ -284,172 +285,160 @@ class BusController extends Controller
         $NewBus['amenities']=$data['amenities'];
         $NewBus['max_seat_book']=$data['max_seat_book'];
 
-              
+        $busValidation = $this->busValidator->validate($NewBus);
+
+        if ($busValidation->fails()) {
+            $errors = $busValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
         try {
-            $bus_last_insert_id=$this->busService->savePostData($NewBus);
+
+            if(($data['safety']) && ($data['conductor_no']) && ($data['manager_no']) && ($data['owner_no'] && ($data['busRoutesInfo']) && ($data['busRoutes']) && ($data['bus_seat_layout_data']))
+           ){
+                $bus_last_insert_id=$this->busService->savePostData($NewBus);
+
+                /////////////// add safety 
+                $safetydata['bus_id']=$bus_last_insert_id;
+                $safetydata['safety']=$data['safety'];
+                $this->busSafetyService->savePostData($safetydata);
+
+                ///////////////// add ///////////
+
+                 $cond['bus_id']=$bus_last_insert_id;
+                $cond['type']="2";
+                $cond['phone']=$data['conductor_no'];
+                $cond['booking_sms_send']=($data['c_sms_ticket']=="true")?"1":"0";
+                $cond['cancel_sms_send']=($data['c_sms_cancel']=="true")?"1":"0";
+                $cond['created_by']=$data['created_by'];
+                $this->busContactsService->savePostData($cond);
+
+                ////////// manager no
+
+                 $mng['bus_id']=$bus_last_insert_id;
+                    $mng['type']="1";
+                    $mng['phone']=$data['manager_no'];
+                    $mng['booking_sms_send']=($data['m_sms_ticket']=="true")?"1":"0";
+                    $mng['cancel_sms_send']=($data['m_sms_cancel']=="true")?"1":"0";
+                    $mng['created_by']=$data['created_by'];
+                
+                    $this->busContactsService->savePostData($mng);
+
+                    /////////// owner no
+
+                    $own['bus_id']=$bus_last_insert_id;
+                    $own['type']="0";
+                    $own['phone']=$data['owner_no'];
+                    $own['booking_sms_send']=($data['o_sms_ticket']=="true")?"1":"0";
+                    $own['cancel_sms_send']=($data['o_sms_cancel']=="true")?"1":"0";
+                    $own['created_by']=$data['created_by'];
+                
+                    $this->busContactsService->savePostData($own);
+
+
+                     $busRoutesInfo=$data['busRoutesInfo'];
+
+                        $busRoutes=$data['busRoutes'];
+                        $location_arrival=[];
+                        $location_depature=[];
+                        $bus_location_sequence=[];
+
+                        if($busRoutes){
+
+                        foreach($busRoutes as $routeKey=>$routeValue)
+                        {
+                            $bus_location_sequence['bus_id']=$timing_grp['bus_id']=$bus_last_insert_id;
+                            $bus_location_sequence['location_id']=$timing_grp['location_id']=$routeValue['source_id'];
+                            $bus_location_sequence['sequence']=$routeValue['sequence'];
+
+                            $this->busLocationSequenceService->savePostData($bus_location_sequence);
+
+                            $found_arrival=0;
+                            $depature_time="";
+                            foreach($routeValue['sourceBoarding'] as $destinations)
+                            {
+                                if($destinations['sourcechecked']=="true")
+                                {
+                                    if($found_arrival==0)
+                                    {
+                                        $location_arrival[$timing_grp['location_id']]['arr_time']=$destinations['sourceTime'];
+                                        $found_arrival++;
+                                    }
+                                    $depature_time=$destinations['sourceTime'];
+                                    $timing_grp['stoppage_name']=$destinations['sourceLocation'];
+                                    $timing_grp['boarding_droping_id']=$destinations['boarding_droping_id'];
+                                    $timing_grp['stoppage_time']=$destinations['sourceTime'];
+                                    $this->BusStoppageTimingService->savePostData($timing_grp);
+                                }
+                            }
+                            if( $timing_grp['location_id']!="")
+                            {
+                                $location_depature[$timing_grp['location_id']]['dep_time']=$depature_time;
+                            }
+                            
+                            
+                        }
+
+                        }
+
+                        if($busRoutesInfo){
+
+                             foreach($busRoutesInfo as $routeinfoKey=>$routeinfoVal)
+                        {
+                           
+                            $booking_seized_array['bus_id']=$routeinfoData['bus_id']=$bus_last_insert_id; //get it from return id
+                            $booking_seized_array['location_id']=$routeinfoVal['from_location'];
+                            $booking_seized_array['seize_booking_minute']=$routeinfoVal['booking_seized'];
+                            $booking_seized_array['created_by']=$data['created_by'];
+
+
+                            
+                            $this->bookingSeizedService->savePostData($booking_seized_array);
+
+                            
+                            $routeinfoData['bus_operator_id']=$data['bus_operator_id'];
+                            $routeinfoData['source_id']=$routeinfoVal['from_location'];
+                            $routeinfoData['destination_id']=$routeinfoVal['to_location'];
+                            $routeinfoData['start_j_days']=$routeinfoVal['arr_days'];
+                            $routeinfoData['j_day']=$routeinfoVal['dep_days'];
+                            
+                            $routeinfoData['arr_time']=$location_arrival[$routeinfoVal['from_location']]['arr_time'];
+                            $routeinfoData['dep_time']=$location_depature[$routeinfoVal['to_location']]['dep_time'];
+
+                            $routeinfoData['user_id']="1";
+                            $routeinfoData['base_seat_fare']=$routeinfoVal['seater_fare'];
+                            $routeinfoData['base_sleeper_fare']=$routeinfoVal['sleeper_fare'];
+                            $stoppage_id=$this->BusStoppageService->savePostData($routeinfoData);
+
+                            if(isset($data['bus_seat_layout_data']))
+                            {
+                                $seatLayoutData['bus_id']=$bus_last_insert_id;
+                                $seatLayoutData['created_by']="Admin";
+                                $seatLayoutData['category']="0";
+                                $seatLayoutData['duration']="0";
+                                $seatLayoutData['ticket_price_id']=$stoppage_id;
+                                $seatLayoutData['bus_seat_layout_data']=$data['bus_seat_layout_data'];
+                                $this->busSeatsService->savePostData($seatLayoutData);
+                            }
+                            
+                            //ADD TO STOPPAGE THEN TO TIMING
+                            
+                        }
+
+                        }
+
+
+                         return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_ACCEPTED);
+
+            }else{
+                return $this->errorResponse("Some mandatory fileds are missing.Please verify and try again.",Response::HTTP_PARTIAL_CONTENT);
+            }
+
         } 
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
         
-        if(isset($data['safety']))
-        {
-            $safetydata['bus_id']=$bus_last_insert_id;
-            $safetydata['safety']=$data['safety'];
-            try {
-               $this->busSafetyService->savePostData($safetydata);
-            } 
-            catch (Exception $e) {
-                return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-            }
-        }
-        
-        if(isset($data['conductor_no']))
-        {
-            $cond['bus_id']=$bus_last_insert_id;
-            $cond['type']="2";
-            $cond['phone']=$data['conductor_no'];
-            $cond['booking_sms_send']=($data['c_sms_ticket']=="true")?"1":"0";
-            $cond['cancel_sms_send']=($data['c_sms_cancel']=="true")?"1":"0";
-            $cond['created_by']=$data['created_by'];
-            try {
-                $this->busContactsService->savePostData($cond);
-            } 
-            catch (Exception $e) {
-                return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-            }
-        }
-        if(isset($data['manager_no']))
-        {
-            $mng['bus_id']=$bus_last_insert_id;
-            $mng['type']="1";
-            $mng['phone']=$data['manager_no'];
-            $mng['booking_sms_send']=($data['m_sms_ticket']=="true")?"1":"0";
-            $mng['cancel_sms_send']=($data['m_sms_cancel']=="true")?"1":"0";
-            $mng['created_by']=$data['created_by'];
-        
-            try {
-                $this->busContactsService->savePostData($mng);
-            } 
-            catch (Exception $e) {
-                return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-            }
-        }
-        if(isset($data['owner_no']))
-        {
-            $own['bus_id']=$bus_last_insert_id;
-            $own['type']="0";
-            $own['phone']=$data['owner_no'];
-            $own['booking_sms_send']=($data['o_sms_ticket']=="true")?"1":"0";
-            $own['cancel_sms_send']=($data['o_sms_cancel']=="true")?"1":"0";
-            $own['created_by']=$data['created_by'];
-        
-            try {
-                $this->busContactsService->savePostData($own);
-            } 
-            catch (Exception $e) {
-                return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-            }
-        }
-        $busRoutesInfo=$data['busRoutesInfo'];
-        $busRoutes=$data['busRoutes'];
-        $location_arrival=[];
-        $location_depature=[];
-        $bus_location_sequence=[];
-        foreach($busRoutes as $routeKey=>$routeValue)
-        {
-            $bus_location_sequence['bus_id']=$timing_grp['bus_id']=$bus_last_insert_id;
-            $bus_location_sequence['location_id']=$timing_grp['location_id']=$routeValue['source_id'];
-            $bus_location_sequence['sequence']=$routeValue['sequence'];
-
-            $this->busLocationSequenceService->savePostData($bus_location_sequence);
-
-            $found_arrival=0;
-            $depature_time="";
-            foreach($routeValue['sourceBoarding'] as $destinations)
-            {
-                if($destinations['sourcechecked']=="true")
-                {
-                    if($found_arrival==0)
-                    {
-                        $location_arrival[$timing_grp['location_id']]['arr_time']=$destinations['sourceTime'];
-                        $found_arrival++;
-                    }
-                    $depature_time=$destinations['sourceTime'];
-                    $timing_grp['stoppage_name']=$destinations['sourceLocation'];
-                    $timing_grp['boarding_droping_id']=$destinations['boarding_droping_id'];
-                    $timing_grp['stoppage_time']=$destinations['sourceTime'];
-                    try {
-                        $this->BusStoppageTimingService->savePostData($timing_grp);
-                    } 
-                    catch (Exception $e) {
-                        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-                    }
-                }
-            }
-            if( $timing_grp['location_id']!="")
-            {
-                $location_depature[$timing_grp['location_id']]['dep_time']=$depature_time;
-            }
-            
-            
-        }
-        foreach($busRoutesInfo as $routeinfoKey=>$routeinfoVal)
-        {
-           
-            $booking_seized_array['bus_id']=$routeinfoData['bus_id']=$bus_last_insert_id; //get it from return id
-            $booking_seized_array['location_id']=$routeinfoVal['from_location'];
-            $booking_seized_array['seize_booking_minute']=$routeinfoVal['booking_seized'];
-            $booking_seized_array['created_by']=$data['created_by'];
-
-
-            
-            $this->bookingSeizedService->savePostData($booking_seized_array);
-
-            
-            $routeinfoData['bus_operator_id']=$data['bus_operator_id'];
-            $routeinfoData['source_id']=$routeinfoVal['from_location'];
-            $routeinfoData['destination_id']=$routeinfoVal['to_location'];
-            $routeinfoData['start_j_days']=$routeinfoVal['arr_days'];
-            $routeinfoData['j_day']=$routeinfoVal['dep_days'];
-            
-            $routeinfoData['arr_time']=$location_arrival[$routeinfoVal['from_location']]['arr_time'];
-            $routeinfoData['dep_time']=$location_depature[$routeinfoVal['to_location']]['dep_time'];
-
-            $routeinfoData['user_id']="1";
-            $routeinfoData['base_seat_fare']=$routeinfoVal['seater_fare'];
-            $routeinfoData['base_sleeper_fare']=$routeinfoVal['sleeper_fare'];
-            $stoppage_id=0;
-            try {
-                $stoppage_id=$this->BusStoppageService->savePostData($routeinfoData);
-            } 
-            catch (Exception $e) {
-                return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-            }
-
-            if(isset($data['bus_seat_layout_data']))
-            {
-                $seatLayoutData['bus_id']=$bus_last_insert_id;
-                $seatLayoutData['created_by']="Admin";
-                $seatLayoutData['category']="0";
-                $seatLayoutData['duration']="0";
-                $seatLayoutData['ticket_price_id']=$stoppage_id;
-                $seatLayoutData['bus_seat_layout_data']=$data['bus_seat_layout_data'];
-                try {
-                    $this->busSeatsService->savePostData($seatLayoutData);
-                } 
-                catch (Exception $e) {
-                    return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-                }
-            }
-
-            
-            //ADD TO STOPPAGE THEN TO TIMING
-            
-        }
-        
-            
-        return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_ACCEPTED);
+       
     } 
     public function changeStatus ($id) {
     
