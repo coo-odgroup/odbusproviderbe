@@ -44,7 +44,7 @@ class BusRepository
     public function getAll()
     {
         $data = $this->bus->with('cancellationslabs','ticketPrice')
-        ->orderBy('name','ASC')
+        ->orderBy('name','ASC')->where('status','1')
         ->get(); 
 
         if($data){
@@ -66,10 +66,26 @@ class BusRepository
     }
     public function getByOperaor($id)
     {
-        return $this->bus
-        ->where('bus_operator_id',$id)
+       
+        $data = $this->bus->with('cancellationslabs','ticketPrice')
+        ->orderBy('name','ASC') ->where('bus_operator_id',$id)
         ->where('status','1')
         ->get(); 
+
+        if($data){
+            foreach($data as $v){ 
+             foreach($v->ticketPrice as $k => $a)
+             {             
+             
+                $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+           }
+               $v['from_location']=$stoppages['source'][0];
+               $v['to_location']=$stoppages['destination'][0];
+       }
+
+   }
+    return $data;
     }
     public function seatsBus($request)
     {  
@@ -116,13 +132,28 @@ class BusRepository
 
     public function getLocationBus($source_id,$destination_id)
     {
-        return $this->bus
-        ->whereHas('ticketPrice', function ($query) use ($source_id,$destination_id){
+       
+        $data = $this->bus->with('cancellationslabs','ticketPrice')
+        ->orderBy('name','ASC')->whereHas('ticketPrice', function ($query) use ($source_id,$destination_id){
             $query->where('source_id', 'like', '%' .$source_id . '%')->where('destination_id', 'like', '%' .$destination_id . '%');               
         })
-        //->where('source_id', $source_id)
-        //->where('destination_id', $destination_id)
-        ->get();
+        ->where('status','1')
+        ->get(); 
+
+        if($data){
+            foreach($data as $v){ 
+             foreach($v->ticketPrice as $k => $a)
+             {             
+             
+                $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+           }
+               $v['from_location']=$stoppages['source'][0];
+               $v['to_location']=$stoppages['destination'][0];
+       }
+
+   }
+    return $data;
     }
 
     public function updatesequence($data, $id)
