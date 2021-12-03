@@ -53,6 +53,9 @@ class BusTypeController extends Controller
         'bus_operator_id',
         'created_by'
       ]);
+
+    
+
       $busTypeValidation = $this->busTypeValidator->validate($data);
       
       if ($busTypeValidation->fails()) {
@@ -62,13 +65,13 @@ class BusTypeController extends Controller
       }
 
       try {
-          $this->busTypeService->savePostData($data);
-          
+          $data=$this->busTypeService->savePostData($data);
+          return $this->successResponse($data,"Bus Type Added",Response::HTTP_CREATED); 
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }   
-      return $this->successResponse($data,"Bus Type Added",Response::HTTP_CREATED); 
+     
     } 
 
     public function updateBusType(Request $request, $id) {
