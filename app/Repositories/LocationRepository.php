@@ -45,19 +45,42 @@ class LocationRepository
       return $location;
     }
     public function add($data)
-    {
-        $location = new $this->location;
-        $location=$this->getModel($data,$location);
-        $location->save();
-        return $location;
+    {    
+        $existingLocation = $this->location
+                                 ->where('name',$data['name']) 
+                                 ->where('status','!=',2)
+                                 ->get();
+        if(count($existingLocation) == 0)
+        {
+              $location = new $this->location;
+              $location=$this->getModel($data,$location);
+              $location->save();
+              return $location;
+        }  
+        else
+        {
+            return 'Location Already Exist';
+        }        
     }
 
     public function edit($data, $id)
-    {
-        $location = $this->location->find($id);
-        $location=$this->getModel($data,$location);
-        $location->update();
-        return $location;
+    {    
+        $duplicate_data = $this->location
+                               ->where('name','like', $data['name'])
+                               ->where('id','!=',$id )
+                               ->where('status','!=',2)
+                               ->get();
+        if(count($duplicate_data)==0)
+        { 
+            $location = $this->location->find($id);
+            $location=$this->getModel($data,$location);
+            $location->update();
+            return $location;
+        }  
+        else
+        {
+            return 'Location Already Exist';
+        } 
     } 
 
 
@@ -67,7 +90,7 @@ class LocationRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->location->whereNotIn('status', [2])->orderBy('name','ASC');
+        $data= $this->location->whereNotIn('status', [2])->orderBy('status','ASC')->orderBy('name','ASC');
 
 
         if($paginate=='all') 

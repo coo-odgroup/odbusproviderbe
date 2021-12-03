@@ -14,7 +14,8 @@ class AgentDetailsValidator
             'password' => 'required',
             'location' => 'required',
             'adhar_no' => 'required',
-            'pancard_no' => 'required',    
+            'pancard_no' => 'required', 
+            'email'  =>'required|unique:user,email' 
         ];      
       
         $agentDetailsValidator = Validator::make($data, $rules);

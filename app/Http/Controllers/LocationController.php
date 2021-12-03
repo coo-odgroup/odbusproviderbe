@@ -83,26 +83,27 @@ class LocationController extends Controller
           'name',
           'synonym',
           'created_by',
-        ]);
-
-        
+        ]);        
       
         $LocationValidation = $this->LocationValidator->validate($data);
         
         if ($LocationValidation->fails()) {
           $errors = $LocationValidation->errors();
-          // return $errors->toJson();
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
-        
-    
-        try {
-            $this->locationService->addPostData($data);
-            return $this->successResponse(null, "Location Added Successfully. Waiting for Approval", Response::HTTP_CREATED);
+        else
+        {
+          $response =  $this->locationService->addPostData($data);;
+
+           if($response=='Location Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Location Added Successfully. Waiting for Approval", Response::HTTP_CREATED);
+           }
         }
-        catch(Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }	
 	
     } 
 
@@ -112,25 +113,27 @@ class LocationController extends Controller
         'name',
         'synonym',
         'created_by'
-      ]);
-    
-      
+      ]);    
   
       $locationValidation = $this->LocationValidator->validate($data);;
       if ($locationValidation->fails()) {
         $errors = $locationValidation->errors();
-        // return $errors->toJson();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }
+      else
+        {
+          $response =  $this->locationService->editPost($data, $id);
 
-      
-      try {
-        $this->locationService->editPost($data, $id);
-        return $this->successResponse(null, "Location Edited", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }  
+           if($response=='Location Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Location Updated", Response::HTTP_CREATED);
+           }
+
+        } 
       
   }
 

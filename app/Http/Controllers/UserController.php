@@ -104,6 +104,9 @@ class UserController extends Controller
           case('agent_role_mismatch'):   //Role of the agent mismatches
               return $this->errorResponse(Config::get('constants.ROLE_MISMATCH'),Response::HTTP_OK);
           break;
+          case('inactive_user'):   //Role of the agent mismatches
+              return $this->errorResponse(Config::get('constants.INACTIVE_USER'),Response::HTTP_OK);
+          break;
       }
       return $this->successResponse($response,Config::get('constants.LOGIN_SUCCESSFUL'),Response::HTTP_OK);     
       }
@@ -123,7 +126,7 @@ class UserController extends Controller
       $agentDetailsValidation = $this->agentDetailsValidator->validate($data);
      
       if ($agentDetailsValidation->fails()) {
-        $errors = $userValidation->errors();
+        $errors = $agentDetailsValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }
       try {

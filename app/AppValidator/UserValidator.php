@@ -11,6 +11,7 @@ class UserValidator
         
         $rules = [
             'phone' => 'required',
+            
         ];      
       
         $userValidator = Validator::make($data, $rules);

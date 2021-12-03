@@ -42,6 +42,8 @@ class AgentController extends Controller
     }
 
     public function createAgent(Request $request) {
+     Log::info($request);
+     exit;
       $data = $request->only([
         'name',
         'email',
