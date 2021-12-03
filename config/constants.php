@@ -15,9 +15,10 @@ return [
     'OTP_INVALID' => 'Invalid OTP',
     'OTP_VERIFIED' => 'OTP verification successful',
     'UNREGISTERED' => 'Agent is not registered',
-    'ROLE_MISMATCH' => 'Role of the agent mismatches',
+    'ROLE_MISMATCH' => 'Role Mismatches',
     'OTP_NOT_VERIFIED' => 'OTP is not yet validated',
     'PWD_MISMATCH' => 'Incorrect Password',
+    'INACTIVE_USER' => 'User Not Active. ',
     'LOGIN_SUCCESSFUL' => 'Login successful',
     'VERIFIED' => 'otp verification is successful',
     'REGT_SUCCESS' => 'Registration Successful'    
