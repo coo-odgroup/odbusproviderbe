@@ -5,6 +5,7 @@ use App\Models\Bus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\OdbusCharges;
+use App\Models\TicketFareSlab;
 
 class BusOperator extends Model
 {
@@ -21,6 +22,11 @@ class BusOperator extends Model
     public function odbusCharges()
     {
         return $this->hasMany(OdbusCharges::class);
+        
+    } 
+    public function ticketFareSlab()
+    {
+        return $this->hasMany(TicketFareSlab::class);
         
     } 
 }

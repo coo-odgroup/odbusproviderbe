@@ -100,6 +100,7 @@ use App\Http\Controllers\AgentFeeController;
 use App\Http\Controllers\AgentBookingController;
 use App\Http\Controllers\TestEmailController;
 
+use App\Http\Controllers\TicketFareSlabController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -108,6 +109,14 @@ Route::post('/emailtest', [TestEmailController::class,'emailtest']);
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
+
+
+
+Route::post('/ticketFareSlab', [TicketFareSlabController::class, 'createslab']);
+Route::post('/ticketFareSlabData', [TicketFareSlabController::class, 'ticketFareSlabData']);
+Route::put('/changeStatusticketFareSlab/{id}', [TicketFareSlabController::class, 'changeStatusticketFareSlab']);
+Route::delete('/ticketFareSlab/{id}', [TicketFareSlabController::class, 'deleteticketFareSlab']);
+
 
 ///////////////////////////Agent Start////////////////////////////////////////
 // Agent commission slab
