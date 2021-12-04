@@ -154,24 +154,24 @@ class BusScheduleRepository
         }     
 
         $data=$data->paginate($paginate);
-     
-
-        if($data != ""){
-            foreach($data as $key=>$v){    
-             // Log::info($v->bus);   exit;    
-                    $v['from_location']=$this->location->where('id', $v->bus['ticketPrice'][0]['source_id'])->get();
-                    $v['to_location']=$this->location->where('id',$v->bus['ticketPrice'][0]['destination_id'])->get();    
-            }
-        }
         
 
+
+        if(count($data) > 0){
+            foreach($data as $key=>$v){    
+                if(count($v->bus['ticketPrice'])>0)
+                {
+                     $v['from_location']=$this->location->where('id', $v->bus['ticketPrice'][0]['source_id'])->get();
+                    $v['to_location']=$this->location->where('id',$v->bus['ticketPrice'][0]['destination_id'])->get();  
+                }                     
+            }
+        }
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
             "data" => $data
            );   
            return $response;
-
     }
     /**
      * Get bus Schedule by id
