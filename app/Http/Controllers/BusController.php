@@ -293,8 +293,8 @@ class BusController extends Controller
         } 
         try {
 
-            if(($data['safety']) && ($data['conductor_no']) && ($data['manager_no']) && ($data['owner_no'] && ($data['busRoutesInfo']) && ($data['busRoutes']) && ($data['bus_seat_layout_data']))
-           ){
+            if($data['safety'] && $data['busRoutesInfo'] && $data['busRoutes'] && $data['bus_seat_layout_data'])
+           {
                 $bus_last_insert_id=$this->busService->savePostData($NewBus);
 
                 /////////////// add safety 
@@ -304,17 +304,21 @@ class BusController extends Controller
 
                 ///////////////// add ///////////
 
-                 $cond['bus_id']=$bus_last_insert_id;
-                $cond['type']="2";
-                $cond['phone']=$data['conductor_no'];
-                $cond['booking_sms_send']=($data['c_sms_ticket']=="true")?"1":"0";
-                $cond['cancel_sms_send']=($data['c_sms_cancel']=="true")?"1":"0";
-                $cond['created_by']=$data['created_by'];
-                $this->busContactsService->savePostData($cond);
+                if(isset($data['conductor_no']) && $data['conductor_no']!=''){
+                    $cond['bus_id']=$bus_last_insert_id;
+                    $cond['type']="2";
+                    $cond['phone']=$data['conductor_no'];
+                    $cond['booking_sms_send']=($data['c_sms_ticket']=="true")?"1":"0";
+                    $cond['cancel_sms_send']=($data['c_sms_cancel']=="true")?"1":"0";
+                    $cond['created_by']=$data['created_by'];
+                    $this->busContactsService->savePostData($cond);
+                }
+
+                
 
                 ////////// manager no
-
-                 $mng['bus_id']=$bus_last_insert_id;
+                if(isset($data['manager_no']) && $data['manager_no']!=''){
+                    $mng['bus_id']=$bus_last_insert_id;
                     $mng['type']="1";
                     $mng['phone']=$data['manager_no'];
                     $mng['booking_sms_send']=($data['m_sms_ticket']=="true")?"1":"0";
@@ -322,8 +326,11 @@ class BusController extends Controller
                     $mng['created_by']=$data['created_by'];
                 
                     $this->busContactsService->savePostData($mng);
+                }
 
                     /////////// owner no
+                   
+                    if(isset($data['owner_no']) && $data['owner_no']!=''){
 
                     $own['bus_id']=$bus_last_insert_id;
                     $own['type']="0";
@@ -333,6 +340,7 @@ class BusController extends Controller
                     $own['created_by']=$data['created_by'];
                 
                     $this->busContactsService->savePostData($own);
+                }
 
 
                      $busRoutesInfo=$data['busRoutesInfo'];

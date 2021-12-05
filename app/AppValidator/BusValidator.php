@@ -15,7 +15,6 @@ class BusValidator
             'name' => 'required|max:50',
             'via' => 'required|max:150',
             'bus_number' => 'required',
-            'bus_description' => 'required',
             'bus_type_id' => 'required',
             'bus_sitting_id' => 'required',
             'amenities' => 'required',
