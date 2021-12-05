@@ -297,6 +297,7 @@ class BusController extends Controller
            {
                 $bus_last_insert_id=$this->busService->savePostData($NewBus);
 
+
                 /////////////// add safety 
                 $safetydata['bus_id']=$bus_last_insert_id;
                 $safetydata['safety']=$data['safety'];
@@ -314,8 +315,6 @@ class BusController extends Controller
                     $this->busContactsService->savePostData($cond);
                 }
 
-                
-
                 ////////// manager no
                 if(isset($data['manager_no']) && $data['manager_no']!=''){
                     $mng['bus_id']=$bus_last_insert_id;
@@ -329,6 +328,7 @@ class BusController extends Controller
                 }
 
                     /////////// owner no
+
                    
                     if(isset($data['owner_no']) && $data['owner_no']!=''){
 
