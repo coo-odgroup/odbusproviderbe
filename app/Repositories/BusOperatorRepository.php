@@ -232,7 +232,7 @@ class BusOperatorRepository
     public function getBusbyOperator($operatorId)
     {
 
-        $operatorWithBuses =  $this->busOperators->with('bus.busstoppage')
+        $operatorWithBuses =  $this->busOperators->with('bus.ticketPrice')
      
          ->where('id', $operatorId)
          
@@ -246,18 +246,26 @@ class BusOperatorRepository
             foreach($buses as $bus)
             {
                 //if($bus->status!='1')continue;
-                $bStoppages = $bus->busstoppage;
+                $bStoppages = $bus->ticketPrice;
                 if(count($bStoppages)==0)continue;
-                //Log::info($bStoppages);
-                foreach($bStoppages as $bStoppage){
-                    $sourceId = $bStoppage->source_id;
-                    $destinationId = $bStoppage->destination_id;
-                    $stoppageName = $this->location->whereIn('id', array($sourceId, $destinationId))->get('name');
+                
+                foreach($bStoppages as $tf){
+                    $sourceId = $tf->source_id;
+                    $destinationId = $tf->destination_id;
+                    $source_stoppageName = $this->location->where('id', $sourceId)->get('name');
+                    $destination_stoppageName = $this->location->where('id', $destinationId)->get('name');
+                   
                 } 
-                $busData[] = array(
-                    "id" => $bus->id,
-                    "name" => $bus->name."[".$bus->bus_number."]"."[".$stoppageName[0]['name']."-".$stoppageName[1]['name']."]"  
-                );  
+
+                if(isset($source_stoppageName[0]) && $destination_stoppageName[0]){
+
+                    $busData[] = array(
+                        "id" => $bus->id,
+                        "name" => $bus->name."[".$bus->bus_number."]"."[".$source_stoppageName[0]['name']."-".$destination_stoppageName[0]['name']."]"  
+                    ); 
+
+                }
+               
             }          
             
          }
