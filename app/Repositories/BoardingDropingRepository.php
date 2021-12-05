@@ -151,11 +151,20 @@ class BoardingDropingRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->location->with('boardingDropping')->where('status','!=' ,2)
-                            ->whereHas('boardingDropping', function ($query){
-                                   $query->where('status', '!=','2');               
-                               })
-                               ->orderBy('id','DESC');
+        $data= $this->location->with('boardingDropping')
+                    ->where('status','!=' ,2)
+                    ->whereHas('boardingDropping', function ($query){
+                     $query->where('status', '!=','2');               
+                     })
+                    ->orderBy('id','DESC'); 
+
+        // $data= $this->location->with(['boardingDropping' => function ($q){
+        //                          $q->orderBy('id', 'DESC');}])
+        //                      ->where('status','!=' ,2)
+        //                     ->whereHas('boardingDropping', function ($query){
+        //                            $query->where('status', '!=','2');               
+        //                        });
+                               
         
         if($paginate=='all') 
         {
