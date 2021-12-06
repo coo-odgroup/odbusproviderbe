@@ -28,6 +28,7 @@ use App\Models\BookingSeized;
 
 
 
+
 //bus_seats  bus_amenities city_closing bus_contacts bus_stoppage bus_stoppage_timing
 class Bus extends Model
 {
@@ -83,6 +84,10 @@ class Bus extends Model
     {
         return $this->belongsToMany(FestivalFare::class);       
     }
+    public function busContacts()
+        {
+            return $this->hasMany(BusContacts::class);       
+        }
 
     public function BusSitting()
     {
