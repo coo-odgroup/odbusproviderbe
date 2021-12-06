@@ -30,7 +30,14 @@ class BusSeatsRepository
     {
        // $result['busSeats']=$this->busSeats->where('bus_id',$busId)->orderBy('source_id','ASC')->get();//busSeats
        // $result['stoppageInfo']=$this->busStoppage->where('bus_id', $busId)->get();
-     return $this->ticketPrice->with('getBusSeats.seats')->where('bus_id',$busId)->get();
+     return $this->ticketPrice->with('getBusSeats.seats')
+            ->whereHas('getBusSeats', function ($query) { 
+                                                $query->where('status', '!=', '2');               
+                                            })
+            ->whereHas('getBusSeats.seats', function ($query) { 
+                                                $query->where('status', '!=', '2');               
+                                            })
+            ->where('bus_id',$busId)->get();
  }
  public function getByBusId($busId)
  {
@@ -235,15 +242,7 @@ public function update($data, $id)
                         
                         foreach($get_ticket_price_id as $ticketpriceID)
                         {
-                            if($upperBerthData['seatId']=="")
-                            {
-                                $busseats = new $this->busSeats;
-                            }
-                            else
-                            {
-                                $busseats = $this->busSeats->find($upperBerthData['seatId']);
-                                
-                            }
+                            $busseats = new $this->busSeats;
                             $data['ticket_price_id']=$ticketpriceID->id;
                             $data['category']='0';
                             $data['duration']='0';
