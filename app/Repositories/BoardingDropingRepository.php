@@ -33,7 +33,7 @@ class BoardingDropingRepository
     }
     public function getByLocationId($id)
     {
-        return $this->boardingDroping ->where('location_id', $id)->get();
+        return $this->boardingDroping->where('location_id', $id)->where("status",1)->get();
     }
 
     public function getModel($data, BoardingDroping $boardingdroping, $stoppage)
