@@ -295,16 +295,12 @@ class BusController extends Controller
 
             if($data['safety'] && $data['busRoutesInfo'] && $data['busRoutes'] && $data['bus_seat_layout_data'])
            {
-                $bus_last_insert_id=$this->busService->savePostData($NewBus);
-
-
+                $bus_last_insert_id=$this->busService->savePostData($NewBus); 
                 /////////////// add safety 
                 $safetydata['bus_id']=$bus_last_insert_id;
                 $safetydata['safety']=$data['safety'];
                 $this->busSafetyService->savePostData($safetydata);
-
                 ///////////////// add ///////////
-
                 if(isset($data['conductor_no']) && $data['conductor_no']!=''){
                     $cond['bus_id']=$bus_last_insert_id;
                     $cond['type']="2";
@@ -314,7 +310,6 @@ class BusController extends Controller
                     $cond['created_by']=$data['created_by'];
                     $this->busContactsService->savePostData($cond);
                 }
-
                 ////////// manager no
                 if(isset($data['manager_no']) && $data['manager_no']!=''){
                     $mng['bus_id']=$bus_last_insert_id;
@@ -326,10 +321,7 @@ class BusController extends Controller
                 
                     $this->busContactsService->savePostData($mng);
                 }
-
-                    /////////// owner no
-
-                   
+                    /////////// owner no////////////                   
                     if(isset($data['owner_no']) && $data['owner_no']!=''){
 
                     $own['bus_id']=$bus_last_insert_id;
