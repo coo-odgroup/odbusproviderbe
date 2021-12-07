@@ -77,8 +77,12 @@ class BusStoppageController extends Controller
                     if($found_arrival==0)
                     {
                         $location_arrival[$timing_grp['location_id']]['arr_time']=$destinations['sourceTime'];
+                         $location_depature[$timing_grp['location_id']]['dep_time']=$depature_time;
+
                         $found_arrival++;
                     }
+
+                    $depature_time=$destinations['sourceTime'];
 
                     $timing_grp['stoppage_name']=$destinations['sourceLocation'];
                     $timing_grp['stoppage_time']=$destinations['sourceTime'];

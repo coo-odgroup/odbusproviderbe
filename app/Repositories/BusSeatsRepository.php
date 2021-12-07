@@ -201,9 +201,12 @@ public function updateBusSeatsExtra($data,$id)
 }
 public function update($data, $id)
 {
-    
+   
     $layoutArray=$data['bus_seat_layout_data'];
     $bus_id=$data['bus_id'];
+
+    $this->busSeats->where("bus_id",$bus_id)->update(array("status"=>"2"));
+    $this->bus->where("id",$bus_id)->update(array("bus_seat_layout_id"=>$data['id']));
         //Log::info($layoutArray);
         //UPDATE EXISTING RECORD STATUS TO 2.
         // $existing_data=$this->busSeats->find('bus_id',$bus_id);
@@ -212,31 +215,21 @@ public function update($data, $id)
 
         //NEED TO CREATE A NEW SET OF RECORD STATUS
 
+
+
     $get_ticket_price_id=$this->ticketPrice->where('bus_id',$bus_id)->get();
 
     foreach($layoutArray as $sLayoutData)
     {
+
+
         if(isset($sLayoutData['upperBerth']))
         {
+
             if(count($sLayoutData['upperBerth'])>0)
             {
                 foreach($sLayoutData['upperBerth'] as $upperBerthData)
                 {
-                    if($upperBerthData['seatChecked']!=true && $upperBerthData['seatId']!=NULL)
-                    {
-                     
-                        $allbusseats = $this->busSeats->where('seats_id',$upperBerthData['seatId']);
-                        if($allbusseats->count()>0)
-                        {
-                            foreach($allbusseats as $busseatsid)
-                            {
-                                $busseats = $this->busSeats->find($busseatsid->id);
-                                $busseats->status=2;
-                                $busseats->update();
-                            }
-                            
-                        }
-                    }
                     if($upperBerthData['seatChecked']==true)
                     {
                         
@@ -257,26 +250,11 @@ public function update($data, $id)
         if(isset($sLayoutData['lowerBerth']))
         {
             if(count($sLayoutData['lowerBerth'])>0)
-            {    
-                foreach($sLayoutData['lowerBerth'] as $lowerBerthData)
-                {
-                 
-                    if($lowerBerthData['seatChecked']!=true)
-                    {
-                           // Log::info("Not Checked Seat");
-                        $allbusseats = $this->busSeats->where('seats_id',$lowerBerthData['seatId'])->get();
-                        if($allbusseats->count()>0)
-                        {
-                                 //Log::info($allbusseats);
-                            foreach($allbusseats as $busseatsid)
-                            {
+            {  
 
-                                $busseats = $this->busSeats->find($busseatsid->id);
-                                $busseats->status=2;
-                                $busseats->update();
-                            }
-                        }
-                    }
+                foreach($sLayoutData['lowerBerth'] as $lowerBerthData)
+                {                 
+                    
                     if($lowerBerthData['seatChecked']==true)
                     {
                         if($lowerBerthData['seatId']!="")
