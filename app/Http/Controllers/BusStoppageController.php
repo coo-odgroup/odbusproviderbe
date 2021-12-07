@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BusStoppage;
 use App\Services\BusStoppageService;
+use App\Services\BusSeatsService;
 use App\Services\BusStoppageTimingService;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -20,12 +21,16 @@ class BusStoppageController extends Controller
     protected $busStoppageService;
     protected $BusStoppageValidator;
     protected $BusStoppageTimingService;
+    protected $BusSeatsService;
     
-    public function __construct(BusStoppageService $busStoppageService, BusStoppageValidator $BusStoppageValidator, BusStoppageTimingService $BusStoppageTimingService)
+    public function __construct(BusStoppageService $busStoppageService, 
+    BusStoppageValidator $BusStoppageValidator, BusStoppageTimingService $BusStoppageTimingService
+    ,BusSeatsService $BusSeatsService)
     {
         $this->busStoppageService = $busStoppageService;
         $this->BusStoppageValidator = $BusStoppageValidator;
         $this->BusStoppageTimingService = $BusStoppageTimingService;
+        $this->BusSeatsService = $BusSeatsService;
     }
 
 
@@ -58,6 +63,8 @@ class BusStoppageController extends Controller
         $data=$request;
         $busRoutesInfo=$data['busRoutesInfo'];
         $busRoutes=$data['busRoutes'];
+
+
         $this->BusStoppageTimingService->deleteByStoppageId($id);
         $this->busStoppageService->deletebyBusId($id);
         foreach($busRoutes as $routeKey=>$routeValue)
@@ -129,7 +136,13 @@ class BusStoppageController extends Controller
             
             //ADD TO STOPPAGE THEN TO TIMING
             
-        }       
+        }  
+
+        $new_arr['bus_id']=$data['bus_id'];
+        $new_arr['bus_seat_layout_data']=$data['bus_seat_layout_data'];
+        $new_arr['bus_seat_layout_id']=$data['bus_seat_layout_id'];
+        
+        $this->BusSeatsService->updatePost($new_arr, $id);
 
         
         return $this->successResponse($request, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);

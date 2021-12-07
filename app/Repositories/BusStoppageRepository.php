@@ -56,6 +56,7 @@ class BusStoppageRepository
         $busStoppage->created_by = "Admin";
         $busStoppage->bus_operator_id = $data['bus_operator_id'];
         $busStoppage->seize_booking_minute = $data['seize_booking_minute'];
+        $busStoppage->status = 1;
         
         return $busStoppage;
     }
@@ -84,8 +85,8 @@ class BusStoppageRepository
     }
     public function deletebyBusId($id)
     {
-        $busstoppage = $this->busStoppage->where('bus_id',$id);
-        $busstoppage->delete();
+        $busstoppage = $this->busStoppage->where('bus_id',$id)->update(array("status"=>"2"));
+        //$busstoppage->delete();
         return $busstoppage;
     }
 

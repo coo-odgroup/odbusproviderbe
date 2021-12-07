@@ -206,7 +206,8 @@ public function update($data, $id)
     $bus_id=$data['bus_id'];
 
     $this->busSeats->where("bus_id",$bus_id)->update(array("status"=>"2"));
-    $this->bus->where("id",$bus_id)->update(array("bus_seat_layout_id"=>$data['id']));
+
+    $this->bus->where("id",$bus_id)->update(array("bus_seat_layout_id"=>$data['bus_seat_layout_id']));
         //Log::info($layoutArray);
         //UPDATE EXISTING RECORD STATUS TO 2.
         // $existing_data=$this->busSeats->find('bus_id',$bus_id);
@@ -215,10 +216,8 @@ public function update($data, $id)
 
         //NEED TO CREATE A NEW SET OF RECORD STATUS
 
-
-
-    $get_ticket_price_id=$this->ticketPrice->where('bus_id',$bus_id)->get();
-
+    $get_ticket_price_id=$this->ticketPrice->where('bus_id',$bus_id)->where("status","1")->get();
+    
     foreach($layoutArray as $sLayoutData)
     {
 
