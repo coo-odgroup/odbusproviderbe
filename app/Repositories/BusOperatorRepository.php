@@ -233,12 +233,12 @@ class BusOperatorRepository
     {
 
         $operatorWithBuses =  $this->busOperators->with('bus.ticketPrice')
-     
+        
          ->where('id', $operatorId)
          
          ->get('id');
 
-        // Log::info($operatorWithBuses);
+        //Log::info($operatorWithBuses);
 
          $busData = array();
          foreach($operatorWithBuses as $operatorWithBus){
@@ -249,13 +249,11 @@ class BusOperatorRepository
                 $bStoppages = $bus->ticketPrice;
                 if(count($bStoppages)==0)continue;
                 
-                foreach($bStoppages as $tf){
-                    $sourceId = $tf->source_id;
-                    $destinationId = $tf->destination_id;
-                    $source_stoppageName = $this->location->where('id', $sourceId)->get('name');
-                    $destination_stoppageName = $this->location->where('id', $destinationId)->get('name');
+                $sourceId = $bStoppages[0]->source_id;
+                $destinationId = $bStoppages[0]->destination_id;
+                $source_stoppageName = $this->location->where('id', $sourceId)->get('name');
+                $destination_stoppageName = $this->location->where('id', $destinationId)->get('name');
                    
-                } 
 
                 if(isset($source_stoppageName[0]) && $destination_stoppageName[0]){
 

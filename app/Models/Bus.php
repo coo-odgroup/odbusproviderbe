@@ -44,7 +44,7 @@ class Bus extends Model
 
     public function ticketPrice()
     {
-        return $this->hasMany(TicketPrice::class);        
+        return $this->hasMany(TicketPrice::class)->where('status','!=',2);        
     } 
 
     public function busSafety()
