@@ -56,7 +56,6 @@ class BusStoppageController extends Controller
     public function updateBusStoppage(Request $request, $id) {
 
         $data=$request;
-        //Log::info($data);
         $busRoutesInfo=$data['busRoutesInfo'];
         $busRoutes=$data['busRoutes'];
         $this->BusStoppageTimingService->deleteByStoppageId($id);
@@ -117,20 +116,20 @@ class BusStoppageController extends Controller
             $routeinfoData['user_id']="1";
             $routeinfoData['base_seat_fare']=$routeinfoVal['seater_fare'];
             $routeinfoData['base_sleeper_fare']=$routeinfoVal['sleeper_fare'];
+            $routeinfoData['seize_booking_minute']=$routeinfoVal['booking_seized'];
             $stoppage_id=0;
             try {
                 $stoppage_id=$this->busStoppageService->savePostData($routeinfoData);
             } 
             catch (Exception $e) {
-                Log::info($e);
+                // Log::info($e);
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
             }
 
             
             //ADD TO STOPPAGE THEN TO TIMING
             
-        }
-        
+        }       
 
         
         return $this->successResponse($request, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);

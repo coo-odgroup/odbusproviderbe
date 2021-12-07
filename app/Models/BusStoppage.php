@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\BusStoppageTiming;
 use App\Models\BusOperator;
 use App\Models\BusSeats;
+use App\Models\BookingSeized;
 
 
 class BusStoppage extends Model
@@ -32,5 +33,10 @@ class BusStoppage extends Model
     public function getBusSeats()
     {
         return $this->hasMany(BusSeats::class);
+    }
+
+     public function bookingSeized()
+    {
+        return $this->belongsTo(BookingSeized::class);
     }
 }

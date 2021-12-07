@@ -270,7 +270,7 @@ class BusController extends Controller
     public function save(Request $request) {
         $data=$request;
        
-       $NewBus['name']=$data['name'];
+        $NewBus['name']=$data['name'];
         $NewBus['via']=$data['via'];
         $NewBus['bus_description']=$data['bus_description'];
         $NewBus['user_id']=$data['user_id'];
@@ -382,17 +382,13 @@ class BusController extends Controller
 
                         if($busRoutesInfo){
 
-                             foreach($busRoutesInfo as $routeinfoKey=>$routeinfoVal)
-                        {
-                           
+                        foreach($busRoutesInfo as $routeinfoKey=>$routeinfoVal)
+                        {                          
                             $booking_seized_array['bus_id']=$routeinfoData['bus_id']=$bus_last_insert_id; //get it from return id
-                            $booking_seized_array['location_id']=$routeinfoVal['from_location'];
-                            $booking_seized_array['seize_booking_minute']=$routeinfoVal['booking_seized'];
-                            $booking_seized_array['created_by']=$data['created_by'];
-
-
-                            
-                            $this->bookingSeizedService->savePostData($booking_seized_array);
+                            // $booking_seized_array['location_id']=$routeinfoVal['from_location'];
+                            // $booking_seized_array['seize_booking_minute']=$routeinfoVal['booking_seized'];
+                            // $booking_seized_array['created_by']=$data['created_by'];                           
+                            // $this->bookingSeizedService->savePostData($booking_seized_array);
 
                             
                             $routeinfoData['bus_operator_id']=$data['bus_operator_id'];
@@ -407,6 +403,7 @@ class BusController extends Controller
                             $routeinfoData['user_id']="1";
                             $routeinfoData['base_seat_fare']=$routeinfoVal['seater_fare'];
                             $routeinfoData['base_sleeper_fare']=$routeinfoVal['sleeper_fare'];
+                            $routeinfoData['seize_booking_minute']=$routeinfoVal['booking_seized'];
                             $stoppage_id=$this->BusStoppageService->savePostData($routeinfoData);
 
                             if(isset($data['bus_seat_layout_data']))

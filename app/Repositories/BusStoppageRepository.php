@@ -55,6 +55,8 @@ class BusStoppageRepository
         $busStoppage->start_j_days = $data['start_j_days'];
         $busStoppage->created_by = "Admin";
         $busStoppage->bus_operator_id = $data['bus_operator_id'];
+        $busStoppage->seize_booking_minute = $data['seize_booking_minute'];
+        
         return $busStoppage;
     }
     public function save($data)
