@@ -64,6 +64,11 @@ class CouponService
         $result = $this->couponRepository->saveCouponOperator($data);
         return $result;
     }
+    public function changeStatus($data)
+    {
+        $result = $this->couponRepository->changeStatus($data);
+        return $result;
+    }
     //COUPON ADD FOR BUS, ROUTE AND OPERATOR ENDS HERE
     
 }

@@ -168,5 +168,16 @@ class CouponController extends Controller
         return $this->successResponse($coupon,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
     }  
+
+     public function changeStatus ($id) {
+        try{
+            $response = $this->couponService->changeStatus($id);
+        }
+        catch (Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse($response,"Coupon Status Updated", Response::HTTP_ACCEPTED);
+      }    
+         
 	     
 }

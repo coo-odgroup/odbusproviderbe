@@ -582,6 +582,8 @@ Route::put('/coupon/{id}', [CouponController::class, 'updateCoupon']);
 Route::delete('/coupon/{id}', [CouponController::class, 'deleteCoupon']);
 Route::get('/coupon/{id}', [CouponController::class, 'getBusCoupon']);
 Route::post('/getData', [CouponController::class, 'getData']);
+Route::put('/changeStatusCoupon/{id}', [CouponController::class, 'changeStatus']);
+
 
 //COUPON FOR BUS, ROUTE AND OPERATOR 
 Route::post('/couponBus', [CouponController::class, 'createCouponBus']);
