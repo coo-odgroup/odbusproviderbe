@@ -89,7 +89,7 @@ class BusCancelledController extends Controller
     }
     public function getBusCancelled($id) {
       try {
-        $buscancelledID= $this->busCancelledService->getById($id);
+        $buscancelledID= $this->busCancelledService->getByBusId($id);
         return $this->successResponse($buscancelledID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
       }
       catch (Exception $e) {

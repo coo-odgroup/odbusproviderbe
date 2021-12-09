@@ -66,9 +66,9 @@ class BusCancelledService
      * @param $id
      * @return String
      */
-    public function getById($id)
+    public function getByBusId($id)
     {
-        return $this->busCancelledRepository->getById($id);
+        return $this->busCancelledRepository->getByBusId($id);
     }
     /**
      * Update  data

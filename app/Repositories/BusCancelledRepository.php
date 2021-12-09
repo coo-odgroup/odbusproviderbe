@@ -176,9 +176,9 @@ class BusCancelledRepository
      * @param $id
      * @return mixed
      */
-    public function getById($id)
+    public function getByBusId($id)
     {
-        return $this->busCancelled ->where('id', $id)->get();
+        return $this->busCancelled->with('busCancelledDate')->where('bus_id', $id)->get();
     }
 
     /**
