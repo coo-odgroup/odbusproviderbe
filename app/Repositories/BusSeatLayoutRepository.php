@@ -207,7 +207,7 @@ class BusSeatLayoutRepository
 
       
         foreach ($sLayoutContent as $ind_records) {
-            $ind_records['seat_class_id']=$ind_records['berthType'];
+            $ind_records['seat_class_id']=$ind_records['seat_class_id'];
             $seatRecords[] =new Seats($ind_records);
         }
         $busSeatLayout->seats()->saveMany($seatRecords);
