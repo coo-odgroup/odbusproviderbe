@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\BusStoppage;
 use App\Models\Location;
+use App\Models\BusStoppageTiming;
 use App\Repositories\BusStoppageRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -14,11 +15,13 @@ use InvalidArgumentException;
 class BusStoppageService
 {
     protected $busStoppageRepository;
+    protected $busStoppageTiming;
     protected $location;
-    public function __construct(busStoppageRepository $busStoppageRepository, Location $location)
+    public function __construct(busStoppageRepository $busStoppageRepository, BusStoppageTiming $busStoppageTiming, Location $location)
     {
         $this->busStoppageRepository = $busStoppageRepository;
-        $this->location = $location;
+        $this->busStoppageTiming = $busStoppageTiming;
+        $this->location=$location;
     }
     public function deleteById($id)
     {
@@ -47,13 +50,12 @@ class BusStoppageService
     }
     public function getBusStoppagebyBusId($busid)
     {
-        $data= $this->busStoppageRepository->getBusStoppagebyBusId($busid);
-         if($data){
-            foreach($data as $v)
+        $data['result']= $this->busStoppageRepository->getBusStoppagebyBusId($busid);
+        $data['locations']=$this->busStoppageTiming->select('location_id')->distinct()->where('bus_id',$busid)->get();
+         if($data['locations']){
+            foreach($data['locations'] as $v)
             { 
-                 
-                $v['from_location']=$this->location->where('id', $v->source_id)->get();
-                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+                $v['location_name']=$this->location->where('id', $v->location_id)->get();
                
             }
         }
