@@ -407,7 +407,12 @@ class BusRepository
         {
             $data = $data->where('name', 'like', '%' .$name . '%')
                          ->orWhere('bus_number', 'like', '%' .$name . '%')
-                         ->orWhere('via', 'like', '%' .$name . '%');                                             
+                         ->orWhere('via', 'like', '%' .$name . '%')
+                         ->orWhere('created_by', 'like', '%' .$name . '%')
+                         ->orwhereHas('busOperator', function ($query) use ($name)
+                                     {$query->where('organisation_name','like', '%' .$name . '%' );})
+                        ->orwhereHas('busOperator', function ($query) use ($name)
+                                    {$query->where('operator_name', 'like', '%' .$name . '%');});                                             
         }     
 
         $data=$data->paginate($paginate);
