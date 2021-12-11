@@ -61,7 +61,8 @@ class BusTypeRepository
 
         if($name!=null)
         {
-            $data=$data->where('name', $name);
+            $data=$data->where('name','like', '%' .$name . '%')
+                       ->orWhere('created_by', 'like', '%' .$name . '%');
         } 
         if($bus_type!=null)
         {
