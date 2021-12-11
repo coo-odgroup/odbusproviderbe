@@ -42,9 +42,9 @@ class AmenitiesRepository
 
         if($name!=null)
         {
-            $data=$data->where('name', $name);
-        } 
-      
+            $data=$data->where('name', 'like', '%' .$name . '%')
+                       ->orWhere('created_by', 'like', '%' .$name . '%');
+        }       
 
         $data=$data->paginate($paginate);
 
