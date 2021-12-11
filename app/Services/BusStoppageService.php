@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\BusStoppage;
+use App\Models\Location;
 use App\Repositories\BusStoppageRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -13,9 +14,11 @@ use InvalidArgumentException;
 class BusStoppageService
 {
     protected $busStoppageRepository;
-    public function __construct(busStoppageRepository $busStoppageRepository)
+    protected $location;
+    public function __construct(busStoppageRepository $busStoppageRepository, Location $location)
     {
         $this->busStoppageRepository = $busStoppageRepository;
+        $this->location = $location;
     }
     public function deleteById($id)
     {
@@ -44,7 +47,17 @@ class BusStoppageService
     }
     public function getBusStoppagebyBusId($busid)
     {
-        return $this->busStoppageRepository->getBusStoppagebyBusId($busid);
+        $data= $this->busStoppageRepository->getBusStoppagebyBusId($busid);
+         if($data){
+            foreach($data as $v)
+            { 
+                 
+                $v['from_location']=$this->location->where('id', $v->source_id)->get();
+                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+               
+            }
+        }
+        return $data;
     }
     
     public function getBusByOperator($operator_id)
