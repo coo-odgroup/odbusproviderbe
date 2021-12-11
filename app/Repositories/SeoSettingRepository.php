@@ -82,7 +82,7 @@ class SeoSettingRepository
 
         if($name!=null)
         {
-            $data=$data->where('page_url', $name);
+            $data=$data->where('page_url', $name)->orwhere('created_by', 'like', '%' .$name . '%');
         } 
 
         if($operator_id!= null)

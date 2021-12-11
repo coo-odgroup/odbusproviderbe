@@ -170,7 +170,7 @@ class CouponRepository
 
         if(!empty($name))
         {
-           $data=$data->whereHas('busOperator', function ($query) use ($name) {$query->where('operator_name', $name );});
+           $data=$data->whereHas('busOperator', function ($query) use ($name) {$query->where('operator_name',  'like', '%' .$name . '%' );})->orwhere('created_by', 'like', '%' .$name . '%');
         }
 
         $data=$data->paginate($paginate);     
