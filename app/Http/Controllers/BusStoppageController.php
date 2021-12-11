@@ -116,7 +116,10 @@ class BusStoppageController extends Controller
             $routeinfoData['destination_id']=$routeinfoVal['to_location'];
             $routeinfoData['start_j_days']=$routeinfoVal['arr_days'];
             $routeinfoData['j_day']=$routeinfoVal['dep_days'];
-
+            if(!isset($location_arrival[$routeinfoVal['from_location']]['arr_time']))
+            {
+                continue;
+            }
             $routeinfoData['arr_time']=$location_arrival[$routeinfoVal['from_location']]['arr_time'];
             $routeinfoData['dep_time']=$location_depature[$routeinfoVal['to_location']]['dep_time'];
 
