@@ -81,6 +81,7 @@ use App\Http\Controllers\ContactReportController;
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\UserContentController;
+use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\SeoSettingController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\SliderController;
@@ -765,3 +766,14 @@ Route::put('/Agent/{id}', [AgentController::class, 'updateAgent']);
 Route::delete('/Agent/{id}', [AgentController::class, 'deleteAgent']);
 Route::get('/Agent/{id}', [AgentController::class, 'getAgent']);
 Route::put('/AgentChangeStatus/{id}', [AgentController::class, 'changeStatus']);
+
+
+
+//Association Content
+
+Route::post('AssociationData',[AssociationController::class,'getAllData']);
+Route::post('Association',[AssociationController::class,'adduser']);
+Route::put('Association/{id}',[AssociationController::class,'updateuser']);
+Route::delete('Association/{id}', [AssociationController::class, 'deleteuser']);
+Route::put('changeAssociationPassword/{id}', [AssociationController::class, 'changePassword']);
+Route::put('/changeAssociationStatus/{id}', [AssociationController::class, 'changeStatus']);
