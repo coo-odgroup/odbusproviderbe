@@ -11,7 +11,7 @@ class BoardingDropingValidator
         
         $rules = [
             'location_id' => 'required',
-            'boarding_point' => 'required|max:200',
+            'boarding_point' => 'required|max:400',
             //'dropping_point' => 'required|max:200',
             'created_by' => 'required',
         ];      

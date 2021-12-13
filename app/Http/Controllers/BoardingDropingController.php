@@ -34,6 +34,8 @@ class BoardingDropingController extends Controller
     }
 
     public function createBoardingDroping(Request $request) {
+        //   log::info($request);
+        // exit();
         $data = $request->only([
           'location_id', 
           'boarding_point',
@@ -122,6 +124,7 @@ class BoardingDropingController extends Controller
       
       public function createBoarding(Request $request) 
       {      
+
         $data = $request->only([
           'location_id', 
           'name',

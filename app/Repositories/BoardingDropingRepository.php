@@ -55,6 +55,7 @@ class BoardingDropingRepository
             $boardingdroping = new $this->boardingDroping;
             $boardingdroping->location_id = $data['location_id'];
             $boardingdroping->boarding_point = $stoppage['boarding_point'];
+            $boardingdroping->landmark = $stoppage['landmark'];
             $boardingdroping->created_by = $data['created_by'];
             $boardingdroping->status = 0;
             $stoppages[]=$boardingdroping;
@@ -73,8 +74,8 @@ class BoardingDropingRepository
             $boardingdroping = new $this->boardingDroping;
             $boardingdroping->location_id = $data['location_id'];
             $boardingdroping->boarding_point = $stoppage['boarding_point'];
+            $boardingdroping->landmark = $stoppage['landmark'];
             $boardingdroping->created_by = $data['created_by'];
-            $boardingdroping->status = 0;
             $stoppages[]=$boardingdroping;
         }
         $this->location->boardingDropping()->saveMany($stoppages);
@@ -156,7 +157,7 @@ class BoardingDropingRepository
                     ->whereHas('boardingDropping', function ($query){
                      $query->where('status', '!=','2');               
                      })
-                    ->orderBy('id','DESC'); 
+                    ->orderBy('name','ASC'); 
 
         // $data= $this->location->with(['boardingDropping' => function ($q){
         //                          $q->orderBy('id', 'DESC');}])
