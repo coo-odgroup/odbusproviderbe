@@ -62,8 +62,16 @@ class AssociationRepository
        $usercontent->name =$data['name'];
        $usercontent->email =$data['email'];
        $usercontent->phone =$data['phone'];
+
+       $usercontent->location =$data['location'];
+       $usercontent->president_name =$data['president_name'];
+       $usercontent->president_phone =$data['president_phone'];
+       $usercontent->general_secretary_name =$data['general_secretary_name'];
+       $usercontent->general_secretary_phone =$data['general_secretary_phone'];
+
+
        $usercontent->role_id ='5';
-       $usercontent->status ='1';
+       $usercontent->status ='0';
        $usercontent->password =bcrypt($data['password']);
        $usercontent->created_by ="Admin";
        $usercontent->save();
@@ -78,7 +86,13 @@ class AssociationRepository
       $usercontent->name =$data['name'];
       $usercontent->email =$data['email'];
       $usercontent->phone =$data['phone'];
+      $usercontent->location =$data['location'];
+      $usercontent->president_name =$data['president_name'];
+      $usercontent->president_phone =$data['president_phone'];
+      $usercontent->general_secretary_name =$data['general_secretary_name'];
+      $usercontent->general_secretary_phone =$data['general_secretary_phone'];
       $usercontent->created_by ="Admin";
+      $usercontent->status ='0';
 	  $usercontent->update();
       return $usercontent;
    } 

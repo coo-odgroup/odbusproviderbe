@@ -43,7 +43,12 @@ class AssociationController extends Controller
           'name',
           'email',
           'phone',
-          'password'
+          'password',
+          'location',
+          'president_name',
+          'president_phone',
+          'general_secretary_name',
+          'general_secretary_phone'
         ]);
 
     	 $usercontent = $this->AssociationValidator->validate($data);
@@ -71,6 +76,11 @@ class AssociationController extends Controller
           'name',
           'email',
           'phone',
+          'location',
+          'president_name',
+          'president_phone',
+          'general_secretary_name',
+          'general_secretary_phone'
         ]);
 
 

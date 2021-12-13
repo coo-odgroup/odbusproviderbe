@@ -13,7 +13,8 @@ class AssociationValidator
             'name' => 'required',
             'email' => 'required',
             'phone' => 'required',
-            'password' => 'required'
+            'password' => 'required',
+            'location' => 'required'
         ];      
       
         $associationValidator = Validator::make($data, $rules);
