@@ -130,9 +130,15 @@ class BusOperatorRepository
     }
     public function getModel($data, BusOperator $busOperators)
     {
+        $trim = trim( $data['organisation_name']);
+        $remove_space= str_replace(' ', '-', $trim);  
+        $remove_special_char = preg_replace('/[^A-Za-z0-9\-]/', '',$remove_space);             
+        $url = strtolower($remove_special_char);
+        
         $busOperators->email_id = $data['email_id'];
         $busOperators->password = $data['password'];
         $busOperators->operator_name = $data['operator_name'];
+        $busOperators->operator_url = $url;
         $busOperators->contact_number = $data['contact_number'];
         $busOperators->organisation_name = $data['organisation_name'];
         $busOperators->location_name = $data['location_name'];
@@ -148,6 +154,7 @@ class BusOperatorRepository
         $busOperators->gst_number = $data['gst_number'];
         $busOperators->gst_amount = $data['gst_amount'];
         $busOperators->created_by = $data['created_by'];
+
         return $busOperators;
     }
     public function getOperatorEmail($data)
@@ -196,7 +203,7 @@ class BusOperatorRepository
 
     }
     public function save($data)
-    {
+    {   
         $busOperators = new $this->busOperators;
         $busOperators=$this->getModel($data,$busOperators);
         $busOperators->save();
