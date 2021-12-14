@@ -49,7 +49,7 @@ class Bus extends Model
 
     public function busSafety()
     {
-        return $this->hasMany(BusSafety::class);        
+        return $this->hasMany(BusSafety::class)->where('status','!=',2);               
     } 
     public function review()
     {        
@@ -57,7 +57,7 @@ class Bus extends Model
     } 
     public function busSchedule()
     {        
-        return $this->hasMany(BusSchedule::class);        
+        return $this->hasMany(BusSchedule::class)->where('status','!=',2);               
     } 
     public function busCancelled()
     {        
@@ -65,11 +65,11 @@ class Bus extends Model
     } 
     public function busstoppage()
     {        
-        return $this->hasMany(BusStoppage::class);        
+        return $this->hasMany(BusStoppage::class)->where('status','!=',2);                
     }  
     public function busSeats()
     {        
-        return $this->hasMany(BusSeats::class);        
+        return $this->hasMany(BusSeats::class)->where('status','!=',2);                
     }     
     public function busOperator()
     {
@@ -86,7 +86,7 @@ class Bus extends Model
     }
     public function busContacts()
         {
-            return $this->hasMany(BusContacts::class);       
+            return $this->hasMany(BusContacts::class)->where('status','!=',2);               
         }
 
     public function BusSitting()
@@ -105,7 +105,7 @@ class Bus extends Model
 
     public function bus_seats()
     {
-        return $this->hasMany(BusSeats::class);
+        return $this->hasMany(BusSeats::class)->where('status','!=',2);        
     }
 
     public function ownerfare()
@@ -114,7 +114,7 @@ class Bus extends Model
     } 
     public function bookingseized()
     {
-        return $this->hasMany(BookingSeized::class);
+        return $this->hasMany(BookingSeized::class)->where('status','!=',2);        
     }
     public function cancellationslabs()
     {        
@@ -122,7 +122,7 @@ class Bus extends Model
     } 
     public function busStoppageTimimg()
     {        
-        return $this->hasMany(BusStoppageTiming::class);        
+        return $this->hasMany(BusStoppageTiming::class)->where('status','!=',2);               
     }
 
 }

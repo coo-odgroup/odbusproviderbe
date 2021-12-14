@@ -17,7 +17,7 @@ class BusOperator extends Model
     ];
     public function bus()
     {        
-        return $this->hasMany(Bus::class);        
+        return $this->hasMany(Bus::class)->where('status','!=',2);               
     } 
     public function odbusCharges()
     {

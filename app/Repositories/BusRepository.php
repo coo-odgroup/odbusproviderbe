@@ -403,6 +403,7 @@ class BusRepository
         $data= $this->bus->with('busOperator','busstoppage','ticketPrice.getBusSeats.seats','busContacts','busSeats.seats')->whereHas('ticketPrice', function ($query) 
                                      {$query->where('status','!=', 2 );})
                                 ->whereNotIn('status', [2])->orderBy('id','DESC');
+                  
 
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
@@ -419,20 +420,37 @@ class BusRepository
 
         if($name!=null)
         {
-            $data = $data->where('name', 'like', '%' .$name . '%')
-                         ->orWhere('bus_number', 'like', '%' .$name . '%')
-                         ->orWhere('via', 'like', '%' .$name . '%')
-                         ->orWhere('created_by', 'like', '%' .$name . '%')
-                         ->orwhereHas('busOperator', function ($query) use ($name)
-                                     {$query->where('organisation_name','like', '%' .$name . '%' );})
-                        ->orwhereHas('busOperator', function ($query) use ($name)
-                                    {$query->where('operator_name', 'like', '%' .$name . '%');});                                             
-        }     
+            $data = $data->where(
+                function($query) use ($name) {
+                    $data = $query->where('name', 'like', '%' .$name . '%')
+                    ->orWhere('bus_number', 'like', '%' .$name . '%')
+                    ->orWhere('via', 'like', '%' .$name . '%')
+                    ->orWhere('created_by', 'like', '%' .$name . '%')
+                    ->orwhereHas('busOperator', function ($query) use ($name)
+                                {$query->where('organisation_name','like', '%' .$name . '%' );})
+                   ->orwhereHas('busOperator', function ($query) use ($name)
+                               {$query->where('operator_name', 'like', '%' .$name . '%');});
+            });        
+        } 
+
+
+        // if($name!=null)
+        // {
+            
+        //     $data = $data->where('name', 'like', '%' .$name . '%')
+        //                  ->orWhere('bus_number', 'like', '%' .$name . '%')
+        //                  ->orWhere('via', 'like', '%' .$name . '%')
+        //                  ->orWhere('created_by', 'like', '%' .$name . '%')
+        //                  ->orwhereHas('busOperator', function ($query) use ($name)
+        //                              {$query->where('organisation_name','like', '%' .$name . '%' );})
+        //                 ->orwhereHas('busOperator', function ($query) use ($name)
+        //                             {$query->where('operator_name', 'like', '%' .$name . '%');});                                             
+        // }     
 
         $data=$data->paginate($paginate);
         ;
         
-        // Log::info($data);
+         Log::info($data);
 
         if($data){
             foreach($data as $v){ 
