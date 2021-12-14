@@ -66,9 +66,9 @@ abstract class AbstractRepository
     }     
      public function create(array $data)
      {
-         Log::info("Model Class".$this->getModelClass());
-        Log::info("Inside Create".$this->model->fillable);
-        var_dump($this->model->fillable);
+         //Log::info("Model Class".$this->getModelClass());
+        //Log::info("Inside Create".$this->model->fillable);
+       // var_dump($this->model->fillable);
         $result = $this->model->create($data->only($this->model->fillable));
         return $result;
      }

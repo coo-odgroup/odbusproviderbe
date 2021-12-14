@@ -20,7 +20,7 @@ class BusLocationSequenceService
      *
      * @param BusLocationSequenceRepository $busLocationSequenceService
      */
-    public function __construct(BusLocationSequenceRepository $busLocationSequenceService)
+    public function __construct(BusLocationSequenceRepository $busLocationSequenceRepository)
     {
         $this->busLocationSequenceRepository = $busLocationSequenceRepository;
     }
@@ -96,6 +96,12 @@ class BusLocationSequenceService
     public function savePostData($data)
     {
         $result = $this->busLocationSequenceRepository->save($data);
+        return $result;
+    }
+
+    public function deletebyBusId($id)
+    {
+         $result = $this->busLocationSequenceRepository->deletebyBusId($id);
         return $result;
     }
 }

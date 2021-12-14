@@ -44,6 +44,8 @@ class BusStoppageTimingRepository
             $result['sequence'][]=$this->busLocationSequence->where('bus_id',$bus_id)->where('location_id',$routeInfo->location_id)->get();
         }
 
+        //Log::info($result);
+
         //return $this->location->with('busStoppageTiming')->get();
         return $result;
     }

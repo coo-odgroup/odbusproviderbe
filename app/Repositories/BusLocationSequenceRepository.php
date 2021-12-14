@@ -61,4 +61,12 @@ class BusLocationSequenceRepository
         $safety->update();
         return $safety;
     }
+
+    public function deletebyBusId($id)
+    {
+        $sequence = $this->busLocationSequence->where('bus_id',$id)->update(array("status"=>"2"));
+        //$busstoppage->delete();
+        return $sequence;
+    }
+
 }

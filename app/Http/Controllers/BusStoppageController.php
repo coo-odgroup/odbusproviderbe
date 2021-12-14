@@ -6,6 +6,7 @@ use App\Models\BusStoppage;
 use App\Services\BusStoppageService;
 use App\Services\BusSeatsService;
 use App\Services\BusStoppageTimingService;
+use App\Services\BusLocationSequenceService;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponser;
@@ -22,15 +23,18 @@ class BusStoppageController extends Controller
     protected $BusStoppageValidator;
     protected $BusStoppageTimingService;
     protected $BusSeatsService;
+    protected $busLocationSequenceService;
+    
     
     public function __construct(BusStoppageService $busStoppageService, 
     BusStoppageValidator $BusStoppageValidator, BusStoppageTimingService $BusStoppageTimingService
-    ,BusSeatsService $BusSeatsService)
+    ,BusSeatsService $BusSeatsService, BusLocationSequenceService $busLocationSequenceService)
     {
         $this->busStoppageService = $busStoppageService;
         $this->BusStoppageValidator = $BusStoppageValidator;
         $this->BusStoppageTimingService = $BusStoppageTimingService;
         $this->BusSeatsService = $BusSeatsService;
+        $this->busLocationSequenceService=$busLocationSequenceService;
     }
 
 
@@ -63,12 +67,21 @@ class BusStoppageController extends Controller
         $data=$request;
         $busRoutesInfo=$data['busRoutesInfo'];
         $busRoutes=$data['busRoutes'];
-
+        
 
         $this->BusStoppageTimingService->deleteByStoppageId($id);
         $this->busStoppageService->deletebyBusId($id);
+        $this->busLocationSequenceService->deletebyBusId($id);
         foreach($busRoutes as $routeKey=>$routeValue)
         {
+
+            $bus_location_sequence['bus_id']=$id;
+            $bus_location_sequence['location_id']=$routeValue['source_id'];
+            $bus_location_sequence['sequence']=$routeValue['sequence'];
+
+            $this->busLocationSequenceService->savePostData($bus_location_sequence);
+
+
             $timing_grp['bus_id']=$id;
             $timing_grp['location_id']=$routeValue['source_id'];
 
@@ -118,7 +131,7 @@ class BusStoppageController extends Controller
             $routeinfoData['j_day']=$routeinfoVal['dep_days'];
             if(!isset($location_arrival[$routeinfoVal['from_location']]['arr_time']))
             {
-                continue;
+               continue;
             }
             $routeinfoData['arr_time']=$location_arrival[$routeinfoVal['from_location']]['arr_time'];
             $routeinfoData['dep_time']=$location_depature[$routeinfoVal['to_location']]['dep_time'];
