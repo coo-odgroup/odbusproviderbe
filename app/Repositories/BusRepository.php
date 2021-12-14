@@ -88,34 +88,46 @@ class BusRepository
     return $data;
     }
     public function seatsBus($request)
-    {  
+    {         
+
         $busData=  $this->bus
-         ->where('id' ,$request->bus_id)->get();  
-        
+         ->where('id' ,$request->bus_id)->where('status','!=',2)->get();  
+        // Log::info($busData);
+
         $seatData=[];
 
-        $lowerBerth=$this->Seats->with('BusSeats')
+        $lowerBerth=$this->Seats->with(['BusSeats' => function ($query){
+            $query->where('status','!=',2);
+         }])
         ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
         ->where('berthType',1)
+        ->where('status','!=',2)
         ->get();
+
+
         foreach($lowerBerth as $key=>$rows)
         {
             $row_data=$this->Seats
             ->where('rowNumber',$rows->rowNumber)
             ->where('berthType', '1')
+            ->where('status','!=',2)
             ->where('bus_seat_layout_id', $busData[0]->bus_seat_layout_id)
             ->orderBy('colNumber')->get();
             $seatData['lowerBerth'][$rows->rowNumber]=$row_data;
         }
 
-        $upperBerth=$this->Seats->with('BusSeats')
+        $upperBerth=$this->Seats->with(['BusSeats' => function ($query){
+            $query->where('status','!=',2);
+         }])
         ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
         ->where('berthType',2)
+        ->where('status','!=',2)
         ->get();
         foreach($upperBerth as $key=>$rows)
         {
             $row_data=$this->Seats->where('rowNumber',$rows->rowNumber)
             ->where('berthType', '2')
+            ->where('status','!=',2)
             ->where('bus_seat_layout_id', $busData[0]->bus_seat_layout_id)
             ->orderBy('colNumber')->get();
             $seatData['upperBerth'][$rows->rowNumber]=$row_data;

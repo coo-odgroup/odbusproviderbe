@@ -66,9 +66,7 @@ class BusController extends Controller
 
         
     }
-    public function seatsBus(Request $request) {
-        
-
+    public function seatsBus(Request $request) {       
         $buses = $this->busService->seatsBus($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
     }
