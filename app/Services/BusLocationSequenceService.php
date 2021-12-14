@@ -13,7 +13,7 @@ class BusLocationSequenceService
     /**
      * @var $busGalleryRepository
      */
-    protected $busLocationSequenceService;
+    protected $busLocationSequenceRepository;
 
     /**
      * BusLocationSequenceRepository constructor.
@@ -22,7 +22,7 @@ class BusLocationSequenceService
      */
     public function __construct(BusLocationSequenceRepository $busLocationSequenceService)
     {
-        $this->busLocationSequenceService = $busLocationSequenceService;
+        $this->busLocationSequenceRepository = $busLocationSequenceRepository;
     }
 
     /**
@@ -34,7 +34,7 @@ class BusLocationSequenceService
     public function deleteById($id)
     {
         try {
-            $post = $this->busLocationSequenceService->delete($id);
+            $post = $this->busLocationSequenceRepository->delete($id);
         } catch (Exception $e) {
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
@@ -49,7 +49,7 @@ class BusLocationSequenceService
      */
     public function getAll()
     {
-        return $this->busLocationSequenceService->getAll();
+        return $this->busLocationSequenceRepository->getAll();
     }
 
     /**
@@ -60,12 +60,12 @@ class BusLocationSequenceService
      */
     public function getById($id)
     {
-        return $this->busLocationSequenceService->getById($id);
+        return $this->busLocationSequenceRepository->getById($id);
     }
 
     public function getByBusId($bid)
     {
-        return $this->busLocationSequenceService->getByBusId($bid);
+        return $this->busLocationSequenceRepository->getByBusId($bid);
     }
     /**
      * Update  data
@@ -77,7 +77,7 @@ class BusLocationSequenceService
     public function updatePost($data, $id)
     {
         try {
-            $post = $this->busLocationSequenceService->update($data, $id);
+            $post = $this->busLocationSequenceRepository->update($data, $id);
 
         } catch (Exception $e) {
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
@@ -95,7 +95,7 @@ class BusLocationSequenceService
      */
     public function savePostData($data)
     {
-        $result = $this->busLocationSequenceService->save($data);
+        $result = $this->busLocationSequenceRepository->save($data);
         return $result;
     }
 }
