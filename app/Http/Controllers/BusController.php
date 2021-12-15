@@ -295,6 +295,7 @@ class BusController extends Controller
         try {
 
             $up=0;
+            $lp=0;
 
             if($data['bus_seat_layout_data']){
                 foreach($data['bus_seat_layout_data'] as $sLayoutData)
@@ -317,7 +318,7 @@ class BusController extends Controller
                         }
                     }
 
-                    $lp=0;
+                  
                     
                     if(isset($sLayoutData['lowerBerth']))
                     {
@@ -343,8 +344,7 @@ class BusController extends Controller
                 return $this->errorResponse("Bus must have at least 1 selected seat.Please check seat layout and try again.",Response::HTTP_PARTIAL_CONTENT);
 
             }
-
-            return '';
+       
 
                 $bus_last_insert_id=$this->busService->savePostData($NewBus); 
                 /////////////// add safety 
