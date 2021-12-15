@@ -283,7 +283,10 @@ class BusController extends Controller
         $NewBus['amenities']=$data['amenities'];
         $NewBus['max_seat_book']=$data['max_seat_book'];
 
-        $busValidation = $this->busValidator->validate($NewBus);
+        $busValidation = $this->busValidator->validate($data->all());
+
+     
+
 
         if ($busValidation->fails()) {
             $errors = $busValidation->errors();
@@ -291,8 +294,58 @@ class BusController extends Controller
         } 
         try {
 
-            if($data['safety'] && $data['busRoutesInfo'] && $data['busRoutes'] && $data['bus_seat_layout_data'])
-           {
+            $up=0;
+
+            if($data['bus_seat_layout_data']){
+                foreach($data['bus_seat_layout_data'] as $sLayoutData)
+                {
+                    if(isset($sLayoutData['upperBerth']))
+                    {        
+                        if(count($sLayoutData['upperBerth'])>0)
+                        {
+                            foreach($sLayoutData['upperBerth'] as $upperBerthData)
+                            {
+                                if($upperBerthData['seatChecked']==true)
+                                {
+                                    if($upperBerthData['seatId']!="")
+                                     {
+                                       $up++;
+                                     }
+                                   
+                                }
+                            }
+                        }
+                    }
+
+                    $lp=0;
+                    
+                    if(isset($sLayoutData['lowerBerth']))
+                    {
+                      if(count($sLayoutData['lowerBerth'])>0)
+                        {                            
+                            foreach($sLayoutData['lowerBerth'] as $lowerBerthData)
+                            { 
+                                if($lowerBerthData['seatChecked']==true)
+                                {
+                                    if($lowerBerthData['seatId']!="")
+                                    {  
+                                        $lp++;
+                                    }                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if($up==0 && $lp==0){ // check if both upper berth & lower berth is empty 
+
+                return $this->errorResponse("Bus must have at least 1 selected seat.Please check seat layout and try again.",Response::HTTP_PARTIAL_CONTENT);
+
+            }
+
+            return '';
+
                 $bus_last_insert_id=$this->busService->savePostData($NewBus); 
                 /////////////// add safety 
                 $safetydata['bus_id']=$bus_last_insert_id;
@@ -424,9 +477,9 @@ class BusController extends Controller
 
                          return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_ACCEPTED);
 
-            }else{
-                return $this->errorResponse("Some mandatory fileds are missing.Please verify and try again.",Response::HTTP_PARTIAL_CONTENT);
-            }
+            // }else{
+            //     return $this->errorResponse("Some mandatory fileds are missing.Please verify and try again.",Response::HTTP_PARTIAL_CONTENT);
+            // }
 
         } 
         catch (Exception $e) {
