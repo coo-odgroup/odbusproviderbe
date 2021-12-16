@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\CancellationSlab;
 use App\Services\CancellationSlabService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
@@ -64,7 +63,7 @@ class CancellationSlabController extends Controller
     
     public function createCancellationSlab(Request $request) {
       $data = $request->only([
-          'bus_operator_id', 'rule_name','slabs','cancellation_policy_desc','created_by'
+          'bus_operator_id', 'rule_name','slabs','cancellation_policy_desc','created_by','user_id'
       ]);
       
       $cSlabValidate = $this->CancellationSlabValidator->validate($data);
@@ -84,7 +83,7 @@ class CancellationSlabController extends Controller
   }
   public function updateCancellationSlab(Request $request, $id) {
     $data = $request->only([
-      'bus_operator_id', 'rule_name', 'slabs','cancellation_policy_desc','created_by'
+      'bus_operator_id', 'rule_name', 'slabs','cancellation_policy_desc','created_by','user_id'
     ]);
     $cSlabValidate = $this->CancellationSlabValidator->validate($data);
     if ($cSlabValidate->fails()) {

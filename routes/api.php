@@ -654,7 +654,7 @@ Route::delete('/extclosinghour/{id}', [ExtendedBusClosingHoursController::class,
 Route::get('/extclosinghour/{id}', [ExtendedBusClosingHoursController::class, 'getExtendedClosingHours']);
 
 
-
+Route::post('/userOperators', [BusOperatorController::class, 'userOperators']);
 Route::post('/busoperatorsDT', [BusOperatorController::class, 'getAllBusOperatorsDT']);
 Route::post('/busoperator', [BusOperatorController::class, 'createBusOperator']);
 Route::post('/BusbyOperatorData', [BusOperatorController::class, 'BusbyOperatorData']);

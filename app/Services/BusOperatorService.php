@@ -66,6 +66,18 @@ class BusOperatorService
         }
         return $busOperator;
     }
+    public function userOperators($request)
+    {
+        try {
+            $busOperator = $this->busOperatorRepository->userOperators($request);
+
+        } catch (Exception $e) {
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+        }
+        return $busOperator;
+    }
+
+
     /**
      * Get all Data.
     

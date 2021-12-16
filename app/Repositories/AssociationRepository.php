@@ -58,6 +58,7 @@ class AssociationRepository
     
    public function addusercontent($data)
    {        
+
        $usercontent = new $this->usercontent;
        $usercontent->name =$data['name'];
        $usercontent->email =$data['email'];
@@ -69,7 +70,7 @@ class AssociationRepository
        $usercontent->general_secretary_name =$data['general_secretary_name'];
        $usercontent->general_secretary_phone =$data['general_secretary_phone'];
 
-
+       $usercontent->user_type ='ASSOCIATION';
        $usercontent->role_id ='5';
        $usercontent->status ='0';
        $usercontent->password =bcrypt($data['password']);

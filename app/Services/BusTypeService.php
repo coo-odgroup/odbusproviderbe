@@ -95,7 +95,7 @@ class BusTypeService
         try {
             $busType = $this->busTypeRepository->save($data);
         } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+            throw new InvalidArgumentException($e->getMessage());
         }
         return $busType;
     }

@@ -45,4 +45,26 @@ class BusValidator
         return $busValidation;
     }
 
+    public function basicValidate($data) { 
+        
+        $rules = [
+            'user_id' => 'required',
+            'bus_operator_id' => 'required',
+            'name' => 'required|max:50',
+            'via' => 'required|max:150',
+            'bus_number' => 'required',
+            'bus_type_id' => 'required',
+            'bus_sitting_id' => 'required',
+            'amenities' => 'required|array|min:1',
+            'cancellationslabs_id' => 'required',
+            'max_seat_book' => 'required',
+            'created_by' => 'required',  
+            'safety' => 'required|array|min:1', 
+            
+        ];      
+      
+        $busValidation = Validator::make($data, $rules);
+        return $busValidation;
+    }
+
 }

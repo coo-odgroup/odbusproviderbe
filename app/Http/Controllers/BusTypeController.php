@@ -49,7 +49,9 @@ class BusTypeController extends Controller
       $data = $request->only([
         'type',
         'name',
+        'user_id',
         'status',
+        'user_role',
         'bus_operator_id',
         'created_by'
       ]);
@@ -78,6 +80,8 @@ class BusTypeController extends Controller
         $data = $request->only([
           'type',
           'name',
+          'user_id',
+          'user_role',
           'status',
           'bus_operator_id',
           'created_by'

@@ -42,6 +42,9 @@ class BusTypeRepository
         $name = $request['name'] ;
         $bus_type = $request['bus_type'] ;
 
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
+
         $data= $this->busType->with('BusClass','busOperator')
                              ->whereNotIn('status', [2])
                              ->orderBy('id','DESC');
@@ -59,14 +62,23 @@ class BusTypeRepository
             $paginate = 10 ;
         }
 
+        
         if($name!=null)
         {
-            $data=$data->where('name','like', '%' .$name . '%')
-                       ->orWhere('created_by', 'like', '%' .$name . '%');
+            $data = $data->where(
+                function($query) use ($name) {
+                    return $query->where('name','like', '%' . $name . '%')
+                                 ->orWhere('created_by','like', '%' . $name . '%');
+            });        
         } 
         if($bus_type!=null)
         {
             $data=$data->where('bus_class_id', $bus_type);
+        }
+
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
         }
 
         $data=$data->paginate($paginate);
@@ -75,9 +87,9 @@ class BusTypeRepository
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
-            "data" => $data
-           );   
-           return $response;
+             "data" => $data
+        );   
+        return $response;
 
        
     }
@@ -85,6 +97,7 @@ class BusTypeRepository
     {
         $busType->bus_class_id = $data['type'];
         $busType->name = $data['name'];    
+        $busType->user_id = $data['user_id'];    
         $busType->bus_operator_id = $data['bus_operator_id'];
         $busType->created_by = $data['created_by'];
         $busType->status = 0;

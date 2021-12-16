@@ -33,14 +33,13 @@ class BusOperatorRepository
     }
     public function BusbyOperatorData($request)
     {
-        // return $this->busOperators->whereNotIn('status', [2])->get();
-         $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;
-       
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'];
 
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
         $data= $this->busOperators->whereNotIn('status', [2])
-                             ->orderBy('id','DESC');
-
+                             ->orderBy('id','DESC');        
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
@@ -52,70 +51,26 @@ class BusOperatorRepository
 
         if($name!=null)
         {
-             $data = $data->where('email_id','like', '%' . $name . '%')
-                     ->orWhere('operator_name','like', '%' . $name . '%')
-                     ->orWhere('contact_number','like', '%' . $name . '%');
-                  
+            $data = $data->where(
+                function($query) use ($name) {
+                    return $query->where('email_id','like', '%' . $name . '%')
+                                 ->orWhere('operator_name','like', '%' . $name . '%')
+                                 ->orWhere('contact_number','like', '%' . $name . '%');
+            });        
         } 
-      
-
-        $data=$data->paginate($paginate);
-
-        $response = array(
-             "count" => $data->count(), 
-             "total" => $data->total(),
-            "data" => $data
-           );   
-           return $response;
-
-    }
-    public function getDatatable($request)
-    {
-        $draw = $request->get('draw');
-        $start = $request->get("start");
-        $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
+        if($user_role==5)
         {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
+            $data= $data->where('user_id',$user_id);   
         }
-        $columnIndex_arr = $request->get('order');
-        $columnName_arr = $request->get('columns');
-        $order_arr = $request->get('order');
-        $search_arr = $request->get('search');
-
-        $columnIndex = $columnIndex_arr[0]['column']; // Column index
-        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
-        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = $search_arr['value']; // Search value
-        
-        $totalRecords = $this->busOperators->select('COUNT(*) as allcount')->whereNotIn('status', [2])->count();
-        $totalRecordswithFilter = $this->busOperators
-        ->where('operator_name', 'like', "%" .$searchValue . "%")
-        ->Where('status','!=','2')
-        ->count();
-        $records = $this->busOperators->orderBy($columnName,$columnSortOrder)
-            ->where('operator_name', "like", "%" .$searchValue . "%")
-            ->Where('status','!=','2')
-            ->skip($start)
-            ->take($rowperpage)
-            ->get();
-        $data_arr = array();
-        foreach($records as $key=>$record)
-        {
-            $data_arr[]=$record->toArray();
-            $data_arr[$key]['created_at']=date('j M Y h:i a',strtotime($record->created_at));
-            $data_arr[$key]['updated_at']=date('j M Y h:i a',strtotime($record->updated_at));
-        } 
-            
-        
+        $data=$data->paginate($paginate);
         $response = array(
-            "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordswithFilter,
-            "aaData" => $data_arr
-        ); 
-        return ($response);
+            "count" => $data->count(), 
+            "total" => $data->total(),
+            "data" => $data
+        );   
+        return $response;
     }
+   
     /**
      * Get amenities by id
      *
@@ -136,6 +91,8 @@ class BusOperatorRepository
         $url = strtolower($remove_special_char);
         
         $busOperators->email_id = $data['email_id'];
+        $busOperators->user_id = $data['user_id'];
+
         $busOperators->password = $data['password'];
         $busOperators->operator_name = $data['operator_name'];
         $busOperators->operator_url = $url;
@@ -276,6 +233,35 @@ class BusOperatorRepository
          }
          return $busData;
 
+    }
+
+    public function userOperators($request)
+    {
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $result=$this->busOperators
+            ->where('id', $id)
+            ->whereNotIn('status', [2])
+            ->get();    
+        }
+        else
+        {
+            if($request['user_role']=="5")
+            {
+                $result=$this->busOperators
+                ->where('user_id', $request['user_id'])
+                ->whereNotIn('status', [2])
+                ->get();       
+            }
+            else
+            {
+                $result=$this->busOperators
+                ->whereNotIn('status', [2])
+                ->get();    
+            }
+            
+        }
+        return $result;    
     }
 
 }

@@ -70,7 +70,7 @@ class AssociationController extends Controller
      }
      public function updateuser(Request $request , $id)
      {
-     	// Log::info($request);exit;
+     	// Log::info($request);
 
      	 $data = $request->only([
           'name',

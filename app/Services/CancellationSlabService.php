@@ -1,6 +1,5 @@
 <?php
 namespace App\Services;
-use App\Models\CancellationSlab;
 use App\Repositories\CancellationSlabRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

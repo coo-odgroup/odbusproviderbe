@@ -44,6 +44,12 @@ class BusOperatorController extends Controller
       $BusOperators = $this->busOperatorService->BusbyOperatorData($request);
       return $this->successResponse($BusOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    public function userOperators(Request $request)
+    {
+      $BusOperators = $this->busOperatorService->userOperators($request);
+      return $this->successResponse($BusOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
 
     public function getAllBusOperators() {
         $prod = $this->busOperatorService->getAll();;
@@ -89,6 +95,7 @@ class BusOperatorController extends Controller
           'need_gst_bill',
           'gst_number',
           'gst_amount',
+          'user_id',
           'created_by'
         ]);  
         $BusOperatorValidation = $this->BusOperatorValidator->validate($data);
@@ -126,6 +133,7 @@ class BusOperatorController extends Controller
             'created_by',
             'need_gst_bill',
             'gst_number',
+            'user_id',
             'gst_amount',
         ]);
         $BusOperatorValidation = $this->BusOperatorValidator->validate($data);

@@ -12,6 +12,7 @@ class BusSittingValidator
         $rules = [
           
           'name' => 'required|max:25',
+          'user_id' => 'required'
         ];      
       
         $busSittingValidation = Validator::make($data, $rules);

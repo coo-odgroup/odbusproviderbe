@@ -118,7 +118,7 @@ class BusController extends Controller
             'bus_operator_id', 'user_id','amenities','safety', 'ticket_cancelation_id', 'name', 'via','bus_number','bus_description','bus_type_id','bus_sitting_id','cancelation_points','cancellationslabs_id','created_by','bus_seat_layout_id','max_seat_book'
         ]);
        
-        $busValidation = $this->busValidator->validate($data);
+        $busValidation = $this->busValidator->basicValidate($data);
 
         if ($busValidation->fails()) {
             $errors = $busValidation->errors();

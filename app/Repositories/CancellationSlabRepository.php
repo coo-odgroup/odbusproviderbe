@@ -26,8 +26,11 @@ class CancellationSlabRepository
 
     public function cancellationslabData($request)
     {      
-         $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'];
+
+        $user_role = $request['user_role'];
+        $user_id = $request['user_id'];
        
 
         $data= $this->cancellationSlab->with('SlabInfo')->with('busOperator')->whereNotIn('status', [2])
@@ -50,6 +53,11 @@ class CancellationSlabRepository
         {
             $data = $data->where('rule_name','like', '%' .$name . '%');
         } 
+
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        }
       
 
         $data=$data->paginate($paginate);
@@ -128,6 +136,7 @@ class CancellationSlabRepository
         $cSlab->rule_name = $data['rule_name'];
         $cSlab->cancellation_policy_desc = $data['cancellation_policy_desc'];
         $cSlab->created_by = $data['created_by'];
+        $cSlab->user_id = $data['user_id'];
         $cSlab->status =0;
         return $cSlab;
     }
