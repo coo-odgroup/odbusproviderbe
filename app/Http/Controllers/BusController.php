@@ -213,14 +213,15 @@ class BusController extends Controller
     public function busContactInfo(Request $request)
     {
         $data=$request;
+        Log::info($request);
         $this->busContactsService->deleteByBusId($data['id']);
         if(isset($data['conductor_no']))
         {
             $cond['bus_id']=$data['id'];
             $cond['type']="2";
             $cond['phone']=$data['conductor_no'];
-            $cond['booking_sms_send']=($data['c_sms_ticket']=="true")?"1":"0";
-            $cond['cancel_sms_send']=($data['c_sms_cancel']=="true")?"1":"0";
+            $cond['booking_sms_send']=($data['c_sms_ticket']=="0")?"0":"1";
+            $cond['cancel_sms_send']=($data['c_sms_cancel']=="0")?"0":"1";
             $cond['created_by']=$data['created_by'];
             try {
                 $this->busContactsService->savePostData($cond);
@@ -234,8 +235,8 @@ class BusController extends Controller
             $mng['bus_id']=$data['id'];
             $mng['type']="1";
             $mng['phone']=$data['manager_no'];
-            $mng['booking_sms_send']=($data['m_sms_ticket']=="true")?"1":"0";
-            $mng['cancel_sms_send']=($data['m_sms_cancel']=="true")?"1":"0";
+            $mng['booking_sms_send']=($data['m_sms_ticket']=="0")?"0":"1";
+            $mng['cancel_sms_send']=($data['m_sms_cancel']=="0")?"0":"1";
             $mng['created_by']=$data['created_by'];
 
             try {
@@ -250,8 +251,8 @@ class BusController extends Controller
             $own['bus_id']=$data['id'];
             $own['type']="0";
             $own['phone']=$data['owner_no'];
-            $own['booking_sms_send']=($data['o_sms_ticket']=="true")?"1":"0";
-            $own['cancel_sms_send']=($data['o_sms_cancel']=="true")?"1":"0";
+            $own['booking_sms_send']=($data['o_sms_ticket']=="0")?"0":"1";
+            $own['cancel_sms_send']=($data['o_sms_cancel']=="0")?"0":"1";
             $own['created_by']=$data['created_by'];
 
             try {
