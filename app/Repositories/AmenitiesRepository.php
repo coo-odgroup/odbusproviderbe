@@ -26,7 +26,8 @@ class AmenitiesRepository
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
-       
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
 
         $data= $this->amenities->whereNotIn('status', [2])
                                ->orderBy('id','DESC');
@@ -45,7 +46,10 @@ class AmenitiesRepository
             $data=$data->where('name', 'like', '%' .$name . '%')
                        ->orWhere('created_by', 'like', '%' .$name . '%');
         }       
-
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        }
         $data=$data->paginate($paginate);
 
         $response = array(
@@ -118,6 +122,7 @@ class AmenitiesRepository
         $amenity->name = $data['name'];
         $amenity->icon = $data['icon'];
         $amenity->created_by = $data['created_by'];
+         $amenity->user_id = $data['user_id'];
         return $amenity;
     }
     /**

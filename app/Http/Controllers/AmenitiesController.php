@@ -54,7 +54,7 @@ class AmenitiesController extends Controller
         $data = $request->only([
           'name',
           'icon',
-          'created_by','android_image'
+          'created_by','android_image','user_id'
         ]);
         $AmenitiesValidation = $this->AmenitiesValidator->validate($data);
         
@@ -89,7 +89,7 @@ class AmenitiesController extends Controller
       $data = $request->only([
           'name',
           'icon',
-          'created_by','id','android_image'
+          'created_by','id','android_image','user_id'
         ]);
         $AmenitiesValidation = $this->AmenitiesValidator->validate($data);
         

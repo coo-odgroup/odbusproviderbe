@@ -74,6 +74,8 @@ class SafetyRepository
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
        
 
         $data= $this->safety->whereNotIn('status', [2])
@@ -110,7 +112,10 @@ class SafetyRepository
 
         } 
       
-
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        }
         $data=$data->paginate($paginate);
 
         $response = array(
@@ -139,6 +144,7 @@ class SafetyRepository
         $safety->name = $data['name'];
         $safety->icon = "";
         $safety->created_by = $data['created_by'];
+        $safety->user_id = $data['user_id'];
         return $safety;
     }
     /**
@@ -154,6 +160,7 @@ class SafetyRepository
         $duplicate_data = $this->safety
                                ->where('name',$data['name'])
                                ->where('status','!=',2)
+                               ->where('user_id',$data['user_id'])
                                ->get();
         if(count($duplicate_data)==0)
         {

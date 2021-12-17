@@ -213,7 +213,6 @@ class BusController extends Controller
     public function busContactInfo(Request $request)
     {
         $data=$request;
-        Log::info($request);
         $this->busContactsService->deleteByBusId($data['id']);
         if(isset($data['conductor_no']))
         {
