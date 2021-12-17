@@ -86,4 +86,10 @@ class BusStoppageService
          $result = $this->busStoppageRepository->deletebyBusId($id);
         return $result;
     }
+
+    public function getbusRoutebyBusId($id)
+    {
+         $result = $this->busStoppageRepository->getbusRoutebyBusId($id);
+        return $result;
+    }
 }

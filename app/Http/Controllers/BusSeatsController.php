@@ -107,6 +107,7 @@ class BusSeatsController extends Controller
         return $this->successResponse(null,"Bus Seat Fare Updated",Response::HTTP_OK);
     }
     public function updateBusSeatsExtras(Request $request, $id) {
+      // Log::info($request);exit;
         try {
             $result=$this->busSeatsService->busSeatsExtra($request,$id);
         } 

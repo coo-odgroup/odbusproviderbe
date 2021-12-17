@@ -104,10 +104,15 @@ class LocationRepository
 
         if($name!=null)
         {
-            $data = $data->where(function($query) use ($name) {
+
+            $data = $data->where(
+                function($query) use ($name) {
+                    $data = $query->where(function($query) use ($name) {
                         $query->where('name','like', '%' .$name . '%')
-                        ->orWhere('synonym','like', '%' .$name . '%');
-                    });                             
+                        ->orWhere('synonym','like', '%' .$name . '%')
+                        ->orWhere('created_by','like', '%' .$name . '%');
+                    });
+            });                            
         }     
         $data=$data->paginate($paginate);
         

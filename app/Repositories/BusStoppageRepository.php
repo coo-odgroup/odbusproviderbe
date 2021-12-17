@@ -1,15 +1,17 @@
 <?php
 namespace App\Repositories;
 use App\Models\BusStoppage;
+use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 
 
 class BusStoppageRepository
 {
     protected $busStoppage;
-    public function __construct(BusStoppage $busStoppage)
+    public function __construct(BusStoppage $busStoppage,Location $location)
     {
         $this->busStoppage = $busStoppage;
+        $this->location = $location; 
     }
     public function getAll()
     {
@@ -30,6 +32,19 @@ class BusStoppageRepository
     public function getBusStoppagebyBusId($busid)
     {
         return $this->busStoppage->where('bus_id', $busid)->get();
+    } 
+
+    public function getbusRoutebyBusId($busid)
+    {
+        $data = $this->busStoppage->where('bus_id', $busid)->get();
+        foreach ($data as  $a) 
+        {                          
+            $a['source']=$this->location->where('id', $a->source_id)->get();
+            $a['destination']=$this->location->where('id', $a->destination_id)->get(); 
+        }
+
+        return $data
+;
     }
    
     public function getModel(BusStoppage $busStoppage,$data)

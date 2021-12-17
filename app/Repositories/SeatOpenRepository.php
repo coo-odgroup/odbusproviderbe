@@ -6,6 +6,9 @@ namespace App\Repositories;
 use App\Models\SeatOpen;
 use App\Models\SeatOpenSeats;
 
+use App\Models\BusSeats;
+use App\Models\Bus;
+
 // use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
 
@@ -17,70 +20,154 @@ class SeatOpenRepository
 {
     
     protected $seatOpen;
-
+    protected $busSeats;
+    protected $bus;
     
-    public function __construct(SeatOpen $seatOpen , SeatOpenSeats $seatsOpenSeats)
+    public function __construct(SeatOpen $seatOpen , SeatOpenSeats $seatsOpenSeats ,BusSeats  
+        $busSeats,Bus $bus )
     {
         $this->seatOpen = $seatOpen;
         $this->seatOpenSeats = $seatsOpenSeats;
+        $this->busSeats = $busSeats;
+        $this->bus = $bus;
        
     }    
     public function getAll()
     {
-        return $this->seatOpen->with('seatOpenSeats')->with('bus','bus.busOperator')->get();
+        // return $this->seatOpen->with('seatOpenSeats')->with('bus','bus.busOperator')->get();
+        return $this->busSeats->with('seats')->with('bus','bus.busOperator')->get();
 
     }
-     public function addseatopen($data)
-    {        
-        $seatopen = new $this->seatOpen;
-        $seatopen->bus_id = $data['bus_id'];
-        $seatopen->operator_id = $data['bus_operator_id'];
-        $seatopen->reason = $data['reason'];
-        $seatopen->date_applied = $data['date'];
-        $seatopen->created_by = $data['created_by'];
-        $seatopen->save();
-        $seats = [];
-        foreach ($data['bus_seat_layout_data'] as $slayout)
-        {
+    //  public function addseatopen($data)
+    // {       
+    // Log::info($data);
+    // exit(); 
+    //     $seatopen = new $this->seatOpen;
+    //     $seatopen->bus_id = $data['bus_id'];
+    //     $seatopen->operator_id = $data['bus_operator_id'];
+    //     $seatopen->reason = $data['reason'];
+    //     $seatopen->date_applied = $data['date'];
+    //     $seatopen->created_by = $data['created_by'];
+    //     $seatopen->save();
+    //     $seats = [];
+    //     foreach ($data['bus_seat_layout_data'] as $slayout)
+    //     {
             
-            foreach ($slayout['lowerBerth'] as $lberth) 
-            {
-                $seat = new SeatOpenSeats();
-                if(isset($lberth['seatChecked']))
-                {
-                    if($lberth["seatChecked"] == true)
-                    {
-                        $seat['seats_id'] = $lberth['seatId'];
-                        $seat['created_by'] = $data['created_by'];
+    //         foreach ($slayout['lowerBerth'] as $lberth) 
+    //         {
+    //             $seat = new SeatOpenSeats();
+    //             if(isset($lberth['seatChecked']))
+    //             {
+    //                 if($lberth["seatChecked"] == true)
+    //                 {
+    //                     $seat['seats_id'] = $lberth['seatId'];
+    //                     $seat['created_by'] = $data['created_by'];
                        
-                        $seats[]=$seat;
-                    }
-                }
+    //                     $seats[]=$seat;
+    //                 }
+    //             }
                
                 
-            }
+    //         }
 
-            foreach ($slayout['upperBerth'] as $uberth) 
+    //         foreach ($slayout['upperBerth'] as $uberth) 
+    //         {
+    //             $seat = new SeatOpenSeats();
+    //             //Log::info($uberth);
+    //             if(isset($uberth['seatChecked']))
+    //             {
+    //                 if($uberth["seatChecked"] == true)
+    //                 {
+    //                     $seat['seats_id'] = $uberth['seatId'];
+    //                     $seat['created_by'] = $data['created_by'];
+
+    //                     $seats[]=$seat;
+    //                 }
+    //             }
+    //         }
+
+    //     }          
+    //      $seatopen->seatOpenSeats()->saveMany($seats);
+    //      return $seatopen;        
+    // }
+    public function addseatopen($data)
+    {
+        // Log::info($data);
+        // exit();
+
+        $layoutArray=$data['bus_seat_layout_data'];
+        $get_ticket_price_id= $data['busRoute'];
+        foreach($layoutArray as $sLayoutData)
+        {
+            if(isset($sLayoutData['upperBerth']))
             {
-                $seat = new SeatOpenSeats();
-                //Log::info($uberth);
-                if(isset($uberth['seatChecked']))
-                {
-                    if($uberth["seatChecked"] == true)
-                    {
-                        $seat['seats_id'] = $uberth['seatId'];
-                        $seat['created_by'] = $data['created_by'];
 
-                        $seats[]=$seat;
+                if(count($sLayoutData['upperBerth'])>0)
+                {
+
+                    foreach($sLayoutData['upperBerth'] as $upperBerthData)
+                    {
+                        if(isset($upperBerthData['seatChecked']))
+                        {
+                            if($upperBerthData['seatChecked'] =="true")
+                            {
+                                foreach($get_ticket_price_id as $ticketpriceID)
+                                {                              
+                                    $busseats = new $this->busSeats;                            
+                                    $busseats->bus_id = $data['bus_id'];
+                                    $busseats->category = '0';
+                                    $busseats->seats_id = $upperBerthData['seatId'];
+                                    $busseats->ticket_price_id = $ticketpriceID;
+                                    $busseats->operation_date = $data['date'];
+                                    $busseats->status = '1';
+                                    $busseats->type = $data['type'];
+                                    $busseats->created_by = $data['created_by'];
+                                    $busseats->reason = $data['reason'];   
+                                    $busseats->other_reason = $data['other_reason'];
+
+                                    $busseats->save(); 
+                                }
+                            }
+                        }                  
                     }
                 }
             }
+            if(isset($sLayoutData['lowerBerth']))
+            {
 
-        }          
-         $seatopen->seatOpenSeats()->saveMany($seats);
-         return $seatopen;        
+                if(count($sLayoutData['lowerBerth'])>0)
+                { 
+                    foreach($sLayoutData['lowerBerth'] as $lowerBerthData)
+                    {
+                        if(isset($lowerBerthData['seatChecked']))
+                        {
+                            if($lowerBerthData['seatChecked'] =="true")
+                            {                         
+                                foreach($get_ticket_price_id as $ticketpriceID)
+                                {
+                                    $busseats = new $this->busSeats;                              
+                                    $busseats->bus_id = $data['bus_id'];
+                                    $busseats->category = '0';
+                                    $busseats->seats_id = $lowerBerthData['seatId'];
+                                    $busseats->ticket_price_id = $ticketpriceID;
+                                    $busseats->operation_date = $data['date'];
+                                    $busseats->status = '1';
+                                    $busseats->type = $data['type'];
+                                    $busseats->created_by = $data['created_by'];
+                                    $busseats->reason = $data['reason'];                  
+                                    $busseats->other_reason = $data['other_reason'];                                 
+                                    // Log::info('lower');
+                                    // Log::info($busseats);
+                                    $busseats->save(); 
+                                }
+                            }
+                        }                      
+                    }
+                }
+            }
+        }
+        return $data;
     }
-
 
     public function seatopenData($request)
     {
@@ -90,14 +177,18 @@ class SeatOpenRepository
          $name = $request['name'] ;
        
 
-        $data= $this->seatOpen->with('seatOpenSeats.seats')
-                               ->with('bus.busOperator')
-                               ->whereNotIn('status', [2]);
+        $data= $this->bus->with('bus_seats')
+                               ->whereNotIn('status', [2])
+                               ->whereHas('bus_seats', function ($query){
+                                   $query->where('type', "1");  
+                                  // $query->whereNotIn('status',[2]);               
+                               });
+        log::info($data->get());
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
-            $data=$data->whereHas('bus', function ($query) use ($request){
-               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
-           });
+           //  $data=$data->whereHas('bus', function ($query) use ($request){
+           //     $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           // });
         }                                 
 
         if($paginate=='all') 
@@ -109,21 +200,21 @@ class SeatOpenRepository
             $paginate = 10 ;
         }
 
-        if($name!=null)
-        {
-            $data = $data->whereHas('bus', function ($query) use ($name){
-                $query->where('name', 'like', '%' .$name . '%');               
-            })
+        // if($name!=null)
+        // {
+        //     $data = $data->whereHas('bus', function ($query) use ($name){
+        //         $query->where('name', 'like', '%' .$name . '%');               
+        //     })
             
 
-             ->orWhereHas('bus.busOperator', function ($query) use ($name){
-                $query->where('operator_name', 'like', '%' .$name . '%');
-            });
+        //      ->orWhereHas('bus.busOperator', function ($query) use ($name){
+        //         $query->where('operator_name', 'like', '%' .$name . '%');
+        //     });
             
-        }     
+        // }     
 
         $data=$data->paginate($paginate);
-
+        
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),

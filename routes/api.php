@@ -206,6 +206,7 @@ Route::get('/BusSitting/{id}', [BusSittingController::class, 'getBusSitting']);
 Route::post('/BusSittingDT', [BusSittingController::class, 'getBusSittingDT']);
 Route::put('/changeStatusBusSitting/{id}', [BusSittingController::class, 'changeStatus']);
 
+
 //Booking Seized
 
 Route::get('/bookingseized',[BookingSeizedController::class,'getAllseized']);
@@ -529,6 +530,7 @@ Route::get('/busStoppage/{id}', [BusStoppageController::class, 'getBusStoppage']
 Route::get('/busStoppagebyBusId/{busid}', [BusStoppageController::class, 'getBusStoppagebyBusId']);
 Route::get('/busStoppageByOperator/{id}', [BusStoppageController::class, 'getBusByOperator']);
 Route::get('/busStoppagebyRoutes/{sourceId}/{destinationId}', [BusStoppageController::class, 'getBusStoppagebyRoutes']);
+Route::get('/getbusRoutebyBusId/{busid}', [BusStoppageController::class, 'getbusRoutebyBusId']);
 
 Route::get('/busSeats', [BusSeatsController::class, 'getAllBusSeats']);
 Route::post('/busSeats', [BusSeatsController::class, 'createBusSeats']);

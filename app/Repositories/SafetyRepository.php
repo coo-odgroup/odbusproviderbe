@@ -90,7 +90,24 @@ class SafetyRepository
 
         if($name!=null)
         {
+
+            $data = $data->where(
+                function($query) use ($name) {
+                    $data = $query->where('name', 'like', '%' .$name . '%')
+                    ->orWhere('bus_number', 'like', '%' .$name . '%')
+                    ->orWhere('via', 'like', '%' .$name . '%')
+                    ->orWhere('created_by', 'like', '%' .$name . '%')
+                    ->orwhereHas('busOperator', function ($query) use ($name)
+                                {$query->where('organisation_name','like', '%' .$name . '%' );})
+                   ->orwhereHas('busOperator', function ($query) use ($name)
+                               {$query->where('operator_name', 'like', '%' .$name . '%');});
+            });           
+
             $data=$data->where('name', $name);
+
+
+
+
         } 
       
 

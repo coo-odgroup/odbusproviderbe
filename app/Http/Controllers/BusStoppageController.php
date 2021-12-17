@@ -191,4 +191,9 @@ class BusStoppageController extends Controller
         $busStoppage = $this->busStoppageService->getBusByOperator($operator_id);
         return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }   
+
+    public function getbusRoutebyBusId($id) {
+        $busStoppage = $this->busStoppageService->getbusRoutebyBusId($id);
+        return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }   
 }

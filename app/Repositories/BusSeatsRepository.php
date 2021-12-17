@@ -121,6 +121,7 @@ public function updateNewFare($data)
 public function updateBusSeatsExtra($data,$id)
 {
     // Log::info($data);
+    // exit;
     $layoutArray=$data['bus_seat_layout_data'];
     // Log::info($layoutArray);
     $get_ticket_price_id=$this->ticketPrice->where('bus_id',$data['bus_id'])->get();
@@ -186,6 +187,8 @@ public function updateBusSeatsExtra($data,$id)
                                 $data['ticket_price_id']=$ticketpriceID->id;
                                 $data['category']='0';                                   
                                 $busseats=$this->getModel($busseats,$data,$lowerBerthData);
+                                // Log::info($busseats);
+                                // exit;
                                 $busseats->save(); 
                             }
                         }

@@ -450,7 +450,7 @@ class BusRepository
         $data=$data->paginate($paginate);
         ;
         
-         Log::info($data);
+         // Log::info($data);
 
         if($data){
             foreach($data as $v){ 
