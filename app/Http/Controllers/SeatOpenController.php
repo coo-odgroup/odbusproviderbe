@@ -75,9 +75,9 @@ class SeatOpenController extends Controller
         return $this->successResponse(null, "Seat Open  Status Updated", Response::HTTP_ACCEPTED);
       }
 
-      public function deleteseatopen ($id) {
+      public function deleteseatopen (Request $request) {
       try{
-        $this->seatopenService->deleteById($id);
+        $this->seatopenService->deleteById($request);
       }
       catch (Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

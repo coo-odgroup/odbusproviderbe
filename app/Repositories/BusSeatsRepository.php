@@ -43,7 +43,9 @@ class BusSeatsRepository
  {
     return $this->busSeats
     ->where('status','1')
-    ->where('bus_id', $busId)->get();
+    ->where('bus_id', $busId)
+    ->where('type',null)
+    ->get();
 }
 public function getById($id)
 {

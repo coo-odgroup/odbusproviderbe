@@ -221,7 +221,7 @@ Route::put('/changebookingseizedStatus/{id}', [BookingSeizedController::class, '
 Route::get('/seatopen',[SeatOpenController::class,'getAllseatopen']);
 Route::post('/seatopen',[SeatOpenController::class,'addseatopen']);
 Route::put('/seatopen/{id}',[SeatOpenController::class,'updateseatopen']);
-Route::delete('/seatopen/{id}', [SeatOpenController::class, 'deleteseatopen']);
+Route::post('/deleteSeatopen', [SeatOpenController::class, 'deleteseatopen']);
 Route::post('/getseatopenDT', [SeatOpenController::class, 'getseatopenDT']);
 Route::post('/seatopenData', [SeatOpenController::class, 'seatopenData']);
 Route::put('/changeseatopenStatus/{id}', [SeatOpenController::class, 'changeStatus']);
@@ -530,6 +530,7 @@ Route::get('/busStoppage/{id}', [BusStoppageController::class, 'getBusStoppage']
 Route::get('/busStoppagebyBusId/{busid}', [BusStoppageController::class, 'getBusStoppagebyBusId']);
 Route::get('/busStoppageByOperator/{id}', [BusStoppageController::class, 'getBusByOperator']);
 Route::get('/busStoppagebyRoutes/{sourceId}/{destinationId}', [BusStoppageController::class, 'getBusStoppagebyRoutes']);
+
 Route::get('/getbusRoutebyBusId/{busid}', [BusStoppageController::class, 'getbusRoutebyBusId']);
 
 Route::get('/busSeats', [BusSeatsController::class, 'getAllBusSeats']);

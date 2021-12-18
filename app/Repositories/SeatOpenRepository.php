@@ -8,6 +8,7 @@ use App\Models\SeatOpenSeats;
 
 use App\Models\BusSeats;
 use App\Models\Bus;
+use App\Models\Location;
 
 // use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
@@ -24,12 +25,13 @@ class SeatOpenRepository
     protected $bus;
     
     public function __construct(SeatOpen $seatOpen , SeatOpenSeats $seatsOpenSeats ,BusSeats  
-        $busSeats,Bus $bus )
+        $busSeats,Bus $bus,Location $location )
     {
         $this->seatOpen = $seatOpen;
         $this->seatOpenSeats = $seatsOpenSeats;
         $this->busSeats = $busSeats;
         $this->bus = $bus;
+        $this->location = $location;  
        
     }    
     public function getAll()
@@ -171,19 +173,44 @@ class SeatOpenRepository
 
     public function seatopenData($request)
     {
-        // Log::info($request);
+       
+    //     $databk= $this->busSeats->with('bus.busOperator','seats','ticketPrice')->where('type',1)->whereNotIn('status', [2])->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
+      
+    //     if($databk)
+    //     {
+    //          foreach($databk as $date){
+
+    //             foreach ($date as $route) {
+    //                foreach ($route as $seatOp)
+    //                 {
+    //                    foreach ($seatOp as $SingleseatOp)
+    //                     {
+    //                        // Log::info($SingleseatOp->ticketPrice->source_id);
+    //                         $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
+    //                         $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+                                                          
+
+    // log::info($databk);
 
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
-       
+    
+        $data= $this->bus->with('busOperator')
+                         ->with(['ticketPrice.getBusSeats' => function ($a){
+                                $a->where('type',1)->whereNotIn('status',[2])->with('seats');
+                                }])                         
+                         ->whereNotIn('status', [2])
+                         ->whereHas('ticketPrice.getBusSeats', function ($query){
+                           $query->where('type', "1")->whereNotIn('status',[2]);  
+                                     
+                         });
 
-        $data= $this->bus->with('bus_seats')
-                               ->whereNotIn('status', [2])
-                               ->whereHas('bus_seats', function ($query){
-                                   $query->where('type', "1");  
-                                  // $query->whereNotIn('status',[2]);               
-                               });
-        log::info($data->get());
+        // log::info($data->get());
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
            //  $data=$data->whereHas('bus', function ($query) use ($request){
@@ -214,6 +241,18 @@ class SeatOpenRepository
         // }     
 
         $data=$data->paginate($paginate);
+    
+
+        if($data){
+            foreach($data as $v){ 
+             foreach($v->ticketPrice as $k => $a)
+             {             
+             
+                $a['source']=$this->location->where('id', $a->source_id)->get();
+                $a['destination']=$this->location->where('id', $a->destination_id)->get(); 
+           }
+            
+       }}
         
         $response = array(
              "count" => $data->count(), 
@@ -281,9 +320,10 @@ class SeatOpenRepository
 
     }
 
-     public function delete($id)
+     public function delete($request)
     {
-        
+        log::info($request);
+        exit;
         $setopen = $this->seatOpen->find($id);
         // Log::info($setopen);exit;
         // $setopen->delete();
