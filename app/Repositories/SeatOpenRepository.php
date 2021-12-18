@@ -14,6 +14,9 @@ use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 
 /*Priyadarshi to Review*/
@@ -173,9 +176,14 @@ class SeatOpenRepository
 
     public function seatopenData($request)
     {
-       
-    //     $databk= $this->busSeats->with('bus.busOperator','seats','ticketPrice')->where('type',1)->whereNotIn('status', [2])->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
-      
+
+        $databk = $this->busSeats->with('bus.busOperator','seats','ticketPrice')->where('type',1)->whereNotIn('status', [2])->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
+        
+        $data = $this->customPaginate(collect($databk))->withPath('/api/seatopenData');
+        return $data;
+
+        //$databk = $databk->paginate(10);
+        
     //     if($databk)
     //     {
     //          foreach($databk as $date){
@@ -239,9 +247,9 @@ class SeatOpenRepository
         //     });
             
         // }     
-
+       
         $data=$data->paginate($paginate);
-    
+
 
         if($data){
             foreach($data as $v){ 
@@ -257,11 +265,22 @@ class SeatOpenRepository
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
-            "data" => $data
+             "data" => $data
            );   
            return $response;
 
+           
+
     }
+
+    public function customPaginate($items, $perPage = 15, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    }
+
+
     // public function updateseatopen($data)
     // {
     //      Log::info($data);
