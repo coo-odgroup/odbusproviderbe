@@ -176,49 +176,13 @@ class SeatOpenRepository
 
     public function seatopenData($request)
     {
-
-        $databk = $this->busSeats->with('bus.busOperator','seats','ticketPrice')->where('type',1)->whereNotIn('status', [2])->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
-        
-        $data = $this->customPaginate(collect($databk))->withPath('/api/seatopenData');
-        return $data;
-
-        //$databk = $databk->paginate(10);
-        
-    //     if($databk)
-    //     {
-    //          foreach($databk as $date){
-
-    //             foreach ($date as $route) {
-    //                foreach ($route as $seatOp)
-    //                 {
-    //                    foreach ($seatOp as $SingleseatOp)
-    //                     {
-    //                        // Log::info($SingleseatOp->ticketPrice->source_id);
-    //                         $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
-    //                         $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-                                                          
-
-    // log::info($databk);
-
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
     
-        $data= $this->bus->with('busOperator')
-                         ->with(['ticketPrice.getBusSeats' => function ($a){
-                                $a->where('type',1)->whereNotIn('status',[2])->with('seats');
-                                }])                         
-                         ->whereNotIn('status', [2])
-                         ->whereHas('ticketPrice.getBusSeats', function ($query){
-                           $query->where('type', "1")->whereNotIn('status',[2]);  
-                                     
-                         });
+        $data= $this->busSeats->with('bus.busOperator','seats','ticketPrice')
+                              ->where('type',1)
+                              ->whereNotIn('status', [2]);
 
-        // log::info($data->get());
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
            //  $data=$data->whereHas('bus', function ($query) use ($request){
@@ -233,47 +197,45 @@ class SeatOpenRepository
         elseif ($paginate == null) 
         {
             $paginate = 10 ;
+        }   
+       
+        $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
+
+        if($data)
+        {
+             foreach($data as $date){
+
+                foreach ($date as $route) {
+                   foreach ($route as $seatOp)
+                    {
+                       foreach ($seatOp as $SingleseatOp)
+                        {
+                           // Log::info($SingleseatOp->ticketPrice->source_id);
+                            $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
+                            $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
+                        }
+                    }
+                }
+            }
         }
 
-        // if($name!=null)
-        // {
-        //     $data = $data->whereHas('bus', function ($query) use ($name){
-        //         $query->where('name', 'like', '%' .$name . '%');               
-        //     })
-            
-
-        //      ->orWhereHas('bus.busOperator', function ($query) use ($name){
-        //         $query->where('operator_name', 'like', '%' .$name . '%');
-        //     });
-            
-        // }     
-       
-        $data=$data->paginate($paginate);
-
-
-        if($data){
-            foreach($data as $v){ 
-             foreach($v->ticketPrice as $k => $a)
-             {             
-             
-                $a['source']=$this->location->where('id', $a->source_id)->get();
-                $a['destination']=$this->location->where('id', $a->destination_id)->get(); 
-           }
-            
-       }}
+       $result = $this->customPaginate(collect($data),$paginate)->withPath('/api/seatopenData');
+    
+        return $result;
         
-        $response = array(
-             "count" => $data->count(), 
-             "total" => $data->total(),
-             "data" => $data
-           );   
-           return $response;
+        // $response = array(
+        //      "count" => $result->count(), 
+        //      "total" => $result->total(),
+        //      "data" => $result
+        //    ); 
+        //    log::info($response);  
+        //    return $response;
 
            
 
     }
 
-    public function customPaginate($items, $perPage = 15, $page = null, $options = [])
+    public function customPaginate($items, $perPage, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
@@ -339,20 +301,17 @@ class SeatOpenRepository
 
     }
 
-     public function delete($request)
+    public function delete($request)
     {
-        log::info($request);
-        exit;
-        $setopen = $this->seatOpen->find($id);
-        // Log::info($setopen);exit;
-        // $setopen->delete();
+        
+        $seatOpen = $this->busSeats
+                         ->where('bus_id',$request['bus_id'])
+                         ->where('ticket_price_id',$request['ticketPriceId'])
+                         ->where('operation_date',$request['operationDate'])
+                         ->where('type',$request['type'])
+                         ->update(['status'=> '2']);
 
-         $setopen->seatOpenSeats()->where('seat_open_id', $id)->delete();
-         $setopen->delete();
-
-       
-
-        return $setopen;
+        return $seatOpen;
     }
 
 

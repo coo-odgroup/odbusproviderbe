@@ -22,10 +22,10 @@ class SeatBlockService
     }
 
    
-    public function deleteById($id)
+    public function deleteById($request)
     {
         try {
-            $seatblock = $this->seatblockRepository->delete($id);
+            $seatblock = $this->seatblockRepository->delete($request);
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));

@@ -76,9 +76,9 @@ class SeatBlockController extends Controller
         return $this->successResponse(null, "Seat Block Status Updated", Response::HTTP_ACCEPTED);
       }
 
-      public function deleteseatblock ($id) {
+      public function deleteseatblock (Request $request) {
       try{
-        $this->seatblockService->deleteById($id);
+        $this->seatblockService->deleteById($request);
       }
       catch (Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

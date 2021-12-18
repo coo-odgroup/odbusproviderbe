@@ -230,7 +230,7 @@ Route::put('/changeseatopenStatus/{id}', [SeatOpenController::class, 'changeStat
 Route::get('/seatblock',[SeatBlockController::class,'getAllseatblock']);
 Route::post('/seatblock',[SeatBlockController::class,'addseatblock']);
 Route::put('/seatblock/{id}',[SeatBlockController::class,'updateseatblock']);
-Route::delete('/seatblock/{id}', [SeatBlockController::class, 'deleteseatblock']);
+Route::post('/deleteSeatblock', [SeatBlockController::class, 'deleteseatblock']);
 Route::post('/getseatblockDT', [SeatBlockController::class, 'getseatblockDT']);
 Route::post('/seatblockData', [SeatBlockController::class, 'seatblockData']);
 Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeStatus']);
