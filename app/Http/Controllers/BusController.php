@@ -213,6 +213,8 @@ class BusController extends Controller
     public function busContactInfo(Request $request)
     {
         $data=$request;
+        //$bus_name=$data['bus_number'];
+        $this->busService->updateBusName($data,$data['id']);
         $this->busContactsService->deleteByBusId($data['id']);
         if(isset($data['conductor_no']))
         {
@@ -263,7 +265,7 @@ class BusController extends Controller
         }
         
         
-        return $this->successResponse($data, "Bus Contact Added", Response::HTTP_ACCEPTED);
+        return $this->successResponse($data, "Bus Contact Details Updated", Response::HTTP_ACCEPTED);
     }
     public function save(Request $request) {
         $data=$request;

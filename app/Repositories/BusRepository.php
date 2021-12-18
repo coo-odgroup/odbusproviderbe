@@ -167,7 +167,13 @@ class BusRepository
    }
     return $data;
     }
-
+    public function updateBusName($data,$id)
+    {
+        $bus = $this->bus->find($id);
+        $bus->bus_number = $data['bus_number'];
+        $bus->update();
+        return $bus;
+    }
     public function updatesequence($data, $id)
     {
         $bus = $this->bus->find($id);

@@ -48,6 +48,16 @@ class BusService
     {
         return $this->busRepository->getById($id);
     }
+    public function updateBusName($data, $id)
+    {
+        try {
+            $post = $this->busRepository->updateBusName($data, $id);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException($e->getMessage());
+        }
+        return $post;
+    }
+
     public function updateSequncePost($data, $id)
     {
         try {
