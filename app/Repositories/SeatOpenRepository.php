@@ -200,6 +200,8 @@ class SeatOpenRepository
         }   
        
         $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
+         // log::info($data); 
+         // exit;
 
         if($data)
         {
@@ -219,8 +221,11 @@ class SeatOpenRepository
             }
         }
 
-       $result = $this->customPaginate(collect($data),$paginate)->withPath('/api/seatopenData');
+        
+
+       $result = $this->customPaginate($data,$paginate)->withPath('/api/seatopenData?');
     
+        log::info($result);  
         return $result;
         
         // $response = array(
@@ -241,6 +246,16 @@ class SeatOpenRepository
         $items = $items instanceof Collection ? $items : Collection::make($items);
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
+
+
+
+
+ // public function customPaginate($items, $perPage, $page = null, $options = [])
+ //    {
+ //        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+ //        $items = $items instanceof Collection ? $items : Collection::make($items);
+ //        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+ //    }
 
 
     // public function updateseatopen($data)
