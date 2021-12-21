@@ -31,7 +31,7 @@ class BusStoppageRepository
     }
     public function getBusStoppagebyBusId($busid)
     {
-        return $this->busStoppage->where('bus_id', $busid)->get();
+        return $this->busStoppage->where('bus_id', $busid)->where('status','!=',2)->get();
     } 
 
     public function getbusRoutebyBusId($busid)
