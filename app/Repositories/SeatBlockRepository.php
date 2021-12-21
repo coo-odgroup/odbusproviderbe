@@ -14,6 +14,9 @@ use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 
 /*Priyadarshi to Review*/
@@ -289,29 +292,22 @@ class SeatBlockRepository
         return ($response);
     }
 
-    public function seatblockData($request)
+     public function seatblockData($request)
     {
-            
-         $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;
-       
-
-         $data= $this->bus->with('busOperator')
-                         ->with(['ticketPrice.getBusSeats' => function ($a){
-                                $a->where('type',2)->whereNotIn('status',[2])->with('seats');
-                                }])                         
-                         ->whereNotIn('status', [2])
-                         ->whereHas('ticketPrice.getBusSeats', function ($query){
-                           $query->where('type', "2")->whereNotIn('status',[2]);  
-                                     
-                         });
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+        $page_no = $request['page_no'] ;
+    
+        $data= $this->busSeats->with('bus.busOperator','seats','ticketPrice')
+                              ->where('type',2)
+                              ->whereNotIn('status', [2]);
 
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
-            $data=$data->whereHas('bus', function ($query) use ($request){
-               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
-           });
-        }                              
+           //  $data=$data->whereHas('bus', function ($query) use ($request){
+           //     $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           // });
+        }                                 
 
         if($paginate=='all') 
         {
@@ -320,41 +316,130 @@ class SeatBlockRepository
         elseif ($paginate == null) 
         {
             $paginate = 10 ;
-        }
+        } 
 
         if($name!=null)
         {
             $data = $data->whereHas('bus', function ($query) use ($name){
                 $query->where('name', 'like', '%' .$name . '%');               
-            })
-            
+            }) ;          
 
-            ->orWhereHas('bus.busOperator', function ($query) use ($name){
-                $query->where('operator_name', 'like', '%' .$name . '%');
-            });
+            // ->orWhereHas('bus.busOperator', function ($query) use ($name){
+            //     $query->where('operator_name', 'like', '%' .$name . '%');
+            // });
             
         }     
+ 
+       
+        $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
+         // log::info($data); 
+         // exit;
 
-        $data=$data->paginate($paginate);
+        if($data)
+        {
+             foreach($data as $date){
 
-         if($data){
-            foreach($data as $v){ 
-             foreach($v->ticketPrice as $k => $a)
-             {             
-             
-                $a['source']=$this->location->where('id', $a->source_id)->get();
-                $a['destination']=$this->location->where('id', $a->destination_id)->get(); 
-           }
-            
-       }}
+                foreach ($date as $route) {
+                   foreach ($route as $seatOp)
+                    {
+                       foreach ($seatOp as $SingleseatOp)
+                        {
+                            $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
+                            $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
+                        }
+                    }
+                }
+            }
+        }
 
-        $response = array(
-             "count" => $data->count(), 
-             "total" => $data->total(),
-            "data" => $data
-           );   
-           return $response;
+        
+
+       $result = $this->customPaginate($data,$paginate,$page_no)->withPath('/api/seatblockData');
+         // log::info($result); 
+        return $result;          
+ 
     }
+
+    public function customPaginate($items, $perPage, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    }
+
+    // public function seatblockData($request)
+    // {
+            
+    //      $paginate = $request['rows_number'] ;
+    //      $name = $request['name'] ;
+       
+
+    //      $data= $this->bus->with('busOperator')
+    //                      ->with(['ticketPrice.getBusSeats' => function ($a){
+    //                             $a->where('type',2)->whereNotIn('status',[2])->with('seats');
+    //                             }])                         
+    //                      ->whereNotIn('status', [2])
+    //                      ->whereHas('ticketPrice.getBusSeats', function ($query){
+    //                        $query->where('type', "2")->whereNotIn('status',[2]);  
+                                     
+    //                      });
+
+    //     if($request['USER_BUS_OPERATOR_ID']!="")
+    //     {
+    //         $data=$data->whereHas('bus', function ($query) use ($request){
+    //            $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+    //        });
+    //     }                              
+
+    //     if($paginate=='all') 
+    //     {
+    //         $paginate = Config::get('constants.ALL_RECORDS');
+    //     }
+    //     elseif ($paginate == null) 
+    //     {
+    //         $paginate = 10 ;
+    //     }
+
+    //     if($name!=null)
+    //     {
+    //         $data = $data->whereHas('bus', function ($query) use ($name){
+    //             $query->where('name', 'like', '%' .$name . '%');               
+    //         })
+            
+
+    //         ->orWhereHas('bus.busOperator', function ($query) use ($name){
+    //             $query->where('operator_name', 'like', '%' .$name . '%');
+    //         });
+            
+    //     }     
+
+    //     $data=$data->paginate($paginate);
+
+    //      if($data){
+    //         foreach($data as $v){ 
+    //          foreach($v->ticketPrice as $k => $a)
+    //          {             
+             
+    //             $a['source']=$this->location->where('id', $a->source_id)->get();
+    //             $a['destination']=$this->location->where('id', $a->destination_id)->get(); 
+    //        }
+            
+    //    }}
+
+    //     $response = array(
+    //          "count" => $data->count(), 
+    //          "total" => $data->total(),
+    //         "data" => $data
+    //        );   
+    //        return $response;
+    // }
+
+    // public function customPaginate($items, $perPage, $page = null, $options = [])
+    // {
+    //     $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+    //     $items = $items instanceof Collection ? $items : Collection::make($items);
+    //     return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    // }
 
 
     public function changeStatus($id)

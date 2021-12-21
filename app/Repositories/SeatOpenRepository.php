@@ -176,8 +176,10 @@ class SeatOpenRepository
 
     public function seatopenData($request)
     {
-         $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+        $page_no = $request['page_no'] ;
+        // log::info($request);exit;
     
         $data= $this->busSeats->with('bus.busOperator','seats','ticketPrice')
                               ->where('type',1)
@@ -197,7 +199,20 @@ class SeatOpenRepository
         elseif ($paginate == null) 
         {
             $paginate = 10 ;
-        }   
+        } 
+
+        if($name!=null)
+        {
+            $data = $data->whereHas('bus', function ($query) use ($name){
+                $query->where('name', 'like', '%' .$name . '%');               
+            }) ;          
+
+            // ->orWhereHas('bus.busOperator', function ($query) use ($name){
+            //     $query->where('operator_name', 'like', '%' .$name . '%');
+            // });
+            
+        }     
+ 
        
         $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
          // log::info($data); 
@@ -223,20 +238,8 @@ class SeatOpenRepository
 
         
 
-       $result = $this->customPaginate($data,$paginate)->withPath('/api/seatopenData?');
-    
-        log::info($result);  
-        return $result;
-        
-        // $response = array(
-        //      "count" => $result->count(), 
-        //      "total" => $result->total(),
-        //      "data" => $result
-        //    ); 
-        //    log::info($response);  
-        //    return $response;
-
-           
+       $result = $this->customPaginate($data,$paginate,$page_no)->withPath('/api/seatopenData?');
+        return $result;          
 
     }
 
