@@ -41,11 +41,17 @@ class BusSeatLayoutController extends Controller
         $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutOperator($request);
         return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function BusSeatLayoutbyUser(Request $request) {
+        $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutbyUser($request);
+        return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
     public function save(Request $request) {
         $data = $request->only([
           'name',
           'layout_data',
           'created_by',
+          'user_id',
           'bus_operator_id'
         ]);
         $busSeatLayoutValidation = $this->busSeatLayoutValidator->validate($data);
@@ -69,6 +75,7 @@ class BusSeatLayoutController extends Controller
           'name',
           'layout_data',
           'created_by',
+          'user_id',
           'bus_operator_id'
         ]);
         $busSeatLayoutValidation = $this->busSeatLayoutValidator->validate($data);

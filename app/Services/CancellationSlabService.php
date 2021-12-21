@@ -40,6 +40,10 @@ class CancellationSlabService
     {
         return $this->cancellationSlabRepository->getAll($request);
     }
+    public function cancellationslabsUserData($request)
+    {
+        return $this->cancellationSlabRepository->cancellationslabsUserData($request);
+    }
     public function cancellationslabsOperator($request)
     {
         return $this->cancellationSlabRepository->cancellationslabsOperator($request);

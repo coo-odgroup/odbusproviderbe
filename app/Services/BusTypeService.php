@@ -49,6 +49,10 @@ class BusTypeService
     {
         return $this->busTypeRepository->getAllBusTypeData($request);
     }
+    public function BusTypebyUser($request)
+    {
+        return $this->busTypeRepository->BusTypebyUser($request);
+    }
     public function getBusTypeOperator($request)
     {
         return $this->busTypeRepository->getBusTypeOperator($request);

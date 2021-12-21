@@ -29,7 +29,22 @@ class BusTypeRepository
         return $data;
 
     }
+    public function BusTypebyUser($request)
+    {
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
 
+
+        $data=$this->busType->where('status',"1");
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        }
+        // Log::info($request);
+        // Log::info($data);
+        return $data->get();
+
+    }
     public function getAll($request)
     {
         return $this->busType->get();

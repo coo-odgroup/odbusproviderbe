@@ -41,6 +41,19 @@ class BusSeatLayoutRepository
         ->whereNotIn('status', [0,2])
         ->get();
     }
+    public function BusSeatLayoutbyUser($request)
+    {
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
+        $data= $this->busSeatLayout->where('status', "1");
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        } 
+
+        return $data->get();
+    }
+
     public function BusSeatLayoutOperator($request)
     {
         return $this->busSeatLayout
@@ -52,6 +65,8 @@ class BusSeatLayoutRepository
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
        
 
         $data= $this->busSeatLayout->with('busOperator')->whereNotIn('status', [2])
@@ -76,7 +91,10 @@ class BusSeatLayoutRepository
         {
             $data=$data->where('name', $name);
         } 
-      
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        } 
 
         $data=$data->paginate($paginate);
 
@@ -154,6 +172,8 @@ class BusSeatLayoutRepository
     public function getModel($data, BusSeatLayout $busSeatLayout)
     {
         $busSeatLayout->name = $data['name'];
+        $busSeatLayout->user_id = $data['user_id'];
+
         $busSeatLayout->bus_operator_id = $data['bus_operator_id'];
         $busSeatLayout->created_by =  $data['created_by'];
         return $busSeatLayout;

@@ -307,7 +307,8 @@ class BusRepository
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
-
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
         $data= $this->bus->whereNotIn('status', [2])->orderBy('id','DESC');
 
         if($request['USER_BUS_OPERATOR_ID']!="")
@@ -329,7 +330,11 @@ class BusRepository
                          ->orWhere('bus_number', 'like', '%' .$name . '%')
                          ->orWhere('via', 'like', '%' .$name . '%');
                                              
-        }     
+        }    
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        } 
 
         $data=$data->paginate($paginate);
         
@@ -404,7 +409,9 @@ class BusRepository
     public function BusData( $request)
     {
         $paginate = $request['rows_number'] ;
-        $name = $request['name'] ;       
+        $name = $request['name'] ;   
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;    
 
         $data= $this->bus->with('busOperator','busstoppage','ticketPrice.getBusSeats.seats','busContacts','busSeats.seats')->whereHas('ticketPrice', function ($query) 
                                      {$query->where('status','!=', 2 );})
@@ -438,6 +445,11 @@ class BusRepository
                                {$query->where('operator_name', 'like', '%' .$name . '%');});
             });        
         } 
+
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        }
 
 
         // if($name!=null)

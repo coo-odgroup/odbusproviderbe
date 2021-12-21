@@ -75,6 +75,11 @@ class AmenitiesService
     {
         return $this->amenitiesRepository->getAmenitiesData($request);
     }
+    public function AmenitiesbyUser($request)
+    {
+        return $this->amenitiesRepository->AmenitiesbyUser($request);
+    }
+
     /**
      * Get  by id.
      *

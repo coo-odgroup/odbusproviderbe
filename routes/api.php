@@ -239,6 +239,8 @@ Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeSt
 
 Route::post('/BusType', [BusTypeController::class, 'createBusType']);
 Route::post('/BusTypeOperator', [BusTypeController::class, 'getBusTypeOperator']);
+Route::post('/BusTypebyUser', [BusTypeController::class, 'BusTypebyUser']);
+
 
 Route::post('/BusTypeData', [BusTypeController::class, 'getAllBusTypeData']);
 Route::get('/BusType', [BusTypeController::class, 'getAllBusType']);
@@ -251,6 +253,7 @@ Route::put('/changeStatusBusType/{id}', [BusTypeController::class, 'changeStatus
 
 Route::post('/Amenities', [AmenitiesController::class, 'createAmenities']);
 Route::post('/AmenitiesData', [AmenitiesController::class, 'AmenitiesData']);
+Route::post('/AmenitiesbyUser', [AmenitiesController::class, 'AmenitiesbyUser']);
 Route::post('/AmenitiesDT', [AmenitiesController::class, 'getAllAmenitiesDT']);
 Route::get('/Amenities', [AmenitiesController::class, 'getAll']);
 Route::post('/AmenitiesUpdate', [AmenitiesController::class, 'updateAmenities']);
@@ -264,6 +267,7 @@ Route::post('/addSafety', [SafetyController::class, 'save']);
 Route::post('/getAllData', [SafetyController::class, 'getAllData']);
 Route::post('/SafetyDT', [SafetyController::class, 'getSafetyDT']);
 Route::get('/Safety', [SafetyController::class, 'getAll']);
+
 Route::post('/Safety', [SafetyController::class, 'update']);
 Route::delete('/Safety/{id}', [SafetyController::class, 'delete']);
 Route::get('/Safety/{id}', [SafetyController::class, 'getById']);
@@ -279,6 +283,7 @@ Route::get('/appdownload/{id}', [AppDownloadController::class, 'getAppDownload']
 
 Route::get('/BusSeatLayoutRecord/{id}', [BusSeatLayoutController::class, 'getSeatLayoutRecord']);
 Route::post('/BusSeatLayout', [BusSeatLayoutController::class, 'save']);
+Route::post('/BusSeatLayoutbyUser', [BusSeatLayoutController::class, 'BusSeatLayoutbyUser']);
 Route::post('/BusSeatLayoutOperator', [BusSeatLayoutController::class, 'BusSeatLayoutOperator']);
 Route::post('/BusSeatLayoutData', [BusSeatLayoutController::class, 'BusSeatLayoutData']);
 Route::get('/BusSeatLayout', [BusSeatLayoutController::class, 'getAll']);
@@ -638,6 +643,9 @@ Route::post('/cancellationslabsOperator', [CancellationSlabController::class, 'c
 Route::post('/cancellationslabData', [CancellationSlabController::class, 'cancellationslabData']);
 Route::put('/cancellationslab/{id}', [CancellationSlabController::class, 'updateCancellationSlab']);
 Route::get('/cancellationslabs', [CancellationSlabController::class, 'getAllCancellationSlab']);
+Route::post('/cancellationslabsUserData', [CancellationSlabController::class, 'cancellationslabsUserData']);
+
+
 Route::delete('/cancellationslab/{id}', [CancellationSlabController::class, 'deleteCancellationSlab']);
 Route::get('/cancellationslab/{id}', [CancellationSlabController::class, 'getCancellationSlab']);
 Route::put('/changeStatusCancellationslab/{id}', [CancellationSlabController::class, 'changeStatus']);

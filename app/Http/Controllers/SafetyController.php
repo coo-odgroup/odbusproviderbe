@@ -52,6 +52,12 @@ class SafetyController extends Controller
       $result = $this->safetyService->dataTable($request);
       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    public function safetyByUser(Request $request)
+    {
+      $result = $this->safetyService->safetyByUser($request);
+      return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
     
     public function getAllData(Request $request)
     {

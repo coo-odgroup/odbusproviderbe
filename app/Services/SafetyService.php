@@ -70,6 +70,10 @@ class SafetyService
     {
         return $this->safetyRepository->getDatatable($request);
     }
+    public function safetyByUser($request)
+    {
+        return $this->safetyRepository->safetyByUser($request);
+    }
 
     public function getAllData($request)
     {

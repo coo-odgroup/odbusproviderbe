@@ -23,6 +23,18 @@ class CancellationSlabRepository
     {
         return $this->cancellationSlab->with('SlabInfo')->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID'])->where('status','1')->get();
     }
+    public function cancellationslabsUserData($request)
+    {
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
+        $data=$this->cancellationSlab->with('SlabInfo')->where('status','1');
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        } 
+
+        return $data->get();
+    }
 
     public function cancellationslabData($request)
     {      

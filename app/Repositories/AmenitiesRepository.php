@@ -21,7 +21,19 @@ class AmenitiesRepository
     {
         return $this->amenities->whereNotIn('status', [2])->get();
     }
+    public function AmenitiesbyUser($request)
+    {
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
 
+        $data=$this->amenities->where('status',"1");
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        }
+
+        return $data->get();
+    }
     public function getAmenitiesData($request)
     {
         $paginate = $request['rows_number'] ;

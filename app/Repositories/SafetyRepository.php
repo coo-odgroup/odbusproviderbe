@@ -20,6 +20,19 @@ class SafetyRepository
     {
         return $this->safety->whereNotIn('status', [2])->get();
     }
+    public function safetyByUser($request)
+    {
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ;
+        $data=$this->safety->whereNotIn('status', [2]);
+        if($user_role==5)
+        {
+            $data= $data->where('user_id',$user_id);   
+        } 
+
+        return $data->get();
+    }
+
     public function getDatatable($request)
     {
         $draw = $request->get('draw');

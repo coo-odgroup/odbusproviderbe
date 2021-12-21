@@ -34,7 +34,11 @@ class BusTypeController extends Controller
       return $this->successResponse($busTypes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     } 
 
+    public function BusTypebyUser(Request $request) {
 
+      $busTypes = $this->busTypeService->BusTypebyUser($request);
+      return $this->successResponse($busTypes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    }
     public function getAllBusTypeData(Request $request) {
 
       $busTypes = $this->busTypeService->getAllBusTypeData($request);
