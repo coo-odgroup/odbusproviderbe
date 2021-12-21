@@ -138,6 +138,7 @@ class AmenitiesRepository
         $duplicate_data = $this->amenities
                                ->where('name',$data['name'])
                                ->where('status','!=',2)
+                               ->where('user_id',$data['user_id'])
                                ->get();
         if(count($duplicate_data)==0)
         {
