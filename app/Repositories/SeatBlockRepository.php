@@ -232,71 +232,15 @@ class SeatBlockRepository
 
 
 
-     public function getseatBlockDT($request)
-    {  
-        $draw = $request->get('draw');
-        $start = $request->get("start");
-        $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
-        }
-        $columnIndex_arr = $request->get('order');
-        $columnName_arr = $request->get('columns');
-        $order_arr = $request->get('order');
-        $search_arr = $request->get('search');
-        $columnIndex = $columnIndex_arr[0]['column']; // Column index
-        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
-        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = $search_arr['value']; // Search value
-        // Total records//
-        // $totalRecords=$this->specialFare->whereHas('bus')->whereNotIn('status', [2])->count();
-        $totalRecords=$this->seatBlock->with('seatBlockSeats.seats')->with('bus.busOperator')->with('seats')->whereNotIn('status', [2])->count();
-        $totalRecordswithFilter=$this->seatBlock
-            ->with('seatBlockSeats.seats')->with('bus.busOperator')  
-            ->whereHas('bus', function ($query) use ($searchValue){
-                $query->where('name', 'like', '%' .$searchValue . '%');               
-            })
-            ->orWhereHas('bus.busOperator', function ($query) use ($searchValue){
-                $query->where('operator_name', 'like', '%' .$searchValue . '%');
-            })
-            ->whereNotIn('status', [2])->count();
-        //Fetch records//
-        $records = $this->seatBlock
-            ->with('seatBlockSeats.seats','bus.busOperator') 
-            ->whereHas('bus', function ($query) use ($searchValue){
-               $query->where('name', 'like', '%' .$searchValue . '%');               
-            })
-            ->orWhereHas('bus.busOperator', function ($query) use ($searchValue){
-               $query->where('operator_name', 'like', '%' .$searchValue . '%');
-            })
-            ->orderBy($columnName,$columnSortOrder) 
-           ->skip($start)
-           ->take($rowperpage)
-           ->whereNotIn('status', [2])
-           ->get();
-       $data_arr = array();
-        foreach($records as $key=>$record)
-        {
-            $data_arr[]=$record->toArray();
-            $data_arr[$key]['created_at']=date('j M Y h:i a',strtotime($record->created_at));
-            $data_arr[$key]['updated_at']=date('j M Y h:i a',strtotime($record->updated_at)); 
-            $data_arr[$key]['date_applied']=date('m/d/Y',strtotime($record->date_applied));
-        }
-        $response = array(
-            "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordswithFilter,
-            "aaData" => $data_arr
-        ); 
-        return ($response);
-    }
 
      public function seatblockData($request)
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
         $page_no = $request['page_no'] ;
+        $date = $request['date'] ;
+        $source_id = $request['source_id'] ;
+        $destination_id = $request['destination_id'] ;
     
         $data= $this->busSeats->with('bus.busOperator','seats','ticketPrice')
                               ->where('type',2)
@@ -328,7 +272,17 @@ class SeatBlockRepository
             //     $query->where('operator_name', 'like', '%' .$name . '%');
             // });
             
-        }     
+        }  
+        if(!empty($source_id) && !empty($destination_id))
+        {
+            $data=$data->whereHas('ticketPrice', function ($query)use ($request){
+               $query->where('source_id',$request['source_id'] )->where('destination_id',$request['destination_id']);               
+           });
+        }  
+         if(!empty($date))
+        {
+            $data=$data->where('operation_date',$date);
+        }  
  
        
         $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
