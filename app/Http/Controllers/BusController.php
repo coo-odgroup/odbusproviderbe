@@ -343,7 +343,7 @@ class BusController extends Controller
 
             if($up==0 && $lp==0){ // check if both upper berth & lower berth is empty 
 
-                return $this->errorResponse("Bus must have at least 1 selected seat.Please check seat layout and try again.",Response::HTTP_PARTIAL_CONTENT);
+                return $this->errorResponse("Bus must have selected at least 1 seat.Please check seat layout and try again.",Response::HTTP_PARTIAL_CONTENT);
 
             }
        
@@ -358,8 +358,8 @@ class BusController extends Controller
                     $cond['bus_id']=$bus_last_insert_id;
                     $cond['type']="2";
                     $cond['phone']=$data['conductor_no'];
-                    $cond['booking_sms_send']=($data['c_sms_ticket']=="true")?"1":"0";
-                    $cond['cancel_sms_send']=($data['c_sms_cancel']=="true")?"1":"0";
+                    $cond['booking_sms_send']=($data['c_sms_ticket']=="true" || $data['c_sms_ticket']==1 )?"1":"0";
+                    $cond['cancel_sms_send']=($data['c_sms_cancel']=="true" || $data['c_sms_cancel']==1 )?"1":"0";
                     $cond['created_by']=$data['created_by'];
                     $this->busContactsService->savePostData($cond);
                 }
@@ -368,8 +368,8 @@ class BusController extends Controller
                     $mng['bus_id']=$bus_last_insert_id;
                     $mng['type']="1";
                     $mng['phone']=$data['manager_no'];
-                    $mng['booking_sms_send']=($data['m_sms_ticket']=="true")?"1":"0";
-                    $mng['cancel_sms_send']=($data['m_sms_cancel']=="true")?"1":"0";
+                    $mng['booking_sms_send']=($data['m_sms_ticket']=="true" || $data['m_sms_ticket']==1 )?"1":"0";
+                    $mng['cancel_sms_send']=($data['m_sms_cancel']=="true" || $data['m_sms_cancel']==1 )?"1":"0";
                     $mng['created_by']=$data['created_by'];
                 
                     $this->busContactsService->savePostData($mng);
@@ -380,8 +380,8 @@ class BusController extends Controller
                     $own['bus_id']=$bus_last_insert_id;
                     $own['type']="0";
                     $own['phone']=$data['owner_no'];
-                    $own['booking_sms_send']=($data['o_sms_ticket']=="true")?"1":"0";
-                    $own['cancel_sms_send']=($data['o_sms_cancel']=="true")?"1":"0";
+                    $own['booking_sms_send']=($data['o_sms_ticket']=="true" || $data['o_sms_cancel']==1 )?"1":"0";
+                    $own['cancel_sms_send']=($data['o_sms_cancel']=="true" || $data['o_sms_cancel']==1 )?"1":"0";
                     $own['created_by']=$data['created_by'];
                 
                     $this->busContactsService->savePostData($own);
