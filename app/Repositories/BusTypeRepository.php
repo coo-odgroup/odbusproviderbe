@@ -3,6 +3,8 @@
 namespace App\Repositories;
 use Illuminate\Support\Facades\Log;
 use App\Models\BusType;
+use Illuminate\Support\Facades\Config;
+
 class BusTypeRepository
 {
     /**

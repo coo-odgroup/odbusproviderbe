@@ -572,6 +572,7 @@ Route::put('/changeStatusBusCancelled/{id}', [BusCancelledController::class, 'ch
 
 Route::post('/busScheduleDT', [BusScheduleController::class, 'getAllBusScheduleDT']);
 Route::post('/busSchedulerData', [BusScheduleController::class, 'busSchedulerData']);
+Route::get('/busScheduleById/{id}', [BusScheduleController::class, 'busScheduleById']);
 Route::get('/busSchedule', [BusScheduleController::class, 'getAllBusSchedule']);
 Route::post('/busSchedule', [BusScheduleController::class, 'createBusSchedule']);
 Route::put('/busSchedule/{id}', [BusScheduleController::class, 'updateBusSchedule']);

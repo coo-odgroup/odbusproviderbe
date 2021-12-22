@@ -42,6 +42,11 @@ class BusScheduleService
     {
         return $this->busScheduleRepository->getAll();
     }
+
+    public function busScheduleById($id)
+    {
+        return $this->busScheduleRepository->busScheduleById($id);
+    }
      /**
      * Get all Data in Datatable Format.
      *

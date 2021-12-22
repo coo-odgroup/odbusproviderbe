@@ -117,6 +117,13 @@ class BusScheduleRepository
     public function getAll()
     {
         return $this->busSchedule->get();
+    } 
+
+    public function busScheduleById($id)
+    {
+        $data = $this->busSchedule->with('busScheduleDate')->where('bus_id',$id)->get();
+        // log::info($data);
+        return $data;
     }
 
 
@@ -193,10 +200,17 @@ class BusScheduleRepository
      */
     public function save($data)
     {
+        $duplicate_data = $this->busSchedule
+                               ->where('bus_id',$data['bus_id'])
+                               ->where('status','!=',2)
+                               ->get();
+        if(count($duplicate_data)==0)
+        {
         $this->bus = $this->bus->find($data['bus_id']);
         $this->bus->running_cycle = $data['running_cycle'];
         $this->bus->update();   
         $this->busSchedule->bus_id= $data['bus_id'];
+        $this->busSchedule->running_cycle= $data['running_cycle'];
         $this->busSchedule->created_by= $data['created_by'];
         $this->busSchedule->status = 0;
         $this->busSchedule->save();
@@ -223,7 +237,13 @@ class BusScheduleRepository
             $busScheduledateModels[] =  $busScheduleDate;
         }        
         $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
-        return $busScheduledateModels;    
+        return $busScheduledateModels; 
+        }
+        else
+        {
+            return 'Bus Schedule Already Exist';
+        }
+   
      }
 
     /**
@@ -264,6 +284,7 @@ class BusScheduleRepository
         }        
         $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
         return $busScheduledateModels;
+        
     }
      
     public function delete($id)

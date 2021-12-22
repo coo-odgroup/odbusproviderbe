@@ -34,6 +34,11 @@ class BusScheduleController extends Controller
         return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
+     public function busScheduleById($id)
+    {
+        return $this->busScheduleService->busScheduleById($id);
+    }   
+
 
     public function busSchedulerData(Request $request) {
         $busSchedule = $this->busScheduleService->busSchedulerData($request);
@@ -49,12 +54,25 @@ class BusScheduleController extends Controller
             $errors = $busScheduleValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
-        try {
-            $response = $this->busScheduleService->savePostData($data);
-            return $this->successResponse($response,"Bus Schedule Added", Response::HTTP_CREATED);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+        else
+        {
+           $response = $this->busScheduleService->savePostData($data);
+
+           if($response=='Bus Schedule Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Bus Schedule Added", Response::HTTP_CREATED);
+           }
         }
+        // try {
+        //     $response = $this->busScheduleService->savePostData($data);
+        //     return $this->successResponse($response,"Bus Schedule Added", Response::HTTP_CREATED);
+        // } catch (Exception $e) {
+        //     return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+        // }
     } 
 
     public function updateBusSchedule(Request $request, $id) {
@@ -98,7 +116,8 @@ class BusScheduleController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse($response,"Bus Schedule Status Updated", Response::HTTP_ACCEPTED);
-      }    
+      }
+
 	     
 /////////////
 }
