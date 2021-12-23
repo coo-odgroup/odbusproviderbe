@@ -46,6 +46,12 @@ class BusSeatsController extends Controller
 
         $busSeats = $this->busSeatsService->getByBusId($id);
         return $this->successResponse($busSeats,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function busextraSeatsByBus($id) {
+
+        $busSeats = $this->busSeatsService->busextraSeatsByBus($id);
+        return $this->successResponse($busSeats,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function createBusSeats(Request $request) {

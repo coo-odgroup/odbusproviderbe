@@ -121,7 +121,10 @@ class BusScheduleRepository
 
     public function busScheduleById($id)
     {
-        $data = $this->busSchedule->with('busScheduleDate')->where('bus_id',$id)->get();
+        $data = $this->busSchedule->with('busScheduleDate')
+                                  ->where('bus_id',$id)
+                                  ->where('status',1)
+                                  ->get();
         // log::info($data);
         return $data;
     }

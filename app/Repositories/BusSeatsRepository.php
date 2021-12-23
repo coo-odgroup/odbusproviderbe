@@ -47,6 +47,18 @@ class BusSeatsRepository
     ->where('type',null)
     ->get();
 }
+
+public function busextraSeatsByBus($busId)
+ {
+    $data = $this->busSeats
+    ->where('status','1')
+    ->where('bus_id', $busId)
+    ->where('duration','>',0)
+    ->where('type',null)
+    ->get();
+    log::info($data);
+    return $data;
+}
 public function getById($id)
 {
     return $this->busSeats ->where('id', $id)->get();

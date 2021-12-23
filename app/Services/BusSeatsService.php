@@ -45,6 +45,11 @@ class BusSeatsService
     {
         return $this->busSeatsRepository->getByBusId($id);
     }
+
+    public function busextraSeatsByBus($id)
+    {
+        return $this->busSeatsRepository->busextraSeatsByBus($id);
+    }
     
     public function updatePost($data, $id)
     {

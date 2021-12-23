@@ -544,6 +544,7 @@ Route::put('/busSeats/{id}', [BusSeatsController::class, 'updateBusSeats']);
 Route::delete('/busSeats/{id}', [BusSeatsController::class, 'deleteBusSeats']);
 Route::get('/busSeats/{id}', [BusSeatsController::class, 'getBusSeats']);
 Route::get('/busSeatsByBus/{id}', [BusSeatsController::class, 'getByBusId']);
+Route::get('/busextraSeatsByBus/{id}', [BusSeatsController::class, 'busextraSeatsByBus']);
 Route::put('/updateBusSeatsExtras/{id}', [BusSeatsController::class, 'updateBusSeatsExtras']);
 
 Route::get('/busSeatsFare/{id}', [BusSeatsController::class, 'getAllBusSeatsFare']);
