@@ -37,7 +37,7 @@ class BusStoppageTimingRepository
         $result=[];
         $result['stoppage_timing']=$this->busStoppageTiming->where('bus_id', $bus_id)->get();
 
-        $result['routes']=$this->busStoppageTiming->select('location_id')->groupBy('location_id')->where('bus_id', $bus_id)->get();
+        $result['routes']=$this->busLocationSequence->select('location_id')->orderBy('sequence')->where('bus_id', $bus_id)->get();
         $result['sequence']=[];
         foreach($result['routes'] as $routeInfo)
         {
