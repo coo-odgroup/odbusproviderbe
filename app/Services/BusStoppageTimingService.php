@@ -51,6 +51,10 @@ class BusStoppageTimingService
     {
         return $this->busStoppageTimingRepository->busStoppageTimingbyBusId($busid);
     }
+    public function busStoppageTimingbyBusIdClone($busid)
+    {
+        return $this->busStoppageTimingRepository->busStoppageTimingbyBusIdClone($busid);
+    }
     public function updatePost($data, $id)
     {
         try {

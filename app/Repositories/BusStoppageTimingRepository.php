@@ -49,6 +49,23 @@ class BusStoppageTimingRepository
         //return $this->location->with('busStoppageTiming')->get();
         return $result;
     }
+    public function busStoppageTimingbyBusIdClone($bus_id)
+    {
+        $result=[];
+        $result['stoppage_timing']=$this->busStoppageTiming->where('bus_id', $bus_id)->get();
+
+        $result['routes']=$this->busLocationSequence->select('location_id')->orderBy('sequence','DESC')->where('bus_id', $bus_id)->get();
+        $result['sequence']=[];
+        foreach($result['routes'] as $routeInfo)
+        {
+            $result['sequence'][]=$this->busLocationSequence->where('bus_id',$bus_id)->where('location_id',$routeInfo->location_id)->get();
+        }
+
+        //Log::info($result);
+
+        //return $this->location->with('busStoppageTiming')->get();
+        return $result;
+    }
     public function getModel(BusStoppageTiming $busstoppageTiming,$data)
     {
         $busstoppageTiming->bus_id = $data['bus_id'];

@@ -558,6 +558,7 @@ Route::get('/busSeatsExtra/{id}', [BusSeatsExtraController::class, 'getBusSeatsE
 
 Route::get('/busStoppageTiming', [BusStoppageTimingController::class, 'getAllBusStoppageTiming']);
 Route::get('/busStoppageTimingbyBusId/{busid}', [BusStoppageTimingController::class, 'busStoppageTimingbyBusId']);
+Route::get('/busStoppageTimingbyBusIdClone/{busid}', [BusStoppageTimingController::class, 'busStoppageTimingbyBusIdClone']);
 Route::post('/busStoppageTiming', [BusStoppageTimingController::class, 'createBusStoppageTiming']);
 Route::put('/busStoppageTiming/{id}', [BusStoppageTimingController::class, 'updateBusStoppageTiming']);
 Route::delete('/busStoppageTiming/{id}', [BusStoppageTimingController::class, 'deleteBusStoppageTiming']);

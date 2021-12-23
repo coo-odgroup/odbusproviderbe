@@ -87,7 +87,11 @@ class BusStoppageTimingController extends Controller
         $busstoppageTiming = $this->busStoppageTimingService->busStoppageTimingbyBusId($id);
         return $this->successResponse($busstoppageTiming,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }   
-	     
+      
+	public function busStoppageTimingbyBusIdClone($id) {
+        $busstoppageTiming = $this->busStoppageTimingService->busStoppageTimingbyBusIdClone($id);
+        return $this->successResponse($busstoppageTiming,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }      
 }
 
 
