@@ -438,6 +438,18 @@ class BusController extends Controller
                         foreach($busRoutesInfo as $routeinfoKey=>$routeinfoVal)
                         {                          
                             $booking_seized_array['bus_id']=$routeinfoData['bus_id']=$bus_last_insert_id; //get it from return id
+                            //CHECK DUPLICATE ROUTES
+                            $recordArray=array(
+                                "bus_id"=>$routeinfoData['bus_id'],
+                                "source_id"=>$routeinfoData['source_id'],
+                                "destination_id"=>$routeinfoData['destination_id'],
+
+                            );
+                            $old_data=$this->BusStoppageService->checkDuplicate($recordArray);
+                            if(count($old_data)>0)
+                            {
+                                continue;
+                            }
                             // $booking_seized_array['location_id']=$routeinfoVal['from_location'];
                             // $booking_seized_array['seize_booking_minute']=$routeinfoVal['booking_seized'];
                             // $booking_seized_array['created_by']=$data['created_by'];                           
@@ -457,6 +469,15 @@ class BusController extends Controller
                             $routeinfoData['base_seat_fare']=$routeinfoVal['seater_fare'];
                             $routeinfoData['base_sleeper_fare']=$routeinfoVal['sleeper_fare'];
                             $routeinfoData['seize_booking_minute']=$routeinfoVal['booking_seized'];
+                            if($routeinfoVal['route_status']=="true")
+                            {
+                                $routeinfoData['status']="1";
+                            }
+                            else
+                            {
+                                $routeinfoData['status']="0";
+                            }
+                            
                             $stoppage_id=$this->BusStoppageService->savePostData($routeinfoData);
 
                             if(isset($data['bus_seat_layout_data']))

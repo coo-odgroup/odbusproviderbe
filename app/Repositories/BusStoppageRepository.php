@@ -73,9 +73,16 @@ class BusStoppageRepository
         $busStoppage->created_by = "Admin";
         $busStoppage->bus_operator_id = $data['bus_operator_id'];
         $busStoppage->seize_booking_minute = $data['seize_booking_minute'];
-        $busStoppage->status = 1;
+        $busStoppage->status = $data['status'];
         
         return $busStoppage;
+    }
+    public function checkDuplicate($data)
+    {
+        return $this->busStoppage->where('bus_id', $data['bus_id'])
+                                  ->where('source_id', $data['source_id'])
+                                  ->where('destination_id', $data['destination_id'])
+                                  ->get();
     }
     public function save($data)
     {

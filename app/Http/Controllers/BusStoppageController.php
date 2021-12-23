@@ -74,7 +74,6 @@ class BusStoppageController extends Controller
         $this->busLocationSequenceService->deletebyBusId($id);
         foreach($busRoutes as $routeKey=>$routeValue)
         {
-
             $bus_location_sequence['bus_id']=$id;
             $bus_location_sequence['location_id']=$routeValue['source_id'];
             $bus_location_sequence['sequence']=$routeValue['sequence'];
@@ -90,6 +89,7 @@ class BusStoppageController extends Controller
             
             foreach($routeValue['sourceBoarding'] as $destinations)
             {
+                
                 if($destinations['sourcechecked']=="true")
                 {
 
@@ -110,6 +110,7 @@ class BusStoppageController extends Controller
                         $this->BusStoppageTimingService->savePostData($timing_grp);
                     } 
                     catch (Exception $e) {
+                        
                         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
                     }
                 }
@@ -123,6 +124,7 @@ class BusStoppageController extends Controller
         }
         foreach($busRoutesInfo as $routeinfoKey=>$routeinfoVal)
         {
+            
             $routeinfoData['bus_id']=$id; //get it from return id
             $routeinfoData['bus_operator_id']=$data['bus_operator_id'];
             $routeinfoData['source_id']=$routeinfoVal['from_location'];
@@ -140,11 +142,21 @@ class BusStoppageController extends Controller
             $routeinfoData['base_seat_fare']=$routeinfoVal['seater_fare'];
             $routeinfoData['base_sleeper_fare']=$routeinfoVal['sleeper_fare'];
             $routeinfoData['seize_booking_minute']=$routeinfoVal['booking_seized'];
+            if($routeinfoVal['route_status']=="true")
+            {
+                $routeinfoData['status']="1";
+            }
+            else
+            {
+                $routeinfoData['status']="0";
+            }
             $stoppage_id=0;
             try {
+                
                 $stoppage_id=$this->busStoppageService->savePostData($routeinfoData);
             } 
             catch (Exception $e) {
+                
                 // Log::info($e);
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
             }
