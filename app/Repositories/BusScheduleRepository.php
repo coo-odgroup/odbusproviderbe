@@ -258,6 +258,8 @@ class BusScheduleRepository
         $this->bus->running_cycle = $data['running_cycle'];
         $this->bus->update(); 
         $this->busSchedule = $this->busSchedule->find($id);
+         $this->busSchedule->running_cycle = $data['running_cycle'];
+         $this->busSchedule->update(); 
         //TOD Latter,Write Enhanced Query
          $this->busSchedule->BusScheduleDate()->delete();  
         $busScheduleDateModels = [];
