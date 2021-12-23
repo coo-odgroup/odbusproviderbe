@@ -441,8 +441,8 @@ class BusController extends Controller
                             //CHECK DUPLICATE ROUTES
                             $recordArray=array(
                                 "bus_id"=>$routeinfoData['bus_id'],
-                                "source_id"=>$routeinfoData['source_id'],
-                                "destination_id"=>$routeinfoData['destination_id'],
+                                "source_id"=>$routeinfoVal['from_location'],
+                                "destination_id"=>$routeinfoVal['to_location'],
 
                             );
                             $old_data=$this->BusStoppageService->checkDuplicate($recordArray);
