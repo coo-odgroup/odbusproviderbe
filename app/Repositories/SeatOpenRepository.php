@@ -128,7 +128,7 @@ class SeatOpenRepository
                                     $busseats->type = $data['type'];
                                     $busseats->created_by = $data['created_by'];
                                     $busseats->reason = $data['reason'];   
-                                    $busseats->other_reason = $data['other_reason'];
+                                    $busseats->other_reason = $data['other_reson'];
 
                                     $busseats->save(); 
                                 }
@@ -160,9 +160,7 @@ class SeatOpenRepository
                                     $busseats->type = $data['type'];
                                     $busseats->created_by = $data['created_by'];
                                     $busseats->reason = $data['reason'];                  
-                                    $busseats->other_reason = $data['other_reason'];                                 
-                                    // Log::info('lower');
-                                    // Log::info($busseats);
+                                    $busseats->other_reason = $data['other_reson'];                                 
                                     $busseats->save(); 
                                 }
                             }

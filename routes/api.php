@@ -54,6 +54,7 @@ use App\Http\Controllers\BusOwnerFareController;
 use App\Http\Controllers\FestivalFareController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\OdbusChargesController;
+use App\Http\Controllers\ExtraSeatBlockController;
 
 use App\Http\Controllers\OffersController;
 
@@ -112,6 +113,11 @@ Route::post('/emailtest', [TestEmailController::class,'emailtest']);
 });
 
 
+//Extra Seat Block
+
+Route::post('/extraSeatBlock',[ExtraSeatBlockController::class,'addExtraSeatBlock']);
+Route::post('/deleteExtraSeat', [ExtraSeatBlockController::class, 'deleteExtraSeatBlock']);
+Route::post('/extraSeatBlockData', [ExtraSeatBlockController::class, 'extraSeatBlockData']);
 
 Route::post('/ticketFareSlab', [TicketFareSlabController::class, 'createslab']);
 Route::post('/ticketFareSlabData', [TicketFareSlabController::class, 'ticketFareSlabData']);

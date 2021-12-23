@@ -56,7 +56,7 @@ public function busextraSeatsByBus($busId)
     ->where('duration','>',0)
     ->where('type',null)
     ->get();
-    log::info($data);
+    // log::info($data);
     return $data;
 }
 public function getById($id)
