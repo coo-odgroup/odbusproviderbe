@@ -100,9 +100,9 @@ class BusStoppageTimingRepository
     
     public function deleteByStoppageId($id)
     {
-        
-        $busstoppageTiming = $this->busStoppageTiming->where('bus_id',$id)->update(array("status"=>"2"));
-        //$busstoppageTiming->delete();
+        //REMOVE FROM TABLE bus_stoppage_timing Instead of Change Status to 2
+        $busstoppageTiming = $this->busStoppageTiming->where('bus_id',$id);
+        $busstoppageTiming->delete();
         return $busstoppageTiming;
     }
 }
