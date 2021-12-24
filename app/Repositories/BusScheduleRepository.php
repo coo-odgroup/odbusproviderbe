@@ -203,7 +203,12 @@ class BusScheduleRepository
      */
     public function save($data)
     {
-        $duplicate_data = $this->busSchedule
+        // log::info($data);
+        // log::info(date("Y-m-d"));
+        // exit;
+        if($data['entry_date'] >= date("Y-m-d"))
+        {
+            $duplicate_data = $this->busSchedule
                                ->where('bus_id',$data['bus_id'])
                                ->where('status','!=',2)
                                ->get();
@@ -246,6 +251,13 @@ class BusScheduleRepository
         {
             return 'Bus Schedule Already Exist';
         }
+
+        }
+        else
+        {
+            return 'Can Not Add Old Date';
+        }
+        
    
      }
 
@@ -257,38 +269,46 @@ class BusScheduleRepository
      */
     public function update($data, $id)
     { 
-        $this->bus = $this->bus->find($data['bus_id']);
-        $this->bus->running_cycle = $data['running_cycle'];
-        $this->bus->update(); 
-        $this->busSchedule = $this->busSchedule->find($id);
-         $this->busSchedule->running_cycle = $data['running_cycle'];
-         $this->busSchedule->update(); 
-        //TOD Latter,Write Enhanced Query
-         $this->busSchedule->BusScheduleDate()->delete();  
-        $busScheduleDateModels = [];
-        $entryDate = $data['entry_date'];
-        $busScheduleDate= new BusScheduleDate();
-        $busScheduleDate->bus_schedule_id=$this->busSchedule->id;
-        $busScheduleDate->entry_date=$entryDate;
-        for($dateCount=0;$dateCount<30;$dateCount++) {   
+
+        if($data['entry_date'] >= date("Y-m-d"))
+        {
+            $this->bus = $this->bus->find($data['bus_id']);
+            $this->bus->running_cycle = $data['running_cycle'];
+            $this->bus->update(); 
+            $this->busSchedule = $this->busSchedule->find($id);
+            $this->busSchedule->running_cycle = $data['running_cycle'];
+            $this->busSchedule->update(); 
+            //TOD Latter,Write Enhanced Query
+            $this->busSchedule->BusScheduleDate()->delete();  
+            $busScheduleDateModels = [];
+            $entryDate = $data['entry_date'];
             $busScheduleDate= new BusScheduleDate();
-            $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
-            if($dateCount!=0)
-            {
-                $entryDate = strtotime("+".$data['running_cycle']."day", strtotime($entryDate));
-            }
-            else
-            {
-                 $entryDate =strtotime($entryDate);
-            }                      
-            $entryDate = date("Y-m-d", $entryDate);
+            $busScheduleDate->bus_schedule_id=$this->busSchedule->id;
             $busScheduleDate->entry_date=$entryDate;
-            $busScheduleDate->created_by =$data['created_by'];
-            $busScheduleDate->status = 1;
-            $busScheduledateModels[] =  $busScheduleDate;
-        }        
-        $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
-        return $busScheduledateModels;
+            for($dateCount=0;$dateCount<30;$dateCount++) {   
+                $busScheduleDate= new BusScheduleDate();
+                $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
+                if($dateCount!=0)
+                {
+                    $entryDate = strtotime("+".$data['running_cycle']."day", strtotime($entryDate));
+                }
+                else
+                {
+                     $entryDate =strtotime($entryDate);
+                }                      
+                $entryDate = date("Y-m-d", $entryDate);
+                $busScheduleDate->entry_date=$entryDate;
+                $busScheduleDate->created_by =$data['created_by'];
+                $busScheduleDate->status = 1;
+                $busScheduledateModels[] =  $busScheduleDate;
+            }        
+            $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
+            return $busScheduledateModels;
+        }
+        else
+        {
+            return 'Can Not Add Old Date';
+        }
         
     }
      

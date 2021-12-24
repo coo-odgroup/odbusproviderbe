@@ -62,6 +62,10 @@ class BusScheduleController extends Controller
            {
               return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
            }
+           else if($response == 'Can Not Add Old Date')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
            else
            {
                return $this->successResponse($response,"Bus Schedule Added", Response::HTTP_CREATED);
@@ -79,14 +83,26 @@ class BusScheduleController extends Controller
         $data = $request->only([
             'bus_id','entry_date','created_by','running_cycle'   
         ]);
-        
-        try {
-            $response = $this->busScheduleService->updatePost($data, $id);
-            return $this->successResponse($response,"Bus Schedule Updated", Response::HTTP_CREATED);
 
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-        }
+        $response = $this->busScheduleService->updatePost($data, $id);
+
+           if($response == 'Can Not Add Old Date')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Bus Schedule Updated", Response::HTTP_CREATED);
+           }
+
+        
+        // try {
+        //     $response = $this->busScheduleService->updatePost($data, $id);
+        //     return $this->successResponse($response,"Bus Schedule Updated", Response::HTTP_CREATED);
+
+        // } catch (Exception $e) {
+        //     return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+        // }
     }
 
     public function deleteBusSchedule ($id) {
