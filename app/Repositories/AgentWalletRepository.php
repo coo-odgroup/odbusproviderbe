@@ -76,7 +76,7 @@ class AgentWalletRepository
                     'tran_id'=>$data['transaction_id']
                    ] ;
 
-           //SendWalletEmailJob::dispatch($to_user, $subject, $agentData);
+           SendWalletEmailJob::dispatch($to_user, $subject, $agentData);
 
            $to_support = "bishalnaik23@gmail.com";
            $subject = "Wallet recharge request From Agent";
@@ -86,7 +86,7 @@ class AgentWalletRepository
                     'via'=>$data['payment_via'],
                     'tran_id'=>$data['transaction_id']
                    ] ;
-          // SendSupportEmailJob::dispatch($to_support, $subject, $supportData);
+          SendSupportEmailJob::dispatch($to_support, $subject, $supportData);
 
            $to_superadmin = "chandra@odgroup.in";
            $subject = "Wallet recharge request From Agent";
@@ -97,7 +97,7 @@ class AgentWalletRepository
                     'tran_id'=>$data['transaction_id'],
                     'otp' => $agentWallet->otp,
                    ] ;
-           //SendSuperAdminEmailJob::dispatch($to_superadmin, $subject, $superAdminData);
+           SendSuperAdminEmailJob::dispatch($to_superadmin, $subject, $superAdminData);
 
 
         return $agentWallet;
@@ -184,7 +184,7 @@ class AgentWalletRepository
                     'tran_id'=>$otpdata[0]->transaction_id,
                     'balance'=>$balance
                    ] ;
-           //SendWalletApproveEmailJob::dispatch($to_user, $subject, $superAdminData);
+           SendWalletApproveEmailJob::dispatch($to_user, $subject, $superAdminData);
          
       return $agentWallet;
 
