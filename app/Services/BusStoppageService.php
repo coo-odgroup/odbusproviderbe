@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\BusStoppage;
 use App\Models\Location;
 use App\Models\BusStoppageTiming;
+use App\Models\BusLocationSequence;
 use App\Repositories\BusStoppageRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -17,9 +18,11 @@ class BusStoppageService
     protected $busStoppageRepository;
     protected $busStoppageTiming;
     protected $location;
-    public function __construct(busStoppageRepository $busStoppageRepository, BusStoppageTiming $busStoppageTiming, Location $location)
+     protected $busLocationSequence;
+    public function __construct(busStoppageRepository $busStoppageRepository, BusStoppageTiming $busStoppageTiming, Location $location, BusLocationSequence $busLocationSequence)
     {
         $this->busStoppageRepository = $busStoppageRepository;
+        $this->busLocationSequence = $busLocationSequence;
         $this->busStoppageTiming = $busStoppageTiming;
         $this->location=$location;
     }
@@ -51,7 +54,11 @@ class BusStoppageService
     public function getBusStoppagebyBusId($busid)
     {
         $data['result']= $this->busStoppageRepository->getBusStoppagebyBusId($busid);
-        $data['locations']=$this->busStoppageTiming->select('location_id')->distinct()->where('bus_id',$busid)->get();
+
+
+        $data['locations']=$this->busLocationSequence->where('status','1')->select('location_id')->where('bus_id', $busid)->get();
+
+        //$data['locations']=$this->busStoppageTiming->select('location_id')->distinct()->where('bus_id',$busid)->get();
          if($data['locations']){
             foreach($data['locations'] as $v)
             { 
