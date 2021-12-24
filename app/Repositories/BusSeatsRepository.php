@@ -41,11 +41,29 @@ class BusSeatsRepository
  }
  public function getByBusId($busId)
  {
-    return $this->busSeats
+    $data =  $this->busSeats
     ->where('status','1')
     ->where('bus_id', $busId)
     ->where('type',null)
     ->get();
+    // log::info($data);
+    $duration = $this->busSeats
+                    ->where('status','1')
+                    ->where('bus_id', $busId)
+                    ->where('type',null)
+                    ->where('duration','!=',0)
+                    ->limit(1)
+                    ->get();
+    // log::info($duration);
+
+
+      $response = array(
+            "seat" => $data, 
+            "duration" => $duration
+           ); 
+      // log::info($response);
+
+    return $response;
 }
 
 public function busextraSeatsByBus($busId)
@@ -134,10 +152,7 @@ public function updateNewFare($data)
 }
 public function updateBusSeatsExtra($data,$id)
 {
-    // Log::info($data);
-    // exit;
     $layoutArray=$data['bus_seat_layout_data'];
-    // Log::info($layoutArray);
     $get_ticket_price_id=$this->ticketPrice->where('bus_id',$data['bus_id'])->get();
     $bus =$this->busSeats->where('bus_id', $data['bus_id'])->where('duration','>',0)->update(['status'=>2]);
     foreach($layoutArray as $sLayoutData)
@@ -156,14 +171,8 @@ public function updateBusSeatsExtra($data,$id)
                         {
                             foreach($get_ticket_price_id as $ticketpriceID)
                             {
-                                if($upperBerthData['seatId']=="")
-                                { 
-                                    $busseats = new $this->busSeats;
-                                }
-                                else
-                                { 
-                                    $busseats = $this->busSeats->find($upperBerthData['seatId']);             
-                                }
+                                 $busseats = new $this->busSeats;
+                                
                                 $data['ticket_price_id']=$ticketpriceID->id;
                                 $data['category']='0';                                   
                                 $busseats=$this->getModel($busseats,$data,$upperBerthData);
@@ -190,26 +199,16 @@ public function updateBusSeatsExtra($data,$id)
                          
                             foreach($get_ticket_price_id as $ticketpriceID)
                             {
-                                if($lowerBerthData['seatId']=="")
-                                { 
-                                    $busseats = new $this->busSeats;
-                                }
-                                else
-                                { 
-                                    $busseats = $this->busSeats->find($lowerBerthData['seatId']);                                     
-                                }
+                                $busseats = new $this->busSeats;
+                               
                                 $data['ticket_price_id']=$ticketpriceID->id;
                                 $data['category']='0';                                   
                                 $busseats=$this->getModel($busseats,$data,$lowerBerthData);
-                                // Log::info($busseats);
-                                // exit;
+                              
                                 $busseats->save(); 
                             }
                         }
-                    }
-                    
-                    
-
+                    }                  
                 }
             }
         }
