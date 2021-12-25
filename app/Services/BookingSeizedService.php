@@ -31,6 +31,11 @@ class BookingSeizedService
         return $this->bookingseizedRepository->getAll();
     }
 
+    public function bookingseizedById($id)
+    {
+        return $this->bookingseizedRepository->bookingseizedById($id);
+    }
+
 
     
     public function updateSeized($data)
@@ -49,6 +54,12 @@ class BookingSeizedService
     { 
 
        return $seized = $this->bookingseizedRepository->bookingseizedData($data);
+   }  
+
+   public function deletebookingseized($id)
+    { 
+
+       return $seized = $this->bookingseizedRepository->deletebookingseized($id);
    }
 
 
@@ -65,15 +76,9 @@ class BookingSeizedService
 }
 
 
-public function savePostData($data)
+public function saveSeized($data)
 {   
-    try {
-        $amenity = $this->bookingseizedRepository->save($data);
-    } catch (Exception $e) {
-        // Log::info($e->getMessage());
-        throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-    }
-    return $amenity;
+    return  $seized = $this->bookingseizedRepository->save($data);
 }
 
 }

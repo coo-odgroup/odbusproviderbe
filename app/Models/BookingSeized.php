@@ -5,19 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Location;
+use App\Models\TicketPrice;
 use App\Models\Bus;
 
 
 class BookingSeized extends Model
 {
     use HasFactory;
-    protected $table = 'booking_seized';
-    protected $fillable = ['location_id ','seize_booking_minute'];
+    protected $table = 'daywise_booking_seized';
+    protected $fillable = ['bus_id','ticket_price_id','seize_booking_minute','seized_date','seize_booking_minute'];
 
 
-    public function location()
+    public function ticketPrice()
     {
-    	 return $this->belongsTo(Location::class);
+    	 return $this->belongsTo(TicketPrice::class);
     }
 
     public function bus()

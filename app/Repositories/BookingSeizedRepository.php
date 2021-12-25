@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Models\Bus;
 use App\Models\BookingSeized;
+use App\Models\Location;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
@@ -13,33 +15,38 @@ class BookingSeizedRepository
 {    
     protected $bookingSeized;
     protected $bus;
+    protected $location;
 
     
-    public function __construct(BookingSeized $bookingSeized,Bus $bus )
+    public function __construct(BookingSeized $bookingSeized,Bus $bus ,Location $location)
     {
         $this->bus = $bus;
+        $this->bookingSeized = $bookingSeized;  
+        $this->location = $location;       
 
-        $this->bookingSeized = $bookingSeized;       
     }    
 
     public function getAll()
     {
-        return $this->bus->with('bookingseized.location','busOperator')->get();
+        return $this->bus->with('ticketPrice','busOperator')->get();
 
     }
 
     public function save($seizedData)
     {
-        //Log::info($seizedData);
-        $seized = new $this->bookingSeized; 
-        $seized->bus_id = $seizedData['bus_id'];   
-        $seized->location_id = $seizedData['location_id'];  
-        $seized->seize_booking_minute = $seizedData['seize_booking_minute'];   
-        $seized->created_by = $seizedData['created_by'];   
-
-        $seized->save();
-        return $seized->fresh();
-      
+        foreach($seizedData['busSeized'] as $record)
+        {
+            $seized = new $this->bookingSeized; 
+            $seized->bus_id = $seizedData['bus_id'];   
+            $seized->ticket_price_id  = $record['id'];  
+            $seized->seize_booking_minute = $record['time'];   
+            $seized->seized_date = $seizedData['date'];   
+            $seized->created_by = $seizedData['created_by'];  
+            $seized->reason = $seizedData['reason'];  
+            $seized->other_reason = $seizedData['otherReson'];  
+            $seized->save(); 
+        }
+        return $seizedData;    
     }
 
     public function update($seizedData)
@@ -65,8 +72,7 @@ class BookingSeizedRepository
          $name = $request['name'] ;
        
 
-        $data= $this->bus->with('bookingseized.location','busOperator');
-                         // ->whereNotIn('status', [2]);
+         $data= $this->bookingSeized->with('bus.busOperator')->with('ticketPrice')->where('status',1);
 
 
         if($paginate=='all') 
@@ -80,21 +86,55 @@ class BookingSeizedRepository
 
         if($name!=null)
         {
-            $data = $data->where('name', 'like', '%' .$name . '%')
-                         ->orWhere('bus_number', 'like', '%' .$name . '%')
-                         ->orWhereHas('busOperator', function ($query) use ($name){
+            $data = $data->WhereHas('bus', function ($query) use ($name){
+                            $query->where('name', 'like', '%' .$name . '%');
+                        })->orWhereHas('bus', function ($query) use ($name){
+                            $query->Where('bus_number', 'like', '%' .$name . '%');
+                        })
+         
+                         ->orWhereHas('bus.busOperator', function ($query) use ($name){
                             $query->where('operator_name', 'like', '%' .$name . '%');
                         });                        
         }     
 
         $data=$data->paginate($paginate);
 
+        if($data){
+            foreach($data as $a)
+            {       
+                  $a['from_location']=$this->location->where('id', $a->ticketPrice->source_id)->get();
+                $a['to_location']=$this->location->where('id',$a->ticketPrice->destination_id)->get(); 
+                                   
+            }
+        }
+  
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
             "data" => $data
            );   
            return $response;   
+    }  
+
+
+
+    public function bookingseizedById($id)
+    {         
+
+         $data= $this->bus->with(['ticketPrice' => function ($a){
+            $a->where('status',1);
+            }])->where('id',$id)->where('status',1)->get(); 
+        if($data){
+            foreach($data as $v)
+            { 
+               foreach($v->ticketPrice as $k => $a)
+               {      
+                $a['from_location']=$this->location->where('id', $a->source_id)->get();
+                $a['to_location']=$this->location->where('id',$a->destination_id)->get(); 
+                }
+            }
+        }
+           return $data;   
     }
 
     public function changeStatus($id)
@@ -106,6 +146,16 @@ class BookingSeizedRepository
         }elseif($post->status==1){
             $post->status = 0;
         }
+        $post->update();
+        return $post;
+    }
+
+    public function deletebookingseized($id)
+    {       
+        // log::info($id);
+        // exit;
+        $post = $this->bookingSeized->find($id);
+        $post->status = 2;
         $post->update();
         return $post;
     }

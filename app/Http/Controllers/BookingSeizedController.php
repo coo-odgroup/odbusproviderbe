@@ -29,12 +29,19 @@ class BookingSeizedController extends Controller
 
         $bookingseized = $this->bookingseizedService->getAll();
         return $this->successResponse($bookingseized,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
-   
-    public function updateSeized(Request $request)
+    } 
+
+    public function bookingseizedById($id)
     {
 
-        $bookingseized = $this->bookingseizedService->updateSeized($request);
+        $bookingseized = $this->bookingseizedService->bookingseizedById($id);
+        return $this->successResponse($bookingseized,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+   
+    public function saveSeized(Request $request)
+    {
+
+        $bookingseized = $this->bookingseizedService->saveSeized($request);
             return $this->successResponse($bookingseized,"Booking Seized Updated",Response::HTTP_OK);
     }  
 
@@ -42,6 +49,14 @@ class BookingSeizedController extends Controller
     {
 
         $bookingseized = $this->bookingseizedService->bookingseizedData($request);
+            return $this->successResponse($bookingseized,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+
+      public function deletebookingseized($id)
+    {
+
+        $bookingseized = $this->bookingseizedService->deletebookingseized($id);
             return $this->successResponse($bookingseized,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }   
 

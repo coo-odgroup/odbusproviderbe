@@ -216,8 +216,10 @@ Route::put('/changeStatusBusSitting/{id}', [BusSittingController::class, 'change
 //Booking Seized
 
 Route::get('/bookingseized',[BookingSeizedController::class,'getAllseized']);
-Route::post('/bookingseized',[BookingSeizedController::class,'updateSeized']);
+Route::get('/bookingseizedById/{id}',[BookingSeizedController::class,'bookingseizedById']);
+Route::post('/bookingseized',[BookingSeizedController::class,'saveSeized']);
 Route::post('/bookingseizedData',[BookingSeizedController::class,'bookingseizedData']);
+Route::delete('/deletebookingseized/{id}',[BookingSeizedController::class,'deletebookingseized']);
 Route::put('/changebookingseizedStatus/{id}', [BookingSeizedController::class, 'changeStatus']);
 
 
