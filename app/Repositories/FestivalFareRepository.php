@@ -154,7 +154,6 @@ class FestivalFareRepository
         $festivalFare->sleeper_price = $data['sleeper_price'];
         $festivalFare->reason = $data['reason'];
         $festivalFare->created_by = $data['created_by'];
-        $festivalFare->status = 0;
         return $festivalFare;
     }
 
@@ -169,6 +168,7 @@ class FestivalFareRepository
 
         $festivalFare = new $this->festivalFare;
         $festivalFare=$this->getModel($data,$festivalFare);
+        $festivalFare->status = 0;
         $festivalFare->save();
 
         $bus_id = $this->bus::find($data['bus_id']);

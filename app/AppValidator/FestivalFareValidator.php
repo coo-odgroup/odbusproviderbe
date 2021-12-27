@@ -13,8 +13,8 @@ class FestivalFareValidator
             // 'operator_id' => 'required',
             // 'bus_id' => 'required',
             'date' => 'required',
-            'seater_price' => 'required',
-            'sleeper_price' => 'required',
+            // 'seater_price' => 'required',
+            // 'sleeper_price' => 'required',
             'created_by' => 'required',
             'reason' => 'required'
         ];      

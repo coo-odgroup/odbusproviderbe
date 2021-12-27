@@ -156,7 +156,7 @@ class BusSpecialFareRepository
         $specialfare->sleeper_price = $data['sleeper_price'];
         $specialfare->reason = $data['reason'];
         $specialfare->created_by = $data['created_by'];
-        $specialfare->status = 0;
+    
         return $specialfare;
     }
 
@@ -164,6 +164,7 @@ class BusSpecialFareRepository
     {
         $specialfare = new $this->specialFare;
         $specialfare=$this->getModel($data,$specialfare);
+        $specialfare->status = 0;
         $specialfare->save();
         $bus_id = $this->bus::find($data['bus_id']);
         $specialfare->bus()->attach($data['bus_id']);

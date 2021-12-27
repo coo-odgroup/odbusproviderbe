@@ -135,7 +135,7 @@ class BusGalleryController extends Controller
             $errors = $busGalleryValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
           }
-          else
+        else
         {
           $response =  $this->busGalleryService->updatePost($data);
 

@@ -154,7 +154,6 @@ class BusOwnerFareRepository
         $ownerFare->sleeper_price = $data['sleeper_price'];
         $ownerFare->reason = $data['reason'];
         $ownerFare->created_by = $data['created_by'];
-        $ownerFare->status = 0;
         return $ownerFare;
     }
 
@@ -168,6 +167,7 @@ class BusOwnerFareRepository
     {
         $ownerFare = new $this->ownerFare;
         $ownerFare=$this->getModel($data,$ownerFare);
+        $ownerFare->status = 0;
         $ownerFare->save();
         $bus_id = $this->bus::find($data['bus_id']);
         $ownerFare->bus()->attach($data['bus_id']);
