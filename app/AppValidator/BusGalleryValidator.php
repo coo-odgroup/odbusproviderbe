@@ -11,7 +11,7 @@ class BusGalleryValidator
         
         $rules = [
             'bus_id' => 'required|max:50',
-            'icon' => 'required',
+            'bus_operator_id' => 'required|max:50',
             'created_by' => 'required',
         ];      
       

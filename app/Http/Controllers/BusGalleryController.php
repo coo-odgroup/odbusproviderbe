@@ -11,6 +11,8 @@ use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
+
 
 use Exception;
 
@@ -53,10 +55,15 @@ class BusGalleryController extends Controller
 
     public function addBusGallery(Request $request)
     {
-
+      // log:info($request);
         $data = $request->only([
             'bus_id',
-            'icon','bus_operator_id',
+            'bus_operator_id',
+            'bus_image_1',
+            'bus_image_2',
+            'bus_image_3',
+            'bus_image_4',
+            'bus_image_5',
             'created_by',
           ]);
           $busGalleryValidation = $this->busGalleryValidator->validate($data);
@@ -64,13 +71,28 @@ class BusGalleryController extends Controller
             $errors = $busGalleryValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
           }
-          try {
-            $response = $this->busGalleryService->savePostData($data);
-            return $this->successResponse($response, "Bus Gallery Image Added", Response::HTTP_CREATED);
+           else
+        {
+          $response =  $this->busGalleryService->savePostData($data);
+
+           if($response=='Bus Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Bus Gallery Image Added", Response::HTTP_CREATED);
+           }
+
         }
-        catch(Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }	
+
+        //   try {
+        //     $response = $this->busGalleryService->savePostData($data);
+        //     return $this->successResponse($response, "Bus Gallery Image Added", Response::HTTP_CREATED);
+        // }
+        // catch(Exception $e){
+        //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        // }	
     }
 
     public function deleteBusGallery ($id) {
@@ -95,25 +117,37 @@ class BusGalleryController extends Controller
         return response($output, 200);
     }
     public function updateGallery(Request $request) {
-      
+      // log::info($request);exit;
         $data = $request->only([
           'id',
           'bus_id',
           'bus_operator_id',
-          'icon',
-          'created_by'
+          'bus_image_1',
+          'bus_image_2',
+          'bus_image_3',
+          'bus_image_4',
+          'bus_image_5',
+          'created_by',
         ]);
+
         $busGalleryValidation = $this->busGalleryValidator->validate($data);
         if ($busGalleryValidation->fails()) {
             $errors = $busGalleryValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
           }
-        try {
-          $response = $this->busGalleryService->updatePost($data);
-          return $this->successResponse($response, "Bus Photos Updated", Response::HTTP_CREATED);
+          else
+        {
+          $response =  $this->busGalleryService->updatePost($data);
 
-      } catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
+           if($response=='Bus Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Bus Gallery Image Updated", Response::HTTP_CREATED);
+           }
+
+        }
     }
 }
