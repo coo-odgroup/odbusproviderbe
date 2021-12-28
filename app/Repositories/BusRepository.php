@@ -309,7 +309,7 @@ class BusRepository
         $name = $request['name'] ;
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;
-        $data= $this->bus->whereNotIn('status', [2])->orderBy('id','DESC');
+        $data= $this->bus->with('ticketPrice')->whereNotIn('status', [2])->orderBy('id','DESC');
 
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
@@ -337,6 +337,24 @@ class BusRepository
         } 
 
         $data=$data->paginate($paginate);
+
+         if(count($data)>0){
+            foreach($data as $key=>$v)
+            {   
+                if(count($v->ticketPrice)>0)
+                {
+                   $start = $v->ticketPrice[0]['source_id'];
+                    $end = $v->ticketPrice[0]['destination_id'];
+                    // Log::info($start)  ;exit;
+                    if($start!="" && $end !="")
+                    {
+                         $v['from_location']=$this->location->where('id',$start)->get();
+                         $v['to_location']=$this->location->where('id',$end)->get();
+                    } 
+                }
+                
+            }
+        }
         
         $response = array(
              "count" => $data->count(), 
@@ -413,7 +431,7 @@ class BusRepository
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;    
 
-        $data= $this->bus->with('busOperator','busstoppage','ticketPrice.getBusSeats.seats','busContacts','busSeats.seats')->whereHas('ticketPrice', function ($query) 
+        $data= $this->bus->with('busOperator','busstoppage','BusType','busAmenities.amenities','busSafety.safety','ticketPrice.getBusSeats.seats','busContacts','busSeats.seats')->whereHas('ticketPrice', function ($query) 
                                      {$query->where('status','!=', 2 );})
                                 ->whereNotIn('status', [2])->orderBy('id','DESC');
                   

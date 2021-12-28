@@ -34,6 +34,7 @@ class FailledTransactionReportRepository
         $bus_operator_id = $request->bus_operator_id;
         $payment_id = $request->payment_id;
         $date_type = $request->date_type;
+        $pnr = $request->pnr;
         $source_id = $request->source_id;
         $destination_id = $request->destination_id;
 
@@ -84,6 +85,11 @@ class FailledTransactionReportRepository
             $paginate = 10 ;
         }
 
+         if(!empty($pnr))
+        {
+           $data=$data->where('pnr', $pnr );
+        }
+        
         if(!empty($bus_operator_id))
         {
            $data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
@@ -91,7 +97,8 @@ class FailledTransactionReportRepository
 
         if(!empty($payment_id))
         {
-            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id );});
+           $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
+                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id );});
         }
 
          if(!empty($source_id) && !empty($destination_id))

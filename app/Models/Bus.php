@@ -23,6 +23,7 @@ use App\Models\Cancellationslabs;
 use App\Models\TicketPrice;
 use App\Models\BusStoppageTiming;
 use App\Models\BookingSeized;
+use App\Models\BusType;
 
 
 
@@ -49,7 +50,7 @@ class Bus extends Model
 
     public function busSafety()
     {
-        return $this->hasMany(BusSafety::class)->where('status','!=',2);               
+        return $this->hasMany(BusSafety::class);               
     } 
     public function review()
     {        
@@ -116,6 +117,7 @@ class Bus extends Model
     {
         return $this->hasMany(BookingSeized::class)->where('status','!=',2);        
     }
+
     public function cancellationslabs()
     {        
         return $this->belongsTo(Cancellationslabs::class);        

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Safety;
+
 
 class BusSafety extends Model
 {
@@ -14,6 +16,10 @@ class BusSafety extends Model
     //     'name'
     // ];
     //protected $appends = ['Disabled'];
-    
+    public function safety()
+    {
+       return $this->belongsTo(Safety::class);
+        
+    } 
 
 }

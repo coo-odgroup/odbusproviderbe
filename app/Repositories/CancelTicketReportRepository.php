@@ -32,6 +32,7 @@ class CancelTicketReportRepository
         $end_date="";
         $paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
+        $pnr = $request->pnr;
         $date_range = $request->date_range;
         $payment_id = $request->payment_id;
         $date_type = $request->date_type;
@@ -88,14 +89,21 @@ class CancelTicketReportRepository
             $paginate = 10 ;
         }
 
+         if(!empty($pnr))
+        {
+           $data=$data->where('pnr', $pnr );
+        }
+
         if(!empty($bus_operator_id))
         {
            $data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
         }
 
+        
         if(!empty($payment_id))
         {
-            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id );});
+            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
+                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id );});
         }
 
          if(!empty($source_id) && !empty($destination_id))
