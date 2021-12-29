@@ -152,19 +152,19 @@ class BusRepository
         ->where('status','1')
         ->get(); 
 
-        if($data){
-            foreach($data as $v){ 
-             foreach($v->ticketPrice as $k => $a)
-             {          
-             
-                $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+            if($data){
+                foreach($data as $v){ 
+                 foreach($v->ticketPrice as $k => $a)
+                 {          
+                 
+                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+               }
+                   $v['from_location']=$stoppages['source'][0];
+                   $v['to_location']=$stoppages['destination'][0];
            }
-               $v['from_location']=$stoppages['source'][0];
-               $v['to_location']=$stoppages['destination'][0];
-       }
 
-   }
+       }
     return $data;
     }
     public function updateBusName($data,$id)
@@ -309,7 +309,7 @@ class BusRepository
         $name = $request['name'] ;
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;
-        $data= $this->bus->with('ticketPrice')->whereNotIn('status', [2])->orderBy('id','DESC');
+        $data= $this->bus->with('ticketPrice')->whereNotIn('status', [2])->orderBy('updated_at','DESC');
 
         if($request['USER_BUS_OPERATOR_ID']!="")
         {

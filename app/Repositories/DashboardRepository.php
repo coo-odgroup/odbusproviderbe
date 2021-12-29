@@ -195,8 +195,9 @@ class DashboardRepository
         $records = $this->bus
         ->with('busOperator')
         ->where('id',$operatorId)->get();
-        $operatorName = $records[0]->busOperator->operator_name;
-        return $operatorName;
+        // log::info($records);
+        // $operatorName = $records[0]->busOperator->operator_name;
+        return $records;
     }
 
 

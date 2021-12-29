@@ -93,7 +93,7 @@ class SeatBlockRepository
     // }
     public function addseatBlock($data)
     {
-        Log::info($data);
+        Log::info($data);exit;
         $layoutArray=$data['bus_seat_layout_data'];
         $get_ticket_price_id= $data['busRoute'];
         foreach($layoutArray as $sLayoutData)

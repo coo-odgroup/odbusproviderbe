@@ -73,7 +73,7 @@ class CouponRepository
         // Log::info($data);
         $coupons = new $this->coupon;
         $coupons->coupon_title = $data['coupon_title'];
-        $coupons->coupon_code = $data['coupon_code'];
+        $coupons->coupon_code = strtoupper($data['coupon_code']);
         $coupons->bus_operator_id = $data['bus_operator_id'];
         $coupons->type = $data['type'];
         $coupons->valid_by = $data['valid_by'];
@@ -101,7 +101,8 @@ class CouponRepository
         $coupons->full_desc = $data['full_desc'];
         $coupons->created_by = $data['created_by'];
         $coupons->status = 1;
-        
+        // Log::info($coupons);
+        // exit;
         $coupons->save();
 
         return $coupons->fresh();

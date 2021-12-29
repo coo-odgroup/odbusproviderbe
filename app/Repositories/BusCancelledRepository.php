@@ -129,7 +129,7 @@ class BusCancelledRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->busCancelled->with('bus.busOperator','bus.busstoppage','busCancelledDate')
+        $data= $this->busCancelled->with('bus.busOperator','bus.busstoppage','busCancelledDate')->with('bus.ticketPrice')
                     ->whereNotIn('status', [2]);
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
@@ -160,7 +160,7 @@ class BusCancelledRepository
 
         $data=$data->paginate($paginate);
 
-        // Log::info($data);
+        
 
 
         $response = array(
