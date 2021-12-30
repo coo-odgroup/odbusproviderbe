@@ -78,7 +78,7 @@ class AgentWalletRepository
 
            SendWalletEmailJob::dispatch($to_user, $subject, $agentData);
 
-           $to_support = "bishalnaik23@gmail.com";
+           $to_support = "bishal.seofied@gmail.com";
            $subject = "Wallet recharge request From Agent";
            $supportData= [
                     'userName'=>$user->name,
@@ -88,7 +88,7 @@ class AgentWalletRepository
                    ] ;
           SendSupportEmailJob::dispatch($to_support, $subject, $supportData);
 
-           $to_superadmin = "chandra@odgroup.in";
+           $to_superadmin = "banashri.seofied@gmail.com";
            $subject = "Wallet recharge request From Agent";
            $superAdminData= [
                     'userName'=>$user->name,
