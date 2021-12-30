@@ -431,9 +431,10 @@ class BusRepository
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;    
 
-        $data= $this->bus->with('busOperator','busstoppage','BusType','busAmenities.amenities','busSafety.safety','ticketPrice.getBusSeats.seats','busContacts','busSeats.seats')->whereHas('ticketPrice', function ($query) 
+        $data= $this->bus->with('busOperator','busstoppage','BusType','busAmenities.amenities','busSafety.safety','ticketPrice.getBusSeats.seats','busContacts','busSeats.seats')
+                        ->whereHas('ticketPrice', function ($query) 
                                      {$query->where('status','!=', 2 );})
-                                ->whereNotIn('status', [2])->orderBy('id','DESC');
+                        ->whereNotIn('status', [2])->orderBy('id','DESC');
                   
 
         if($request['USER_BUS_OPERATOR_ID']!="")
