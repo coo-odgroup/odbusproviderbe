@@ -119,13 +119,79 @@ class BusScheduleRepository
         return $this->busSchedule->get();
     } 
 
+
+    public function scheduleCornJob()
+    {
+      $msg=[];
+        $today='2022-02-22';
+        // $today=date('Y-m-d');
+       $checkdate =date('Y-m-d', strtotime($today. ' + 3 days'));
+        $data = $this->busSchedule->with(['busScheduleDate' => function ($a) use ($today){
+                                   $a->orderBy('id','DESC')
+                                   ;}])->get();
+          foreach ($data as $v)
+          {
+            if(isset($v->busScheduleDate[0]))
+            {
+              if($checkdate==$v->busScheduleDate[0]->entry_date)
+              {
+                $request['bus_schedule_id'] = $v->busScheduleDate[0]->bus_schedule_id ;
+                $request['running_cycle']=$v->running_cycle;
+                $request['created_by'] = 'server';
+                $request['entry_date']=$checkdate;
+                
+                $this->serverSave($request);
+                 $msg = 'data inserted';
+              } else{
+                 $msg = 'no bus found';
+              }            
+            }          
+
+          }
+         return $msg;
+    } 
+   
+   public function serverSave($request)
+   {    
+      // log::info($request );
+     $entdate =date('Y-m-d', strtotime($request['entry_date']. ' + '.$request['running_cycle'].' days'));
+          $this->busSchedule = $this->busSchedule->find($request['bus_schedule_id']);
+          // log::info($entdate);exit;
+          // exit;
+            //TOD Latter,Write Enhanced Query
+            // $this->busSchedule->BusScheduleDate()->delete();  
+            $busScheduleDateModels = [];
+            $entryDate = $entdate;
+            $busScheduleDate= new BusScheduleDate();
+            $busScheduleDate->bus_schedule_id=$this->busSchedule->id;
+            $busScheduleDate->entry_date=$entryDate;
+            for($dateCount=0;$dateCount<30;$dateCount++) {   
+                $busScheduleDate= new BusScheduleDate();
+                $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
+                if($dateCount!=0)
+                {
+                    $entryDate = strtotime("+".$request['running_cycle']."day", strtotime($entryDate));
+                }
+                else
+                {
+                     $entryDate =strtotime($entryDate);
+                }                      
+                $entryDate = date("Y-m-d", $entryDate);
+                $busScheduleDate->entry_date=$entryDate;
+                $busScheduleDate->created_by =$request['created_by'];
+                $busScheduleDate->status = 1;
+                $busScheduledateModels[] =  $busScheduleDate;
+            }        
+            $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
+            return $busScheduledateModels;       
+   }
+
     public function busScheduleById($id)
     {
         $data = $this->busSchedule->with('busScheduleDate')
                                   ->where('bus_id',$id)
                                   ->where('status',1)
                                   ->get();
-        // log::info($data);
         return $data;
     }
 
@@ -214,18 +280,18 @@ class BusScheduleRepository
                                ->get();
         if(count($duplicate_data)==0)
         {
-        $this->bus = $this->bus->find($data['bus_id']);
-        $this->bus->running_cycle = $data['running_cycle'];
-        $this->bus->update();   
-        $this->busSchedule->bus_id= $data['bus_id'];
-        $this->busSchedule->running_cycle= $data['running_cycle'];
-        $this->busSchedule->created_by= $data['created_by'];
-        $this->busSchedule->status = 0;
-        $this->busSchedule->save();
-        $busScheduleDateModels = [];
-        $entryDate = $data['entry_date'];
-        $busScheduleDate= new BusScheduleDate();
-        $busScheduleDate->bus_schedule_id=$this->busSchedule->id;
+          $this->bus = $this->bus->find($data['bus_id']);
+          $this->bus->running_cycle = $data['running_cycle'];
+          $this->bus->update();   
+          $this->busSchedule->bus_id= $data['bus_id'];
+          $this->busSchedule->running_cycle= $data['running_cycle'];
+          $this->busSchedule->created_by= $data['created_by'];
+          $this->busSchedule->status = 0;
+          $this->busSchedule->save();
+          $busScheduleDateModels = [];
+          $entryDate = $data['entry_date'];
+          $busScheduleDate= new BusScheduleDate();
+          $busScheduleDate->bus_schedule_id=$this->busSchedule->id;
         for($dateCount=0;$dateCount<30;$dateCount++) { 
            
             $busScheduleDate= new BusScheduleDate();
