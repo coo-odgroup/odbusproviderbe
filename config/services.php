@@ -26,10 +26,11 @@ return [
     ],
 
     'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION'),
+        'key' => 'AKIAVGIJQ6OJMZN6NIJC',//env('AWS_ACCESS_KEY_ID'),
+        'secret' =>'BIsKR/jNtk5h6FLUm6TTw+A47IcJ0yodfJWpziuqfpb2', //env('AWS_SECRET_ACCESS_KEY'),
+        'region' =>'email-smtp.ap-south-1.amazonaws.com' //env('MAIL_HOST'),
     ],
+   
     'mailjet' => [
         'key' => env('MAILJET_APIKEY'),
         'secret' => env('MAILJET_APISECRET'),

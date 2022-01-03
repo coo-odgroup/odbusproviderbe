@@ -21,6 +21,7 @@ class AgentWalletController extends Controller
     
     public function __construct(AgentWalletService $agentWalletService, AgentWalletValidator $agentWalletValidator)
     {
+       
         $this->agentWalletService = $agentWalletService;
         $this->agentWalletValidator = $agentWalletValidator;
     }
@@ -41,7 +42,8 @@ class AgentWalletController extends Controller
     }
 
     public function addAgentWallet(Request $request) 
-    {       
+    { 
+
         $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
 
         $agentWalletValidator = $this->agentWalletValidator->validate($data);
@@ -54,6 +56,7 @@ class AgentWalletController extends Controller
            $this->agentWalletService->savePostData($request);
            return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
         } catch (Exception $e) {
+            
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
          

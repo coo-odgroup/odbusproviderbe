@@ -53,7 +53,8 @@ class SendSuperAdminEmailJob implements ShouldQueue
             'otp' =>$this->otp,
         ];
         Mail::send('agentWalletRequestSuperAdmin', $data, function ($messageNew) {
-            $messageNew->from('support@odbus.in', 'ODBUS')
+            $messageNew
+            //->from('support@odbus.in', 'ODBUS')
             ->to($this->to)
             ->subject($this->subject);
         });

@@ -49,7 +49,8 @@ class SendSupportEmailJob implements ShouldQueue
             'tran_id' => $this->tran_id
         ];
         Mail::send('agentWalletRequestAdmin', $data, function ($messageNew) {
-            $messageNew->from('support@odbus.in', 'ODBUS')
+            $messageNew
+            //->from('support@odbus.in', 'ODBUS')
             ->to($this->to)
             ->subject($this->subject);
         });

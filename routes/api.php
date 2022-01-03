@@ -793,6 +793,9 @@ Route::get('/Agent/{id}', [AgentController::class, 'getAgent']);
 Route::put('/AgentChangeStatus/{id}', [AgentController::class, 'changeStatus']);
 
 
+////////// testing Email
+Route::post('/TestEmail', [BusController::class, 'testingEmail']);
+
 
 //Association Content
 

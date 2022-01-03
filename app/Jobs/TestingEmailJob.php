@@ -3,15 +3,16 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
-class SendEmailJob implements ShouldQueue
+class TestingEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -21,20 +22,16 @@ class SendEmailJob implements ShouldQueue
      * @return void
      */
     protected $to;
-    protected $subject;
-    protected $email_body;
     protected $name;
-    protected $Age;
-
-    public function __construct($to, $subject, $req)
+    protected $subject;
+    public function __construct($to, $name)
     {
-        // Log::info($req);
         $this->to = $to;
-        $this->subject = $subject;
-        $this->message= "Good Morning";
-        $this->name=$req['name'];
-        $this->Age=$req['Age'];
+        $this->name = $name;
+        $this->subject = 'testing';
+        
     }
+
     /**
      * Execute the job.
      *
@@ -42,16 +39,23 @@ class SendEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'content'=>$this->to,
+        $data = [
             'name' => $this->name,
-            'Age' => $this->Age
         ];
-        Mail::send('email', $data, function ($messageNew) {
-            $messageNew
-            //->from('support@odbus.in', 'ODBUS')
+        
+        Mail::send('test', $data, function ($messageNew) {
+            $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });
+        
+        // check for failures
+        if (Mail::failures()) {
+            return new Error(Mail::failures()); 
+            //return "Email failed";
+        }else{
+            return 'success';
+        }
+
     }
 }

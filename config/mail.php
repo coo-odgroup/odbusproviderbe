@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'smtp'),
+    'default' => env('MAIL_MAILER', 'failover'),
 
     /*
     |--------------------------------------------------------------------------
@@ -36,8 +36,18 @@ return [
     'mailers' => [
         'smtp' => [
             'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
-            'port' => env('MAIL_PORT', 587),
+            'host' => env('MAIL_HOST'),
+            'port' => env('MAIL_PORT'),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'username' => env('MAIL_USERNAME'),
+            'password' => env('MAIL_PASSWORD'),
+            'timeout' => null,
+                'auth_mode' => null,
+            ],
+        'sendmail' => [
+            'transport' => 'sendmail',
+            'host' => env('MAIL_HOST'),
+            'port' => env('MAIL_PORT'),
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
@@ -51,12 +61,44 @@ return [
             'encryption' => env('MAILJET_ENCRYPTION', 'tls'),
             'username' => env('MAILJET_APIKEY'),
             'password' => env('MAILJET_APISECRET'),
-            'timeout' => null,
-            'auth_mode' => null,
+            'transactional' => [
+                'call' => true,
+                'options' => [
+                    'url' => 'api.mailjet.com',
+                    'version' => 'v3.1',
+                    'call' => true,
+                    'secured' => true
+                ]
+            ],
+            'common' => [
+                'call' => true,
+                'options' => [
+                    'url' => 'api.mailjet.com',
+                    'version' => 'v3',
+                    'call' => true,
+                    'secured' => true
+                ]
+            ],
+            'v4' => [
+                'call' => true,
+                'options' => [
+                    'url' => 'api.mailjet.com',
+                    'version' => 'v4',
+                    'call' => true,
+                    'secured' => true
+                ]
+            ],
         ],
 
         'ses' => [
-            'transport' => 'ses',
+            'transport' => env('MAIL_MAILER'),
+            'host' => env('MAIL_HOST'),
+            'port' => env('MAIL_PORT'),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'username' => env('AWS_ACCESS_KEY_ID'),
+            'password' => env('AWS_SECRET_ACCESS_KEY'),
+            'timeout' => null,
+            'auth_mode' => null,
         ],
 
         'mailgun' => [
@@ -76,6 +118,13 @@ return [
             'transport' => 'log',
             'channel' => env('MAIL_LOG_CHANNEL'),
         ],
+        'failover' => [
+            'transport' => 'failover',
+            'mailers' => [
+                'ses',
+                'mailjet',
+            ],
+        ],
 
         'array' => [
             'transport' => 'array',
@@ -94,10 +143,13 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('mail_from_address', null),
+        'name' => env('MAIL_FROM_NAME', null),
     ],
 
+    'contact' => [
+        'address'=> env('MAIL_CONTACT_ADDRESS',null),
+    ],
     /*
     |--------------------------------------------------------------------------
     | Markdown Mail Settings

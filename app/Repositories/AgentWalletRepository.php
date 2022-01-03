@@ -46,8 +46,7 @@ class AgentWalletRepository
     }
 
     public function save($data)
-    {  
-        // Log::info($data);exit;
+    {         
         $user = $this->user->find($data['user_id']);
       
         $agentWallet = new $this->agentWallet;

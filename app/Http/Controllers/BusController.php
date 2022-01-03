@@ -28,6 +28,7 @@ use App\Services\BusLocationSequenceService;
 
 use App\Models\BusStoppageTiming;
 use App\Services\BusStoppageTimingService;
+use App\Jobs\TestingEmailJob;
 
 
 use App\Models\BusSeats;
@@ -547,6 +548,18 @@ class BusController extends Controller
       $bus = $this->busService->getBusScheduleEntryDatesFilter($request);
       return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     
+      }
+
+
+      public function testingEmail(Request $request) {
+
+        $to = $request['email'];
+        $name = $request['name'];
+
+        $res= TestingEmailJob::dispatch($to, $name);
+
+        return $this->successResponse($res,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+
       }
      
 }
