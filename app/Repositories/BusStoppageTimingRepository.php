@@ -38,6 +38,7 @@ class BusStoppageTimingRepository
         $result['stoppage_timing']=$this->busStoppageTiming->where('bus_id', $bus_id)->where('status','1')->get();
 
         $result['routes']=$this->busLocationSequence->where('status','1')->select('location_id')->orderBy('sequence')->where('bus_id', $bus_id)->get();
+        
         $result['sequence']=[];
         foreach($result['routes'] as $routeInfo)
         {
@@ -52,13 +53,13 @@ class BusStoppageTimingRepository
     public function busStoppageTimingbyBusIdClone($bus_id)
     {
         $result=[];
-        $result['stoppage_timing']=$this->busStoppageTiming->where('bus_id', $bus_id)->get();
+        $result['stoppage_timing']=$this->busStoppageTiming->where('bus_id', $bus_id)->where('status','1')->get();
 
-        $result['routes']=$this->busLocationSequence->select('location_id')->orderBy('sequence','DESC')->where('bus_id', $bus_id)->get();
+        $result['routes']=$this->busLocationSequence->where('status','1')->select('location_id')->orderBy('sequence','DESC')->where('bus_id', $bus_id)->get();
         $result['sequence']=[];
         foreach($result['routes'] as $routeInfo)
         {
-            $result['sequence'][]=$this->busLocationSequence->where('bus_id',$bus_id)->where('location_id',$routeInfo->location_id)->get();
+            $result['sequence'][]=$this->busLocationSequence->where('bus_id',$bus_id)->where('location_id',$routeInfo->location_id)->where('status','1')->get();
         }
 
         //Log::info($result);
