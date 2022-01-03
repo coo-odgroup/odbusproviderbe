@@ -143,7 +143,7 @@ return [
     */
 
     'from' => [
-        'address' => env('mail_from_address', null),
+        'address' => env('MAIL_FROM_ADDRESS', null),
         'name' => env('MAIL_FROM_NAME', null),
     ],
 

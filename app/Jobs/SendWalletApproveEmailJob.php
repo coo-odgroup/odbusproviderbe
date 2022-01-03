@@ -8,6 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 
 class SendWalletApproveEmailJob implements ShouldQueue
@@ -54,8 +56,7 @@ class SendWalletApproveEmailJob implements ShouldQueue
             'balance' => $this->balance
         ];
         Mail::send('agentWalletApprove', $data, function ($messageNew) {
-            $messageNew
-            //->from('support@odbus.in', 'ODBUS')
+            $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });

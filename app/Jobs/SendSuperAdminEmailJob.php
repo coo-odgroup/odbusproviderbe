@@ -8,6 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 
 class SendSuperAdminEmailJob implements ShouldQueue
@@ -53,8 +55,7 @@ class SendSuperAdminEmailJob implements ShouldQueue
             'otp' =>$this->otp,
         ];
         Mail::send('agentWalletRequestSuperAdmin', $data, function ($messageNew) {
-            $messageNew
-            //->from('support@odbus.in', 'ODBUS')
+            $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });

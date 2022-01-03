@@ -104,7 +104,6 @@ class AgentWalletService
             $post = $this->agentWalletRepository->save($data);
 
         } catch (Exception $e) {
-             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
         return $post;

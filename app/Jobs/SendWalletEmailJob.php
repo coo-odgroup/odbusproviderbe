@@ -7,7 +7,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 class SendWalletEmailJob implements ShouldQueue
 {
@@ -48,9 +51,8 @@ class SendWalletEmailJob implements ShouldQueue
             'via' => $this->via,
             'tran_id' => $this->tran_id
         ];
-        Mail::send('agentWalletRequestEmail', $data, function ($messageNew) {
-            $messageNew
-            //->from('support@odbus.in', 'ODBUS')
+        Mail::send('agentWalletRequestEmail', $data, function ($messageNew) {            
+            $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });

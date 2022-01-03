@@ -56,7 +56,6 @@ class AgentWalletController extends Controller
            $this->agentWalletService->savePostData($request);
            return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
         } catch (Exception $e) {
-            
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
          
