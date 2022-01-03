@@ -36,11 +36,20 @@ class ExtraSeatOpenReportRepository
         $paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
         $bus_id = $request->bus_id;
+        // ->with(['busSeats' => function ($a){
+        //     $a->where('status',1);
+        //     }])->with('busSeats.seats','busOperator')
 
-        $data= $this->bus->with('busSeats.seats','busOperator')
-                    ->whereHas('busSeats', function ($query) {$query->where('duration', '>','0 ');})
-                    ->whereHas('busSeats', function ($query) {$query->where('status', '1');})
-                    ->orderBy('id','DESC');
+        // $data= $this->bus->with(['busSeats' => function ($a){
+        //                     $a->where('status',1)->where('duration', '>','0 ')->with('seats','ticketPrice'); }])->with('busOperator')
+        //                  ->whereHas('busSeats', function ($query) {$query->where('duration', '>','0 ');})
+        //                  ->whereHas('busSeats', function ($query) {$query->where('status', '1');})
+        //                  ->orderBy('id','DESC');
+         $data= $this->bus->with(['ticketPrice.getBusSeats' => function ($a){
+                            $a->where('status',1)->where('duration', '>','0 ')->with('seats'); }])->with('busOperator')
+                         ->whereHas('busSeats', function ($query) {$query->where('duration', '>','0 ');})
+                         ->whereHas('busSeats', function ($query) {$query->where('status', '1');})
+                         ->orderBy('id','DESC');
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
             $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
@@ -63,7 +72,7 @@ class ExtraSeatOpenReportRepository
 
          $data=$data->paginate($paginate);
 
-
+         // Log::info($data);  
           $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
