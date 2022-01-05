@@ -187,7 +187,7 @@ class BusRepository
         $bus->name = $data['name'];
         $bus->bus_operator_id = $data['bus_operator_id'];
         $bus->via = $data['via'];
-        $bus->bus_number = $data['bus_number'];
+        $bus->bus_number = strtoupper($data['bus_number']);
         $bus->bus_description = $data['bus_description'];
         $bus->bus_type_id = $data['bus_type_id'];
         $bus->max_seat_book = $data['max_seat_book'];

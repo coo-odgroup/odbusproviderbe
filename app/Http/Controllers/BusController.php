@@ -90,7 +90,7 @@ class BusController extends Controller
       //USED WITH auth:api..
     public function createBuses(Request $request) {
 
-        // Log::info();exit;
+        // Log::info($request);exit;
         $data = $request->only([
             'bus_operator_id','user_id', 'bus_description','cancelation_points', 'name', 'via','bus_number','bus_type_id',
             'bus_sitting_id','amenities_id','cancellationslabs_id','bus_seat_layout_id','running_cycle','has_return_bus','created_by'
@@ -114,9 +114,9 @@ class BusController extends Controller
     } 
 
     public function update(Request $request, $id) {
-        
+        // log::info($request);exit;
         $data = $request->only([
-            'bus_operator_id', 'user_id','amenities','safety', 'ticket_cancelation_id', 'name', 'via','bus_number','bus_description','bus_type_id','bus_sitting_id','cancelation_points','cancellationslabs_id','created_by','bus_seat_layout_id','max_seat_book'
+            'bus_operator_id','bus_number','user_id','amenities','safety', 'ticket_cancelation_id', 'name', 'via','bus_number','bus_description','bus_type_id','bus_sitting_id','cancelation_points','cancellationslabs_id','created_by','bus_seat_layout_id','max_seat_book'
         ]);
        
         $busValidation = $this->busValidator->basicValidate($data);
@@ -213,9 +213,11 @@ class BusController extends Controller
     }
     public function busContactInfo(Request $request)
     {
+        // log::info($request);
+        // exit;
         $data=$request;
         //$bus_name=$data['bus_number'];
-        $this->busService->updateBusName($data,$data['id']);
+        // $this->busService->updateBusName($data,$data['id']);
         $this->busContactsService->deleteByBusId($data['id']);
         if(isset($data['conductor_no']))
         {
@@ -268,7 +270,10 @@ class BusController extends Controller
         
         return $this->successResponse($data, "Bus Contact Details Updated", Response::HTTP_ACCEPTED);
     }
+
     public function save(Request $request) {
+        
+
         $data=$request;
        
         $NewBus['name']=$data['name'];
@@ -288,14 +293,12 @@ class BusController extends Controller
 
         $busValidation = $this->busValidator->validate($data->all());
 
-     
-
-
         if ($busValidation->fails()) {
             $errors = $busValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         try {
+
 
             $up=0;
             $lp=0;
@@ -346,10 +349,9 @@ class BusController extends Controller
 
                 return $this->errorResponse("Bus must have selected at least 1 seat.Please check seat layout and try again.",Response::HTTP_PARTIAL_CONTENT);
 
-            }
-       
+            }      
 
-                $bus_last_insert_id=$this->busService->savePostData($NewBus); 
+                $bus_last_insert_id=$this->busService->savePostData($NewBus);  
                 /////////////// add safety 
                 $safetydata['bus_id']=$bus_last_insert_id;
                 $safetydata['safety']=$data['safety'];

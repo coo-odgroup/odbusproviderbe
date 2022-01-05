@@ -75,7 +75,7 @@ class ReviewRepository
             $paginate = 10 ;
         }
 
-        $data= $this->review->with('bus','BusOperator')->where('status','!=' ,2)
+        $data= $this->review->with('bus.busOperator')->where('status','!=' ,2)
                             ->orderBy('id',"DESC");
         if (!empty($start_date) && !empty($end_date)) {
             $data = $data->whereBetween('created_at', [$start_date, $end_date]);
