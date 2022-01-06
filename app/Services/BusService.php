@@ -79,7 +79,7 @@ class BusService
     }
     public function savePostData($data)
     {
-        log::info($data);
+        // log::info($data);
         $result = $this->busRepository->save($data);
         return $result;
     }

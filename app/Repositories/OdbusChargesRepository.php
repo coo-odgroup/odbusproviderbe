@@ -71,6 +71,7 @@ class OdbusChargesRepository
         $odbusCharges->mobile_no_2 = $data['mobile_no_2'];
         $odbusCharges->mobile_no_3 = $data['mobile_no_3'];
         $odbusCharges->mobile_no_4 = $data['mobile_no_4'];
+        $odbusCharges->seo_script = $data['seo_script'];
         $odbusCharges->operator_slogan = $data['operator_slogan'];
         $odbusCharges->operator_home_content = $data['operator_home_content'];
         $odbusCharges->created_by = $data['created_by'];
