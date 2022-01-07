@@ -70,7 +70,7 @@ class OdbusChargesRepository
         $odbusCharges->booking_email = $data['booking_email'];
         $odbusCharges->request_email = $data['request_email'];
         $odbusCharges->other_email = ($data['other_email']!='' && $data['other_email'] !='null') ? $data['other_email'] : null;
-        
+
         $odbusCharges->mobile_no_1 = $data['mobile_no_1'];
         $odbusCharges->mobile_no_2 = $data['mobile_no_2'];
         $odbusCharges->mobile_no_3 = $data['mobile_no_3'];
@@ -79,11 +79,29 @@ class OdbusChargesRepository
 
         $odbusCharges->seo_script = ($data['seo_script']!='' && $data['seo_script'] !='null') ? $data['seo_script'] : null;
 
+        $odbusCharges->google_verification_code = ($data['google_verification_code']!='' && $data['google_verification_code'] !='null') ? $data['google_verification_code'] : null;
+
+        $odbusCharges->bing_verification_code = ($data['bing_verification_code']!='' && $data['bing_verification_code'] !='null') ? $data['bing_verification_code'] : null;
+
+        $odbusCharges->pintrest_verification_code = ($data['pintrest_verification_code']!='' && $data['pintrest_verification_code'] !='null') ? $data['pintrest_verification_code'] : null;
+
+        $odbusCharges->google_analytics = ($data['google_analytics']!='' && $data['google_analytics'] !='null') ? $data['google_analytics'] : null;
+
+        $odbusCharges->fb_page_id = ($data['fb_page_id']!='' && $data['fb_page_id'] !='null') ? $data['fb_page_id'] : null;
+
+        $odbusCharges->twitter_page_id = ($data['twitter_page_id']!='' && $data['twitter_page_id'] !='null') ? $data['twitter_page_id'] : null;
+
+        $odbusCharges->no_script = ($data['no_script']!='' && $data['no_script'] !='null') ? $data['no_script'] : null;
+
         $odbusCharges->operator_slogan = ($data['operator_slogan']!='' && $data['operator_slogan'] !='null') ? $data['operator_slogan'] : null;
 
         $odbusCharges->operator_home_content =($data['operator_home_content']!='' && $data['operator_home_content'] !='null') ? $data['operator_home_content'] : null;
 
         $odbusCharges->created_by = $data['created_by'];
+
+       // Log::info($odbusCharges);
+
+
         return $odbusCharges;
     }
     /**
@@ -133,6 +151,19 @@ class OdbusChargesRepository
                 $odbusCharges->footer_logo = $footer_picture;
                 $footer_logo->move(public_path('uploads/logo/'), $footer_picture); 
            }
+
+
+            $og_image = collect($data)->get('og_image');     
+            if(($og_image)!=""){
+
+                $filename  = $og_image->getClientOriginalName();
+                $extension = $og_image->getClientOriginalExtension();
+                $og_picture   =  rand().'-'.$filename;
+
+                $odbusCharges->og_image = $og_picture;
+                $og_image->move(public_path('uploads/og_image/'), $og_picture); 
+           }
+
 
             $odbusCharges->save();
             return $odbusCharges;
@@ -209,8 +240,8 @@ class OdbusChargesRepository
                 }       
             }
             $footer_logo = collect($data)->get('footer_logo');
-            if($footer_logo!="")
-             {
+           
+            if($footer_logo!=""){
                 $filename  = $footer_logo->getClientOriginalName();
                 $extension = $footer_logo->getClientOriginalExtension();
                 $footer_picture   =  rand().'-'.$filename;
@@ -230,6 +261,29 @@ class OdbusChargesRepository
                 }       
 
             }
+
+             $og_image_file = collect($data)->get('og_image'); 
+            if ($og_image_file!="" ) 
+            {
+                $og_image_name  = $og_image_file->getClientOriginalName();
+                $extension = $og_image_file->getClientOriginalExtension();
+                $og_picture   =  rand().'-'.$og_image_name;
+
+                $odbusCharges->og_image = $og_picture;
+
+                $og_image_file->move(public_path('uploads/og_image/'), $og_picture);
+
+                if($charges_detail[0]->og_image!='')
+                {              
+                   $old_og_path = public_path('uploads/og_image/').$charges_detail[0]->og_image;
+                  
+                    if(File::exists($old_og_path))
+                   {
+                          unlink($old_og_path);
+                   }  
+                }       
+            }
+
             else
             {
                  $odbusCharges=$this->getModel($data,$odbusCharges);;
