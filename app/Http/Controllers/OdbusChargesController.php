@@ -55,7 +55,7 @@ class OdbusChargesController extends Controller
         {
            $response = $this->odbusChargesService->savePostData($data);
 
-           if($response=='Opertaor already taken')
+           if($response=='User already taken')
            {
               return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
            }
@@ -78,7 +78,7 @@ class OdbusChargesController extends Controller
       {
         $response = $this->odbusChargesService->updatePost($request);
 
-        if($response=='Opertaor already taken')
+        if($response=='User already taken')
         {
           return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
         }

@@ -124,8 +124,8 @@ class BusScheduleRepository
     {
       $msg=[];
       $count = 0;
-        // $today='2022-02-22';
-        $today=date('Y-m-d');
+         //$today='2022-02-22';
+         $today=date('Y-m-d');
        $checkdate =date('Y-m-d', strtotime($today. ' + 3 days'));
         $data = $this->busSchedule->with(['busScheduleDate' => function ($a) use ($today){
                                    $a->orderBy('id','DESC')
@@ -148,6 +148,9 @@ class BusScheduleRepository
             }          
 
           }
+
+          Log::info($count.' bus scheduled today');
+
          return $count.' bus scheduled today';
     } 
    

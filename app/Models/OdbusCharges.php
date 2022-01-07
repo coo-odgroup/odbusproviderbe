@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\busSafety;
 use App\Models\BusOperator;
+use App\Models\User;
 
 class OdbusCharges extends Model
 {
@@ -17,5 +18,10 @@ class OdbusCharges extends Model
     public function busOperator()
     {
     	return $this->belongsTo(BusOperator::class);
+    }
+
+    public function user()
+    {
+    	return $this->belongsTo(User::class);
     }
 }

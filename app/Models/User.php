@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Models\Role;
 use App\Models\UserBusOperator;
+use App\Models\OdbusCharges;
 use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
@@ -28,6 +29,11 @@ class User extends Model
     {
         return $this->hasOne(Role::class);
     }
+
+    public function odbusCharges()
+    {        
+        return $this->hasOne(OdbusCharges::class);        
+    } 
 
     public function UserBusOperator()
     {        

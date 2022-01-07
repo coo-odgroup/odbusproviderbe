@@ -50,6 +50,11 @@ class UserRepository
         return $this->user::with('userBankDetails')->where('id', $id)->get();
     }
 
+    public function AllUser(){
+
+        return $this->user->where('name','!=' ,null)->where('email','!=' ,null)->get();
+    }
+
     
     
     public function save($data)

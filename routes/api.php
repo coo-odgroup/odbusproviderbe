@@ -781,6 +781,7 @@ Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
 
 
 Route::post('/login', [UserController::class, 'login']);
+Route::get('/AllUser', [UserController::class, 'AllUser']);
 
 
 //});

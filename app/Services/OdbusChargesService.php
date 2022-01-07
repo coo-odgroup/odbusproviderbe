@@ -61,7 +61,7 @@ class OdbusChargesService
         try {
             $charges = $this->odbusChargesRepository->update($data);
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            //Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $charges;

@@ -3,22 +3,25 @@
 namespace App\Repositories;
 use App\Models\OdbusCharges;
 use App\Models\BusOperator;
+use App\Models\User;
 use Illuminate\Support\Facades\File; 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 class OdbusChargesRepository 
 {
     protected $odbusCharges;
-    public function __construct(OdbusCharges $odbusCharges)
+    protected $user;
+    public function __construct(OdbusCharges $odbusCharges, User $user )
     {
         $this->odbusCharges = $odbusCharges;
+        $this->user = $user;
     }
     public function getData($request)
     {
         $paginate = $request['per_page'] ;
         $name = $request['name'] ;
 
-        $data= OdbusCharges::with('busOperator')->whereNotIn('status', [2])->orderBy('id','desc');
+        $data= OdbusCharges::with('user')->whereNotIn('status', [2])->orderBy('id','desc');
 
         if($paginate=='all') 
         {
@@ -30,9 +33,9 @@ class OdbusChargesRepository
         }
         if($name!=null)
         {
-            $data = $data->WhereHas('busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%');})
-                        ->orWhereHas('busOperator', function ($query) use ($name) {$query->where('contact_number', 'like', '%' .$name . '%');})
-                        ->orWhereHas('busOperator', function ($query) use ($name) {$query->where('email_id', 'like', '%' .$name . '%');});                       
+            $data = $data->WhereHas('user', function ($query) use ($name) {$query->where('name', 'like', '%' .$name . '%');})
+                        ->orWhereHas('user', function ($query) use ($name) {$query->where('phone', 'like', '%' .$name . '%');})
+                        ->orWhereHas('user', function ($query) use ($name) {$query->where('email', 'like', '%' .$name . '%');});                       
         }     
         $data=$data->paginate($paginate);
         
@@ -58,7 +61,7 @@ class OdbusChargesRepository
     
     public function getModel($data, OdbusCharges $odbusCharges)
     {
-        $odbusCharges->bus_operator_id = $data['bus_operator_id'];
+        $odbusCharges->user_id = $data['user_id'];
         $odbusCharges->payment_gateway_charges = $data['payment_gateway_charges'];
         $odbusCharges->email_sms_charges = $data['email_sms_charges'];
         $odbusCharges->odbus_gst_charges = $data['odbus_gst_charges'];
@@ -66,14 +69,20 @@ class OdbusChargesRepository
         $odbusCharges->support_email = $data['support_email'];
         $odbusCharges->booking_email = $data['booking_email'];
         $odbusCharges->request_email = $data['request_email'];
-        $odbusCharges->other_email = $data['other_email'];
+        $odbusCharges->other_email = ($data['other_email']!='' && $data['other_email'] !='null') ? $data['other_email'] : null;
+        
         $odbusCharges->mobile_no_1 = $data['mobile_no_1'];
         $odbusCharges->mobile_no_2 = $data['mobile_no_2'];
         $odbusCharges->mobile_no_3 = $data['mobile_no_3'];
-        $odbusCharges->mobile_no_4 = $data['mobile_no_4'];
-        $odbusCharges->seo_script = $data['seo_script'];
-        $odbusCharges->operator_slogan = $data['operator_slogan'];
-        $odbusCharges->operator_home_content = $data['operator_home_content'];
+
+        $odbusCharges->mobile_no_4 = ($data['mobile_no_4']!='' && $data['mobile_no_4'] !='null') ? $data['mobile_no_4'] : null;
+
+        $odbusCharges->seo_script = ($data['seo_script']!='' && $data['seo_script'] !='null') ? $data['seo_script'] : null;
+
+        $odbusCharges->operator_slogan = ($data['operator_slogan']!='' && $data['operator_slogan'] !='null') ? $data['operator_slogan'] : null;
+
+        $odbusCharges->operator_home_content =($data['operator_home_content']!='' && $data['operator_home_content'] !='null') ? $data['operator_home_content'] : null;
+
         $odbusCharges->created_by = $data['created_by'];
         return $odbusCharges;
     }
@@ -86,7 +95,7 @@ class OdbusChargesRepository
     public function save($data)
     {  
         $duplicate_data = $this->odbusCharges
-                               ->where('bus_operator_id',$data['bus_operator_id'])
+                               ->where('user_id',$data['user_id'])
                                ->where('status','!=',2)
                                ->get();
         if(count($duplicate_data)==0)
@@ -131,7 +140,7 @@ class OdbusChargesRepository
         }
         else
         {
-            return 'Opertaor already taken';
+            return 'User already taken';
         }
         
     }
@@ -146,7 +155,7 @@ class OdbusChargesRepository
       
         $id = $data['id'] ;
         $duplicate_data = $this->odbusCharges
-                               ->where('bus_operator_id',$data['bus_operator_id'])
+                               ->where('user_id',$data['user_id'])
                                ->where('id','!=',$id)
                                ->where('status','!=',2)
                                ->get();
@@ -231,7 +240,7 @@ class OdbusChargesRepository
         }
         else
         {
-            return 'Opertaor already taken';
+            return 'User already taken';
         }
         
   

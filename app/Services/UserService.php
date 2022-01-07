@@ -157,5 +157,11 @@ class UserService
         $agent = $this->userRepository->agentRegister($data);
         return $agent;
     }
+
+    public function AllUser()
+    {
+       $list = $this->userRepository->AllUser();
+        return $list;
+    }
     
 }
