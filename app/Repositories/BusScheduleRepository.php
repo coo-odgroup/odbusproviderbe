@@ -123,8 +123,9 @@ class BusScheduleRepository
     public function scheduleCronJob()
     {
       $msg=[];
-        $today='2022-02-22';
-        // $today=date('Y-m-d');
+      $count = 0;
+        // $today='2022-02-22';
+        $today=date('Y-m-d');
        $checkdate =date('Y-m-d', strtotime($today. ' + 3 days'));
         $data = $this->busSchedule->with(['busScheduleDate' => function ($a) use ($today){
                                    $a->orderBy('id','DESC')
@@ -140,15 +141,14 @@ class BusScheduleRepository
                 $request['created_by'] = 'server';
                 $request['entry_date']=$checkdate;
                 
-                $this->serverSave($request);
-                 $msg = 'data inserted';
-              } else{
-                 $msg = 'no bus found';
-              }            
+                $this->serverSave($request);  
+                $count++;
+                              
+              }         
             }          
 
           }
-         return $msg;
+         return $count.' bus scheduled today';
     } 
    
    public function serverSave($request)
