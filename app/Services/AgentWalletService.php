@@ -97,6 +97,11 @@ class AgentWalletService
 
         //return $this->agentWalletRepository->getData($request);
     }
+    public function agentWalletBalance($id)
+    {
+      
+      return $this->agentWalletRepository->balance($id);
+    }
         
     public function savePostData($data)
     {

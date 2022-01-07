@@ -72,5 +72,13 @@ class AgentWalletController extends Controller
          }
         
     }  
-	     
+	   
+    public function agentWalletBalance($id) 
+    {       
+         
+        $wallet = $this->agentWalletService->agentWalletBalance($id);
+        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        
+    }  
+         
 }

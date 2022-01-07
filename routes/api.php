@@ -142,6 +142,8 @@ Route::put('/AgentFee/{id}', [AgentFeeController::class, 'updateAgentFee']);
 Route::delete('/AgentFee/{id}', [AgentFeeController::class, 'deleteAgentFee']);
 Route::get('/AgentFee/{id}', [AgentFeeController::class, 'getAgentFee']); 
 // Agent wallet
+
+Route::get('/agentWalletBalance/{id}',[AgentWalletController::class,'agentWalletBalance']);
 Route::post('/agentWallet',[AgentWalletController::class,'addAgentWallet']);
 Route::post('/agentWalletData',[AgentWalletController::class,'getData']);
 Route::post('/agentWalletAllData',[AgentWalletController::class,'getAllData']);

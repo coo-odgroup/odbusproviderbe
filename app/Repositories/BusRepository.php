@@ -261,6 +261,8 @@ class BusRepository
     
     public function getAllBusDT( $request)
     {
+        // log::info($request);
+        // exit;
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length");

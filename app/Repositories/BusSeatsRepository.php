@@ -217,6 +217,8 @@ public function updateBusSeatsExtra($data,$id)
 }
 public function update($data, $id)
 {
+    // log::info($data);
+    //     exit;
    
     $layoutArray=$data['bus_seat_layout_data'];
     $bus_id=$data['bus_id'];
@@ -245,7 +247,7 @@ public function update($data, $id)
             {
                 foreach($sLayoutData['upperBerth'] as $upperBerthData)
                 {
-                    if($upperBerthData['seatChecked']==true)
+                    if((isset($upperBerthData['seatChecked']) && $upperBerthData['seatChecked']==true)||(!isset($upperBerthData['seatChecked']) && $upperBerthData['extraSeat'] > 0))
                     {
                         
                         foreach($get_ticket_price_id as $ticketpriceID)
@@ -253,7 +255,7 @@ public function update($data, $id)
                             $busseats = new $this->busSeats;
                             $data['ticket_price_id']=$ticketpriceID->id;
                             $data['category']='0';
-                            $data['duration']='0';
+                            $data['duration']=$upperBerthData['extraSeat'];
                             $busseats=$this->getModel($busseats,$data,$upperBerthData);
                             $busseats->save(); 
                         }
@@ -270,7 +272,7 @@ public function update($data, $id)
                 foreach($sLayoutData['lowerBerth'] as $lowerBerthData)
                 {                 
                     
-                    if($lowerBerthData['seatChecked']==true)
+                    if((isset($lowerBerthData['seatChecked']) && $lowerBerthData['seatChecked']==true)||(!isset($lowerBerthData['seatChecked']) && $lowerBerthData['extraSeat'] > 0))
                     {
                         if($lowerBerthData['seatId']!="")
                         {
@@ -280,7 +282,7 @@ public function update($data, $id)
                                 $busseats = new $this->busSeats;
                                 $data['ticket_price_id']=$ticketpriceID->id;
                                 $data['category']='0';
-                                $data['duration']='0';
+                                $data['duration']=$lowerBerthData['extraSeat'];
                                 $data['status']=1;
                                 $busseats=$this->getModel($busseats,$data,$lowerBerthData);
                                 $busseats->save();
