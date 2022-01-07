@@ -43,9 +43,9 @@ class BusScheduleService
         return $this->busScheduleRepository->getAll();
     }
 
-    public function scheduleCornJob()
+    public function scheduleCronJob()
     {
-        return $this->busScheduleRepository->scheduleCornJob();
+        return $this->busScheduleRepository->scheduleCronJob();
     }
 
     public function busScheduleById($id)

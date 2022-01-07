@@ -120,7 +120,7 @@ class BusScheduleRepository
     } 
 
 
-    public function scheduleCornJob()
+    public function scheduleCronJob()
     {
       $msg=[];
         $today='2022-02-22';
