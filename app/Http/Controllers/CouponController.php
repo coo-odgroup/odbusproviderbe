@@ -67,24 +67,31 @@ class CouponController extends Controller
     }
     public function createCoupon(Request $request) {
         // Log::info($request);exit;
-        $data = $request->only([
-
-                             'coupon_title','coupon_code','type','amount', 
-                            'max_discount_price','min_tran_amount','max_redeem',
-                            'from_date','to_date','short_desc','full_desc',
-                            'created_by','bus_operator_id','valid_by','percentage'
-            
-          ]);
+        $data = $request->only(['coupon_type',
+                                'coupon_title',
+                                'coupon_code',
+                                'short_description',
+                                'source_id',
+                                'destination_id',
+                                'full_description',                      
+                                'coupon_discount_type',
+                                'percentage',
+                                'max_discount_price',
+                                'amount',
+                                'min_tran_amount',
+                                'valid_by',
+                                'from_date',
+                                'to_date',
+                                'bus_operator_id',
+                                'max_redeem','created_by']);
         
-          $couponRules = [
-           
+          $couponRules = [           
             'coupon_title' => 'required',
-            'bus_operator_id' => 'required',
+            'coupon_type' => 'required',
             'coupon_code' => 'required',
-            'type' => 'required',
+            'coupon_discount_type' => 'required',
             'valid_by' => 'required',
             'max_redeem' => 'required',
-            // 'category' => 'required',
             'from_date' => 'required',
             'to_date' => 'required',
             'created_by' => 'required',
@@ -109,25 +116,31 @@ class CouponController extends Controller
         // Log::info($request);
         // exit;
 
-        $data = $request->only([
-                            'id',
-                             'coupon_title','coupon_code','type','amount', 
-                            'max_discount_price','min_tran_amount','max_redeem',
-                           'from_date','to_date','short_desc','full_desc',
-                            'created_by','bus_operator_id','valid_by','percentage'
-        ]);
-        $couponRules = [
-            
+        $data = $request->only(['coupon_type',
+                                'coupon_title',
+                                'coupon_code',
+                                'short_description',
+                                'source_id',
+                                'destination_id',
+                                'full_description',                      
+                                'coupon_discount_type',
+                                'percentage',
+                                'max_discount_price',
+                                'amount',
+                                'min_tran_amount',
+                                'valid_by',
+                                'from_date',
+                                'to_date',
+                                'bus_operator_id',
+                                'max_redeem','created_by']);
+        
+          $couponRules = [           
             'coupon_title' => 'required',
+            'coupon_type' => 'required',
             'coupon_code' => 'required',
-            'type' => 'required',
+            'coupon_discount_type' => 'required',
             'valid_by' => 'required',
-            'bus_operator_id' => 'required',
-            // 'amount' => 'required',
-            // 'max_discount_price' => 'required',
-            // 'min_tran_amount' => 'required',
             'max_redeem' => 'required',
-            // 'category' => 'required',
             'from_date' => 'required',
             'to_date' => 'required',
             'created_by' => 'required',
