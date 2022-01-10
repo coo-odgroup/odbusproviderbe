@@ -46,7 +46,7 @@ class PageContentController extends Controller
      {
      	 $data = $request->only([
           'page_name',
-          'bus_operator_id',
+          'user_id',
           'page_url',
           'page_description',
           'meta_title',
@@ -78,7 +78,7 @@ class PageContentController extends Controller
 
      	 $data = $request->only([
           'page_name',
-          'bus_operator_id',
+          'user_id',
           'page_url',
           'page_description',
           'meta_title',

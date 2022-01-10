@@ -57,7 +57,7 @@ class SliderRepository
     }
     public function getModel($data, Slider $slide)
     {
-        $slide->bus_operator_id = $data['bus_operator_id'];
+        $slide->user_id = $data['user_id'];
         $slide->occassion = $data['occassion'];
         $slide->url = $data['url'];
         $slide->slider_img = $data['slider_img'];

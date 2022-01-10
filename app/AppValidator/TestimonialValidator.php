@@ -10,9 +10,13 @@ class TestimonialValidator
     public function validate($data) { 
         
         $rules = [
-            // 'posted_by'=>'required',
-            // 'testinmonial_content '=>'required',
-            // 'location'=>'required',
+            'posted_by'=>'required',
+            'testinmonial_content'=>'required',
+            'travel_date'=>'required',
+            'user_id'=>'required',
+            'destination'=>'required',
+            'source'=>'required',
+            'designation'=>'required'
             // 'designation '=>'required',
         ];      
       

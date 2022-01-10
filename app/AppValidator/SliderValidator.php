@@ -9,7 +9,7 @@ class SliderValidator
     public function validate($data) { 
 
         $rules = [
-            'bus_operator_id' => 'required',
+            'user_id' => 'required',
             'occassion' => 'required',
             'slider_img' => 'required',
             'alt_tag' => 'required',

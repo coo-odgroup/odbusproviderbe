@@ -25,22 +25,22 @@ class BannerRepository
         $status = $request['status'];
        
         if($searchBy!='' && $status!=''){
-            $list = $this->banner->with('busOperator')
+            $list = $this->banner->with('User')
                                  ->where('occassion', 'like', '%' .$searchBy . '%')
                                  ->where('status', $status) 
-                                 ->orWhereHas('busOperator', function ($query) use ($searchBy){$query->where('operator_name', 'like', '%' .$searchBy . '%');
+                                 ->orWhereHas('User', function ($query) use ($searchBy){$query->where('name', 'like', '%' .$searchBy . '%');
                             })->whereNotIn('status', [2])->orderBy('id','desc');
 
         }elseif($searchBy!='' && $status==''){
-            $list = $this->banner->with('busOperator')->where('occassion', $searchBy)
-                                 ->orWhereHas('busOperator', function ($query) use ($searchBy){
-                                    $query->where('operator_name', 'like', '%' .$searchBy . '%');
+            $list = $this->banner->with('User')->where('occassion', $searchBy)
+                                 ->orWhereHas('User', function ($query) use ($searchBy){
+                                    $query->where('name', 'like', '%' .$searchBy . '%');
                                    })->whereNotIn('status', [2])->orderBy('id','desc');
         }elseif($searchBy=='' && $status!=''){
-            $list = $this->banner->with('busOperator')->where('status', $status)
+            $list = $this->banner->with('User')->where('status', $status)
                                  ->whereNotIn('status', [2])->orderBy('id','desc');
         }else{
-            $list = $this->banner->with('busOperator')->whereNotIn('status', [2])->orderBy('id','desc');    
+            $list = $this->banner->with('User')->whereNotIn('status', [2])->orderBy('id','desc');    
         }
 
         $list =  $list->paginate($paginate);
@@ -71,7 +71,7 @@ class BannerRepository
         $banner->end_date = $data['end_date'];
         $banner->end_time = $data['end_time'];
         $banner->created_by =  $data['created_by'];
-        $banner->bus_operator_id = $data['bus_operator_id'];
+        $banner->user_id = $data['user_id'];
         return $banner;
     }
 

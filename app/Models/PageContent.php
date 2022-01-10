@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BusOperator;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -17,6 +18,11 @@ class PageContent extends Model
     public function BusOperator()
 	{        
 		return $this->belongsTo(BusOperator::class);        
+	} 
+
+    public function User()
+	{        
+		return $this->belongsTo(User::class);        
 	} 
 
 }

@@ -26,16 +26,16 @@ class PageContentRepository
    public function getAll()
    {
 
-      return $this->pagecontent->with('BusOperator')->where('status', 1)->get();
+      return $this->pagecontent->with('User')->where('status', 1)->get();
    }
 
    public function getAllData($request)
    {
       $paginate = $request['rows_number'] ;
-      $operator_id = $request['bus_operator_id'] ;
+      $user_id = $request['user_id'] ;
 
 
-      $data = $this->pagecontent->with('BusOperator')->where('status','!=',2)->orderBy('id','DESC');
+      $data = $this->pagecontent->with('User')->where('status','!=',2)->orderBy('id','DESC');
       if($paginate=='all') 
       {
           $paginate = Config::get('constants.ALL_RECORDS');
@@ -45,9 +45,9 @@ class PageContentRepository
           $paginate = 10 ;
       }
  
-      if($operator_id!= null)
+      if($user_id!= null)
       {
-        $data = $data->Where('bus_operator_id', $operator_id);
+        $data = $data->Where('user_id', $user_id);
       }
        $data=$data->paginate($paginate);
        
@@ -64,7 +64,7 @@ class PageContentRepository
    {
       $pagecontent->page_name =$data['page_name'];
       // $pagecontent->bus_operator_id =$data['bus_operator_id'];
-      $pagecontent->bus_operator_id = $data['bus_operator_id'];
+      $pagecontent->user_id = $data['user_id'];
       $pagecontent->page_url =$data['page_url'];
       $pagecontent->page_description =$data['page_description'];
       $pagecontent->meta_title =$data['meta_title'];

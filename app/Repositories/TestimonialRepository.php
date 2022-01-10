@@ -25,10 +25,10 @@ class TestimonialRepository
     {
       $paginate = $request['rows_number'] ;
       $name = $request['name'] ;
-      $operator_id = $request['bus_operator_id'] ;
+      $user_id = $request['user_id'] ;
 
 
-      $data = $this->testimonial->with('BusOperator')->where('status','!=',2)->orderBy('id','DESC');
+      $data = $this->testimonial->with('User')->where('status','!=',2)->orderBy('id','DESC');
       if($paginate=='all') 
       {
           $paginate = Config::get('constants.ALL_RECORDS');
@@ -47,9 +47,9 @@ class TestimonialRepository
                      ->orWhere('travel_date','like', '%' . $name . '%')
                      ->orWhere('designation','like', '%' . $name . '%');
       } 
-      if($operator_id!= null)
+      if($user_id!= null)
       {
-        $data = $data->Where('bus_operator_id', $operator_id);
+        $data = $data->Where('user_id', $user_id);
       }
        $data=$data->paginate($paginate);
        
@@ -68,12 +68,11 @@ class TestimonialRepository
        $testimonial->posted_by =$data['posted_by'];
        $testimonial->testinmonial_content =$data['testinmonial_content'];
        $testimonial->travel_date =$data['travel_date'];
-       $testimonial->bus_operator_id =$data['operator'];
+       $testimonial->user_id =$data['user_id'];
        $testimonial->destination =$data['destination'];
        $testimonial->source =$data['source'];
        $testimonial->designation = $data['designation'];
        $testimonial->created_by = $data['created_by'];
-       $testimonial->status = 0;
         return $testimonial;
     }
 

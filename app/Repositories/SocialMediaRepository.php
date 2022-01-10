@@ -26,10 +26,10 @@ class SocialMediaRepository
       // Log::info($request);
       $paginate = $request['rows_number'] ;
 
-      $operator_id = $request['bus_operator_id'] ;
+      $user_id = $request['user_id'] ;
 
 
-      $data = $this->socialMedia->with('BusOperator')->where('status','!=',2)->orderBy('id','DESC');
+      $data = $this->socialMedia->with('User')->where('status','!=',2)->orderBy('id','DESC');
       if($paginate=='all') 
       {
           $paginate = Config::get('constants.ALL_RECORDS');
@@ -39,9 +39,9 @@ class SocialMediaRepository
           $paginate = 10 ;
       }
       
-      if($operator_id!= null)
+      if($user_id!= null)
       {
-        $data = $data->Where('bus_operator_id', $operator_id);
+        $data = $data->Where('user_id', $user_id);
       }
        $data=$data->paginate($paginate);
        
@@ -60,11 +60,10 @@ class SocialMediaRepository
        $socialMedia->facebook_link =$data['facebook_link'];
        $socialMedia->twitter_link =$data['twitter_link'];
        $socialMedia->instagram_link =$data['instagram_link'];
-       $socialMedia->bus_operator_id =$data['bus_operator_id'];
+       $socialMedia->user_id =$data['user_id'];
        $socialMedia->googleplus_link =$data['googleplus_link'];
        $socialMedia->linkedin_link =$data['linkedin_link'];
        $socialMedia->created_by =$data['created_by'];
-       $socialMedia->status = 0;
         return $socialMedia;
     }
 

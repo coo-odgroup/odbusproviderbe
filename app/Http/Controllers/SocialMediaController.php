@@ -39,7 +39,7 @@ class SocialMediaController extends Controller
   public function addsocialmedia(Request $request)
   {
    $data = $request->only([
-    'bus_operator_id',
+    'user_id',
     'facebook_link',
     'twitter_link',
     'instagram_link',
@@ -69,7 +69,7 @@ class SocialMediaController extends Controller
   {
 
    $data = $request->only([
-     'bus_operator_id',
+     'user_id',
      'facebook_link',
      'twitter_link',
      'instagram_link',

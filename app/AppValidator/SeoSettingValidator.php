@@ -11,7 +11,7 @@ class SeoSettingValidator
         
         $rules = [
             'page_url' => 'required',
-            'bus_operator_id' => 'required',
+            'user_id' => 'required',
         ];      
       
         $seosettingValidator = Validator::make($data, $rules);

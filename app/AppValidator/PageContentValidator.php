@@ -13,7 +13,7 @@ class PageContentValidator
             'page_name' => 'required',
             'page_url' => 'required',
             'page_description' => 'required',
-            'bus_operator_id' => 'required'
+            'user_id' => 'required'
         ];      
       
         $pagecontentValidator = Validator::make($data, $rules);

@@ -50,7 +50,7 @@ class SeoSettingController extends Controller
           'seo_type',
           'source_id',
           'destination_id',
-          'bus_operator_id',
+          'user_id',
           'url_description',
           'meta_title',
           'meta_keyword',
@@ -82,7 +82,7 @@ class SeoSettingController extends Controller
 
      	 $data = $request->only([
           'page_url', 
-          'bus_operator_id',
+          'user_id',
           'seo_type',
           'source_id',
           'destination_id',
