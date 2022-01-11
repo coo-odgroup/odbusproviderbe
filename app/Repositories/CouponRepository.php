@@ -79,7 +79,7 @@ class CouponRepository
         $coupons->coupon_type = $data['coupon_type'];
         $coupons->coupon_title = $data['coupon_title'];
         $coupons->coupon_code = strtoupper($data['coupon_code']);      
-        $coupons->coupon_discount_type = $data['coupon_discount_type'];
+        $coupons->type = $data['coupon_discount_type'];
         $coupons->valid_by = $data['valid_by'];
         if($data['coupon_type'] == 1)
         {
@@ -142,7 +142,7 @@ class CouponRepository
         $coupons->bus_operator_id = $data['bus_operator_id'];
         $coupons->source_id = $data['source_id'];
         $coupons->destination_id = $data['destination_id'];
-        $coupons->coupon_discount_type = $data['coupon_discount_type'];
+        $coupons->type = $data['coupon_discount_type'];
         $coupons->valid_by = $data['valid_by'];
         if($data['coupon_type'] == 1)
         {
