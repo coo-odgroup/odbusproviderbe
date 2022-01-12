@@ -303,8 +303,7 @@ class BusStoppageController extends Controller
               if(count($chk_tkt_prc)>0) {
                  ///////update  ticket price table
 
-                 try {   
-                    $routeinfoData['status']=1;             
+                 try {             
                     $this->busStoppageService->updatePost($routeinfoData,$chk_tkt_prc[0]->id);
                  } 
                  catch (Exception $e) {                     
