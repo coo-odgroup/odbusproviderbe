@@ -54,10 +54,8 @@ class BusStoppageService
     public function getBusStoppagebyBusId($busid)
     {
         $data['result']= $this->busStoppageRepository->getBusStoppagebyBusId($busid);
-
-
         $data['locations']=$this->busLocationSequence->where('status','1')->select('location_id')->where('bus_id', $busid)->get();
-
+     
         //$data['locations']=$this->busStoppageTiming->select('location_id')->distinct()->where('bus_id',$busid)->get();
          if($data['locations']){
             foreach($data['locations'] as $v)
@@ -102,6 +100,13 @@ class BusStoppageService
     public function getbusRoutebyBusId($id)
     {
          $result = $this->busStoppageRepository->getbusRoutebyBusId($id);
+        return $result;
+    }
+
+
+    public function updateStatus($id)
+    {
+         $result = $this->busStoppageRepository->updateStatus($id);
         return $result;
     }
 }

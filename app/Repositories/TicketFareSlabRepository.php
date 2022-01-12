@@ -21,7 +21,7 @@ class TicketFareSlabRepository
     {      
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
-         log::info($request);
+         //log::info($request);
        
 
         $data= $this->busOperator->with('ticketFareSlab')

@@ -106,4 +106,12 @@ class BusStoppageTimingRepository
         $busstoppageTiming->delete();
         return $busstoppageTiming;
     }
+
+    public function updateStatus($id)
+    {
+        $busStoppageTiming = $this->busStoppageTiming->where('id',$id)->update(array("status"=>"2"));
+        //$busstoppage->delete();
+        return $busStoppageTiming;
+    }
+
 }

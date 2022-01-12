@@ -104,4 +104,12 @@ class BusLocationSequenceService
          $result = $this->busLocationSequenceRepository->deletebyBusId($id);
         return $result;
     }
+
+    public function updateStatus($id)
+    {
+         $result = $this->busLocationSequenceRepository->updateStatus($id);
+        return $result;
+    }
+
+    
 }

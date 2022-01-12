@@ -68,6 +68,13 @@ class BusStoppageTimingService
 
     }
 
+
+    public function updateStatus($id)
+    {
+         $result = $this->busStoppageTimingRepository->updateStatus($id);
+        return $result;
+    }
+
    
     public function savePostData($data)
     {

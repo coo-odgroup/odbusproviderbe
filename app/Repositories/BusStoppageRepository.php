@@ -114,4 +114,13 @@ class BusStoppageRepository
         return $busstoppage;
     }
 
+    public function updateStatus($id)
+    {
+        $busstoppage = $this->busStoppage->where('id',$id)->update(array("status"=>"2"));
+        //$busstoppage->delete();
+        return $busstoppage;
+    }
+
+    
+
 }
