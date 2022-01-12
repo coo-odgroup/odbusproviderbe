@@ -103,6 +103,7 @@ use App\Http\Controllers\AgentBookingController;
 use App\Http\Controllers\TestEmailController;
 
 use App\Http\Controllers\TicketFareSlabController;
+use App\Http\Controllers\TicketInformationController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -112,6 +113,12 @@ Route::post('/emailtest', [TestEmailController::class,'emailtest']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
 
+
+//Extra Seat Block
+
+Route::post('/getpnrdetails',[TicketInformationController::class,'getpnrdetails']);
+Route::post('/cancelticket',[TicketInformationController::class,'cancelticket']);
+Route::post('/cancelticketdata',[TicketInformationController::class,'cancelticketdata']);
 
 //Extra Seat Block
 
