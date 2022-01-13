@@ -73,6 +73,7 @@ class BusStoppageRepository
         $busStoppage->created_by = "Admin";
         $busStoppage->bus_operator_id = $data['bus_operator_id'];
         $busStoppage->seize_booking_minute = $data['seize_booking_minute'];
+        $busStoppage->actual_time = $data['actual_time'];
         $busStoppage->status = $data['status'];
         
         return $busStoppage;

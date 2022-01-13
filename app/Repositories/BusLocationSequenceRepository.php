@@ -20,6 +20,7 @@ class BusLocationSequenceRepository
         $busLocationSequence->bus_id = $data['bus_id'];
         $busLocationSequence->location_id = $data['location_id'];
         $busLocationSequence->sequence = $data['sequence'];
+        $busLocationSequence->location_time = $data['location_time'];
         return $busLocationSequence;
     }
     /**

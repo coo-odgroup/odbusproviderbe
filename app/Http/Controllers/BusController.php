@@ -405,6 +405,7 @@ class BusController extends Controller
                             $bus_location_sequence['bus_id']=$timing_grp['bus_id']=$bus_last_insert_id;
                             $bus_location_sequence['location_id']=$timing_grp['location_id']=$routeValue['source_id'];
                             $bus_location_sequence['sequence']=$routeValue['sequence'];
+                            $bus_location_sequence['location_time']=$routeValue['location_time'];
 
                             $this->busLocationSequenceService->savePostData($bus_location_sequence);
 
@@ -472,6 +473,7 @@ class BusController extends Controller
                             $routeinfoData['base_seat_fare']=$routeinfoVal['seater_fare'];
                             $routeinfoData['base_sleeper_fare']=$routeinfoVal['sleeper_fare'];
                             $routeinfoData['seize_booking_minute']=$routeinfoVal['booking_seized'];
+                            $routeinfoData['actual_time']=$routeinfoVal['actual_time'];
                             if($routeinfoVal['route_status']=="true")
                             {
                                 $routeinfoData['status']="1";
