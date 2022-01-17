@@ -45,12 +45,13 @@ class CancellationSlabRepository
         $user_id = $request['user_id'];
        
 
-        $data= $this->cancellationSlab->with('SlabInfo')->with('busOperator')->whereNotIn('status', [2])
+        $data= $this->cancellationSlab->with('SlabInfo')->with('User')->whereNotIn('status', [2])
                              ->orderBy('id','DESC');
-        if($request['USER_BUS_OPERATOR_ID']!="")
-        {
-            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
-        }                        
+
+        // if($request['USER_BUS_OPERATOR_ID']!="")
+        // {
+        //     $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
+        // }                        
 
         if($paginate=='all') 
         {
@@ -144,7 +145,7 @@ class CancellationSlabRepository
 
     public function getModel($data, CancellationSlab $cSlab)
     {
-        $cSlab->bus_operator_id = $data['bus_operator_id'];
+        // $cSlab->bus_operator_id = $data['bus_operator_id'];
         $cSlab->rule_name = $data['rule_name'];
         $cSlab->cancellation_policy_desc = $data['cancellation_policy_desc'];
         $cSlab->created_by = $data['created_by'];
@@ -160,6 +161,18 @@ class CancellationSlabRepository
      */
     public function save($data)
     {
+
+        // check if cancellation slab already exist for a user
+
+        $chk_exist=$this->cancellationSlab->where('user_id',$data['user_id'])->get();
+
+
+        if(count($chk_exist) > 0){
+            return 'SLAB_EXIST';
+        }
+
+
+
         $cSlab = new $this->cancellationSlab;
         $cSlab=$this->getModel($data,$cSlab);
         $cSlab->save();
@@ -190,6 +203,15 @@ class CancellationSlabRepository
      */
     public function update($data, $id)
     { 
+
+          // check if cancellation slab already exist for a user
+
+          $chk_exist=$this->cancellationSlab->where('user_id',$data['user_id'])->where('id','!=',$id)->get();
+
+          if(count($chk_exist) > 0){
+              return 'SLAB_EXIST';
+          }
+
         $cSlab = $this->cancellationSlab->findOrFail($id);
         $cSlab=$this->getModel($data,$cSlab);
         $cSlab->update();

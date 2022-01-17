@@ -9,7 +9,7 @@ class CancellationSlabValidator
     public function validate($data) { 
         $rules = [
             'rule_name' => 'required',
-            'bus_operator_id' => 'required'
+            'user_id' => 'required'
             // 'deduction' => 'required',
             //'status' => 'required',
         ];      

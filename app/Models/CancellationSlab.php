@@ -4,6 +4,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CancellationSlabInfo;
 use App\Models\Bus;
+use App\Models\User;
+
 class CancellationSlab extends Model
 {
     use HasFactory;
@@ -25,5 +27,10 @@ class CancellationSlab extends Model
         return $this->belongsTo(BusOperator::class);
         
     }
+
+    public function User()
+	{        
+		return $this->belongsTo(User::class);        
+	} 
 
 }

@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CancellationSlabInfo;
 use App\Models\Bus;
+
 class Cancellationslabs extends Model
 {
     use HasFactory;
@@ -20,5 +21,7 @@ class Cancellationslabs extends Model
     {
     	return $this->hasMany(Bus::class);
     }
+
+    
 
 }

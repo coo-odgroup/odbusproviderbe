@@ -66,8 +66,7 @@ class CancellationSlabController extends Controller
     }
     
     public function createCancellationSlab(Request $request) {
-      $data = $request->only([
-          'bus_operator_id', 'rule_name','slabs','cancellation_policy_desc','created_by','user_id'
+      $data = $request->only(['rule_name','slabs','cancellation_policy_desc','created_by','user_id'
       ]);
       
       $cSlabValidate = $this->CancellationSlabValidator->validate($data);
@@ -79,7 +78,12 @@ class CancellationSlabController extends Controller
       try {
        
         $response = $this->cancellationSlabService->savePostData($data);
+        if($response  =='SLAB_EXIST'){
+          return $this->errorResponse("Cancellation Slab is already exist for this user", Response::HTTP_PARTIAL_CONTENT);
+        }else{
           return $this->successResponse($response, "Cancellation Slab Added", Response::HTTP_CREATED);
+        }
+         
       }
       catch(Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -96,7 +100,12 @@ class CancellationSlabController extends Controller
     }
     try {
       $response = $this->cancellationSlabService->updatePost($data, $id);
-      return $this->successResponse($response, "Cancellation Slab Updated",Response::HTTP_CREATED);
+
+      if($response  =='SLAB_EXIST'){
+        return $this->errorResponse("Cancellation Slab is already exist for this user", Response::HTTP_PARTIAL_CONTENT);
+      }else{
+        return $this->successResponse($response, "Cancellation Slab Updated", Response::HTTP_CREATED);
+      }
     }
     catch(Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

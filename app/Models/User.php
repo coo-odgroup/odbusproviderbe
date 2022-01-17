@@ -10,6 +10,7 @@ use Laravel\Passport\HasApiTokens;
 use App\Models\Role;
 use App\Models\UserBusOperator;
 use App\Models\OdbusCharges;
+use App\Models\Cancellationslabs;
 use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
@@ -39,6 +40,12 @@ class User extends Model
     {        
         return $this->hasOne(UserBusOperator::class);        
     } 
+
+    public function Cancellationslabs()
+    {        
+        return $this->hasOne(Cancellationslabs::class);        
+    } 
+
 }
 
 
