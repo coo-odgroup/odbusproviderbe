@@ -63,21 +63,43 @@ class BoardingDropingRepository
         $this->location->boardingDropping()->saveMany($stoppages);
         return $data;
     }
+
+    public function getUpdateModel(BoardingDroping $boardingDroping,$data)
+    {
+        $boardingDroping->location_id = $data['location_id'];
+        $boardingDroping->boarding_point = $data['boarding_point'];
+        $boardingDroping->landmark = $data['landmark'];       
+        $boardingDroping->created_by = $data['created_by'];       
+        return $boardingDroping;
+    }
     public function update($data, $id)
     {
 
-        $this->boardingDroping->where('location_id',$id)->update(['status'=>2]);
         $this->location=$this->location->find($data['location_id']);
         $stoppages=[];
         foreach($data['boarding_point'] as $stoppage)
-        {
-            $boardingdroping = new $this->boardingDroping;
-            $boardingdroping->location_id = $data['location_id'];
-            $boardingdroping->boarding_point = $stoppage['boarding_point'];
-            $boardingdroping->landmark = $stoppage['landmark'];
-            $boardingdroping->created_by = $data['created_by'];
-            $stoppages[]=$boardingdroping;
+        { 
+       
+        if(isset($stoppage['id']) && $stoppage['id'] != null && $stoppage['id'] !=''){  /////////// update existing and add new ones ///
+           
+            $updateBoarding = $this->boardingDroping->find($stoppage['id']);
+
+            $UpdRecord=$stoppage;
+            $UpdRecord['location_id']=$data['location_id'];
+            $UpdRecord['created_by']=$data['created_by'];
+            $boardingDroping=$this->getUpdateModel($updateBoarding,$UpdRecord);
+            $boardingDroping->update();
+
+        }else{    
+            $boardingdrop = new $this->boardingDroping;          
+             $boardingdrop->location_id = $data['location_id'];
+             $boardingdrop->boarding_point = $stoppage['boarding_point'];
+             $boardingdrop->landmark = $stoppage['landmark'];
+             $boardingdrop->created_by = $data['created_by'];
+             $stoppages[]=$boardingdrop;
+
         }
+     }
         $this->location->boardingDropping()->saveMany($stoppages);
         return $data;
     }
