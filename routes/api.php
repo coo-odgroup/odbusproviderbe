@@ -114,11 +114,14 @@ Route::post('/emailtest', [TestEmailController::class,'emailtest']);
 });
 
 
-//Extra Seat Block
+//Ticket Information 
 
 Route::post('/getpnrdetails',[TicketInformationController::class,'getpnrdetails']);
 Route::post('/cancelticket',[TicketInformationController::class,'cancelticket']);
 Route::post('/cancelticketdata',[TicketInformationController::class,'cancelticketdata']);
+
+Route::post('/adjustticket',[TicketInformationController::class,'adjustticket']);
+Route::post('/adjustticketdata',[TicketInformationController::class,'adjustticketdata']);
 
 //Extra Seat Block
 

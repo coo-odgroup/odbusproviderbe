@@ -41,6 +41,15 @@ class TicketInformationService
     {
         return $this->ticketInformationRepository->cancelticketdata($request);
     }
+    public function adjustticketdata ($request)
+    {
+        return $this->ticketInformationRepository->adjustticketdata ($request);
+    }
+
+    public function adjustticket($request)
+    {
+        return $this->ticketInformationRepository->adjustticket($request);
+    }
 
    
    
