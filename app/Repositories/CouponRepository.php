@@ -163,7 +163,7 @@ class CouponRepository
             $coupons->destination_id = $data['destination_id'];
         }
 
-        if($coupons->coupon_discount_type==1)
+        if($data['coupon_discount_type']==1)
         {
             $coupons->percentage = $data['percentage'];
             $coupons->max_discount_price = $data['max_discount_price'];
@@ -178,6 +178,7 @@ class CouponRepository
             $coupons->percentage = 0;
             $coupons->max_discount_price = 0;
         }
+
         $coupons->max_redeem = $data['max_redeem'];
         $coupons->from_date = $data['from_date'];
         $coupons->to_date = $data['to_date'];
