@@ -2,6 +2,7 @@
 namespace App\Repositories;
 use App\Models\Bus;
 use App\Models\Booking;
+use App\Models\CustomerPayment;
 use App\Models\Location;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -9,34 +10,42 @@ use Illuminate\Support\Facades\Log;
 use App\Jobs\SendCancelTicketEmailJob;
 use App\Jobs\SendCancelAdjTicketEmailJob;
 
+use Illuminate\Http\Request;
+use GuzzleHttp\Psr7\Request as GuzzleRequest;
+
 class TicketInformationRepository
 {
  
     protected $location;
     protected $booking;
+    protected $customerPayment;
     protected $bus;
 
-    public function __construct(Location $location, Bus $bus,Booking $booking)
+    public function __construct(Location $location, Bus $bus,Booking $booking , CustomerPayment $customerPayment)
     {
         $this->location = $location;
         $this->bus = $bus;
         $this->booking = $booking;
+        $this->customerPayment = $customerPayment;
     }
     public function getpnrdetails($request)
     {
         $date = date('Y-m-d',strtotime("-1 days"));
-        // log::info($date);
-        // exit;
+        
         $pnr_Details = $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
+                             ->with('bus.BusType')
+                             ->with('bus.BusSitting')
+                             ->with('bus.busContacts')
+                             ->with('bus.BusType.BusClass')
                              ->where('pnr',$request[0])
                              ->where('status',1)
                              ->where('journey_dt','>',$date)
                              ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
                              ->orderBy('id','DESC')->get();
-        // log::info($pnr_Details);
+        
           if($pnr_Details){
             foreach($pnr_Details as $key=>$v){
 
@@ -203,24 +212,199 @@ class TicketInformationRepository
     }
     public function adjustticket($request)
     {
-        Log::info($request);
-        $id=$request->id ;
-        $cancelticket = $this->booking->find($id);       
-        // // Log::info($cancelticket);
-        // exit;
+        /////// first check the seat is booked or on hold before cancelling pnr and insert new record to booking table
 
-        $cancelticket->cancel_reason = $request['reason'];             
-        $cancelticket->cancel_by = $request['created_by'];
-        $cancelticket->status = 2 ;
-         // Log::info($cancelticket);exit;
-        $cancelticket->update();
-        
-           $to_user = 'bishal.seofied@gmail.com';         
-           $subject = "Ticket Cancel( Pnr.no-".$request->pnr." )";
-           $data= ['pnr'=>$request['pnr'],
-                    'has been cancelled.'
-                  ] ;
-           SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
+        $client = new \GuzzleHttp\Client();       
+
+        $api_url = Config::get('constants.CONSUMER_API_URL');
+        $url = $api_url.'CheckSeatStatus';   
+             
+        $API_RESP = $client->request('POST', $url,  [
+            'verify' => false,
+            'form_params' => [
+                'entry_date' => $request['bookingInfo']['journey_dt'],
+                'busId' => $request['bookingInfo']['bus_id'],
+                'sourceId' => $request['bookingInfo']['source_id'],
+                'destinationId' => $request['bookingInfo']['destination_id'],
+                'seatIds' => $request['bookingInfo']['seat_ids'],
+            ]
+        ]);
+
+        $response = json_decode($API_RESP->getBody());
+
+        if($response->data =='SEAT AVAIL'){ // allow to pnr cancel and new booking record insert to booking table
+
+             /////////////// insert to booking table with status 4 (Seat Hold) ///
+
+             $bookingDetailarr=[];
+            if(count($request['bookingInfo']['bookingDetail']) >0){
+
+                foreach($request['bookingInfo']['bookingDetail'] as $bd){
+
+                    $bookingDetailarr[]=array("bus_seats_id"=> $bd['bus_seats_id'],
+                    "passenger_name"=> $bd['passenger_name'],
+                    "passenger_gender"=> $bd['passenger_gender'],
+                    "passenger_age"=> $bd['passenger_age'],
+                    "created_by"=> $bd['created_by']);
+
+                }
+
+            }
+
+             $BookTicketBody = [ "customerInfo" => [
+                "email" => $request['customerInfo']['email'],
+                "phone"=> $request['customerInfo']['phone'],
+                "name"=> $request['customerInfo']['name']
+             ],
+              "bookingInfo" => [
+                "bus_id"=> $request['bookingInfo']['bus_id'],
+                "source_id"=> $request['bookingInfo']['source_id'],
+                "destination_id"=>  $request['bookingInfo']['destination_id'],
+                "journey_dt"=>  $request['bookingInfo']['journey_dt'],
+                "boarding_point"=>   $request['bookingInfo']['boarding_point'],
+                "dropping_point"=>   $request['bookingInfo']['dropping_point'],
+                "boarding_time"=>  $request['bookingInfo']['boarding_time'],
+                "dropping_time"=>  $request['bookingInfo']['dropping_time'],
+                "origin"=>  $request['bookingInfo']['origin'],
+                "app_type"=>  $request['bookingInfo']['app_type'],
+                "typ_id"=>  $request['bookingInfo']['typ_id'],
+                "total_fare"=>  $request['bookingInfo']['total_fare'],
+                "specialFare"=>  $request['bookingInfo']['specialFare'],
+                "addOwnerFare"=>  $request['bookingInfo']['addOwnerFare'],
+                "festiveFare"=>  $request['bookingInfo']['festiveFare'],
+                "owner_fare"=>  $request['bookingInfo']['owner_fare'],
+                "odbus_service_Charges"=>  $request['bookingInfo']['odbus_service_Charges'],
+                "adj_note"=>  $request['bookingInfo']['adj_note'],
+                "status"=>  '4',
+                "created_by"=>  $request['bookingInfo']['created_by'],
+                "bookingDetail" => $bookingDetailarr
+              ],              
+            ];
+
+             $url = $api_url.'BookTicket';
+             $res = $client->request('POST', $url,  [
+                'verify' => false,
+                'form_params' => $BookTicketBody
+            ]);
+
+           $get_booking_data = json_decode($res->getBody());
+
+          // return $get_booking_data->data->id;
+
+         
+
+           if(isset($get_booking_data->data->id)){
+             /////////////// cancel pnr /////////////////////////
+                $id=$request['bookingInfo']['id'] ;
+                $cancelticket = $this->booking->find($id);
+                $cancelticket->cancel_reason = $request['bookingInfo']['reason'];             
+                $cancelticket->cancel_by = $request['bookingInfo']['created_by'];
+                $cancelticket->cancel_type = "BOOKING ADJUSTMENT";
+                $cancelticket->status = 2 ;
+                // Log::info($cancelticket);exit;
+                $cancelticket->update();
+
+                /////// update customer payment table with adjust keywork concat for 3 payment columns
+                $customer_payment_id=$request['bookingInfo']['customer_payment_id'] ;
+                $customerPayment=$this->customerPayment->find($customer_payment_id);
+                $customerPayment->order_id  = 'ADJUST_'.time().'_'.$request['bookingInfo']['razorpay_order_id'];             
+                $customerPayment->razorpay_id  = 'ADJUST_'.time().'_'.$request['bookingInfo']['razorpay_payment_id'];
+                $customerPayment->razorpay_signature = 'ADJUST-'.time().'_'.$request['bookingInfo']['razorpay_signature'];
+
+                $customerPayment->update();
+
+                ////////// insert latest booking id to customer payment table /////
+
+                $user_pay = new $this->customerPayment();
+                $user_pay->name = $request['customerInfo']['name'];
+                $user_pay->booking_id = $get_booking_data->data->id;
+                $user_pay->amount = $request['bookingInfo']['total_fare'];
+                $user_pay->order_id = $request['bookingInfo']['razorpay_order_id'];
+                $user_pay->razorpay_id  = $request['bookingInfo']['razorpay_payment_id'];
+                $user_pay->razorpay_signature = $request['bookingInfo']['razorpay_signature'];
+                $user_pay->payment_done = 1;                 
+                 $user_pay->save();
+
+                ////////////////////////////// send email /////////////////////////
+
+
+               $pnr= $request['bookingInfo']['pnr'];
+
+                 
+               if($request['customerInfo']['email']!= ''){
+
+                        $to_user = $request['customerInfo']['email'];         
+                        $subject = "Ticket Cancel ( PNR - ".$pnr." )";
+                        $data= ['pnr'=> $pnr ,
+                        'has been cancelled.'
+                        ] ;
+                        SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
+               }
+
+                 ///////////////////// final ticket booking and email/sms sending //////////////////////
+           $booking_date = date("d-m-Y");
+           $journey_date = date("d-m-Y",strtotime($request['bookingInfo']['journey_dt']));
+
+            $final_arr=  [
+               "transaction_id"=> $get_booking_data->data->transaction_id,
+               "razorpay_payment_id" => $request['bookingInfo']['razorpay_payment_id'],
+                "razorpay_order_id" => $request['bookingInfo']['razorpay_order_id'],
+                "razorpay_signature" => $request['bookingInfo']['razorpay_signature'] , 
+               "name"=> $request['customerInfo']['name'],
+               "phone"=>  $request['customerInfo']['phone'],
+               "email"=>  $request['customerInfo']['email'],
+               "routedetails"=>   $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
+               "bookingdate"=> $booking_date  ,
+               "journeydate"=> $journey_date ,
+               "boarding_point"=>  $request['bookingInfo']['boarding_point'],
+               "departureTime"=>  $request['bookingInfo']['boarding_time'],
+               "dropping_point"=>  $request['bookingInfo']['dropping_point'],
+               "arrivalTime"=>  $request['bookingInfo']['dropping_time'],
+               "seat_id"=>  $request['bookingInfo']['seat_ids'],
+               "seat_no"=>  $request['bookingInfo']['seat_names'],
+               "bus_id" => $request['bookingInfo']['bus_id'],
+               "source"=>  $request['bookingInfo']['source_name'],
+               "destination"=>  $request['bookingInfo']['destination_name'],
+               "busname"=>  $request['bookingInfo']['busname'],
+               "busNumber"=>  $request['bookingInfo']['busNumber'],
+               "bustype"=>  $request['bookingInfo']['bustype'],
+               "busTypeName"=>  $request['bookingInfo']['busTypeName'],
+               "sittingType"=>  $request['bookingInfo']['sittingType'],
+               "conductor_number"=>  $request['bookingInfo']['conductor_number'],
+               "totalfare"=>  $request['bookingInfo']['total_fare'],
+               "discount"=>  0,
+               "payable_amount"=>  $request['bookingInfo']['total_fare'],
+               "odbus_charges"=>  $request['bookingInfo']['odbus_service_Charges'],
+               "odbus_gst"=>  $request['bookingInfo']['odbus_gst'],
+               "owner_fare"=>  $request['bookingInfo']['owner_fare'],
+               "passengerDetails" => $bookingDetailarr
+           ]; 
+
+
+           $url = $api_url.'PaymentStatus';
+           $resp = $client->request('POST', $url,  [
+              'verify' => false,
+              'form_params' => $final_arr
+          ]);
+
+           Log::info($resp->getBody());
+
+         // return $resp->getBody();
+
+          //$get_final_response = json_decode($resp->getBody());
+
+            return 'Booking is successful';
+
+              
+           }else{
+            return 'ERROR OCCURRED';
+           }
+
+        }else{
+            return 'SEAT NOT AVAIL';
+        }
+
+       
 
         // $PNR = substr(str_shuffle("0123456789"), 0, 8);
         // $booking->pnr = $PNR;

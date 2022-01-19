@@ -21,6 +21,7 @@ return [
     'INACTIVE_USER' => 'User Not Active. ',
     'LOGIN_SUCCESSFUL' => 'Login successful',
     'VERIFIED' => 'otp verification is successful',
-    'REGT_SUCCESS' => 'Registration Successful'    
+    'REGT_SUCCESS' => 'Registration Successful',    
+    'CONSUMER_API_URL' => 'https://consumer.odbus.co.in/api/',    
 ];
 
