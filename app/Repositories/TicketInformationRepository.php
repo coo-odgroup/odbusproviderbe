@@ -154,15 +154,17 @@ class TicketInformationRepository
 
     public function adjustticketdata($request)
     {
-       
+       // log::info($request);
+       // exit;
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice','Bus','Users',
                                     'CustomerPayment')
-                             ->where('status',2)
-                             ->where('cancel_by','!=',NULL)
+                             ->where('status',1)
+                             ->where('booking_type','Adjust')
+                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
                              ->orderBy('id','DESC');      
 
         if($paginate=='all') 
@@ -176,7 +178,7 @@ class TicketInformationRepository
 
         if($name!=null)
         {
-           $data = $data->where('cancel_by', 'like', '%' .$name .'%')
+           $data = $data->where('created_by', 'like', '%' .$name .'%')
                         ->orwhere('pnr','like', '%' .$name . '%' );
         }     
 
@@ -212,6 +214,8 @@ class TicketInformationRepository
     }
     public function adjustticket($request)
     {
+      // Log::info($request);
+      // exit;
         /////// first check the seat is booked or on hold before cancelling pnr and insert new record to booking table
 
         $client = new \GuzzleHttp\Client();       
@@ -276,6 +280,7 @@ class TicketInformationRepository
                 "odbus_service_Charges"=>  $request['bookingInfo']['odbus_service_Charges'],
                 "adj_note"=>  $request['bookingInfo']['adj_note'],
                 "status"=>  '4',
+                "booking_type" =>'Adjust',
                 "created_by"=>  $request['bookingInfo']['created_by'],
                 "bookingDetail" => $bookingDetailarr
               ],              
@@ -333,7 +338,8 @@ class TicketInformationRepository
                  
                if($request['customerInfo']['email']!= ''){
 
-                        $to_user = $request['customerInfo']['email'];         
+                        // $to_user = $request['customerInfo']['email'];         
+                        $to_user = "bishal.seofied@gmail.com";         
                         $subject = "Ticket Cancel ( PNR - ".$pnr." )";
                         $data= ['pnr'=> $pnr ,
                         'has been cancelled.'
