@@ -106,12 +106,14 @@ class AgentWalletRepository
 
     public function balance($id)
     {
-        $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->offset(1)->limit(1)->get(); 
+        $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get(); 
 
-        if(sizeof($agentWallet) == 0)
-        {
-             $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get(); 
-        } 
+        //->offset(1)
+
+        // if(sizeof($agentWallet) == 0)
+        // {
+        //      $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get(); 
+        // } 
          // log::info($agentWallet[0]->balance);
         return $agentWallet;  
     }
