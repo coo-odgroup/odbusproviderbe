@@ -61,10 +61,12 @@ class OdbusChargesRepository
     
     public function getModel($data, OdbusCharges $odbusCharges)
     {
+
         $odbusCharges->user_id = $data['user_id'];
         $odbusCharges->payment_gateway_charges = $data['payment_gateway_charges'];
         $odbusCharges->email_sms_charges = $data['email_sms_charges'];
         $odbusCharges->odbus_gst_charges = $data['odbus_gst_charges'];
+        $odbusCharges->bus_list_sequence = $data['busListingseq'];
         $odbusCharges->advance_days_show = $data['advance_days_show'];
         $odbusCharges->support_email = $data['support_email'];
         $odbusCharges->booking_email = $data['booking_email'];
@@ -99,7 +101,7 @@ class OdbusChargesRepository
 
         $odbusCharges->created_by = $data['created_by'];
 
-       // Log::info($odbusCharges);
+       // Log::info($odbusCharges);exit;
 
 
         return $odbusCharges;

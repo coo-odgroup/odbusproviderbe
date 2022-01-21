@@ -38,6 +38,7 @@ class TestimonialController extends Controller
 
      public function addtestimonial(Request $request)
      {
+      // log::info($request);exit;
      	 $data = $request->only([
             'posted_by',
             'testinmonial_content',

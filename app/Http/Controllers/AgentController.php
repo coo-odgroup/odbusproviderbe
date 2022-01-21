@@ -102,21 +102,17 @@ class AgentController extends Controller
           'created_by'
         ]);
         
-        $agentValidation = $this->agentValidator->validate($data);
 
-        if ($agentValidation->fails()) {
-          $errors = $agentValidation->errors();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        
-        try {
-          $result=$this->agentService->update($data, $id);
-          return $this->successResponse($result, "Agent Updated Successfully",Response::HTTP_CREATED);
-         
-        }
-        catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }
+        $response = $this->agentService->update($data, $id);
+
+           if($response=='Email or Phone already exits')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Agent Updated Successfully", Response::HTTP_CREATED);
+           }
         
     }
 

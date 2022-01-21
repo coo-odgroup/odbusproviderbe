@@ -103,10 +103,29 @@ class AgentRepository
      */
     public function update($data, $id)
     {
-        $agent = $this->agent->find($id);
-        $agent=$this->getModel($data,$agent);
-        $agent->update();
-        return $agent;
+        
+
+          
+        $duplicate_data = $this->agent
+                               ->where('email',$data['email'])
+                               ->orwhere('phone',$data['phone'])
+                               ->where('id','!=',$id )
+                               ->where('status','!=',2)
+                               ->get();
+        log::info($duplicate_data);
+        // exit;
+        if(count($duplicate_data)==0)
+        {   
+            $agent = $this->agent->find($id);
+            $agent=$this->getModel($data,$agent);
+            $agent->update();
+            return $agent;
+        }
+        else
+        {
+            return 'Email or Phone already exits';
+        } 
+
     }
 
     /**

@@ -14,6 +14,7 @@ class OdbusChargesValidator
             'payment_gateway_charges' => 'required',
             'email_sms_charges' => 'required',
             'odbus_gst_charges' => 'required',
+            'busListingseq' => 'required',
             'advance_days_show' => 'required',
             'support_email' => 'required',
             'booking_email' => 'required',
