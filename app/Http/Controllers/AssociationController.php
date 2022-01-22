@@ -57,17 +57,22 @@ class AssociationController extends Controller
       if ($usercontent->fails()) {
         $errors = $usercontent->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      }      
-      try {
-        $this->AssociationService->addusercontent($request);
-        return $this->successResponse(null, "USER ADDED", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-      	// Log::info($e);
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }  
+      else
+        {
+          $response = $this->AssociationService->addusercontent($request);
 
+           if($response=='Association Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Association Added", Response::HTTP_CREATED);
+           }
+        }    
      }
+
      public function updateuser(Request $request , $id)
      {
      	// Log::info($request);
@@ -82,26 +87,18 @@ class AssociationController extends Controller
           'general_secretary_name',
           'general_secretary_phone'
         ]);
+    	 
+          $response =$this->AssociationService->updateusercontent($request, $id);;
 
-
-     	 $this->AssociationService->updateusercontent($request, $id);
-        return $this->successResponse(null,'USER DATA UPDATED' , Response::HTTP_CREATED);
-
-    	 // $usercontent = $this->AssociationValidator->validate($data);
-
-
-      // if ($usercontent->fails()) {
-      //   $errors = $usercontent->errors();
-      //   return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      // }      
-      // try {
-      //   $this->AssociationService->updateusercontent($request, $id);
-      //   return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
-      // }
-      // catch(Exception $e){
-      // 	// Log::info($e);
-      //   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      // }  
+           if($response=='Association Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Association Added", Response::HTTP_CREATED);
+           }
+            
 
      }
 

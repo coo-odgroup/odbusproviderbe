@@ -428,10 +428,14 @@ class BusRepository
    
     public function BusData( $request)
     {
+        Log::info($request);
+
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;   
         $user_role = $request['user_role'] ;
-        $user_id = $request['user_id'] ;    
+        $user_id = $request['user_id'] ; 
+        $operator= $request['operator'];   
+        $status= $request['status'];   
 
         $data= $this->bus->with('busOperator','busstoppage','BusType','busAmenities.amenities','busSafety.safety','ticketPrice.getBusSeats.seats','busContacts','busSeats.seats')
                         ->whereHas('ticketPrice', function ($query) 
@@ -450,6 +454,33 @@ class BusRepository
         elseif ($paginate == null) 
         {
             $paginate = 10 ;
+        }
+        if($operator!=null)
+        {
+            $data = $data->where(
+                function($query) use ($operator) {
+                    $data = $query->orwhereHas('busOperator', function ($query) use ($operator)
+                                        {$query->where('id',$operator );
+            }); 
+            })  ;   
+        }
+        if($status!=null)
+        {
+            if($status==1)
+            {
+                $data = $data->where(
+                function($query) use ($name) {
+                    $data = $query->where('status', 1);
+                });    
+            }
+            if($status==0)
+            {
+                $data = $data->where(
+                function($query) use ($name) {
+                    $data = $query->where('status', 0);
+                });    
+            }
+                
         }
 
         if($name!=null)

@@ -106,15 +106,19 @@ class AgentRepository
         
 
           
-        $duplicate_data = $this->agent
+        $duplicate_email = $this->agent
                                ->where('email',$data['email'])
-                               ->orwhere('phone',$data['phone'])
+                               ->where('id','!=',$id )
+                               ->where('status','!=',2)
+                               ->get(); 
+        $duplicate_phone = $this->agent
+                               ->where('phone',$data['phone'])
                                ->where('id','!=',$id )
                                ->where('status','!=',2)
                                ->get();
-        log::info($duplicate_data);
-        // exit;
-        if(count($duplicate_data)==0)
+        // log::info($duplicate_data);
+        // // exit;
+        if(count($duplicate_email)==0 && count($duplicate_phone)==0)
         {   
             $agent = $this->agent->find($id);
             $agent=$this->getModel($data,$agent);

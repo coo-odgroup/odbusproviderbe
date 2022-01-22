@@ -57,45 +57,79 @@ class AssociationRepository
 
     
    public function addusercontent($data)
-   {        
+   { 
+     
+        $duplicate_email = $this->usercontent
+                               ->where('email',$data['email'])
+                               ->where('status','!=',2)
+                               ->get(); 
+        $duplicate_phone = $this->usercontent
+                               ->where('phone',$data['phone'])
+                               ->where('status','!=',2)
+                               ->get();
 
-       $usercontent = new $this->usercontent;
-       $usercontent->name =$data['name'];
-       $usercontent->email =$data['email'];
-       $usercontent->phone =$data['phone'];
+        if(count($duplicate_email)==0 && count($duplicate_phone)==0)
+        {
+             $usercontent = new $this->usercontent;
+             $usercontent->name =$data['name'];
+             $usercontent->email =$data['email'];
+             $usercontent->phone =$data['phone'];
 
-       $usercontent->location =$data['location'];
-       $usercontent->president_name =$data['president_name'];
-       $usercontent->president_phone =$data['president_phone'];
-       $usercontent->general_secretary_name =$data['general_secretary_name'];
-       $usercontent->general_secretary_phone =$data['general_secretary_phone'];
+             $usercontent->location =$data['location'];
+             $usercontent->president_name =$data['president_name'];
+             $usercontent->president_phone =$data['president_phone'];
+             $usercontent->general_secretary_name =$data['general_secretary_name'];
+             $usercontent->general_secretary_phone =$data['general_secretary_phone'];
 
-       $usercontent->user_type ='ASSOCIATION';
-       $usercontent->role_id ='5';
-       $usercontent->status ='0';
-       $usercontent->password =bcrypt($data['password']);
-       $usercontent->created_by ="Admin";
-       $usercontent->save();
+             $usercontent->user_type ='ASSOCIATION';
+             $usercontent->role_id ='5';
+             $usercontent->status ='0';
+             $usercontent->password =bcrypt($data['password']);
+             $usercontent->created_by ="Admin";
+             $usercontent->save();
 
-      
-       return $usercontent;
+            
+             return $usercontent;
+        }
+        else
+        {
+             return 'Association Already Exist';
+        }
 
    }
    public function updateusercontent($data, $id)
    {
-      $usercontent = $this->usercontent->find($id);
-      $usercontent->name =$data['name'];
-      $usercontent->email =$data['email'];
-      $usercontent->phone =$data['phone'];
-      $usercontent->location =$data['location'];
-      $usercontent->president_name =$data['president_name'];
-      $usercontent->president_phone =$data['president_phone'];
-      $usercontent->general_secretary_name =$data['general_secretary_name'];
-      $usercontent->general_secretary_phone =$data['general_secretary_phone'];
-      $usercontent->created_by ="Admin";
-      $usercontent->status ='0';
-	  $usercontent->update();
-      return $usercontent;
+        $duplicate_email = $this->usercontent
+                               ->where('email',$data['email'])
+                               ->where('id','!=',$id )
+                               ->where('status','!=',2)
+                               ->get(); 
+        $duplicate_phone = $this->usercontent
+                               ->where('phone',$data['phone'])
+                               ->where('id','!=',$id )
+                               ->where('status','!=',2)
+                               ->get();
+
+        if(count($duplicate_email)==0 && count($duplicate_phone)==0)
+        { 
+              $usercontent = $this->usercontent->find($id);
+              $usercontent->name =$data['name'];
+              $usercontent->email =$data['email'];
+              $usercontent->phone =$data['phone'];
+              $usercontent->location =$data['location'];
+              $usercontent->president_name =$data['president_name'];
+              $usercontent->president_phone =$data['president_phone'];
+              $usercontent->general_secretary_name =$data['general_secretary_name'];
+              $usercontent->general_secretary_phone =$data['general_secretary_phone'];
+              $usercontent->created_by ="Admin";
+              $usercontent->status ='0';
+              $usercontent->update();
+              return $usercontent;
+        }
+        else
+        {
+             return 'Association Already Exist';
+        }
    } 
 
    public function changePassword($data, $id)
