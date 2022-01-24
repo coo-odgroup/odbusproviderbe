@@ -44,7 +44,7 @@ class BusSeatsRepository
     $data =  $this->busSeats
     ->where('status','1')
     ->where('bus_id', $busId)
-    ->where('type',null)
+    //->where('type',null)
     ->get();
     // log::info($data);
     $duration = $this->busSeats
@@ -221,15 +221,9 @@ public function update($data, $id)
     $layoutArray=$data['bus_seat_layout_data'];
     $bus_id=$data['bus_id'];
 
-    //$this->busSeats->where("bus_id",$bus_id)->update(array("status"=>"2"));
-
     $this->bus->where("id",$bus_id)->update(array("bus_seat_layout_id"=>$data['bus_seat_layout_id']));
-        //Log::info($layoutArray);
-        //UPDATE EXISTING RECORD STATUS TO 2.
-        // $existing_data=$this->busSeats->find('bus_id',$bus_id);
-        // $existing_data->status=2;
-        // $existing_data->update();
-
+    //Log::info($layoutArray);
+       
         //NEED TO CREATE A NEW SET OF RECORD STATUS
 
      $get_ticket_price_id=$this->ticketPrice->where('bus_id',$bus_id)->where("status","1")->get();
@@ -256,10 +250,12 @@ public function update($data, $id)
                                             ->where('bus_id',$bus_id)
                                             ->where('seats_id',$upperBerthData['seatId'])
                                             ->where('ticket_price_id',$ticketpriceID->id)
+                                            ->where('status',1)
+                                            ->where('operation_date','=',null)
                                             ->get();
 
                          // Log::info($bus_id."-".$upperBerthData['seatId']."-".$ticketpriceID->id);
-                         // Log::info($find_existing);
+                          //Log::info($find_existing);
 
                          
                             //$queries = \DB::getQueryLog();
@@ -315,16 +311,16 @@ public function update($data, $id)
                                             ->get();
 
                          // Log::info($bus_id."-".$lowerBerthData['seatId']."-".$ticketpriceID->id);
-                          //Log::info($find_existing);
+                         // Log::info($find_existing);
 
 
 
                             if(count($find_existing)>0)
                             {
-                                //Log::info("LOWER BERTH: Found Duplicate and Return ".$lowerBerthData['seatId']);
+                               // Log::info("LOWER BERTH: Found Duplicate and Return ".$lowerBerthData['seatId']);
                                 continue;
                             }
-                           // Log::info("LOWER BERTH: Add A new seat ".$lowerBerthData['seatId']);
+                            //Log::info("LOWER BERTH: Add A new seat ".$lowerBerthData['seatId']);
                             $busseats = new $this->busSeats;
                             $data['ticket_price_id']=$ticketpriceID->id;
                             $data['category']='0';
