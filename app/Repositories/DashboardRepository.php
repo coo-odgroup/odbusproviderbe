@@ -166,7 +166,7 @@ class DashboardRepository
 
     public function getAllAgentData($request)
     {
-        // Log::info($request->USERID);
+        // // Log::info($request->USERID);
         // Log::info($request);
         $dt_month = date('Y-m-d', strtotime('today - 30 days'));
         $dt_week = date('Y-m-d', strtotime('today - 7 days'));
@@ -233,8 +233,21 @@ class DashboardRepository
     {
         // log::info($request);
         $dt = date('Y-m-d', strtotime('today - 30 days'));
-
-       $route_data = $this->booking
+    if($request->ROLE_ID==1)
+    {
+         $route_data = $this->booking
+                          ->select(['source_id', 'destination_id'])
+                          ->selectRaw('count(*) as pnr_count')
+                          ->selectRaw('sum(total_fare) as amount')
+                          ->groupBy(['source_id', 'destination_id'])
+                          ->orderBy('pnr_count','DESC')
+                          ->where('journey_dt','>',$dt)
+                          ->where('status','1')
+                          ->limit(10)
+                          ->get();
+    }
+    else{
+        $route_data = $this->booking
                           ->select(['source_id', 'destination_id'])
                           ->selectRaw('count(*) as pnr_count')
                           ->selectRaw('sum(total_fare) as amount')
@@ -244,6 +257,9 @@ class DashboardRepository
                           ->where('status','1')
                           ->limit(10)
                           ->get();
+
+    }
+       
 
         $data_arr = array();
         foreach($route_data as $key=>$v)
