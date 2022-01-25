@@ -124,7 +124,6 @@ class CompleteReportRepository
         }
         $data=$data->paginate($paginate); 
         
-        
    
         if($data){
             foreach($data as $key=>$v){

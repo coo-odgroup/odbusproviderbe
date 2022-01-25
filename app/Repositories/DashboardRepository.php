@@ -164,16 +164,82 @@ class DashboardRepository
         return $data_arr;     
     }
 
-    public function getRoute()
+    public function getAllAgentData($request)
     {
+        // Log::info($request->USERID);
+        // Log::info($request);
+        $dt_month = date('Y-m-d', strtotime('today - 30 days'));
+        $dt_week = date('Y-m-d', strtotime('today - 7 days'));
+        $current_month=date('Y-m');
+        $data_arr = array();
+        $current_date =date('Y-m-d'); 
+       
+        $today_data = $this->booking->where('status','1')->where('user_id',$request->USERID);
+        $upcoming_data = $this->booking->where('status','1')->where('user_id',$request->USERID);
+        $bus_data = $this->bus->where('status','1')->where('user_id',$request->USERID);
+       
+        $agent_commission=$this->booking->selectRaw('sum(agent_commission) as odbus_amount')->where('status','1')->where('user_id',$request->USERID);
+        $sales_data=$this->booking->selectRaw('sum(total_fare) as today_amount')->where('status','1')->where('user_id',$request->USERID); 
+
+
+        if($request['rangeFor'] == 'All' )
+        {
+            $today_data = $today_data->get();
+            $upcoming_data = $upcoming_data->where('journey_dt','>',$current_date)->get();
+            
+            $booking_data = $agent_commission;
+            $sales_data = $sales_data;
+        } 
+
+        if($request['rangeFor'] == 'Today')
+        {
+            $today_data = $today_data->where('created_at','Like',$current_date.'%')->get();
+            $upcoming_data = $upcoming_data->where('journey_dt','>',$current_date)->get();
+            // $bus_data = $bus_data->get();
+            $booking_data = $agent_commission->where('created_at','Like',$current_date.'%');
+            $sales_data = $sales_data->where('created_at','Like',$current_date.'%');
+        } 
+
+        if($request['rangeFor'] == 'This Week')
+        {
+            $today_data = $today_data->whereBetween('created_at',[$dt_week,$current_date])->get();
+            $upcoming_data = $upcoming_data->where('journey_dt','>',$current_date)->get();
+            // $bus_data = $bus_data->get();
+            $booking_data = $agent_commission->whereBetween('created_at',[$dt_week,$current_date]);
+            $sales_data = $sales_data->whereBetween('created_at',[$dt_week,$current_date]);
+        } 
+
+        if($request['rangeFor'] == 'This Month')
+        {
+            $today_data = $today_data->where('created_at','Like',$current_month.'%')->get();
+            $upcoming_data = $upcoming_data->where('journey_dt','>',$current_date)->get();
+            $booking_data = $agent_commission->where('created_at','Like',$current_month.'%');
+            $sales_data = $sales_data->where('created_at','Like',$current_month.'%');
+        }
+             
+
+
+        $today_data =count($today_data);        
+        $upcoming_data = count($upcoming_data);        
+        $data_arr['today_pnr'] = $today_data;
+        $data_arr['upcoming_pnr'] = $upcoming_data;
+        $data_arr['booking_profit'] = $booking_data->get();
+        $data_arr['cancellation_profit'] = 1641 ; //MADE STATIC
+        $data_arr['sales_data']=$sales_data->get();
+        return $data_arr;     
+    }
+
+    public function getRoute($request)
+    {
+        // log::info($request);
         $dt = date('Y-m-d', strtotime('today - 30 days'));
 
        $route_data = $this->booking
                           ->select(['source_id', 'destination_id'])
                           ->selectRaw('count(*) as pnr_count')
-                          ->selectRaw('sum(owner_fare) as amount')
+                          ->selectRaw('sum(total_fare) as amount')
                           ->groupBy(['source_id', 'destination_id'])
-                          ->orderBy('pnr_count','DESC')
+                          ->orderBy('pnr_count','DESC')->where('user_id',$request->USERID)
                           ->where('journey_dt','>',$dt)
                           ->where('status','1')
                           ->limit(10)

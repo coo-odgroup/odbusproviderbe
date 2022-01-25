@@ -29,9 +29,14 @@ class DashboardService
         return $this->dashboardRepository->getAll($request);
     } 
 
-    public function getRoute()
+    public function getAllAgentData($request)
     {
-        return $this->dashboardRepository->getRoute();
+        return $this->dashboardRepository->getAllAgentData($request);
+    } 
+
+    public function getRoute($request)
+    {
+        return $this->dashboardRepository->getRoute($request);
     }  
 
     public function getOperator()

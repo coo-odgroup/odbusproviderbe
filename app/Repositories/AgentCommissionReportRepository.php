@@ -70,10 +70,11 @@ class AgentCommissionReportRepository
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','CustomerPayment')
+                                    'Bus')
                              ->with('bus.busstoppage')
-                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
-                             ->where('user_id', $user_id )->where('user_id','!=', "")
+                             // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
+                             ->where('user_id', $user_id )
+                             ->where('status',1)
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {

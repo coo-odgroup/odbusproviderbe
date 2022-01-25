@@ -123,7 +123,7 @@ class AgentWalletRepository
     }
 
     public function getWalletRecord($user_id){
-        return $this->agentWallet->where('user_id',$user_id)->whereNotIn('status', [2]);
+        return $this->agentWallet->where('user_id',$user_id)->orderBy('id','DESC')->whereNotIn('status', [2]);
     }
 
     public function Pagination($data,$paginate){

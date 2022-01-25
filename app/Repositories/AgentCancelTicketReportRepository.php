@@ -69,10 +69,11 @@ class AgentCancelTicketReportRepository
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','CustomerPayment')
+                                    'Bus')
                              ->with('bus.busstoppage')
                              ->where('status', 2)
-                             ->where('user_id', $user_id )->where('user_id','!=',"" )
+                             ->where('user_id', $user_id )
+                             ->where('user_id','!=',"" )
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {

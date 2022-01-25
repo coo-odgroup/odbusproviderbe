@@ -19,7 +19,7 @@ class AgentNotificationRepository
     
     public function getallnotification($id){
 
-        return $this->notification->whereNotIn('status', [2])
+        return $this->notification->whereNotIn('status', [2])->orderBy('id','DESC')
         ->whereHas('userNotification', function ($query) use ($id)
          {$query->where('user_id', $id );
      });

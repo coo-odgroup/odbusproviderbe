@@ -69,11 +69,11 @@ class AgentCompleteReportRepository
         // Log::info( $user_id);
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','CustomerPayment')
+                                    'Bus')
                              ->with('bus.busstoppage')
                              ->where('user_id', $user_id )
-                             ->where('user_id', '!=','' )
-                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})->orderBy('id','DESC');
+                             ->where('status', 1 )
+                             ->orderBy('id','DESC');
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
@@ -118,7 +118,7 @@ class AgentCompleteReportRepository
         }
         $data=$data->paginate($paginate); 
         
-        
+        // Log::info($data);
    
         if($data){
             foreach($data as $key=>$v){

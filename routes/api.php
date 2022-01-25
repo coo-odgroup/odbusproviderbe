@@ -195,7 +195,8 @@ Route::post('seosettingData',[SeoSettingController::class,'seosettingData']);
 Route::post('/BusData', [BusController::class, 'BusData']);
 
 Route::post('/dashboarddata',[DashboardController::class,'getAll']);
-Route::get('/toproutedata',[DashboardController::class,'getRoute']);
+Route::post('/agentdashboarddata',[DashboardController::class,'getAllAgentData']);
+Route::post('/toproutedata',[DashboardController::class,'getRoute']);
 Route::get('/operatordata',[DashboardController::class,'getOperator']);
 Route::get('/ticketstaticsdata',[DashboardController::class,'getticketstatics']);
 Route::get('/bookingbydevicedata',[DashboardController::class,'getbookingbydevice']);

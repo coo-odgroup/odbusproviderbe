@@ -29,10 +29,15 @@ class DashboardController extends Controller
         $dashboarddata = $this->dashboardService->getAll($request);
         return $this->successResponse($dashboarddata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-
-    public function getRoute()
+     public function getAllAgentData(Request $request)
     {
-        $routedata = $this->dashboardService->getRoute();
+        $dashboarddata = $this->dashboardService->getAllAgentData($request);
+        return $this->successResponse($dashboarddata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function getRoute(Request $request)
+    {
+        $routedata = $this->dashboardService->getRoute($request);
         return $this->successResponse($routedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     
