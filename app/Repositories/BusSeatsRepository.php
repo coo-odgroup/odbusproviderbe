@@ -241,7 +241,7 @@ public function update($data, $id)
                 {
                     foreach($get_ticket_price_id as $ticketpriceID)
                     {
-                        if((isset($upperBerthData['seatChecked']) && ($upperBerthData['seatChecked']==true || $upperBerthData['seatChecked']=="true")) || (!isset($upperBerthData['seatChecked']) && $upperBerthData['extraSeat'] > 0))
+                        if((isset($upperBerthData['seatChecked']) && ($upperBerthData['seatChecked']==true || $upperBerthData['seatChecked']=="true")) || (!isset($upperBerthData['seatChecked']) && isset($upperBerthData['extraSeat'])  && $upperBerthData['extraSeat'] > 0))
                         {
 
                            // \DB::connection()->enableQueryLog();
@@ -302,7 +302,7 @@ public function update($data, $id)
                 {                     
                     foreach($get_ticket_price_id as $ticketpriceID)
                     {
-                        if((isset($lowerBerthData['seatChecked']) && ($lowerBerthData['seatChecked']==true || $lowerBerthData['seatChecked']=="true")) || (!isset($lowerBerthData['seatChecked']) && $lowerBerthData['extraSeat'] > 0))
+                        if((isset($lowerBerthData['seatChecked']) && ($lowerBerthData['seatChecked']==true || $lowerBerthData['seatChecked']=="true")) || (!isset($lowerBerthData['seatChecked']) && isset($lowerBerthData['extraSeat']) && $lowerBerthData['extraSeat'] > 0))
                         {
                             $find_existing = $this->busSeats
                                             ->where('bus_id',$bus_id)
