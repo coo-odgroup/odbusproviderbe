@@ -308,6 +308,8 @@ public function update($data, $id)
                                             ->where('bus_id',$bus_id)
                                             ->where('seats_id',$lowerBerthData['seatId'])
                                             ->where('ticket_price_id',$ticketpriceID->id)
+                                            ->where('status',1)
+                                            ->where('operation_date','=',null)
                                             ->get();
 
                          // Log::info($bus_id."-".$lowerBerthData['seatId']."-".$ticketpriceID->id);
