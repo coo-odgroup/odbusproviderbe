@@ -86,7 +86,7 @@ class AgentWalletRepository
                     'tran_id'=>$data['transaction_id'],
                     'otp' => $agentWallet->otp,
                    ] ;
-          SendSupportEmailJob::dispatch($to_support, $subject, $supportData);
+            SendSuperAdminEmailJob::dispatch($to_support, $subject, $supportData);
 
            $to_superadmin = "coo@odgroup.in";
            $subject = "Wallet recharge request From Agent";
