@@ -339,8 +339,8 @@ class TicketInformationRepository
                  
                if($request['customerInfo']['email']!= ''){
 
-                        // $to_user = $request['customerInfo']['email'];         
-                        $to_user = "bishal.seofied@gmail.com";         
+                        $to_user = $request['customerInfo']['email'];         
+                        // $to_user = "bishal.seofied@gmail.com";         
                         $subject = "Ticket Cancel ( PNR - ".$pnr." )";
                         $data= ['pnr'=> $pnr ,
                         'has been cancelled.'
