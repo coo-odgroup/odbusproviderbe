@@ -68,7 +68,7 @@ class TicketInformationRepository
 
     public function cancelticket($request)
     {
-        // Log::info($request['pnr']);
+        // Log::info($request['email']);
         // exit;
         $id=$request->id ;
         $cancelticket = $this->booking->find($id);       
@@ -80,7 +80,8 @@ class TicketInformationRepository
 
         $cancelticket->update();
         
-           $to_user = 'bishal.seofied@gmail.com';
+           // $to_user = 'bishal.seofied@gmail.com';
+           $to_user = $request['email'];
          
            $subject = "Ticket Cancel( Pnr.no-".$request->pnr." )";
            $data= ['pnr'=>$request['pnr'],
