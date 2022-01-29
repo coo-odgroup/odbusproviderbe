@@ -69,15 +69,39 @@ class AgentController extends Controller
         $errors = $agentValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }
+      else
+        {
+          $response =  $this->agentService->savePostData($request);
 
-      try {
-          $this->agentService->savePostData($data);
+           if($response=='Email Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else if($response=='Phone Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else if($response=='Pan Card Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else if($response=='Aadhaar Card Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Agent Added", Response::HTTP_CREATED);
+           }
+        }
+      // try {
+      //     $this->agentService->savePostData($data);
           
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }   
-      return $this->successResponse($data,"Agent Created Successfully",Response::HTTP_CREATED); 
+      // }
+      // catch (Exception $e) {
+      //   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      // }   
+      // return $this->successResponse($data,"Agent Created Successfully",Response::HTTP_CREATED); 
     } 
 
     public function updateAgent(Request $request, $id) {
@@ -101,17 +125,28 @@ class AgentController extends Controller
           'bank_account_no',
           'created_by'
         ]);
-        
 
-        $response = $this->agentService->update($data, $id);
+        $response =  $this->agentService->update($data, $id);
 
-           if($response=='Email or Phone already exits')
+           if($response=='Email Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else if($response=='Phone Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else if($response=='Pan Card Already Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else if($response=='Aadhaar Card Already Exist')
            {
               return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
            }
            else
            {
-               return $this->successResponse($response,"Agent Updated Successfully", Response::HTTP_CREATED);
+               return $this->successResponse($response,"Agent Updated", Response::HTTP_CREATED);
            }
         
     }

@@ -29,7 +29,10 @@ class AgentRepository
 
     public function getAllAgentData($request)
     {
-        $paginate = $request['rows_number'] ;
+        log::info($request);
+         $paginate = $request['rows_number'] ;
+         $name = $request['name'] ;
+         $status = $request['status'];
 
         $data= $this->agent
                     ->whereNotIn('status', [2])
@@ -43,6 +46,41 @@ class AgentRepository
         {
             $paginate = 10 ;
         }
+
+        //  if($status!=null)
+        // {
+        //     if($status== 1){
+        //         $data = $data->where('status', 1); 
+        //     }
+        //     elseif($status== 0)
+        //     {
+        //         $data = $data->where('status', 0); 
+        //     }                                      
+        // }
+        if($name!=null && $status!=null)
+        {
+            $data = $data->where('name', 'like', '%' .$name . '%')
+                         ->orWhere('email', 'like', '%' .$name . '%')
+                         ->orWhere('phone', 'like', '%' .$name . '%')
+                         ->orWhere('bank_account_no', 'like', '%' .$name . '%')
+                         ->orWhere('ifsc_code', 'like', '%' .$name . '%')
+                         ->orWhere('organization_name', 'like', '%' .$name . '%')
+                         ->where('status', $status);                        
+        }
+        elseif($name!=null && $status==null)
+        {
+            $data = $data->where('name', 'like', '%' .$name . '%')
+                         ->orWhere('email', 'like', '%' .$name . '%')
+                         ->orWhere('phone', 'like', '%' .$name . '%')
+                         ->orWhere('bank_account_no', 'like', '%' .$name . '%')
+                         ->orWhere('ifsc_code', 'like', '%' .$name . '%')
+                         ->orWhere('organization_name', 'like', '%' .$name . '%');                        
+        }
+        elseif($name==null && $status!=null)
+        {
+            $data = $data->where('status', $status);                        
+        }
+        
 
         
 
@@ -88,11 +126,46 @@ class AgentRepository
     }
     public function save($data)
     {
+        // log::info($data);
+        // exit;
+        $email = $this->agent->where('email',$data['email'])->where('status','!=',2)->get();
+        $phone = $this->agent->where('phone',$data['phone'])->where('status','!=',2)->get();
+        $aadhaar = $this->agent->where('adhar_no',$data['adhar_no'])->where('status','!=',2)->get();
+        $pancard = $this->agent->where('pancard_no',$data['pancard_no'])->where('status','!=',2)->get();
        
-        $agent = new $this->agent;
-        $agent=$this->getModel($data,$agent);
-        $agent->save();
-        return $agent;
+        if(count($email)==0)
+        {
+            if(count($phone)==0)
+            {
+                if(count($aadhaar)==0)
+                {
+                    if(count($pancard)==0)
+                    {
+                            $agent = new $this->agent;
+                            $agent=$this->getModel($data,$agent);
+                            $agent->save();
+                            return $agent;
+                    }
+                    else
+                    {
+                        return 'Pan Card Already Exist';
+                    }
+                }
+                else
+                {
+                    return 'Aadhaar Card Already Exist';
+                }
+
+            }
+            else
+            {
+                return 'Phone Already Exist';
+            }
+        }
+        else
+        {
+            return 'Email Already Exist';
+        }
     }
 
     /**
@@ -104,32 +177,55 @@ class AgentRepository
     public function update($data, $id)
     {
         
-
+        $email = $this->agent->where('email',$data['email'])->where('id','!=',$id )->where('status','!=',2)->get();
+        $phone = $this->agent->where('phone',$data['phone'])->where('id','!=',$id )->where('status','!=',2)->get();
+        $aadhaar = $this->agent->where('adhar_no',$data['adhar_no'])->where('id','!=',$id )->where('status','!=',2)->get();
+        $pancard = $this->agent->where('pancard_no',$data['pancard_no'])->where('id','!=',$id )->where('status','!=',2)->get();
           
-        $duplicate_email = $this->agent
-                               ->where('email',$data['email'])
-                               ->where('id','!=',$id )
-                               ->where('status','!=',2)
-                               ->get(); 
-        $duplicate_phone = $this->agent
-                               ->where('phone',$data['phone'])
-                               ->where('id','!=',$id )
-                               ->where('status','!=',2)
-                               ->get();
+        // $duplicate_email = $this->agent
+        //                        ->where('email',$data['email'])
+        //                        ->where('id','!=',$id )
+        //                        ->where('status','!=',2)
+        //                        ->get(); 
+        // $duplicate_phone = $this->agent
+        //                        ->where('phone',$data['phone'])
+        //                        ->where('id','!=',$id )
+        //                        ->where('status','!=',2)
+        //                        ->get();
         // log::info($duplicate_data);
         // // exit;
-        if(count($duplicate_email)==0 && count($duplicate_phone)==0)
-        {   
-            $agent = $this->agent->find($id);
-            $agent=$this->getModel($data,$agent);
-            $agent->update();
-            return $agent;
+         if(count($email)==0)
+        {
+            if(count($phone)==0)
+            {
+                if(count($aadhaar)==0)
+                {
+                    if(count($pancard)==0)
+                    {
+                            $agent = $this->agent->find($id);
+                            $agent=$this->getModel($data,$agent);
+                            $agent->update();
+                            return $agent;
+                    }
+                    else
+                    {
+                        return 'Pan Card Already Exist';
+                    }
+                }
+                else
+                {
+                    return 'Aadhaar Card Already Exist';
+                }
+            }
+            else
+            {
+                return 'Phone Already Exist';
+            }
         }
         else
         {
-            return 'Email or Phone already exits';
-        } 
-
+            return 'Email Already Exist';
+        }
     }
 
     /**

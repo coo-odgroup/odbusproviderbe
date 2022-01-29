@@ -120,7 +120,7 @@ class AgentWalletRepository
     }
 
     public function getAllWalletRecord(){
-        return $this->agentWallet->whereNotIn('status', [2]);
+        return $this->agentWallet->whereNotIn('status', [2])->orderBy('id','DESC');
     }
 
     public function getWalletRecord($user_id){

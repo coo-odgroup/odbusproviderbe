@@ -10,8 +10,8 @@ class AgentValidator
     public function validate($data) { 
         
         $rules = [
-         'email' => 'required|unique:user,email',
-         'phone' => 'required|unique:user,phone',
+         'email' => 'required',
+         'phone' => 'required',
         ];      
       
         $agentFeeValidation = Validator::make($data, $rules);
