@@ -216,24 +216,50 @@ class BusSeatLayoutRepository
         $busSeatLayout->update();
 
 
-        $records=$this->seats->where('bus_seat_layout_id',$id)->get();
-        foreach ($records as $seat) {
-            $seat->status = '2';
-            $seat->save();
-        }
+        // $records=$this->seats->where('bus_seat_layout_id',$id)->get();
+        // foreach ($records as $seat) {
+        //     $seat->status = '2';
+        //     $seat->save();
+        // }
 
 
         $sLayoutContent=json_decode($data['layout_data'],true);
 
-      
+       // Log::info($sLayoutContent);
+
         foreach ($sLayoutContent as $ind_records) {
+
+            
+
             $ind_records['seat_class_id']=$ind_records['seat_class_id'];
-            $seatRecords[] =new Seats($ind_records);
+            $ind_records['bus_seat_layout_id']=$id;
+            $ind_records['berthType']=$ind_records['berthType'];
+            $ind_records['seatText']=(isset($ind_records['seatText'])) ? $ind_records['seatText'] : '';
+            $ind_records['rowNumber']=$ind_records['rowNumber'];
+            $ind_records['colNumber']=$ind_records['colNumber'];
+            $ind_records['created_by']=$data['created_by'];
+
+            $seats = $this->seats->find($ind_records['id']);
+            $seats = $this->getSeatModel($ind_records,$seats);
+            $seats->update();
         }
-        $busSeatLayout->seats()->saveMany($seatRecords);
-        return $busSeatLayout;
+       // $busSeatLayout->seats()->saveMany($seatRecords);
+       // return $busSeatLayout;
+        return 'success';
 
 
+    }
+
+    public function getSeatModel($data,Seats $seats)
+    {       
+        $seats->seat_class_id = $data['seat_class_id'];
+        $seats->bus_seat_layout_id = $data['bus_seat_layout_id'];
+        $seats->berthType = $data['berthType'];
+        $seats->seatText = $data['seatText'];
+        $seats->rowNumber = $data['rowNumber'];   
+        $seats->colNumber = $data['colNumber'];   
+        $seats->created_by = $data['created_by'];  
+        return $seats;
     }
     /**
      * Update busSeatLayout
