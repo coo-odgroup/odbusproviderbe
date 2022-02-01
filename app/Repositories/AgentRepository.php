@@ -27,9 +27,53 @@ class AgentRepository
 
     }
 
+    public function updateAgentProfile($request)
+    {
+        // log::info($request);
+        // exit;
+        $agent=$this->agent->find($request['user_id']);
+   
+        
+        $agent->name = $request['name'];
+        $agent->email = $request['email'];    
+        $agent->phone = $request['phone'];
+        if($request['pwd_check']==true && $request['password']!='')
+        {
+            $agent->password = bcrypt($request['password']);
+        }
+        $agent->location = $request['location'];
+        $agent->adhar_no = $request['adhar_no'];
+        $agent->pancard_no = $request['pancard_no'];
+        $agent->organization_name = $request['organization_name'];
+        $agent->address = $request['address'];
+        $agent->street = $request['street'];
+        $agent->city = $request['city'];
+        $agent->landmark = $request['landmark'];
+        $agent->pincode = $request['pincode'];
+        $agent->name_on_bank_account = $request['name_on_bank_account'];
+        $agent->branch_name = $request['branch_name'];
+        $agent->bank_name = $request['bank_name'];
+        $agent->ifsc_code = $request['ifsc_code'];
+        $agent->bank_account_no = $request['bank_account_no'];
+        $agent->upi_id = $request['upi_id'];
+        $agent->update();
+        // log::info($agent);
+        return $agent;
+
+    }
+
+     public function agentprofile($request)
+    {
+       
+        $data= $this->agent->where('id',$request['user_id'])->get();
+        // log::info($data);
+         return $data;
+
+    }
+
     public function getAllAgentData($request)
     {
-        log::info($request);
+        // log::info($request);
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
          $status = $request['status'];
@@ -192,8 +236,8 @@ class AgentRepository
         //                        ->where('id','!=',$id )
         //                        ->where('status','!=',2)
         //                        ->get();
-        // log::info($duplicate_data);
-        // // exit;
+        // log::info($data);
+        // exit;
          if(count($email)==0)
         {
             if(count($phone)==0)
@@ -203,7 +247,27 @@ class AgentRepository
                     if(count($pancard)==0)
                     {
                             $agent = $this->agent->find($id);
-                            $agent=$this->getModel($data,$agent);
+                            if($agent->password != $data['password'])
+                            {
+                                 $agent->password = bcrypt($data['password']);
+                            }                        
+                            $agent->name = $data['name'];
+                            $agent->email = $data['email'];    
+                            $agent->phone = $data['phone'];   
+                            $agent->user_type = "Agent";
+                            $agent->role_id = "3";
+                            $agent->location = $data['location'];
+                            $agent->adhar_no = $data['adhar_no'];
+                            $agent->pancard_no = $data['pancard_no'];
+                            $agent->organization_name = $data['organization_name'];
+                            $agent->address = $data['address'];
+                            $agent->landmark = $data['landmark'];
+                            $agent->pincode = $data['pincode'];
+                            $agent->name_on_bank_account = $data['name_on_bank_account'];
+                            $agent->bank_name = $data['bank_name'];
+                            $agent->ifsc_code = $data['ifsc_code'];
+                            $agent->bank_account_no = $data['bank_account_no'];
+                            $agent->created_by = $data['created_by'];
                             $agent->update();
                             return $agent;
                     }

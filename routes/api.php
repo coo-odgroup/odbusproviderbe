@@ -806,6 +806,9 @@ Route::delete('/Agent/{id}', [AgentController::class, 'deleteAgent']);
 Route::get('/Agent/{id}', [AgentController::class, 'getAgent']);
 Route::put('/AgentChangeStatus/{id}', [AgentController::class, 'changeStatus']);
 
+Route::post('/Agentprofile', [AgentController::class, 'agentprofile']);
+Route::post('/updateAgentProfile', [AgentController::class, 'updateAgentProfile']);
+
 
 ////////// testing Email
 Route::post('/TestEmail', [BusController::class, 'testingEmail']);
