@@ -46,11 +46,14 @@ class AgentWalletRepository
     }
 
     public function save($data)
-    {         
+    {     
         $user = $this->user->find($data['user_id']);
-      
+        $balance = $this->agentWallet->where('user_id',$data['user_id'])->where('status',1)->orderBy('id','DESC')->limit(1)->get();
+
         $agentWallet = new $this->agentWallet;
         $agentWallet=$this->getModel($data,$agentWallet);
+        $agentWallet->balance =  $balance[0]->balance;
+ 
         $agentWallet->save(); 
 
         $notification = new $this->notification; 
@@ -78,6 +81,7 @@ class AgentWalletRepository
            SendWalletEmailJob::dispatch($to_user, $subject, $agentData);
 
            $to_support = "support@odbus.in";
+           // $to_support = "bishal.seofied@gmail.com";
            $subject = "Wallet recharge request From Agent";
            $supportData= [
                     'userName'=>$user->name,
@@ -89,6 +93,7 @@ class AgentWalletRepository
             SendSuperAdminEmailJob::dispatch($to_support, $subject, $supportData);
 
            $to_superadmin = "coo@odgroup.in";
+           // $to_superadmin ="bishal.seofied@gmail.com";
            $subject = "Wallet recharge request From Agent";
            $superAdminData= [
                     'userName'=>$user->name,
@@ -108,17 +113,10 @@ class AgentWalletRepository
     public function balance($id)
     {
         $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get(); 
-
-        //->offset(1)
-
-        // if(sizeof($agentWallet) == 0)
-        // {
-        //      $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get(); 
-        // } 
-         // log::info($agentWallet[0]->balance);
         return $agentWallet;  
     }
 
+  
     public function getAllWalletRecord(){
         return $this->agentWallet->whereNotIn('status', [2])->orderBy('id','DESC');
     }
@@ -162,8 +160,19 @@ class AgentWalletRepository
     {
          $agentWallet = $this->agentWallet->find($id);
          $user = $this->user->find($agentWallet->user_id);
+         $lastrow = $this->agentWallet->where('user_id',$agentWallet->user_id)
+                                      ->where('status',1)
+                                      ->orderBy('id','DESC')
+                                      ->limit(1)
+                                      ->get();
          $agentWallet->balance = $balance;
          $agentWallet->update();
+         if($lastrow[0]->id != $agentWallet->id);
+         {
+                $agentWalletLastRow = $this->agentWallet->find($lastrow[0]->id);
+                $agentWalletLastRow->balance = $balance;
+                $agentWalletLastRow->update();
+         }
 
 
 
