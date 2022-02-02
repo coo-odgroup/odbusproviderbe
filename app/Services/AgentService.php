@@ -44,6 +44,15 @@ class AgentService
         return $this->agentRepository->getAll($request);
     }
 
+    public function agentprofile($request)
+    {
+        return $this->agentRepository->agentprofile($request);
+    }
+     public function updateAgentProfile($request)
+    {
+        return $this->agentRepository->updateAgentProfile($request);
+    }
+
    
     /**
      * Get  by id.

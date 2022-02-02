@@ -28,6 +28,18 @@ class AgentController extends Controller
     }
 
 
+    public function agentprofile(Request $request) {
+
+      $agents = $this->agentService->agentprofile($request);
+      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    } 
+
+    public function updateAgentProfile(Request $request) {
+
+      $agents = $this->agentService->updateAgentProfile($request);
+      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    } 
+
     public function getAllAgent(Request $request) {
 
       $agents = $this->agentService->getAll($request);
