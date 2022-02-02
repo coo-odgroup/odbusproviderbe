@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendForgetOtpEmailJob;
 
 class UserRepository
 {
@@ -55,7 +56,44 @@ class UserRepository
         return $this->user->where('name','!=' ,null)->where('email','!=' ,null)->get();
     }
 
-    
+    public function AgentForgetPasswordOtp($data){
+
+       $exist= $this->user->where('email', $data['email'])->get();
+
+       if(isset($exist[0])){
+
+        $email= $exist[0]->email;
+        $phone=  $exist[0]->phone;
+        $name=  $exist[0]->name;
+
+        $otp=  rand(100000,999999);
+        
+
+        $this->user->where('id', $exist[0]->id)->update(array(
+            'otp' => $otp
+        ));
+
+        $today=date("Y-m-d H:i:s");
+
+        $subject = "Forgot Password OTP - ".$today;
+        $emailData['otp']= $otp ;
+        $emailData['name']= $name ;
+
+        SendForgetOtpEmailJob::dispatch($email,$subject, $emailData);
+
+        //$sendsms = $this->channelRepository->sendSms($request,$otp); 
+
+        return 'success';
+
+
+
+       }else{
+           return "NOT FOUND";
+       }
+
+        
+
+    }
     
     public function save($data)
     {

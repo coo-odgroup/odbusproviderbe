@@ -163,5 +163,12 @@ class UserService
        $list = $this->userRepository->AllUser();
         return $list;
     }
+
+    public function AgentForgetPasswordOtp($request){
+
+        $res = $this->userRepository->AgentForgetPasswordOtp($request);
+        return $res;
+
+    }
     
 }

@@ -151,5 +151,25 @@ class UserController extends Controller
         return $this->successResponse($list,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
+    public function AgentForgetPasswordOtp(){
+
+      $data = $request->all();
+      $agentForgetOtpValidator = $this->agentForgetOtpValidator->validate($data);
+     
+      if ($agentForgetOtpValidator->fails()) {
+        $errors = $agentForgetOtpValidator->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      }
+      try {
+        $response = $this->userService->AgentForgetPasswordOtp($request);
+        return $this->successResponse($response,Config::get('constants.REGT_SUCCESS'),Response::HTTP_OK);
+      }
+      catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }   
+
+
+    }
+
 
 }
