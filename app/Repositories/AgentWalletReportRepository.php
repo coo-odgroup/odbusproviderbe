@@ -31,6 +31,10 @@ class AgentWalletReportRepository
                          ->orWhere('remarks', 'like', '%' .$name . '%')
                          ->orWhere('payment_via', 'like', '%' .$name . '%')
                         ;   
+    } 
+
+    public function tranType($data,$tran_type){
+       return  $data->where('transaction_type', $tran_type );   
     }
 
    

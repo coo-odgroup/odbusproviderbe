@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Bus;
 use App\Models\Booking;
 use App\Models\Location;
+use App\Models\AgentWallet;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
@@ -16,12 +17,14 @@ class AgentCommissionReportRepository
     protected $booking;
     protected $location;
     protected $bus;
+    protected $agentWallet;
 
-    public function __construct(Booking $booking ,Location $location ,Bus $bus)
+    public function __construct(Booking $booking ,AgentWallet $agentWallet ,Location $location ,Bus $bus)
     {       
         $this->booking = $booking;       
         $this->location = $location;       
         $this->bus = $bus;       
+        $this->agentWallet = $agentWallet;       
     }    
     
     public function getData($request)
@@ -124,7 +127,7 @@ class AgentCommissionReportRepository
    
         if($data){
             foreach($data as $key=>$v){
-
+               // $v['wallet']=$this->agentWallet->where('transaction_id',$v->transaction_id)->get();
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 

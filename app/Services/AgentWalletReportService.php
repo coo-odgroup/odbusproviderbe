@@ -23,10 +23,11 @@ class AgentWalletReportService
 
 	public function getalldata($request)
 	{
-		// Log:info($request);
+		Log:info($request);
 		$paginate = $request['rows_number'] ;
 		$name = $request['name'] ;
 		$user_id =$request['user_id'];
+		$tran_type =$request['tran_type'];
 
 
 		$data= $this->agentWalletReportRepository->getWalletRecord($user_id);
@@ -43,8 +44,13 @@ class AgentWalletReportService
 		if($name!=null)
 		{
 			$data = $this->agentWalletReportRepository->Filter($data, $name);                     
-		}     
+		} 
 
+		if($tran_type!=null)
+		{
+			$data = $this->agentWalletReportRepository->tranType($data, $tran_type);                     
+		}     
+		// exit;
 		$data= $this->agentWalletReportRepository->Pagination($data,$paginate); 
 
 		$response = array(
