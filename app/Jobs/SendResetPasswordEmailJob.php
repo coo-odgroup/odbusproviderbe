@@ -44,8 +44,7 @@ class SendResetPasswordEmailJob implements ShouldQueue
        // Log::info($data);
 
         Mail::send('agentResetPassword', $data, function ($messageNew) {
-            $messageNew
-            //->from('support@odbus.in', 'ODBUS')
+            $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });
