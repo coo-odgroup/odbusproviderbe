@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
-class SendForgetOtpEmailJob implements ShouldQueue
+class SendResetPasswordEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $to;
     protected $subject;
     protected $req;
-    protected $otp;
+    protected $password;
     protected $name;
 
     public function __construct($to,$subject, $req)
@@ -26,7 +26,7 @@ class SendForgetOtpEmailJob implements ShouldQueue
        
         $this->to = $to;
         $this->subject = $subject;
-        $this->otp=$req['otp'];
+        $this->password=$req['password'];
         $this->name=$req['name'];
     }
     /**
@@ -37,13 +37,13 @@ class SendForgetOtpEmailJob implements ShouldQueue
     public function handle()
     {
         $data=[
-            'otp'=>$this->otp,
+            'password'=>$this->password,
             'name' => $this->name
         ];
 
        // Log::info($data);
 
-        Mail::send('agentOtp', $data, function ($messageNew) {
+        Mail::send('agentResetPassword', $data, function ($messageNew) {
             $messageNew
             //->from('support@odbus.in', 'ODBUS')
             ->to($this->to)

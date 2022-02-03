@@ -787,7 +787,11 @@ Route::post('/ownerpaymentData', [OwnerPaymentController::class, 'ownerpaymentDa
 Route::post('/Register', [UserController::class, 'Register']);
 Route::post('/VerifyOtp', [UserController::class, 'verifyOtp']);
 Route::post('/Login', [UserController::class, 'login']);
-Route::put('/AgentForgetPasswordOtp', [UserController::class, 'AgentForgetPasswordOtp']);
+Route::post('/AgentForgetPasswordOtp', [UserController::class, 'AgentForgetPasswordOtp']);
+Route::post('/AgentVerifyOtp', [UserController::class, 'AgentVerifyOtp']);
+Route::post('/AgentResetPassword', [UserController::class, 'AgentResetPassword']);
+
+
 Route::get('/GetAllRoles', [UserController::class, 'getRoles']);
 Route::post('/AgentRgestration', [UserController::class, 'agentRegister']);
 

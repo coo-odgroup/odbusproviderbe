@@ -11,6 +11,8 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendForgetOtpEmailJob;
+use App\Jobs\SendResetPasswordEmailJob;
+
 
 class UserRepository
 {
@@ -56,6 +58,65 @@ class UserRepository
         return $this->user->where('name','!=' ,null)->where('email','!=' ,null)->get();
     }
 
+    public function AgentVerifyOtp($data){
+
+        $exist= $this->user->where('email', $data['email'])->get();
+
+        if(isset($exist[0])){
+
+            if($data['otp'] == $exist[0]->otp ){
+        
+               $user = $this->user->find($exist[0]->id);       
+               $user->otp = null;
+               $user->update(); 
+               return $user;
+
+            }else{
+                return 'INVALID OTP';
+            }
+ 
+        }else{
+            return "NOT FOUND";
+        }
+
+    }
+
+    public function AgentResetPassword($data){
+
+        $exist= $this->user->where('email', $data['email'])->get();
+
+        if(isset($exist[0])){
+ 
+         $email= $exist[0]->email;
+         $phone=  $exist[0]->phone;
+         $name=  $exist[0]->name;
+ 
+ 
+        // Log::info($otp);
+ 
+        $user = $this->user->find($exist[0]->id);       
+        $user->password =bcrypt($data['password']);
+        $user->update();
+         
+         $today=date("Y-m-d H:i:s");
+ 
+         $subject = "Reset Password is successful - ".$today;
+         $emailData['password']= $data['password'] ;
+         $emailData['name']= $name ;
+ 
+         SendResetPasswordEmailJob::dispatch($email,$subject, $emailData);
+ 
+         //$sendsms = $this->channelRepository->sendSms($request,$otp); 
+ 
+         return $user;
+ 
+        }else{
+            return "NOT FOUND";
+        }
+ 
+
+    }
+
     public function AgentForgetPasswordOtp($data){
 
        $exist= $this->user->where('email', $data['email'])->get();
@@ -67,12 +128,13 @@ class UserRepository
         $name=  $exist[0]->name;
 
         $otp=  rand(100000,999999);
+
+       // Log::info($otp);
+
+       $user = $this->user->find($exist[0]->id);       
+       $user->otp = $otp;
+       $user->update();
         
-
-        $this->user->where('id', $exist[0]->id)->update(array(
-            'otp' => $otp
-        ));
-
         $today=date("Y-m-d H:i:s");
 
         $subject = "Forgot Password OTP - ".$today;
@@ -83,9 +145,7 @@ class UserRepository
 
         //$sendsms = $this->channelRepository->sendSms($request,$otp); 
 
-        return 'success';
-
-
+        return $user;
 
        }else{
            return "NOT FOUND";
@@ -331,9 +391,7 @@ public function getRoles()
   return Role::whereNotIn('status', [2])->where('id','!=', 3)->get();
 }
 
-public function agentRegister($request)
-
-{    
+public function agentRegister($request){    
     $users = $this->user->where('id', $request['userId'])->update(array(
         'name' => $request['name'],
         'email' => $request['email'],
@@ -363,5 +421,7 @@ public function agentRegister($request)
 
     
 }
+
+
 
 }

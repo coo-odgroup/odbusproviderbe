@@ -170,5 +170,23 @@ class UserService
         return $res;
 
     }
+
+    public function AgentVerifyOtp($request){
+
+        $res = $this->userRepository->AgentVerifyOtp($request);
+        return $res;
+
+    }
+
+    public function AgentResetPassword($request){
+
+        $res = $this->userRepository->AgentResetPassword($request);
+        return $res;
+
+    }
+
+    
+
+    
     
 }

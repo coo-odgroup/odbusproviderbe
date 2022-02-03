@@ -11,6 +11,9 @@ use App\Traits\ApiResponser;
 use InvalidArgumentException;
 use App\AppValidator\UserValidator;
 use App\AppValidator\AgentDetailsValidator;
+use App\AppValidator\AgentForgetOtpValidator;
+use App\AppValidator\AgentVerifyOtpValidator;
+use App\AppValidator\AgentResetPasswordValidator;
 use App\AppValidator\LoginValidator;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,14 +29,22 @@ class UserController extends Controller
     protected $userValidator;
     protected $loginValidator;
     protected $agentDetailsValidator;
+    protected $agentForgetOtpValidator;
+    protected $agentVerifyOtpValidator;
+    protected $agentResetPasswordValidator;
+    
+    
 
-    public function __construct(UsersService $usersService,UserService $userService,UserValidator $userValidator,LoginValidator $loginValidator,AgentDetailsValidator $agentDetailsValidator)
+    public function __construct(UsersService $usersService,UserService $userService,UserValidator $userValidator,LoginValidator $loginValidator,AgentDetailsValidator $agentDetailsValidator, AgentForgetOtpValidator $agentForgetOtpValidator,AgentVerifyOtpValidator $agentVerifyOtpValidator, AgentResetPasswordValidator $agentResetPasswordValidator)
     {
         $this->usersService = $usersService;
         $this->userService = $userService;
         $this->userValidator = $userValidator;    
         $this->loginValidator = $loginValidator; 
         $this->agentDetailsValidator = $agentDetailsValidator;       
+        $this->agentForgetOtpValidator = $agentForgetOtpValidator;       
+        $this->agentVerifyOtpValidator = $agentVerifyOtpValidator;       
+        $this->agentResetPasswordValidator = $agentResetPasswordValidator;       
     }
 
     // public function login(Request $request) {    
@@ -151,7 +162,7 @@ class UserController extends Controller
         return $this->successResponse($list,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
-    public function AgentForgetPasswordOtp(){
+    public function AgentForgetPasswordOtp(Request $request){
 
       $data = $request->all();
       $agentForgetOtpValidator = $this->agentForgetOtpValidator->validate($data);
@@ -162,14 +173,78 @@ class UserController extends Controller
       }
       try {
         $response = $this->userService->AgentForgetPasswordOtp($request);
-        return $this->successResponse($response,Config::get('constants.REGT_SUCCESS'),Response::HTTP_OK);
+        if($response=='NOT FOUND'){
+          return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
+
+        }else{
+          return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
+        }
+        
       }
       catch (Exception $e) {
+       // Log::info($e->getMessage());
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }   
 
 
     }
+
+    public function AgentVerifyOtp(Request $request){
+
+      $data = $request->all();
+      $agentForgetOtpValidator = $this->agentVerifyOtpValidator->validate($data);
+     
+      if ($agentForgetOtpValidator->fails()) {
+        $errors = $agentForgetOtpValidator->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      }
+      try {
+        $response = $this->userService->AgentVerifyOtp($request);
+        if($response=='NOT FOUND'){
+          return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
+
+        }elseif($response=='INVALID OTP'){
+          return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_OK);         
+
+        }else{
+          return $this->successResponse($response,Config::get('constants.OTP_VERIFIED'),Response::HTTP_OK);
+        }
+      }
+      catch (Exception $e) {
+       // Log::info($e->getMessage());
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }   
+
+
+    }
+
+    public function AgentResetPassword(Request $request){
+
+      $data = $request->all();
+      $agentResetPasswordValidator = $this->agentResetPasswordValidator->validate($data);
+     
+      if ($agentResetPasswordValidator->fails()) {
+        $errors = $agentResetPasswordValidator->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      }
+      try {
+        $response = $this->userService->AgentResetPassword($request);
+        if($response=='NOT FOUND'){
+          return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
+
+        }else{
+          return $this->successResponse($response,Config::get('constants.RESET_PASSWORD_SUCCESS'),Response::HTTP_OK);
+        }
+      }
+      catch (Exception $e) {
+       // Log::info($e->getMessage());
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }   
+
+
+    }
+
+    
 
 
 }
