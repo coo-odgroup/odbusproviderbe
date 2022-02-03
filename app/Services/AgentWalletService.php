@@ -60,10 +60,11 @@ class AgentWalletService
 
 
     public function getData($request)
-    {
-      // Log::info($request);
+    { 
+      Log::info($request);
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
+         $payment_via = $request['payment_via'] ;
          $user_id = $request['user_id'] ;
 
 
@@ -81,6 +82,11 @@ class AgentWalletService
         if($name!=null)
         {
             $data = $this->agentWalletRepository->Filter($data, $name);                     
+        } 
+
+        if($payment_via!=null)
+        {
+            $data = $this->agentWalletRepository->payViaFilter($data, $payment_via);                     
         }     
 
         $data= $this->agentWalletRepository->Pagination($data,$paginate); 

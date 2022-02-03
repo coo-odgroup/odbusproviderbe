@@ -121,21 +121,34 @@ class AgentWalletRepository
         return $this->agentWallet->whereNotIn('status', [2])->orderBy('id','DESC');
     }
 
+  
     public function getWalletRecord($user_id){
-        return $this->agentWallet->where('user_id',$user_id)->orderBy('id','DESC')->whereNotIn('status', [2]);
+        return $this->agentWallet->where('user_id',$user_id)->orderBy('id','DESC')->whereNotIn('status', [2])->where('payment_via','!=',"");
     }
 
     public function Pagination($data,$paginate){
        return $data->paginate($paginate);
     }
 
+    // public function Filter($data,$name){
+    //    return  $data->where('transaction_id', 'like', '%' .$name . '%')
+    //                      ->orWhere('reference_id', 'like', '%' .$name . '%')
+    //                      ->orWhere('amount', 'like', '%' .$name . '%')
+    //                      ->orWhere('remarks', 'like', '%' .$name . '%')
+    //                      ->orWhere('payment_via', 'like', '%' .$name . '%')
+    //                     ;   
+    // }
+
     public function Filter($data,$name){
        return  $data->where('transaction_id', 'like', '%' .$name . '%')
-                         ->orWhere('reference_id', 'like', '%' .$name . '%')
-                         ->orWhere('amount', 'like', '%' .$name . '%')
-                         ->orWhere('remarks', 'like', '%' .$name . '%')
-                         ->orWhere('payment_via', 'like', '%' .$name . '%')
+                         // ->orWhere('reference_id', 'like', '%' .$name . '%')
+                         // ->orWhere('amount', 'like', '%' .$name . '%')
+                         // ->orWhere('remarks', 'like', '%' .$name . '%')
+                        
                         ;   
+    }
+    public function payViaFilter($data,$name){
+       return  $data->Where('payment_via', 'like', '%' .$name . '%');   
     }
 
     public function Otp($id,$data)
