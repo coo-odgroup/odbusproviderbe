@@ -58,7 +58,7 @@ class AgentWalletRepository
 
         $notification = new $this->notification; 
          $notification->notification_heading = "Wallet Recharge of Rs.".$data['amount']." Request";
-         $notification->notification_details = " Dear Agent,Your Request of Rs.".$data['amount'].
+         $notification->notification_details = " Dear ".$user->name.", Your Request of Rs.".$data['amount'].
          " through ".$data['payment_via']." with transaction.id-".$data['transaction_id']." has been received.You will be notified once it will approved.";
          $notification->created_by = $data['user_name'];
          $notification->save();
@@ -70,7 +70,7 @@ class AgentWalletRepository
          $notification->userNotification()->saveMany($userNotification);
 
            $to_user = $user->email ;
-           $subject = "Wallet recharge request";
+           $subject = "Wallet recharge request - ".$user->name;
            $agentData= [
                     'userName'=>$user->name,
                     'amount'=>$data['amount'],
@@ -82,7 +82,7 @@ class AgentWalletRepository
 
            $to_support = "support@odbus.in";
            // $to_support = "bishal.seofied@gmail.com";
-           $subject = "Wallet recharge request From Agent";
+           $subject = "Wallet recharge request From ".$user->name;
            $supportData= [
                     'userName'=>$user->name,
                     'amount'=>$data['amount'],
@@ -178,8 +178,8 @@ class AgentWalletRepository
 
          $notification = new $this->notification; 
          $notification->notification_heading = "Wallet Recharge of Rs.".$otpdata[0]->amount." Approved";
-         $notification->notification_details = " Dear Agent,Your Request of Rs.".$otpdata[0]->amount.
-         " through ".$otpdata[0]->payment_via." with transaction.id-".$otpdata[0]->transaction_id." has been approved.Your Current balance is".$balance ;
+         $notification->notification_details = " Dear ".$user->name.", Your Request of Rs.".$otpdata[0]->amount.
+         " through ".$otpdata[0]->payment_via." with transaction.id-".$otpdata[0]->transaction_id." has been approved.Your Current balance is ".$balance ;
          $notification->created_by = $data->user_name ;
          $notification->save();
 
