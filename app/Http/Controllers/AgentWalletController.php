@@ -31,6 +31,20 @@ class AgentWalletController extends Controller
      
         $wallet = $this->agentWalletService->getAllData($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+     public function agentWalletBalancedetails(Request $request) 
+    {      
+     
+        $wallet = $this->agentWalletService->agentWalletBalancedetails($request);
+        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function agentAllTransaction(Request $request) 
+    {      
+     
+        $wallet = $this->agentWalletService->agentAllTransaction($request);
+        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
   
 

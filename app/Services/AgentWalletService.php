@@ -61,7 +61,7 @@ class AgentWalletService
 
     public function getData($request)
     { 
-      Log::info($request);
+      // Log::info($request);
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
          $payment_via = $request['payment_via'] ;
@@ -107,6 +107,18 @@ class AgentWalletService
     {
       
       return $this->agentWalletRepository->balance($id);
+    }
+
+    public function agentAllTransaction($id)
+    {
+      
+      return $this->agentWalletRepository->agentAllTransaction($id);
+    }
+
+    public function agentWalletBalancedetails($request)
+    {
+      
+      return $this->agentWalletRepository->agentWalletBalancedetails($request);
     }
         
     public function savePostData($data)

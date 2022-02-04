@@ -120,6 +120,77 @@ class AgentWalletRepository
     public function getAllWalletRecord(){
         return $this->agentWallet->with('user')->where('status', 0)->orderBy('id','DESC')->where('payment_via','!=',"");
     }
+    
+    public function agentWalletBalancedetails($request){
+        $paginate = $request->rows_number;
+        $name = $request->name;
+        $data= $this->user->with(['agentWallet' => function ($a)
+                                {$a->where('status',1)
+                                    ->orderBy('id','DESC');
+                                    }])->where('role_id ',3)
+                                    ->where('status',1);
+
+        if($paginate=='all')    
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) {
+            $paginate = 10 ;
+        }
+          if(!empty($name))
+        {
+           $data=$data->where('name', 'like', '%' .$name . '%')
+                    ->orWhere('email','like', '%' .$name . '%')
+                    ->orWhere('phone','like', '%' .$name . '%');
+        }
+
+        $data=$data->paginate($paginate); 
+      
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           ); 
+           return $response;    
+
+    } 
+
+    public function agentAllTransaction($request){
+        $paginate = $request->rows_number;
+        $name = $request->name;
+        
+
+        $data= $this->agentWallet->with('user')->where('status', 1)->orderBy('id','DESC');
+
+        if($paginate=='all')    
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) {
+            $paginate = 10 ;
+        }
+          if(!empty($name))
+        {
+           // $data=$data->where('name', 'like', '%' .$name . '%')
+           //          ->orWhere('email','like', '%' .$name . '%')
+           //          ->orWhere('phone','like', '%' .$name . '%');
+           $data=$data->whereHas('user', function ($query) use ($name) 
+                        {$query->where('name', 'like', '%' .$name . '%')
+                    ->orWhere('email','like', '%' .$name . '%')
+                    ->orWhere('phone','like', '%' .$name . '%');
+                    });
+        }
+
+        $data=$data->paginate($paginate); 
+      
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           ); 
+           return $response;    
+
+    }
 
   
     public function getWalletRecord($user_id){

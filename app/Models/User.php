@@ -12,6 +12,7 @@ use App\Models\UserBusOperator;
 use App\Models\OdbusCharges;
 use App\Models\Cancellationslabs;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\AgentWallet;
 
 class User extends Model
 {
@@ -44,6 +45,10 @@ class User extends Model
     public function Cancellationslabs()
     {        
         return $this->hasOne(Cancellationslabs::class);        
+    } 
+    public function agentWallet()
+    {
+        return $this->hasMany(AgentWallet::class);        
     } 
 
 }

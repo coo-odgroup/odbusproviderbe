@@ -157,6 +157,8 @@ Route::get('/agentWalletBalance/{id}',[AgentWalletController::class,'agentWallet
 Route::post('/agentWallet',[AgentWalletController::class,'addAgentWallet']);
 Route::post('/agentWalletData',[AgentWalletController::class,'getData']);
 Route::post('/agentWalletAllData',[AgentWalletController::class,'getAllData']);
+Route::post('/agentWalletBalance',[AgentWalletController::class,'agentWalletBalancedetails']);
+Route::post('/agentAllTransaction',[AgentWalletController::class,'agentAllTransaction']);
 Route::put('/changeAgentWalletStatus/{id}',[AgentWalletController::class,'changeStatus']);
 
 //Agent Notification
