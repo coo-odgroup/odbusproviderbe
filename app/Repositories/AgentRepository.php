@@ -79,7 +79,78 @@ class AgentRepository
          $status = $request['status'];
 
         $data= $this->agent
-                    ->whereNotIn('status', [2])
+                    ->where('status', 0)
+                    ->orderBy('id','DESC');
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        //  if($status!=null)
+        // {
+        //     if($status== 1){
+        //         $data = $data->where('status', 1); 
+        //     }
+        //     elseif($status== 0)
+        //     {
+        //         $data = $data->where('status', 0); 
+        //     }                                      
+        // }
+        if($name!=null && $status!=null)
+        {
+            $data = $data->where('name', 'like', '%' .$name . '%')
+                         ->orWhere('email', 'like', '%' .$name . '%')
+                         ->orWhere('phone', 'like', '%' .$name . '%')
+                         ->orWhere('bank_account_no', 'like', '%' .$name . '%')
+                         ->orWhere('ifsc_code', 'like', '%' .$name . '%')
+                         ->orWhere('organization_name', 'like', '%' .$name . '%')
+                         ->where('status', $status);                        
+        }
+        elseif($name!=null && $status==null)
+        {
+            $data = $data->where('name', 'like', '%' .$name . '%')
+                         ->orWhere('email', 'like', '%' .$name . '%')
+                         ->orWhere('phone', 'like', '%' .$name . '%')
+                         ->orWhere('bank_account_no', 'like', '%' .$name . '%')
+                         ->orWhere('ifsc_code', 'like', '%' .$name . '%')
+                         ->orWhere('organization_name', 'like', '%' .$name . '%');                        
+        }
+        elseif($name==null && $status!=null)
+        {
+            $data = $data->where('status', $status);                        
+        }
+        
+
+        
+
+        $data=$data->paginate($paginate);
+        // Log::info($data);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;
+
+       
+    }
+
+
+    public function ourAgentData($request)
+    {
+        // log::info($request);
+         $paginate = $request['rows_number'] ;
+         $name = $request['name'] ;
+         $status = $request['status'];
+
+        $data= $this->agent
+                    ->wherenotIn('status',[0,2  ])
                     ->orderBy('id','DESC');
 
         if($paginate=='all') 
@@ -314,6 +385,22 @@ class AgentRepository
             $post->status = 1;
         }elseif($post->status==1){
             $post->status = 0;
+        }
+        $post->update();
+        return $post;
+    }
+
+    public function blockAgent($request)
+    {
+        $post = $this->agent->find($request->id);
+        if($post->status==1){
+            $post->status = 3;
+        }elseif($post->status==3){
+            $post->status = 1;
+        }
+        if($request->reason!= NULL)
+        {
+             $post->reason =$request->reason;
         }
         $post->update();
         return $post;

@@ -106,11 +106,26 @@ class AgentService
     public function getAllAgentData($request)
     {
         return $this->agentRepository->getAllAgentData($request);
+    } 
+
+    public function ourAgentData($request)
+    {
+        return $this->agentRepository->ourAgentData($request);
     }
     public function changeStatus($id)
     {
         try {
             $agent = $this->agentRepository->changeStatus($id);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+        }
+        return $agent;
+
+    }
+     public function blockAgent($request)
+    {
+        try {
+            $agent = $this->agentRepository->blockAgent($request);
         } catch (Exception $e) {
             throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
         }

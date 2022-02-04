@@ -118,7 +118,7 @@ class AgentWalletRepository
 
   
     public function getAllWalletRecord(){
-        return $this->agentWallet->whereNotIn('status', [2])->orderBy('id','DESC');
+        return $this->agentWallet->with('user')->where('status', 0)->orderBy('id','DESC')->where('payment_via','!=',"");
     }
 
   

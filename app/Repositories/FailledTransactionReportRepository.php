@@ -75,7 +75,7 @@ class FailledTransactionReportRepository
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
-                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '2' );})
+                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '0' );})
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {

@@ -51,7 +51,7 @@ class AgentWalletService
             "data" => $data
            );   
 
-        // Log::info($response);
+        // Log::info($response['data']);
            return $response;  
 
 

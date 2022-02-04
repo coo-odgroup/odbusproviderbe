@@ -51,6 +51,12 @@ class AgentController extends Controller
 
       $agents = $this->agentService->getAllAgentData($request);
       return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    } 
+
+    public function ourAgentData(Request $request) {
+
+      $agents = $this->agentService->ourAgentData($request);
+      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
     public function createAgent(Request $request) {
@@ -190,6 +196,16 @@ class AgentController extends Controller
     public function changeStatus($id) {
         try{
           $this->agentService->changeStatus($id);
+        }
+        catch (Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
+      }
+
+      public function blockAgent(Request $request) {
+        try{
+          $this->agentService->blockAgent($request);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
