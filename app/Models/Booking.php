@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Users;
+use App\Models\User;
 use App\Models\Bus;
 use App\Models\BookingDetail;
 use App\Models\CustomerPayment;
@@ -24,6 +25,11 @@ class Booking extends Model
      public function Users()
       {
             return $this->belongsTo(Users::class);
+      } 
+
+      public function User()
+      {
+            return $this->belongsTo(User::class);
       }
 
       public function Bus()

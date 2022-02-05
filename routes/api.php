@@ -55,6 +55,7 @@ use App\Http\Controllers\FestivalFareController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\OdbusChargesController;
 use App\Http\Controllers\ExtraSeatBlockController;
+use App\Http\Controllers\AgentReportController;
 
 use App\Http\Controllers\OffersController;
 
@@ -831,3 +832,8 @@ Route::put('Association/{id}',[AssociationController::class,'updateuser']);
 Route::delete('Association/{id}', [AssociationController::class, 'deleteuser']);
 Route::put('changeAssociationPassword/{id}', [AssociationController::class, 'changePassword']);
 Route::put('/changeAssociationStatus/{id}', [AssociationController::class, 'changeStatus']);
+
+// AgentReport
+Route::post('agentbookingreport',[AgentReportController::class,'getData']);
+Route::post('agentcancelreport',[AgentReportController::class,'agentcancelreport']);
+Route::post('agentCommissionreport',[AgentReportController::class,'agentCommissionreport']);
