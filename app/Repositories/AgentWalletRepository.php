@@ -127,7 +127,8 @@ class AgentWalletRepository
         $data= $this->user->with(['agentWallet' => function ($a)
                                 {$a->where('status',1)
                                     ->orderBy('id','DESC');
-                                    }])->where('role_id ',3)
+                                    }])
+                                    ->where('role_id',3)
                                     ->where('status',1);
 
         if($paginate=='all')    
