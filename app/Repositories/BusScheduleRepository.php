@@ -237,6 +237,13 @@ class BusScheduleRepository
                 ->orWhere('created_by', 'like', '%' .$name . '%')
                 ->orderBy('id','DESC');
 
+                if($request['USER_BUS_OPERATOR_ID']!="")
+                {
+                    $data=$data->whereHas('bus', function ($query) use ($request){
+                       $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+                   });
+                }    
+
             // $data=$data->where('created_by', 'like', '%' .$name . '%')
             //            ->orwhereHas('bus.busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%' );})                        
             //            ->orWhereHas('bus', function ($query) use ($name) {$query->where('name','like', '%' .$name . '%');})
