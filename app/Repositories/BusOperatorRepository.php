@@ -29,7 +29,7 @@ class BusOperatorRepository
     }
     public function getAll()
     {
-        return $this->busOperators->whereNotIn('status', [2])->get();
+        return $this->busOperators->whereNotIn('status', [2])->orderBy('organisation_name', 'ASC')->get();
     }
     public function BusbyOperatorData($request)
     {
@@ -199,7 +199,6 @@ class BusOperatorRepository
         $operatorWithBuses =  $this->busOperators->with('bus.ticketPrice')
         
          ->where('id', $operatorId)
-         
          ->get('id');
 
         //Log::info($operatorWithBuses);

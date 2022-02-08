@@ -201,11 +201,11 @@ class BusScheduleRepository
 
     public function busSchedulerData($request)
     {
-      // Log::info($request);
           $paginate = $request['rows_number'] ;
          $name = $request['name'] ;     
 
         $data= $this->busSchedule->with('busScheduleDate','bus.busOperator','bus.ticketPrice')
+                              
                                  ->whereNotIn('status', [2])
                                  ->orderBy('id','DESC');
 
@@ -227,16 +227,24 @@ class BusScheduleRepository
 
         if($name!=null)
         {
-            $data=$data->Where('created_by', 'like', '%' .$name . '%')
-                       ->orwhereHas('bus.busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%' );})                        
-                       ->orWhereHas('bus', function ($query) use ($name) {$query->where('name','like', '%' .$name . '%');})
-                       ->orWhereHas('bus', function ($query) use ($name) {$query->where('bus_number','like', '%' .$name . '%' );});
+            $data= $this->busSchedule->with('busScheduleDate','bus.busOperator','bus.ticketPrice')
+                ->whereHas('bus.busOperator', function ($query) use($name){
+                     $query->where('name', 'like', '%'.$name.'%')
+                       ->orwhere('bus_number', 'like', '%'.$name.'%') 
+                       ->orwhere('operator_name', 'like', '%'.$name.'%') ;
+                })
+                ->where('status','!=' ,'2')
+                ->orWhere('created_by', 'like', '%' .$name . '%')
+                ->orderBy('id','DESC');
+
+            // $data=$data->where('created_by', 'like', '%' .$name . '%')
+            //            ->orwhereHas('bus.busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%' );})                        
+            //            ->orWhereHas('bus', function ($query) use ($name) {$query->where('name','like', '%' .$name . '%');})
+            //            ->orWhereHas('bus', function ($query) use ($name) {$query->where('bus_number','like', '%' .$name . '%' );});
         }     
 
         $data=$data->paginate($paginate);
         
-
-
         if(count($data) > 0){
             foreach($data as $key=>$v){    
                 if(count($v->bus['ticketPrice'])>0)
