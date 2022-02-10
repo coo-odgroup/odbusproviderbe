@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "8314fcc2-9263-4fbc-af3f-3a00e8af71dd",
-		"name": "ODBUS PROVIDER API",
+		"_postman_id": "dceb27fe-70cb-459b-a5c7-88112a229fb9",
+		"name": "ODBUS PROVIDER API Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -2825,7 +2825,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"bus_operator_id\":\"1\",\r\n    \"coupon_title\":\"zzzz\",\r\n    \"coupon_code\":\"od01zz\",\r\n    \"type\":\"1\",\r\n    \"amount\":\"10\",\r\n    \"valid_by\":\"1\",\r\n    \"percentage\":40,\r\n    \"max_discount_price\":\"\",\r\n    \"min_tran_amount\":\"\",\r\n    \"max_redeem\":\"5\",\r\n    \"max_use_limit\":\"20\",\r\n    \"category\":\"2\",\r\n    \"from_date\":\"2020-10-01 14:20:55 \",\r\n    \"to_date\":\"2020-11-01 14:20:55\",\r\n    \"short_desc\":\"some info goes here\",\r\n    \"full_desc\":\"Full info goes here\",\r\n    \"created_by\":\"admin\"\r\n            \r\n}",
+							"raw": "{\r\n    \"bus_operator_id\":125,\r\n    \"coupon_title\": \"testing\",\r\n    \"coupon_type\":1,\r\n    \"coupon_code\":\"testing\",\r\n    \"coupon_discount_type\":1,\r\n    \"percentage\":10,\r\n    \"max_discount_price\":500,\r\n    \"amount\":\"\",\r\n    \"min_tran_amount\":\"\",\r\n    \"valid_by\":1,\r\n    \"max_redeem\":\"5\",\r\n    \"from_date\": \"2022-02-10\",\r\n    \"to_date\":\"2022-02-20\",\r\n    \"short_description\":\"testing\",\r\n    \"full_description\":\"testing\",\r\n    \"created_by\":\"admin\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

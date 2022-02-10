@@ -74,7 +74,6 @@ class CouponRepository
     public function save($data)
     {
         // Log::info($data);
-   
         $coupons = new $this->coupon;
         $coupons->coupon_type = $data['coupon_type'];
         $coupons->coupon_title = $data['coupon_title'];
@@ -99,7 +98,7 @@ class CouponRepository
             $coupons->source_id = $data['source_id'];
             $coupons->destination_id = $data['destination_id'];
         }
-        if($coupons->coupon_discount_type==1)
+        if($data['coupon_discount_type']==1)
         {
             $coupons->percentage = $data['percentage'];
             $coupons->max_discount_price = $data['max_discount_price'];
