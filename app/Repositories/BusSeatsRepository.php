@@ -221,6 +221,16 @@ public function update($data, $id)
     $layoutArray=$data['bus_seat_layout_data'];
     $bus_id=$data['bus_id'];
 
+    //////////  get prev seatLayout_id (if doesnot match then update bus seats table all record for that bus status to 2) ///////
+
+    $getBus_data=$this->bus->where("id",$bus_id)->get();
+
+    if($getBus_data[0]->bus_seat_layout_id != $data['bus_seat_layout_id']){
+        Log::info('status 2');
+        $this->busSeats->where('bus_id',$bus_id)->update(array("status"=>2));
+    }
+
+
     $this->bus->where("id",$bus_id)->update(array("bus_seat_layout_id"=>$data['bus_seat_layout_id']));
     //Log::info($layoutArray);
        
