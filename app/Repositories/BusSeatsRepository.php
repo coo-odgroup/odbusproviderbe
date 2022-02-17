@@ -90,7 +90,7 @@ public function getModel(BusSeats $busseats,$data,$berthData)
     $busseats->ticket_price_id = $data['ticket_price_id'];
     $busseats->duration = $data['duration'];
     $busseats->status = '1';
-    $busseats->created_by = "Admin";
+    $busseats->created_by = $data['created_by'];
     return $busseats;
 }
 public function saveBusSeats($busseats,$data,$berthData)
@@ -226,7 +226,7 @@ public function update($data, $id)
     $getBus_data=$this->bus->where("id",$bus_id)->get();
 
     if($getBus_data[0]->bus_seat_layout_id != $data['bus_seat_layout_id']){
-        Log::info('status 2');
+        //Log::info('status 2');
         $this->busSeats->where('bus_id',$bus_id)->update(array("status"=>2));
     }
 
@@ -282,11 +282,14 @@ public function update($data, $id)
                             }
                             //Log::info("UPPER BERTH: Add A new seat ".$upperBerthData['seatId']);
                             $busseats = new $this->busSeats;
-                            $data['ticket_price_id']=$ticketpriceID->id;
-                            $data['category']='0';
-                            $data['duration']=$upperBerthData['extraSeat'];
-                            $data['status']=1;
-                            $busseats=$this->getModel($busseats,$data,$upperBerthData);
+                            $upd_data['bus_id']=$data['bus_id'];
+                            $upd_data['ticket_price_id']=$ticketpriceID->id;
+                            $upd_data['category']='0';
+                            $upd_data['duration']=$upperBerthData['extraSeat'];
+                            $upd_data['status']=1;
+                            $upd_data['created_by']=(isset($data['created_by'])) ? $data['created_by'] : 'Admin';
+                            
+                            $busseats=$this->getModel($busseats,$upd_data,$upperBerthData);
                             $busseats->save();
                         }
                         if(isset($upperBerthData['seatChecked']) && $upperBerthData['seatChecked']==false)
@@ -334,11 +337,13 @@ public function update($data, $id)
                             }
                             //Log::info("LOWER BERTH: Add A new seat ".$lowerBerthData['seatId']);
                             $busseats = new $this->busSeats;
-                            $data['ticket_price_id']=$ticketpriceID->id;
-                            $data['category']='0';
-                            $data['duration']=$lowerBerthData['extraSeat'];
-                            $data['status']=1;
-                            $busseats=$this->getModel($busseats,$data,$lowerBerthData);
+                            $upd_data['bus_id']=$data['bus_id'];
+                            $upd_data['ticket_price_id']=$ticketpriceID->id;
+                            $upd_data['category']='0';
+                            $upd_data['duration']=$lowerBerthData['extraSeat'];
+                            $upd_data['status']=1;
+                            $upd_data['created_by']=(isset($data['created_by'])) ? $data['created_by'] : 'Admin';
+                            $busseats=$this->getModel($busseats,$upd_data,$lowerBerthData);
                             $busseats->save();
                         }
                         if(isset($lowerBerthData['seatChecked']) && $lowerBerthData['seatChecked']==false)

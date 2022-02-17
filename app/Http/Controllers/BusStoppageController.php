@@ -329,6 +329,11 @@ class BusStoppageController extends Controller
         $new_arr['bus_id']=$data['bus_id'];
         $new_arr['bus_seat_layout_data']=$data['bus_seat_layout_data'];
         $new_arr['bus_seat_layout_id']=$data['bus_seat_layout_id'];
+        $new_arr['created_by']=$data['created_by'];
+        
+        
+        
+
         
         $this->BusSeatsService->updatePost($new_arr, $id);
 
