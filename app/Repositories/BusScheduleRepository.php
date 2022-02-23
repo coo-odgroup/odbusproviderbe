@@ -419,4 +419,13 @@ class BusScheduleRepository
         return $post;
     }
 
+    public function unscheduledbuslist()
+    {
+        $data = $this->bus
+                ->with('busOperator')
+                ->where("status",1)
+                ->whereNotIn('id', $this->busSchedule->select('bus_id'))->get();
+
+        return $data;
+    }
 }

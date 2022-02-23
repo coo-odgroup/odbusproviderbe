@@ -122,5 +122,16 @@ class BusScheduleService
         }
         return $busSchedule;
     }
-    
+
+    public function unscheduledbuslist()
+    {
+        try {
+            $busSchedule = $this->busScheduleRepository->unscheduledbuslist();
+            return $busSchedule;
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.EXCEPTION_ERROR'));
+        }
+       
+    }
 }

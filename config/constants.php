@@ -25,5 +25,6 @@ return [
     'VERIFIED' => 'otp verification is successful',
     'REGT_SUCCESS' => 'Registration Successful',    
     'CONSUMER_API_URL' => 'https://consumer.odbus.co.in/api/',    
+    'EXCEPTION_ERROR' => 'Error Occured',    
 ];
 

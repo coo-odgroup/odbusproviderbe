@@ -604,6 +604,7 @@ Route::post('/busSchedule', [BusScheduleController::class, 'createBusSchedule'])
 Route::put('/busSchedule/{id}', [BusScheduleController::class, 'updateBusSchedule']);
 Route::delete('/busSchedule/{id}', [BusScheduleController::class, 'deleteBusSchedule']);
 Route::get('/busSchedule/{id}', [BusScheduleController::class, 'getBusSchedule']);
+Route::get('/unscheduledbuslist', [BusScheduleController::class, 'unscheduledbuslist']);
 Route::put('/changeStatusBusSchedule/{id}', [BusScheduleController::class, 'changeStatus']);
 
 Route::get('/busschedulecronjob', [BusScheduleController::class, 'scheduleCronJob']);
