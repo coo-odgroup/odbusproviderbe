@@ -15,7 +15,7 @@ return [
     'OTP_INVALID' => 'Invalid OTP',
     'RESET_PASSWORD_SUCCESS' => 'Reset Password is successful',
     'OTP_VERIFIED' => 'OTP verification successful',
-    'UNREGISTERED' => 'Agent is not registered',
+    'UNREGISTERED' => 'User is not registered',
     'ROLE_MISMATCH' => 'Role Mismatches',
     'OTP_NOT_VERIFIED' => 'OTP is not yet validated',
     'PWD_MISMATCH' => 'Incorrect Password',
