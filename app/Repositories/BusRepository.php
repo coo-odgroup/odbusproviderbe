@@ -428,7 +428,7 @@ class BusRepository
    
     public function BusData( $request)
     {
-        Log::info($request);
+        // Log::info($request);
 
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;   
@@ -437,10 +437,12 @@ class BusRepository
         $operator= $request['operator'];   
         $status= $request['status'];   
 
-        $data= $this->bus->with('busOperator','busstoppage','BusType','busAmenities.amenities','busSafety.safety','ticketPrice.getBusSeats.seats','busContacts','busSeats.seats')
-                        ->whereHas('ticketPrice', function ($query) 
-                                     {$query->where('status','!=', 2 );})
-                        ->whereNotIn('status', [2])->orderBy('id','DESC');
+        $data= $this->bus->with('busOperator','busstoppage','BusType','busAmenities.amenities','busSafety.safety','busContacts','busSeats.seats')
+            ->with(['ticketPrice.getBusSeats' => function($query) {
+                    $query->where('status','!=', 2 )->with('seats');}])
+            ->whereHas('ticketPrice', function ($query) 
+                         {$query->where('status','!=', 2 );})
+            ->whereNotIn('status', [2])->orderBy('id','DESC');
                   
 
         if($request['USER_BUS_OPERATOR_ID']!="")
