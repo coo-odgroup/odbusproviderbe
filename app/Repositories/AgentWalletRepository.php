@@ -49,11 +49,15 @@ class AgentWalletRepository
     {     
         $user = $this->user->find($data['user_id']);
         $balance = $this->agentWallet->where('user_id',$data['user_id'])->where('status',1)->orderBy('id','DESC')->limit(1)->get();
-
         $agentWallet = new $this->agentWallet;
         $agentWallet=$this->getModel($data,$agentWallet);
-        $agentWallet->balance =  $balance[0]->balance;
- 
+        if(count($balance)==0)
+        {
+            $agentWallet->balance = 0;
+        }else
+        {
+             $agentWallet->balance =  $balance[0]->balance; 
+        } 
         $agentWallet->save(); 
 
         $notification = new $this->notification; 

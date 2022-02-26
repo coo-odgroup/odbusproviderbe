@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 use App\Models\AgentWallet;
+use App\Models\Booking;
 
 
 
@@ -11,9 +12,10 @@ class AgentWalletReportRepository
   
     protected $agentWallet; 
     
-    public function __construct(AgentWallet $agentWallet)
+    public function __construct(AgentWallet $agentWallet,Booking $booking)
     {
         $this->agentWallet = $agentWallet;
+        $this->booking = $booking;
     }
       
     public function getWalletRecord($user_id){
@@ -21,7 +23,15 @@ class AgentWalletReportRepository
     }
 
     public function Pagination($data,$paginate){
-       return $data->paginate($paginate);
+        $data=  $data->paginate($paginate);
+         if($data){
+            foreach($data as $key=>$v){
+                if($v->booking_id!=null){
+                    $v['pnrDetails']=$this->booking->where('id', $v->booking_id)->get();
+                }
+            }
+        }
+        return $data;
     }
 
     public function Filter($data,$name){

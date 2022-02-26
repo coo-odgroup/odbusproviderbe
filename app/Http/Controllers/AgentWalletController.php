@@ -57,7 +57,7 @@ class AgentWalletController extends Controller
 
     public function addAgentWallet(Request $request) 
     { 
-
+        
         $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
 
         $agentWalletValidator = $this->agentWalletValidator->validate($data);
