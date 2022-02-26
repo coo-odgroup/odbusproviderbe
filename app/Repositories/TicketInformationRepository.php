@@ -43,7 +43,7 @@ class TicketInformationRepository
                              ->where('pnr',$request[0])
                              ->where('status',1)
                              ->where('journey_dt','>',$date)
-                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
+                             // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
                              ->orderBy('id','DESC')->get();
         
           if($pnr_Details){

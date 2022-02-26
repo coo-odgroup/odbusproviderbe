@@ -72,7 +72,7 @@ class CompleteReportRepository
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->where('status',1)
-                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
+                             // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {
