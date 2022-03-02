@@ -227,7 +227,7 @@ class TicketInformationRepository
 
         $access_token_url = $api_url.'ClientLogin';  
 
-          $API_RESP_TOKEN = $client->request('POST', $url,  [
+          $API_RESP_TOKEN = $client->request('POST', $access_token_url,  [
             'verify' => false,
             'form_params' => [
                 'client_id' => "odbusSasAdminApi",
@@ -247,7 +247,7 @@ class TicketInformationRepository
         $url = $api_url.'CheckSeatStatus';   
              
         $API_RESP = $client->request('POST', $url,  [
-            'headers'=> ['Authorization' =>  $access_token],
+            'headers'=> ['Authorization' =>   "Bearer " . $access_token],
             'verify' => false,
             'form_params' => [
                 'entry_date' => $request['bookingInfo']['journey_dt'],
@@ -313,7 +313,7 @@ class TicketInformationRepository
              $url = $api_url.'BookTicket';
              $res = $client->request('POST', $url,  [
                 'verify' => false,
-                'headers'=> ['Authorization' =>  $access_token],
+                'headers'=> ['Authorization' =>   "Bearer " . $access_token],
                 'form_params' => $BookTicketBody
             ]);
 
@@ -415,7 +415,7 @@ class TicketInformationRepository
            $url = $api_url.'PaymentStatus';
            $resp = $client->request('POST', $url,  [
               'verify' => false,
-              'headers'=> ['Authorization' =>  $access_token],
+              'headers'=> ['Authorization' =>   "Bearer " . $access_token],
               'form_params' => $final_arr
           ]);
 
