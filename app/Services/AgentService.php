@@ -112,10 +112,10 @@ class AgentService
     {
         return $this->agentRepository->ourAgentData($request);
     }
-    public function changeStatus($id)
+    public function changeStatus($request)
     {
         try {
-            $agent = $this->agentRepository->changeStatus($id);
+            $agent = $this->agentRepository->changeStatus($request);
         } catch (Exception $e) {
             throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
         }

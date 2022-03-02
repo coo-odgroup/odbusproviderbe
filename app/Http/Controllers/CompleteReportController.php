@@ -16,7 +16,6 @@ class CompleteReportController extends Controller
     use ApiResponser;
    
     protected $completereportService; 
- 
 
     
     public function __construct(CompleteReportService $completereportService)

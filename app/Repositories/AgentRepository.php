@@ -224,6 +224,8 @@ class AgentRepository
         $agent->pancard_no = $data['pancard_no'];
         $agent->organization_name = $data['organization_name'];
         $agent->address = $data['address'];
+        $agent->street = $data['street'];
+        $agent->city = $data['city'];
         $agent->landmark = $data['landmark'];
         $agent->pincode = $data['pincode'];
         $agent->name_on_bank_account = $data['name_on_bank_account'];
@@ -377,14 +379,20 @@ class AgentRepository
         return $post;
 
     }
-    public function changeStatus($id)
+    public function changeStatus($request)
     {
-     
-        $post = $this->agent->find($id);
+        $agent_id =random_int(100000, 999999);
+        $post = $this->agent->find($request->id);
+     // log::info($agent_id);
+     // exit;
         if($post->status==0){
             $post->status = 1;
+            $post->created_by = $request->created_by;
+            $post->unique_id = $agent_id;
         }elseif($post->status==1){
             $post->status = 0;
+            $post->created_by = $request->created_by;
+            $post->unique_id = $agent_id;
         }
         $post->update();
         return $post;

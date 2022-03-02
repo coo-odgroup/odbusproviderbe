@@ -814,7 +814,7 @@ Route::get('/Agent', [AgentController::class, 'getAllAgent']);
 Route::put('/Agent/{id}', [AgentController::class, 'updateAgent']);
 Route::delete('/Agent/{id}', [AgentController::class, 'deleteAgent']);
 Route::get('/Agent/{id}', [AgentController::class, 'getAgent']);
-Route::put('/AgentChangeStatus/{id}', [AgentController::class, 'changeStatus']);
+Route::put('/AgentChangeStatus', [AgentController::class, 'changeStatus']);
 Route::post('/blockAgent', [AgentController::class, 'blockAgent']);
 
 Route::post('/Agentprofile', [AgentController::class, 'agentprofile']);

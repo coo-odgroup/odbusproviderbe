@@ -60,7 +60,8 @@ class AgentController extends Controller
     }
 
     public function createAgent(Request $request) {
-  
+    // Log::info($request);
+    // exit;
       $data = $request->only([
         'name',
         'email',
@@ -68,6 +69,8 @@ class AgentController extends Controller
         'password',
         'user_type',
         'otp',
+        'city',
+        'street',
         'location',
         'adhar_no',
         'pancard_no',
@@ -193,9 +196,10 @@ class AgentController extends Controller
       
     }   
 
-    public function changeStatus($id) {
+    public function changeStatus(Request $request) {
+      // Log::info($request);exit;
         try{
-          $this->agentService->changeStatus($id);
+          $this->agentService->changeStatus($request);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
