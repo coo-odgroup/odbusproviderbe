@@ -222,9 +222,32 @@ class TicketInformationRepository
         $client = new \GuzzleHttp\Client();       
 
         $api_url = Config::get('constants.CONSUMER_API_URL');
+
+        ////////// get access token first 
+
+        $access_token_url = $api_url.'ClientLogin';  
+
+          $API_RESP_TOKEN = $client->request('POST', $url,  [
+            'verify' => false,
+            'form_params' => [
+                'client_id' => "odbusSasAdminApi",
+                'password' => "Admin@2010"
+            ]
+        ]);
+
+        $access_token_res = json_decode($API_RESP_TOKEN->getBody());
+
+        $access_token = $access_token_res->data->access_token;
+
+        Log::info( $access_token);
+
+        ///////////////////////////////
+
+
         $url = $api_url.'CheckSeatStatus';   
              
         $API_RESP = $client->request('POST', $url,  [
+            'headers'=> ['Authorization' =>  $access_token],
             'verify' => false,
             'form_params' => [
                 'entry_date' => $request['bookingInfo']['journey_dt'],
@@ -290,6 +313,7 @@ class TicketInformationRepository
              $url = $api_url.'BookTicket';
              $res = $client->request('POST', $url,  [
                 'verify' => false,
+                'headers'=> ['Authorization' =>  $access_token],
                 'form_params' => $BookTicketBody
             ]);
 
@@ -391,6 +415,7 @@ class TicketInformationRepository
            $url = $api_url.'PaymentStatus';
            $resp = $client->request('POST', $url,  [
               'verify' => false,
+              'headers'=> ['Authorization' =>  $access_token],
               'form_params' => $final_arr
           ]);
 
