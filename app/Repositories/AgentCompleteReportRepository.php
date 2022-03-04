@@ -69,8 +69,8 @@ class AgentCompleteReportRepository
         // Log::info( $user_id);
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users')
-                             ->with('bus.busstoppage')
+                                    'Bus','Users','User')
+                             ->with('bus.busstoppage','bus.busContacts')
                              ->where('user_id', $user_id )
                              ->where('status', 1 )
                              ->orderBy('id','DESC');
