@@ -28,6 +28,12 @@ class AssociationRepository
       return $this->usercontent->with('UserBusOperator')->where('status', 1)->get();
    }
 
+   public function getAllAssoc()
+   {
+
+      return $this->usercontent->where('role_id',5)->where('status', 1)->get();
+   }
+
    public function getAllData($request)
    {
       $paginate = $request['rows_number'] ;

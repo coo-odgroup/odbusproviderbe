@@ -89,6 +89,8 @@ use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\BannerController;
 
+use App\Http\Controllers\AssociationAssignOperatorController;
+
 
 //Agent
 use App\Http\Controllers\AgentWalletController;
@@ -113,6 +115,9 @@ Route::post('/emailtest', [TestEmailController::class,'emailtest']);
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
+
+
+
 
 
 //Ticket Information 
@@ -833,8 +838,20 @@ Route::put('Association/{id}',[AssociationController::class,'updateuser']);
 Route::delete('Association/{id}', [AssociationController::class, 'deleteuser']);
 Route::put('changeAssociationPassword/{id}', [AssociationController::class, 'changePassword']);
 Route::put('/changeAssociationStatus/{id}', [AssociationController::class, 'changeStatus']);
+Route::get('/allAssoc', [AssociationController::class, 'getAllAssoc']);
+
+
+Route::post('/assocAssignOperator', [AssociationAssignOperatorController::class, 'addAssignOperator']);
+Route::post('/getassocAssignOperator', [AssociationAssignOperatorController::class, 'getAllAssignOperator']);
+Route::post('/deleteassocAssignOperator', [AssociationAssignOperatorController::class, 'deleteassocAssignOperator']);
+
+
+
 
 // AgentReport
 Route::post('agentbookingreport',[AgentReportController::class,'getData']);
 Route::post('agentcancelreport',[AgentReportController::class,'agentcancelreport']);
 Route::post('agentCommissionreport',[AgentReportController::class,'agentCommissionreport']);
+
+
+
