@@ -27,7 +27,7 @@ class AssociationAssignOperatorRepository
 
     public function getAllAssignOperator($request)
      {
-      Log::info($request);
+      // Log::info($request);
 
         $paginate = $request['rows_number'] ;
         $assoc_id = $request['assoc_id'] ;

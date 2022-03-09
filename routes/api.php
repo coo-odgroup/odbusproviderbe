@@ -845,6 +845,8 @@ Route::post('/assocAssignOperator', [AssociationAssignOperatorController::class,
 Route::post('/getassocAssignOperator', [AssociationAssignOperatorController::class, 'getAllAssignOperator']);
 Route::post('/deleteassocAssignOperator', [AssociationAssignOperatorController::class, 'deleteassocAssignOperator']);
 
+// Route::post('/getAssocBuslist', [AssociationAssigBusController::class, 'getAssocBuslist']);
+
 
 
 
