@@ -77,7 +77,7 @@ class AgentCommissionReportRepository
                              ->with('bus.busstoppage')
                              // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
                              ->where('user_id', $user_id )
-                             ->where('status',1)
+                             ->where('status','!=',0)
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {
