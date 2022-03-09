@@ -28,6 +28,11 @@ class AssociationService
         return $this->AssociationRepository->getAllData($request);
     }
 
+    public function getAllAssoc()
+    {
+        return $this->AssociationRepository->getAllAssoc();
+    }
+
     public function addusercontent($request)
     {
         return $this->AssociationRepository->addusercontent($request);

@@ -13,6 +13,8 @@ use App\Models\OdbusCharges;
 use App\Models\Cancellationslabs;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\AgentWallet;
+// use App\Models\AssocAssignBus;
+// use App\Models\AssocAssignOperator;
 
 class User extends Model
 {
@@ -50,6 +52,17 @@ class User extends Model
     {
         return $this->hasMany(AgentWallet::class);        
     } 
+
+
+    // public function assocAssignOperator()
+    // {
+    //     return $this->hasMany(AssocAssignOperator::class);        
+    // } 
+
+    // public function assocAssignBus()
+    // {
+    //     return $this->hasMany(AssocAssignBus::class);        
+    // } 
 
 }
 
