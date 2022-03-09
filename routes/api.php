@@ -109,6 +109,8 @@ use App\Http\Controllers\TestEmailController;
 use App\Http\Controllers\TicketFareSlabController;
 use App\Http\Controllers\TicketInformationController;
 
+use App\Http\Controllers\OprAssignOperatorController;
+
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
 
@@ -861,3 +863,8 @@ Route::post('agentCommissionreport',[AgentReportController::class,'agentCommissi
 
 
 
+//Operator Assign operators
+Route::get('/allUserOperator', [AssociationController::class, 'getAllUserOperator']);
+Route::post('/oprAssignOperator', [OprAssignOperatorController::class, 'addAssignOperator']);
+Route::post('/getoprAssignOperator', [OprAssignOperatorController::class, 'getAllAssignOperator']);
+Route::post('/deleteoprAssignOperator', [OprAssignOperatorController::class, 'deleteOprAssignOperator']);

@@ -42,11 +42,20 @@ class AssociationController extends Controller
         return $this->successResponse($usercontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function getAllUserOperator()
+    {
+        $usercontent = $this->AssociationService->getAllUserOperator();
+        return $this->successResponse($usercontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
      public function adduser(Request $request)
      {
      	// Log::info($request);exit;
      	 $data = $request->only([
           'name',
+          'short_nm',
+          'support_email',
+          'support_contact',
           'email',
           'phone',
           'password',
@@ -85,6 +94,9 @@ class AssociationController extends Controller
 
      	 $data = $request->only([
           'name',
+          'short_nm',
+          'support_email',
+          'support_contact',
           'email',
           'phone',
           'location',

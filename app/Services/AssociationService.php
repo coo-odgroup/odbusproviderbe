@@ -33,6 +33,11 @@ class AssociationService
         return $this->AssociationRepository->getAllAssoc();
     }
 
+    public function getAllUserOperator()
+    {
+        return $this->AssociationRepository->getAllUserOperator();
+    }
+
     public function addusercontent($request)
     {
         return $this->AssociationRepository->addusercontent($request);

@@ -12,6 +12,9 @@ class AssociationValidator
         $rules = [
             'name' => 'required',
             'email' => 'required',
+            'short_nm' => 'required',
+            'support_email' => 'required',
+            'support_contact' => 'required',
             'phone' => 'required',
             'password' => 'required',
             'location' => 'required'

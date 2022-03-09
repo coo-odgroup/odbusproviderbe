@@ -30,8 +30,12 @@ class AssociationRepository
 
    public function getAllAssoc()
    {
-
       return $this->usercontent->where('role_id',5)->where('status', 1)->get();
+   }
+
+   public function getAllUserOperator()
+   {
+      return $this->usercontent->where('role_id',4)->where('status', 1)->get();
    }
 
    public function getAllData($request)
@@ -80,7 +84,9 @@ class AssociationRepository
              $usercontent->name =$data['name'];
              $usercontent->email =$data['email'];
              $usercontent->phone =$data['phone'];
-
+             $usercontent->short_nm = $data['short_nm'];
+             $usercontent->support_email = $data['support_email'];
+             $usercontent->support_contact = $data['support_contact'];
              $usercontent->location =$data['location'];
              $usercontent->president_name =$data['president_name'];
              $usercontent->president_phone =$data['president_phone'];
@@ -120,6 +126,9 @@ class AssociationRepository
         { 
               $usercontent = $this->usercontent->find($id);
               $usercontent->name =$data['name'];
+              $usercontent->short_nm = $data['short_nm'];
+              $usercontent->support_email = $data['support_email'];
+              $usercontent->support_contact = $data['support_contact'];
               $usercontent->email =$data['email'];
               $usercontent->phone =$data['phone'];
               $usercontent->location =$data['location'];
