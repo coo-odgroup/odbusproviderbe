@@ -28,9 +28,12 @@ class AssociationAssignBusRepository
   public function getAssocBuslist($request)
   {
     $opr = $this->AssocAssignOperator
-                ->with('busOperator.bus')
+                ->with('busOperator.bus.ticketPrice','busOperator.bus.busOperator')
                 ->where('user_id',$request['assoc_id'])
                 ->get();
+
+    
+
     $busData=[];
 
     foreach($opr as $k=>$data)
@@ -42,20 +45,35 @@ class AssociationAssignBusRepository
         }       
       }
     }
-    // Log::info($busData);
+    if($busData)
+    {
+      foreach ($busData as $v)
+      {
+        foreach ($v->ticketPrice as $k=>$a) {
+
+          $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+          $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+        }
+         // Log::info($stoppages['source']);
+        $v['from_location']=$stoppages['source'][0];
+        $v['to_location']=$stoppages['destination'][0];
+      }
+    }
+
+    
     return $busData;
   } 
 
 
    public function getassocAssignBus($request)
      {
-      // Log::info($request);
-
         $paginate = $request['rows_number'] ;
         $assoc_id = $request['assoc_id'] ;
 
-
-        $data = $this->AssocAssignBus->with('bus.busOperator','bus.ticketPrice','User')->orderBy('id','DESC');
+        $data = $this->AssocAssignBus->with('bus.busOperator','bus.ticketPrice','User')
+                                     ->whereHas('User', function ($query) 
+                                            {$query->where('role_id', '5' );
+                                          })->orderBy('id','DESC');
        
         if($paginate=='all') 
         {

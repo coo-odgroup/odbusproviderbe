@@ -33,7 +33,11 @@ class AssociationAssignOperatorRepository
         $assoc_id = $request['assoc_id'] ;
 
 
-        $data = $this->AssocAssignOperator->with('busOperator','User')->orderBy('id','DESC');
+        $data = $this->AssocAssignOperator->with('busOperator','User')
+                                          ->whereHas('User', function ($query) 
+                                            {$query->where('role_id', '5' );
+                                          })
+                                          ->orderBy('id','DESC');
        
         if($paginate=='all') 
         {

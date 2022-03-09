@@ -110,6 +110,7 @@ use App\Http\Controllers\TicketFareSlabController;
 use App\Http\Controllers\TicketInformationController;
 
 use App\Http\Controllers\OprAssignOperatorController;
+use App\Http\Controllers\AssociationReportController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -854,6 +855,8 @@ Route::post('/assocAssignBus', [AssociationAssigBusController::class, 'assocAssi
 Route::post('/getassocAssignBus', [AssociationAssigBusController::class, 'getassocAssignBus']);
 Route::post('/deleteassocAssignBus', [AssociationAssigBusController::class, 'deleteassocAssignBus']);
 
+Route::post('/assocBookingReport', [AssociationReportController::class, 'assocBookingReport']);
+Route::post('/assocCancelReport', [AssociationReportController::class, 'assocCancelReport']);
 
 
 // AgentReport
