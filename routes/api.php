@@ -90,6 +90,7 @@ use App\Http\Controllers\SliderController;
 use App\Http\Controllers\BannerController;
 
 use App\Http\Controllers\AssociationAssignOperatorController;
+use App\Http\Controllers\AssociationAssigBusController;
 
 
 //Agent
@@ -845,8 +846,11 @@ Route::post('/assocAssignOperator', [AssociationAssignOperatorController::class,
 Route::post('/getassocAssignOperator', [AssociationAssignOperatorController::class, 'getAllAssignOperator']);
 Route::post('/deleteassocAssignOperator', [AssociationAssignOperatorController::class, 'deleteassocAssignOperator']);
 
-// Route::post('/getAssocBuslist', [AssociationAssigBusController::class, 'getAssocBuslist']);
 
+Route::post('/getAssocBuslist', [AssociationAssigBusController::class, 'getAssocBuslist']);
+Route::post('/assocAssignBus', [AssociationAssigBusController::class, 'assocAssignBus']);
+Route::post('/getassocAssignBus', [AssociationAssigBusController::class, 'getassocAssignBus']);
+Route::post('/deleteassocAssignBus', [AssociationAssigBusController::class, 'deleteassocAssignBus']);
 
 
 

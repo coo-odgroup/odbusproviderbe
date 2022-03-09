@@ -9,7 +9,7 @@ class AssocAssignOperator extends Model
 {
     use HasFactory;
 
-    protected $table = 'assoc_assign_operator';    
+    protected $table = 'assign_operator';    
 
     protected $fillable = ['user_id','operator_id','created_at','updated_at','created_by'];
    
