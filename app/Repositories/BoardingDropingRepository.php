@@ -24,7 +24,6 @@ class BoardingDropingRepository
         }])
         ->select('id','name','status','created_at','updated_at','created_by')
         ->where('status',"!=",'2')
-        ->orderBy('id','DESC')
         ->get();
         //return $this->boardingDroping->whereNotIn('status', [2])->get();
     }
@@ -62,6 +61,11 @@ class BoardingDropingRepository
             $stoppages[]=$boardingdroping;
         }
         $this->location->boardingDropping()->saveMany($stoppages);
+
+        $upd_dt=date("Y-m-d H:i:s");
+
+        $this->location->where("id",$data['location_id'])->update([ 'updated_at' => $upd_dt ]);
+        
         return $data;
     }
 
@@ -141,6 +145,11 @@ class BoardingDropingRepository
 
      /////////////////
         $this->location->boardingDropping()->saveMany($stoppages);
+
+        $upd_dt=date("Y-m-d H:i:s");
+
+        $this->location->where("id",$data['location_id'])->update([ 'updated_at' => $upd_dt ]);
+
         return $data;
     }
     /**
@@ -219,7 +228,7 @@ class BoardingDropingRepository
                     ->whereHas('boardingDropping', function ($query){
                      $query->where('status', '!=','2');               
                      })
-                    ->orderBy('name','ASC'); 
+                    ->orderBy('updated_at','DESC'); 
 
         // $data= $this->location->with(['boardingDropping' => function ($q){
         //                          $q->orderBy('id', 'DESC');}])
