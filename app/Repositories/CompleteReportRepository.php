@@ -69,7 +69,7 @@ class CompleteReportRepository
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users','CustomerPayment')
+                                    'Bus','Users','CustomerPayment','User.role')
                              ->with('bus.busstoppage')
                              ->where('status',1)
                              // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
