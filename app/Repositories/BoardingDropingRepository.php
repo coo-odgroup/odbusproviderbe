@@ -24,6 +24,7 @@ class BoardingDropingRepository
         }])
         ->select('id','name','status','created_at','updated_at','created_by')
         ->where('status',"!=",'2')
+        ->orderBy('id','DESC')
         ->get();
         //return $this->boardingDroping->whereNotIn('status', [2])->get();
     }
@@ -76,12 +77,40 @@ class BoardingDropingRepository
     {
 
         $this->location=$this->location->find($data['location_id']);
+
+        $allboarding_droping=$this->boardingDroping->where("location_id",$data['location_id'])->get();
+
+        $allbdarr=[];
+
+        if(count($allboarding_droping)>0){
+
+            foreach($allboarding_droping as $ad){
+                $allbdarr[]=$ad->id;
+            }
+
+        }
+      
+
         $stoppages=[];
         foreach($data['boarding_point'] as $stoppage)
         { 
        
         if(isset($stoppage['id']) && $stoppage['id'] != null && $stoppage['id'] !=''){  /////////// update existing and add new ones ///
            
+          //////// check if posted array has less items than table data and make status=2
+
+          if(count($allbdarr) > 0 && in_array($stoppage['id'],$allbdarr)){
+
+            if (($key = array_search($stoppage['id'], $allbdarr)) !== false) {
+                unset($allbdarr[$key]);
+            }
+
+          }
+
+          ////////////////////////////////
+
+          
+          
             $updateBoarding = $this->boardingDroping->find($stoppage['id']);
 
             $UpdRecord=$stoppage;
@@ -100,6 +129,17 @@ class BoardingDropingRepository
 
         }
      }
+
+      //////// check if posted array has less items than table data and make status=2
+
+     if(count($allbdarr) > 0){
+         foreach($allbdarr as $a){
+            $this->boardingDroping=$this->boardingDroping->find($a);
+            $this->boardingDroping->where("id",$a)->update([ 'status' => 2 ]);
+         }
+     }
+
+     /////////////////
         $this->location->boardingDropping()->saveMany($stoppages);
         return $data;
     }
