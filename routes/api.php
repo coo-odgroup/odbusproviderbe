@@ -111,6 +111,7 @@ use App\Http\Controllers\TicketInformationController;
 
 use App\Http\Controllers\OprAssignOperatorController;
 use App\Http\Controllers\AssociationReportController;
+use App\Http\Controllers\OprAssigBusController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -871,3 +872,10 @@ Route::get('/allUserOperator', [AssociationController::class, 'getAllUserOperato
 Route::post('/oprAssignOperator', [OprAssignOperatorController::class, 'addAssignOperator']);
 Route::post('/getoprAssignOperator', [OprAssignOperatorController::class, 'getAllAssignOperator']);
 Route::post('/deleteoprAssignOperator', [OprAssignOperatorController::class, 'deleteOprAssignOperator']);
+
+
+//Operator Assign Bus
+Route::post('/getOprBuslist', [OprAssigBusController::class, 'getOprBuslist']);
+Route::post('/oprAssignBus', [OprAssigBusController::class, 'OprAssignBus']);
+Route::post('/getOprAssignBus', [OprAssigBusController::class, 'getOprAssignBus']);
+Route::post('/deleteOprAssignBus', [OprAssigBusController::class, 'deleteOprAssignBus']);
