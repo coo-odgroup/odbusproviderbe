@@ -23,7 +23,7 @@ class AgentReportRepository
     
     public function getData($request)
     {
-        Log::info($request);
+        //Log::info($request);
         // exit;
         $start_date="";
         $end_date="";
@@ -64,7 +64,7 @@ class AgentReportRepository
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','User')
+                                    'Bus','User','Users')
                              ->with('bus.busstoppage')
                              ->where('status',1)
                              ->where('user_id','!=',0)
@@ -176,7 +176,7 @@ class AgentReportRepository
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','User')
+                                    'Bus','User','Users')
                              ->with('bus.busstoppage')
                              ->where('status',2)
                              ->where('user_id','!=',0)
