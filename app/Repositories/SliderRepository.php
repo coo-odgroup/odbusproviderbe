@@ -66,15 +66,20 @@ class SliderRepository
         $slide->start_time = $data['start_time'];
         $slide->end_date = $data['end_date'];
         $slide->end_time = $data['end_time'];
+        $slide->coupon_id  = $data['coupon_id'];
+        $slide->slider_description = $data['slider_description'];
         $slide->created_by = $data['created_by'];
         return $slide;
     }
     public function save($data)
     {
+        // log::info($data);
+        // exit;
         $slide = new $this->slider;
         $slide = $this->getModel($data,$slide);
         $file = collect($data)->get('slider_img');
-        //Log::info($file);
+        //Log::
+        info($file);
         if(($file)!=null){
 
             $filename  = $file->getClientOriginalName();

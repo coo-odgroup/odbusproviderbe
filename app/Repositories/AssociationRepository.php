@@ -31,6 +31,11 @@ class AssociationRepository
    public function getAllAssoc()
    {
       return $this->usercontent->where('role_id',5)->where('status', 1)->get();
+   } 
+
+   public function getAllAgent()
+   {
+      return $this->usercontent->where('role_id',3)->where('status', 1)->get();
    }
 
    public function getAllUserOperator()

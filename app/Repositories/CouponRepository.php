@@ -29,7 +29,7 @@ class CouponRepository
     
     public function getAll()
     {
-        return $this->coupon->where('status','!=',2)->get();
+        return $this->coupon->with('couponType')->where('status','!=',2)->get();
     }
 
     
@@ -75,7 +75,7 @@ class CouponRepository
     {
         // Log::info($data);
         $coupons = new $this->coupon;
-        $coupons->coupon_type = $data['coupon_type'];
+        $coupons->coupon_type_id = $data['coupon_type'];
         $coupons->coupon_title = $data['coupon_title'];
         $coupons->coupon_code = strtoupper($data['coupon_code']);      
         $coupons->type = $data['coupon_discount_type'];
@@ -135,7 +135,7 @@ class CouponRepository
     public function update($data, $id)
     {
         $coupons = $this->coupon->find($id);
-        $coupons->coupon_type = $data['coupon_type'];
+        $coupons->coupon_type_id = $data['coupon_type'];
         $coupons->coupon_title = $data['coupon_title'];
         $coupons->coupon_code = strtoupper($data['coupon_code']);
         $coupons->bus_operator_id = $data['bus_operator_id'];

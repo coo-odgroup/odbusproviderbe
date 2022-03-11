@@ -42,6 +42,12 @@ class AssociationController extends Controller
         return $this->successResponse($usercontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function getAllAgent()
+    {
+        $usercontent = $this->AssociationService->getAllAgent();
+        return $this->successResponse($usercontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
     public function getAllUserOperator()
     {
         $usercontent = $this->AssociationService->getAllUserOperator();

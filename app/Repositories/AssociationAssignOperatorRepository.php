@@ -37,6 +37,7 @@ class AssociationAssignOperatorRepository
                                           ->whereHas('User', function ($query) 
                                             {$query->where('role_id', '5' );
                                           })
+                                          ->where('status',1)
                                           ->orderBy('id','DESC');
        
         if($paginate=='all') 
@@ -89,8 +90,9 @@ class AssociationAssignOperatorRepository
      // log::info($request);
      // exit;
         $AssocAssignOperator = $this->AssocAssignOperator->find($request->id);
-        // $AssocAssignOperator->status = 2;
-        $AssocAssignOperator->delete();
+        $AssocAssignOperator->status = 2;
+        $AssocAssignOperator->created_by = $request->created_by;
+        $AssocAssignOperator->update();
         return $AssocAssignOperator;
    }
 

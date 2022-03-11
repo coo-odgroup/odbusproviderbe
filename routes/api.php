@@ -91,6 +91,7 @@ use App\Http\Controllers\BannerController;
 
 use App\Http\Controllers\AssociationAssignOperatorController;
 use App\Http\Controllers\AssociationAssigBusController;
+use App\Http\Controllers\AssociationAssigAgentController;
 
 
 //Agent
@@ -860,6 +861,10 @@ Route::post('/deleteassocAssignBus', [AssociationAssigBusController::class, 'del
 Route::post('/assocBookingReport', [AssociationReportController::class, 'assocBookingReport']);
 Route::post('/assocCancelReport', [AssociationReportController::class, 'assocCancelReport']);
 
+Route::post('/assocAssignAgent', [AssociationAssigAgentController::class, 'assocAssignAgent']);
+Route::post('/getassocAssignAgent', [AssociationAssigAgentController::class, 'getassocAssignAgent']);
+Route::post('/deleteassocAssignAgent', [AssociationAssigAgentController::class, 'deleteassocAssignAgent']);
+Route::get('/allAgent', [AssociationController::class, 'getAllAgent']);
 
 // AgentReport
 Route::post('agentbookingreport',[AgentReportController::class,'getData']);

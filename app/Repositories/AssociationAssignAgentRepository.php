@@ -2,26 +2,21 @@
 namespace App\Repositories;
 // use App\Models\Bus;
 use App\Models\User;
-use App\Models\AssocAssignBus;
-use App\Models\AssocAssignOperator;
+use App\Models\AssocAssignAgent;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Support\Facades\Config;
-use App\Models\Location;
 
 /*Priyadarshi to Review*/
-class AssociationAssignBusRepository
+class AssociationAssignAgentRepository
 {
    protected $usercontent;
-   protected $AssocAssignBus;
+   protected $AssocAssignAgent;
    protected $AssocAssignOperator;
 
-   public function __construct(User $usercontent,Location $location,AssocAssignBus $AssocAssignBus,AssocAssignOperator $AssocAssignOperator  )
+   public function __construct(User $usercontent,AssocAssignAgent $AssocAssignAgent )
    {
       $this->usercontent = $usercontent ;
-      $this->AssocAssignBus = $AssocAssignBus ;
-      $this->AssocAssignOperator = $AssocAssignOperator ;
-      $this->location = $location ;
+      $this->AssocAssignAgent = $AssocAssignAgent ;
    }    
  
 
@@ -65,12 +60,13 @@ class AssociationAssignBusRepository
   } 
 
 
-   public function getassocAssignBus($request)
+   public function getassocAssignAgent($request)
      {
+     	// log::info($request);
         $paginate = $request['rows_number'] ;
         $assoc_id = $request['assoc_id'] ;
 
-        $data = $this->AssocAssignBus->with('bus.busOperator','bus.ticketPrice','User')
+        $data = $this->AssocAssignAgent->with('User')
                                      ->whereHas('User', function ($query) 
                                             {$query->where('role_id', '5' );
                                           })->where('status',1)->orderBy('id','DESC');
@@ -93,18 +89,11 @@ class AssociationAssignBusRepository
          $data=$data->paginate($paginate);
 
          
-            if($data){
+            if($data)
+            {
             foreach($data as $v){ 
-             foreach($v->bus->ticketPrice as $k => $a)
-             {             
-             
-                $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
-             }
-               $v['from_location']=$stoppages['source'][0];
-               $v['to_location']=$stoppages['destination'][0];
-            }
-          }
+             $v['agent']=$this->usercontent->where('id',$v->agent_id)->where('status',1)->get();
+          }}
 
 
           $response = array(
@@ -117,28 +106,32 @@ class AssociationAssignBusRepository
 
 
 
-   public function assocAssignBus($request)
+   public function assocAssignAgent($request)
    {
-     foreach ($request['bus_id'] as $k=>$bus_id) {        
-       $AssocAssignBus = new $this->AssocAssignBus;
-       $AssocAssignBus->user_id = $request['user_id'];
-       $AssocAssignBus->created_by = $request['created_by'];
-       $AssocAssignBus->bus_id = $bus_id;
+   	// Log::info($request);
+   	// exit;
+     foreach ($request['agent_id'] as $k=>$agent_id) {        
+       $AssocAssignAgent = new $this->AssocAssignAgent;
+       $AssocAssignAgent->user_id = $request['user_id'];
+       $AssocAssignAgent->created_by = $request['created_by'];
+       $AssocAssignAgent->agent_id = $agent_id;
 
-        $AssocAssignBus->save();
+        $AssocAssignAgent->save();
      }
      return 'done' ;
    
    } 
 
 
-   public function deleteassocAssignBus($request)
+   public function deleteassocAssignAgent($request)
    {
-        $AssocAssignBus = $this->AssocAssignBus->find($request->id);
-        $AssocAssignBus->status = 2;
-        $AssocAssignBus->created_by = $request->created_by;
-        $AssocAssignBus->delete();
-        return $AssocAssignBus;
+	   	// Log::info($request);
+	   	// exit;
+        $AssocAssignAgent = $this->AssocAssignAgent->find($request->id);
+        $AssocAssignAgent->status = 2;
+        $AssocAssignAgent->created_by = $request->created_by;
+        $AssocAssignAgent->update();
+        return $AssocAssignAgent;
    }
 
 
