@@ -629,6 +629,7 @@ Route::delete('/busSlots/{id}', [BusSlotsController::class, 'deleteBusSlots']);
 Route::get('/busSlots/{id}', [BusSlotsController::class, 'getBusBusSlots']);
 
 Route::get('/coupon', [CouponController::class, 'getAllCoupon']);
+Route::get('/couponType', [CouponController::class, 'getAllCouponType']);
 Route::post('/coupon', [CouponController::class, 'createCoupon']);
 Route::put('/coupon/{id}', [CouponController::class, 'updateCoupon']);
 Route::delete('/coupon/{id}', [CouponController::class, 'deleteCoupon']);

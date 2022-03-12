@@ -27,16 +27,21 @@ class SliderRepository
         //return $request->all();
        
         if($searchBy!='' && $status!=''){
-            $list = $this->slider->where('occassion', 'like', '%' .$searchBy . '%')->where('status', $status)
-                                 ->whereNotIn('status', [2])->orderBy('id','desc');
+            $list = $this->slider->where('occassion', 'like', '%' .$searchBy . '%')
+                                 ->where('status', $status)
+                                 ->whereNotIn('status', [2])
+                                 ->orderBy('id','desc');
         }elseif($searchBy!='' && $status==''){
             $list = $this->slider->where('occassion', $searchBy)
-                                 ->whereNotIn('status', [2])->orderBy('id','desc');
+                                 ->whereNotIn('status', [2])
+                                 ->orderBy('id','desc');
         }elseif($searchBy=='' && $status!=''){
             $list = $this->slider->where('status', $status)
-                                 ->whereNotIn('status', [2])->orderBy('id','desc');
+                                 ->whereNotIn('status', [2])
+                                 ->orderBy('id','desc');
         }else{
-            $list = $this->slider->whereNotIn('status', [2])->orderBy('id','desc');    
+            $list = $this->slider->with('coupon')->whereNotIn('status', [2])
+                                 ->orderBy('id','desc');    
         }
 
         $list =  $list->paginate($paginate);
@@ -66,7 +71,14 @@ class SliderRepository
         $slide->start_time = $data['start_time'];
         $slide->end_date = $data['end_date'];
         $slide->end_time = $data['end_time'];
-        $slide->coupon_id  = $data['coupon_id'];
+        if($data['coupon_id']!= 'null'){
+            $slide->coupon_id  = $data['coupon_id'];
+        }else
+        {
+             $slide->coupon_id  = 0;
+        }
+        
+       
         $slide->slider_description = $data['slider_description'];
         $slide->created_by = $data['created_by'];
         return $slide;

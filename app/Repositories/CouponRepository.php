@@ -7,6 +7,7 @@ use App\Models\CouponAssignedBus;
 use App\Models\CouponRoute;
 use App\Models\CouponOperator;
 use App\Models\Location;
+use App\Models\CouponType;
 use Illuminate\Support\Facades\Log;
 class CouponRepository
 {
@@ -16,20 +17,27 @@ class CouponRepository
     protected $couponRoute;
     protected $couponOperator;
     protected $location;
+    protected $CouponType;
     
-    public function __construct(Coupon $coupon, CouponAssignedBus $couponAssignedBus, CouponRoute $couponRoute, CouponOperator $couponOperator,Location $location)
+    public function __construct(Coupon $coupon, CouponAssignedBus $couponAssignedBus, CouponRoute $couponRoute, CouponOperator $couponOperator,Location $location,CouponType $CouponType)
     {
         $this->coupon = $coupon;
         $this->couponAssignedBus = $couponAssignedBus;
         $this->couponRoute = $couponRoute;
         $this->couponOperator = $couponOperator;
         $this->location = $location; 
+        $this->CouponType = $CouponType; 
     }
 
     
     public function getAll()
     {
         return $this->coupon->with('couponType')->where('status','!=',2)->get();
+    }
+
+    public function getAllCouponType()
+    {
+        return $this->CouponType->where('status',1)->get();
     }
 
     
@@ -196,7 +204,7 @@ class CouponRepository
         // Log:: info($request);
         $name=$request->name;
         $paginate = $request->rows_number;
-        $data= $this->coupon->with("BusOperator")->where('status','!=',2)->orderBy('id','DESC');
+        $data= $this->coupon->with("BusOperator","couponType")->where('status','!=',2)->orderBy('id','DESC');
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
             $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);

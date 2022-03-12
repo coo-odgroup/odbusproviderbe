@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\BusOperator;
 use App\Models\CouponType;
+use App\Models\Slider;
 
 class Coupon extends Model
 {
@@ -23,6 +22,11 @@ class Coupon extends Model
 	}
 
 	public function couponType()
+	{        
+		return $this->belongsTo(CouponType::class);        
+	}
+
+	public function Slider()
 	{        
 		return $this->belongsTo(CouponType::class);        
 	}

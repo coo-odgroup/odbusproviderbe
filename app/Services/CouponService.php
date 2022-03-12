@@ -23,7 +23,13 @@ class CouponService
     public function getAll()
     {
         return $this->couponRepository->getAll();
+    } 
+
+    public function getAllCouponType()
+    {
+        return $this->couponRepository->getAllCouponType();
     }
+    
      public function getData($request)
     {
         return $this->couponRepository->getData($request);
