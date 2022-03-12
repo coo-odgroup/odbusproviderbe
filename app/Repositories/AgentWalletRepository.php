@@ -122,7 +122,7 @@ class AgentWalletRepository
 
   
     public function getAllWalletRecord(){
-        return $this->agentWallet->with('user')->where('status', 0)->orderBy('id','DESC')->where('payment_via','!=',"");
+        return $this->agentWallet->with('user')->orderBy('id','DESC')->where('payment_via','!=',"");
     }
     
     public function agentWalletBalancedetails($request){
@@ -243,6 +243,15 @@ class AgentWalletRepository
          
       return $agentWallet;
 
+    }
+
+    public function declineWalletReq($data,$id)
+    {
+        $agentWallet = $this->agentWallet->find($id);       
+        $agentWallet->status = 3;
+        $agentWallet->reject_reason = $data->reject_reason;
+        $agentWallet->update();
+        return "Success";
     }
 
     public function update_balance($id,$balance,$otpdata,$data)

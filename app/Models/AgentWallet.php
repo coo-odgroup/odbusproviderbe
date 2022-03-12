@@ -10,7 +10,7 @@ class AgentWallet extends Model
 {
     use HasFactory; 
     protected $table = 'agent_wallet';
-    protected $fillable = ['transaction_id','reference_id','payment_via','amount','remarks','user_id'];
+    protected $fillable = ['transaction_id','reference_id','payment_via','amount','remarks','user_id','reject_reason'];
 
 
     public function user()

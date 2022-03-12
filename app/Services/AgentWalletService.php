@@ -163,6 +163,12 @@ class AgentWalletService
        }
    }
 
+
+   public function declineWlletReqStatus($data,$id)
+   {
+       return $this->agentWalletRepository->declineWalletReq($data,$id);
+   }
+
 }
 
  

@@ -86,6 +86,19 @@ class AgentWalletController extends Controller
          }
         
     }  
+
+    public function declineWlletReqStatus(Request $request, $id) 
+    {       
+    	$dd = $this->agentWalletService->declineWlletReqStatus($request,$id);       
+
+        if($dd !=' '){
+        return $this->successResponse($dd,"Wallet Request Declined!",Response::HTTP_CREATED);
+        }else{
+            return $this->errorResponse($dd,Response::HTTP_PARTIAL_CONTENT);
+        }
+        
+    } 
+    
 	   
     public function agentWalletBalance($id) 
     {       
