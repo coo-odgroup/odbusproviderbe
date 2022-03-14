@@ -23,9 +23,13 @@ class TestimonialRepository
     }    
     public function getAll($request)
     {
+      // Log::info($request);
+
       $paginate = $request['rows_number'] ;
       $name = $request['name'] ;
       $user_id = $request['user_id'] ;
+      $userID = $request['userID'] ;
+      $role_id = $request['role_id'] ;
 
 
       $data = $this->testimonial->with('User')->where('status','!=',2)->orderBy('id','DESC');
@@ -50,6 +54,10 @@ class TestimonialRepository
       if($user_id!= null)
       {
         $data = $data->Where('user_id', $user_id);
+      }
+      if($userID!= null && $role_id!= 1 )
+      {
+        $data = $data->Where('user_id', $userID);
       }
        $data=$data->paginate($paginate);
        

@@ -35,12 +35,15 @@ class ReviewRepository
 
     public function getData($request)
     {
-        Log::info($request);
-        
+        // Log::info($request);
+
         $operator_id = $request->bus_operator_id ;
         $paginate = $request->rows_number; 
         $rangeFromDate  =  $request->rangeFromDate;
-        $rangeToDate  =  $request->rangeToDate;    
+        $rangeToDate  =  $request->rangeToDate; 
+        $user_id = $request['user_id'] ;
+        $role_id = $request['role_id'] ;
+
         if(!empty($rangeFromDate))
         {
             if(strlen($rangeFromDate['month'])==1)
@@ -86,6 +89,10 @@ class ReviewRepository
         {
           $data = $data->Where('bus_operator_id', $operator_id);
         }
+        if($user_id!= null && $role_id!= 1 )
+          {
+            $data = $data->Where('user_id', $user_id);
+          }
 
 
         $data=$data->paginate($paginate); 

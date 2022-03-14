@@ -20,6 +20,8 @@ class BannerRepository
     }
     public function getData($request)
     {
+        // Log::info($request);
+        
         $paginate = $request['per_page'];
         $searchBy = $request['searchBy']; 
         $status = $request['status'];
@@ -119,9 +121,9 @@ class BannerRepository
             if(isset($existing_image))
             {
                 if(File::exists($old_image_path_consumer))
-             {
+                 {
                     unlink($old_image_path_consumer);
-             }  
+                 }  
             }
                    
         }
