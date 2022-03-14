@@ -114,6 +114,7 @@ use App\Http\Controllers\OprAssignOperatorController;
 use App\Http\Controllers\AssociationReportController;
 use App\Http\Controllers\OprAssigBusController;
 use App\Http\Controllers\OprReportController;
+use App\Http\Controllers\RoleController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -122,10 +123,6 @@ Route::post('/emailtest', [TestEmailController::class,'emailtest']);
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
-
-
-
-
 
 //Ticket Information 
 
@@ -173,7 +170,6 @@ Route::post('/agentWalletAllData',[AgentWalletController::class,'getAllData']);
 Route::post('/agentWalletBalance',[AgentWalletController::class,'agentWalletBalancedetails']);
 Route::post('/agentAllTransaction',[AgentWalletController::class,'agentAllTransaction']);
 Route::put('/changeAgentWalletStatus/{id}',[AgentWalletController::class,'changeStatus']);
-Route::put('/declineWlletReqStatus/{id}',[AgentWalletController::class,'declineWlletReqStatus']);
 
 //Agent Notification
 Route::post('/agentnotification',[AgentNotificationController::class,'getData']);
@@ -630,7 +626,6 @@ Route::delete('/busSlots/{id}', [BusSlotsController::class, 'deleteBusSlots']);
 Route::get('/busSlots/{id}', [BusSlotsController::class, 'getBusBusSlots']);
 
 Route::get('/coupon', [CouponController::class, 'getAllCoupon']);
-Route::get('/couponType', [CouponController::class, 'getAllCouponType']);
 Route::post('/coupon', [CouponController::class, 'createCoupon']);
 Route::put('/coupon/{id}', [CouponController::class, 'updateCoupon']);
 Route::delete('/coupon/{id}', [CouponController::class, 'deleteCoupon']);
@@ -890,3 +885,13 @@ Route::post('/deleteOprAssignBus', [OprAssigBusController::class, 'deleteOprAssi
 
 Route::post('/oprBookingReport', [OprReportController::class, 'oprBookingReport']);
 Route::post('/oprCancelReport', [OprReportController::class, 'oprCancelReport']);
+
+
+Route::post('/createrole', [RoleController::class, 'createRole']);
+Route::post('/RoleData', [RoleController::class, 'RoleData']);
+Route::get('/Role', [RoleController::class, 'getAllRole']);
+Route::put('/Role/{id}', [RoleController::class, 'updateRole']);
+Route::delete('/Role/{id}', [RoleController::class, 'deleteRole']);
+Route::get('/Role/{id}', [RoleController::class, 'getRole']);
+Route::post('/RoleDT', [RoleController::class, 'getRoleDT']);
+Route::put('/changeStatusRole/{id}', [RoleController::class, 'changeStatus']);
