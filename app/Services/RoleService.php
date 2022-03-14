@@ -109,14 +109,14 @@ class RoleService
         return $this->roleRepository->getAllBusSittingDT($request);
     } 
 
-    public function BusRoleData($request)
+    public function RoleData($request)
     {
-        return $this->roleRepository->BusSittingData($request);
+        return $this->roleRepository->RoleData($request);
     }
     public function changeStatus($id)
     {
         try {
-            $post = $this->busSittingRepository->changeStatus($id);
+            $post = $this->roleRepository->changeStatus($id);
 
         } catch (Exception $e) {
             throw new InvalidArgumentException('Unable to change status');

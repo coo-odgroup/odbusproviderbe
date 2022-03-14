@@ -27,7 +27,7 @@ class RoleRepository
         return $this->role->whereNotIn('status', [2])->get();
     }
 
-    public function BusRoleData($request)
+    public function RoleData($request)
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
@@ -88,7 +88,6 @@ class RoleRepository
         $role = new $this->role;
         $role->name = $data['name'];
         $role->created_by = $data['created_by'] ;
-        $role->user_id = $data['user_id'] ;
         $role->save();
 
         return $role->fresh();

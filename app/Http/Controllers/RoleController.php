@@ -45,7 +45,7 @@ class RoleController extends Controller
     public function createRole(Request $request) 
     {
         $data = $request->only([
-          'name','created_by','user_id'          
+          'name','created_by'          
         ]);
         
         $roleValidation = $this->roleValidator->validate($data);
@@ -68,7 +68,7 @@ class RoleController extends Controller
 
     public function updateRole(Request $request, $id) {
         $data = $request->only([
-          'name','created_by','user_id'
+          'name','created_by'
         ]);
         
         $roleValidation =   $this->roleValidator->validate($data);
@@ -120,7 +120,7 @@ class RoleController extends Controller
     public function changeStatus ($id)
     {
       try{
-        $this->busSittingService->changeStatus($id);
+        $this->roleService->changeStatus($id);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
