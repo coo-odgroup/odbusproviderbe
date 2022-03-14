@@ -40,6 +40,7 @@ class BookingSeizedRepository
             $seized->bus_id = $seizedData['bus_id'];   
             $seized->ticket_price_id  = $record['id'];  
             $seized->seize_booking_minute = $record['time'];   
+            $seized->closing_time = $record['closing_time'];   
             $seized->seized_date = $seizedData['date'];   
             $seized->created_by = $seizedData['created_by'];  
             $seized->reason = $seizedData['reason'];  
@@ -72,7 +73,7 @@ class BookingSeizedRepository
          $name = $request['name'] ;
        
 
-         $data= $this->bookingSeized->with('bus.busOperator')->with('ticketPrice')->where('status',1);
+         $data= $this->bookingSeized->with('bus.busOperator')->with('ticketPrice')->where('status',1)->orderBy('id','DESC');
 
 
         if($paginate=='all') 
