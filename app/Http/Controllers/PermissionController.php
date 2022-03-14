@@ -62,7 +62,7 @@ class PermissionController extends Controller
        catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }  
-      return $this->successResponse($data,"Sitting Type Added",Response::HTTP_CREATED); 
+      return $this->successResponse($data,"Permission Added",Response::HTTP_CREATED); 
       
     } 
 
@@ -86,7 +86,7 @@ class PermissionController extends Controller
          catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,"Sitting Type Updated",Response::HTTP_CREATED);     
+        return $this->successResponse($data,"Permission Updated",Response::HTTP_CREATED);     
     }
 
     public function deletePermission ($id) {
@@ -97,7 +97,7 @@ class PermissionController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),"404");
       }
-      return $this->successResponse(Null,"Sitting Type Deleted",Response::HTTP_ACCEPTED);
+      return $this->successResponse(Null,"Permission Deleted",Response::HTTP_ACCEPTED);
     }
 
     public function getPermission($id) {
@@ -124,6 +124,6 @@ class PermissionController extends Controller
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, "Sitting Type Status Updated", Response::HTTP_ACCEPTED);
+      return $this->successResponse(null, "Permission Status Updated", Response::HTTP_ACCEPTED);
     }
 }

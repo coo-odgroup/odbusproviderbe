@@ -116,6 +116,7 @@ use App\Http\Controllers\OprAssigBusController;
 use App\Http\Controllers\OprReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\CouponTypeController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -907,3 +908,15 @@ Route::delete('/Permission/{id}', [PermissionController::class, 'deletePermissio
 Route::get('/Permission/{id}', [PermissionController::class, 'getPermission']);
 Route::post('/PermissionDT', [PermissionController::class, 'getPermissionDT']);
 Route::put('/changeStatusPermission/{id}', [PermissionController::class, 'changeStatus']);
+
+
+
+//Permission API
+Route::post('/createcoupontype', [CouponTypeController::class, 'createCouponType']);
+Route::post('/CouponTypeData', [CouponTypeController::class, 'CouponTypeData']);
+Route::get('/CouponType', [CouponTypeController::class, 'getAllCouponType']);
+Route::put('/CouponType/{id}', [CouponTypeController::class, 'updateCouponType']);
+Route::delete('/CouponType/{id}', [CouponTypeController::class, 'deleteCouponType']);
+Route::get('/CouponType/{id}', [CouponTypeController::class, 'getCouponType']);
+Route::post('/CouponTypeDT', [CouponTypeController::class, 'getCouponTypeDT']);
+Route::put('/changeStatusCouponType/{id}', [CouponTypeController::class, 'changeStatus']);

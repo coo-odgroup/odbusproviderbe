@@ -62,7 +62,7 @@ class RoleController extends Controller
        catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }  
-      return $this->successResponse($data,"Sitting Type Added",Response::HTTP_CREATED); 
+      return $this->successResponse($data,"Role Added",Response::HTTP_CREATED); 
       
     } 
 
@@ -86,7 +86,7 @@ class RoleController extends Controller
          catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,"Sitting Type Updated",Response::HTTP_CREATED);     
+        return $this->successResponse($data,"Role Updated",Response::HTTP_CREATED);     
     }
 
     public function deleteRole ($id) {
@@ -97,7 +97,7 @@ class RoleController extends Controller
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),"404");
       }
-      return $this->successResponse(Null,"Sitting Type Deleted",Response::HTTP_ACCEPTED);
+      return $this->successResponse(Null,"Role Deleted",Response::HTTP_ACCEPTED);
     }
 
     public function getBusSitting($id) {
@@ -125,6 +125,6 @@ class RoleController extends Controller
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, "Sitting Type Status Updated", Response::HTTP_ACCEPTED);
+      return $this->successResponse(null, "Role Status Updated", Response::HTTP_ACCEPTED);
     }
 }
