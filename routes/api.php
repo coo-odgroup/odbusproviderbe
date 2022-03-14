@@ -115,6 +115,7 @@ use App\Http\Controllers\AssociationReportController;
 use App\Http\Controllers\OprAssigBusController;
 use App\Http\Controllers\OprReportController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -886,7 +887,7 @@ Route::post('/deleteOprAssignBus', [OprAssigBusController::class, 'deleteOprAssi
 Route::post('/oprBookingReport', [OprReportController::class, 'oprBookingReport']);
 Route::post('/oprCancelReport', [OprReportController::class, 'oprCancelReport']);
 
-
+//Role API
 Route::post('/createrole', [RoleController::class, 'createRole']);
 Route::post('/RoleData', [RoleController::class, 'RoleData']);
 Route::get('/Role', [RoleController::class, 'getAllRole']);
@@ -895,3 +896,14 @@ Route::delete('/Role/{id}', [RoleController::class, 'deleteRole']);
 Route::get('/Role/{id}', [RoleController::class, 'getRole']);
 Route::post('/RoleDT', [RoleController::class, 'getRoleDT']);
 Route::put('/changeStatusRole/{id}', [RoleController::class, 'changeStatus']);
+
+
+//Permission API
+Route::post('/createpermission', [PermissionController::class, 'createPermission']);
+Route::post('/PermissionData', [PermissionController::class, 'PermissionData']);
+Route::get('/Permission', [PermissionController::class, 'getAllPermission']);
+Route::put('/Permission/{id}', [PermissionController::class, 'updatePermission']);
+Route::delete('/Permission/{id}', [PermissionController::class, 'deletePermission']);
+Route::get('/Permission/{id}', [PermissionController::class, 'getPermission']);
+Route::post('/PermissionDT', [PermissionController::class, 'getPermissionDT']);
+Route::put('/changeStatusPermission/{id}', [PermissionController::class, 'changeStatus']);
