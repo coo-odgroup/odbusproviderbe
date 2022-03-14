@@ -9,8 +9,5 @@ class CouponType extends Model
 {
     use HasFactory;
     protected $table = 'coupon_type';
-    protected $fillable = [  'coupon_type_name','created_by'];
- 
-
-
+    protected $fillable = ['coupon_type_name','created_by'];
 }

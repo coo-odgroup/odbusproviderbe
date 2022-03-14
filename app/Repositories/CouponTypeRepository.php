@@ -27,7 +27,7 @@ class CouponTypeRepository
     public function CouponTypeData($request)
     {
         $paginate = $request['rows_number'] ;
-        $name = $request['name'] ;
+        $name = $request['coupon_type_name'] ;
        
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;
@@ -46,7 +46,7 @@ class CouponTypeRepository
 
         if($name!=null)
         {
-            $data=$data->where('name','LIKE', '%'.$name.'%');
+            $data=$data->where('coupon_type_name','LIKE', '%'.$name.'%');
         } 
       
         if($user_role==5)
