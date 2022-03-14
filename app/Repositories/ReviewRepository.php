@@ -35,7 +35,8 @@ class ReviewRepository
 
     public function getData($request)
     {
-        // Log::info($request);
+        Log::info($request);
+        
         $operator_id = $request->bus_operator_id ;
         $paginate = $request->rows_number; 
         $rangeFromDate  =  $request->rangeFromDate;

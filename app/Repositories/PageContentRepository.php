@@ -31,8 +31,12 @@ class PageContentRepository
 
    public function getAllData($request)
    {
+    // Log::info($request);
+
       $paginate = $request['rows_number'] ;
       $user_id = $request['user_id'] ;
+      $role_id = $request['role_id'] ;
+      $name = $request['name'] ;
 
 
       $data = $this->pagecontent->with('User')->where('status','!=',2)->orderBy('id','DESC');
@@ -45,11 +49,14 @@ class PageContentRepository
           $paginate = 10 ;
       }
  
-      if($user_id!= null)
+      if($user_id!= null && $role_id!= 1 )
       {
         $data = $data->Where('user_id', $user_id);
       }
        $data=$data->paginate($paginate);
+
+       // Log::info($data);
+       // exit;
        
 
         $response = array(

@@ -129,8 +129,9 @@ class BusCancelledRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->busCancelled->with('bus.busOperator','bus.busstoppage','busCancelledDate')->with('bus.ticketPrice')
-                    ->whereNotIn('status', [2]);
+        $data= $this->busCancelled->with('bus.busOperator','bus.busstoppage','busCancelledDate')
+                                  ->with('bus.ticketPrice')->orderBy('id','DESC')
+                                  ->whereNotIn('status', [2]);
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
             $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
@@ -145,20 +146,23 @@ class BusCancelledRepository
             $paginate = 10 ;
         }
 
-        if($name!=null)
-        {
-            $data = $data->WhereHas('bus', function ($query) use ($name){
-                            $query->where('name', 'like', '%' .$name . '%');
-                            })
-                          ->orWhereHas('bus', function ($query) use ($name){
-                            $query->where('bus_number', 'like', '%' .$name . '%');
-                            })
-                         ->orWhereHas('bus.busOperator', function ($query) use ($name){
-                            $query->where('operator_name', 'like', '%' .$name . '%');
-                            });                        
-        }     
-
+        
         $data=$data->paginate($paginate);
+        // Log::info($data);
+        // exit;
+        if($data){
+            foreach($data as $v){ 
+               foreach($v->bus->ticketPrice as $k => $a)
+               {             
+
+                $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+            }
+            $v['from_location']=$stoppages['source'][0];
+            $v['to_location']=$stoppages['destination'][0];
+        }
+    }
+
 
         
 
