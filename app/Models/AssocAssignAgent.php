@@ -18,6 +18,8 @@ class AssocAssignAgent extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function Users()
+    {
+        return $this->belongsTo(Users::class);
+    }
 }
-
-

@@ -117,6 +117,7 @@ use App\Http\Controllers\OprReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\CouponTypeController;
+use App\Http\Controllers\OprAssignAgentController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -884,6 +885,11 @@ Route::post('/getOprBuslist', [OprAssigBusController::class, 'getOprBuslist']);
 Route::post('/oprAssignBus', [OprAssigBusController::class, 'OprAssignBus']);
 Route::post('/getOprAssignBus', [OprAssigBusController::class, 'getOprAssignBus']);
 Route::post('/deleteOprAssignBus', [OprAssigBusController::class, 'deleteOprAssignBus']);
+
+//Operator Assign Agent 
+Route::post('/addoprAssignAgent', [OprAssignAgentController::class, 'addAssignAgent']);
+Route::post('/getoprAssignAgent', [OprAssignAgentController::class, 'getAllAssignAgent']);
+Route::post('/deleteoprAssignAgent', [OprAssignAgentController::class, 'deleteOprAssignAgent']);
 
 Route::post('/oprBookingReport', [OprReportController::class, 'oprBookingReport']);
 Route::post('/oprCancelReport', [OprReportController::class, 'oprCancelReport']);
