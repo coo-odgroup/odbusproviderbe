@@ -73,7 +73,7 @@ class AgentRepository
 
     public function getAllAgentData($request)
     {
-        // log::info($request);
+        
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
          $status = $request['status'];
@@ -145,6 +145,7 @@ class AgentRepository
     public function ourAgentData($request)
     {
         // log::info($request);
+        
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
          $status = $request['status'];
@@ -401,10 +402,12 @@ class AgentRepository
     public function blockAgent($request)
     {
         $post = $this->agent->find($request->id);
+
         if($post->status==1){
             $post->status = 3;
         }elseif($post->status==3){
             $post->status = 1;
+            $post->reason ="";
         }
         if($request->reason!= NULL)
         {

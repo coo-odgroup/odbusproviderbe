@@ -33,6 +33,7 @@ class AgentReportRepository
         $date_type = $request->date_type;
         $rangeFromDate  =  $request->rangeFromDate;
         $rangeToDate  =  $request->rangeToDate;
+         $user_id  =  $request->user_id;
 
         if(!empty($rangeFromDate))
         {
@@ -75,6 +76,11 @@ class AgentReportRepository
         }
         elseif ($paginate == null) {
             $paginate = 10 ;
+        }
+
+        if(!empty($user_id))
+        {
+           $data=$data->where('user_id', $user_id );
         }
 
         if(!empty($pnr))

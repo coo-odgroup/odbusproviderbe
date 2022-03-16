@@ -25,7 +25,7 @@ class CompleteReportRepository
     
     public function getData($request)
     {
-        // Log::info($request);
+        //Log::info($request);
         // exit;
         $start_date="";
         $end_date="";
@@ -38,6 +38,7 @@ class CompleteReportRepository
         $destination_id = $request->destination_id;
         $rangeFromDate  =  $request->rangeFromDate;
         $rangeToDate  =  $request->rangeToDate;
+       
 
         if(!empty($rangeFromDate))
         {
@@ -86,6 +87,8 @@ class CompleteReportRepository
         {
            $data=$data->where('pnr', $pnr );
         }
+
+       
 
         if(!empty($bus_operator_id))
         {
