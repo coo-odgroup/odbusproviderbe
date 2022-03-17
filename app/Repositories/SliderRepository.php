@@ -24,6 +24,8 @@ class SliderRepository
         $paginate = $request['per_page'];
         $searchBy = $request['searchBy']; 
         $status = $request['status'];
+        $userID = $request['userID'] ;
+        $role_id = $request['role_id'] ;
         //return $request->all();
        
         if($searchBy!='' && $status!=''){
@@ -43,6 +45,10 @@ class SliderRepository
             $list = $this->slider->with('coupon')->whereNotIn('status', [2])
                                  ->orderBy('id','desc');    
         }
+        if($userID!= null && $role_id!= 1 )
+          {
+            $list = $list->Where('user_id', $userID);
+          }
 
         $list =  $list->paginate($paginate);
         //return $list;

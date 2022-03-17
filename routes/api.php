@@ -78,6 +78,7 @@ use App\Http\Controllers\FailledTransactionReportController;
 use App\Http\Controllers\CouponUsedUserReportController;
 use App\Http\Controllers\CancelTicketReportController;
 use App\Http\Controllers\ContactReportController;
+use App\Http\Controllers\AssocAssignReportController;
 
 // SettingController 
 use App\Http\Controllers\SocialMediaController;
@@ -121,11 +122,16 @@ use App\Http\Controllers\OprAssignAgentController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
-
 	Route::middleware('auth:api')->group( function () {
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
+
+
+Route::post('/assocAssignAgentreport',[AssocAssignReportController::class,'getAssignAgentData']);
+Route::post('/assocAssignBusreport',[AssocAssignReportController::class,'getAssignBusData']);
+
+Route::post('/assocAssignOperatorreport',[AssocAssignReportController::class,'getAssignOperatorData']);
 
 //Ticket Information 
 

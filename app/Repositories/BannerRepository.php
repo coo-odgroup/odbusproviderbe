@@ -25,6 +25,9 @@ class BannerRepository
         $paginate = $request['per_page'];
         $searchBy = $request['searchBy']; 
         $status = $request['status'];
+        $userID = $request['userID'] ;
+        $role_id = $request['role_id'] ;
+
        
         if($searchBy!='' && $status!=''){
             $list = $this->banner->with('User')
@@ -44,6 +47,11 @@ class BannerRepository
         }else{
             $list = $this->banner->with('User')->whereNotIn('status', [2])->orderBy('id','desc');    
         }
+
+         if($userID!= null && $role_id!= 1 )
+          {
+            $list = $list->Where('user_id', $userID);
+          }
 
         $list =  $list->paginate($paginate);
         //return $list;

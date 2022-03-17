@@ -62,10 +62,14 @@ class SeoSettingRepository
 
     public function seosettingData($request)
     {        
+       // Log::info($request);exit; 
       
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
         $user_id = $request['user_id'] ;
+        $userID = $request['userID'] ;
+        $role_id = $request['role_id'] ;
+
        
 
         $data= $this->seosetting->with('User')->whereNotIn('status', [2])
@@ -89,7 +93,11 @@ class SeoSettingRepository
         {
         $data = $data->Where('user_id', $user_id);
         }
-
+        
+        if($userID!= null && $role_id!= 1 )
+        {
+        $data = $data->Where('user_id', $userID);
+        }
         $data=$data->paginate($paginate);
 
         $response = array(

@@ -77,23 +77,43 @@ class SocialMediaRepository
     }
 
     public function addsocialMedia($data)
-    {    
+    { 
+  
 
+      $oldData= $this->socialMedia->where('user_id',$data->user_id)->get();
+  // Log::info();exit;   
+  if(count($oldData)==0){
        $socialMedia = new $this->socialMedia;
        $socialMedia=$this->getModel($data,$socialMedia);
        $socialMedia->save();
 
        return $socialMedia;
+  }else{
+    return "User Social Media Data already exist";
+  }
+      
 
     }
     public function updatesocialMedia($data, $id)
     {
         // Log::info($id);
-       $socialMedia = $this->socialMedia->find($id);
-       $socialMedia=$this->getModel($data,$socialMedia);
-       $socialMedia->update();
-
+        // exit;
+        // // $id = $data['id'] ;      
+        $duplicate_data = $this->socialMedia
+                               ->where('user_id',$data->user_id)
+                               ->where('id','!=',$id )
+                               ->where('status','!=',2)
+                               ->get();
+        if(count($duplicate_data)==0){
+             $socialMedia = $this->socialMedia->find($id);
+             $socialMedia=$this->getModel($data,$socialMedia);
+             $socialMedia->update();
        return $socialMedia;
+        } 
+        else{
+           return "User Social Media Data already exist";
+        }                      
+      
     }
 
 

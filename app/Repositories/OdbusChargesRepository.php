@@ -20,6 +20,8 @@ class OdbusChargesRepository
     {
         $paginate = $request['per_page'] ;
         $name = $request['name'] ;
+        $userID = $request['userID'] ;
+        $role_id = $request['role_id'] ;
 
         $data= OdbusCharges::with('user')->whereNotIn('status', [2])->orderBy('id','desc');
 
@@ -31,6 +33,11 @@ class OdbusChargesRepository
         {
             $paginate = 10 ;
         }
+         if($userID!= null && $role_id!= 1 )
+          {
+            $data = $data->Where('user_id', $userID);
+          }
+
         if($name!=null)
         {
             $data = $data->WhereHas('user', function ($query) use ($name) {$query->where('name', 'like', '%' .$name . '%');})

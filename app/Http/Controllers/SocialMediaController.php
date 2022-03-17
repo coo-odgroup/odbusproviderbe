@@ -55,16 +55,22 @@ class SocialMediaController extends Controller
     $errors = $socialmedia->errors();
     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
     }      
-    try {
-      $this->socialmediaService->addsocialmedia($request);
-      return $this->successResponse(null, "Social Media Added", Response::HTTP_CREATED);
+    else{
+      $response =  $this->socialmediaService->addsocialmedia($request);;
+
+           if($response=='User Social Media Data already exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Social Media Added", Response::HTTP_CREATED);
+           }
     }
-    catch(Exception $e){
-          // Log::info($e);
-      return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-    }  
 
   }
+
+
   public function updatesocialmedia(Request $request , $id)
   {
 
@@ -85,14 +91,18 @@ class SocialMediaController extends Controller
     $errors = $socialmedia->errors();
     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
   }      
-  try {
-    $this->socialmediaService->updatesocialmedia($request, $id);
-    return $this->successResponse(null,"Social Media Updated", Response::HTTP_CREATED);
-  }
-  catch(Exception $e){
-          // Log::info($e);
-    return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-  }  
+  else{
+      $response =  $this->socialmediaService->updatesocialmedia($request, $id);;
+
+           if($response=='User Social Media Data already exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"Social Media Added", Response::HTTP_CREATED);
+           }
+    }
 
   }
 
