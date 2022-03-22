@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Models\User;
+use App\Models\PermissionToRole;
 use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
@@ -18,5 +19,10 @@ class Role extends Model
     public function user()
     {
         return $this->hasOne(User::class);
+    }
+
+    public function PermissionToRole()
+    {
+        return $this->hasMany(PermissionToRole::class);
     }
 }

@@ -78,7 +78,6 @@ use App\Http\Controllers\FailledTransactionReportController;
 use App\Http\Controllers\CouponUsedUserReportController;
 use App\Http\Controllers\CancelTicketReportController;
 use App\Http\Controllers\ContactReportController;
-use App\Http\Controllers\AssocAssignReportController;
 
 // SettingController 
 use App\Http\Controllers\SocialMediaController;
@@ -119,19 +118,15 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\CouponTypeController;
 use App\Http\Controllers\OprAssignAgentController;
+use App\Http\Controllers\PermissionToRoleController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
+
 	Route::middleware('auth:api')->group( function () {
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
-
-
-Route::post('/assocAssignAgentreport',[AssocAssignReportController::class,'getAssignAgentData']);
-Route::post('/assocAssignBusreport',[AssocAssignReportController::class,'getAssignBusData']);
-
-Route::post('/assocAssignOperatorreport',[AssocAssignReportController::class,'getAssignOperatorData']);
 
 //Ticket Information 
 
@@ -932,3 +927,9 @@ Route::delete('/CouponType/{id}', [CouponTypeController::class, 'deleteCouponTyp
 Route::get('/CouponType/{id}', [CouponTypeController::class, 'getCouponType']);
 Route::post('/CouponTypeDT', [CouponTypeController::class, 'getCouponTypeDT']);
 Route::put('/changeStatusCouponType/{id}', [CouponTypeController::class, 'changeStatus']);
+
+
+//Permission To Role API
+Route::post('/addPermissionToRole', [PermissionToRoleController::class, 'addPermissionToRole']);
+Route::post('/getPermissionToRole', [PermissionToRoleController::class, 'getAllPermissionToRole']);
+Route::delete('/deletePermissionToRole/{id}', [PermissionToRoleController::class, 'deletePermissionToRole']);
