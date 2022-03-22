@@ -97,7 +97,25 @@ class SeatOpenRepository
     // }
     public function addseatopen($data)
     {
-        // Log::info($data);
+        
+        $date= $data->date;
+        $all_date=[];
+        if(!empty($date))
+        {
+            foreach ($date as  $d) {
+                if(strlen($d['month'])==1)
+                {
+                    $d['month']="0".$d['month'];
+                }
+                if(strlen($d['day'])==1)
+                {
+                    $d['day']="0".$d['day'];
+                }
+
+                $all_date[] = $d['year'].'-'.$d['month'].'-'.$d['day'] ;   
+            }
+        }
+        // Log::info($start_date);
         // exit();
 
         $layoutArray=$data['bus_seat_layout_data'];
@@ -118,19 +136,23 @@ class SeatOpenRepository
                             {
                                 foreach($get_ticket_price_id as $ticketpriceID)
                                 {                              
-                                    $busseats = new $this->busSeats;                            
-                                    $busseats->bus_id = $data['bus_id'];
-                                    $busseats->category = '0';
-                                    $busseats->seats_id = $upperBerthData['seatId'];
-                                    $busseats->ticket_price_id = $ticketpriceID;
-                                    $busseats->operation_date = $data['date'];
-                                    $busseats->status = '1';
-                                    $busseats->type = $data['type'];
-                                    $busseats->created_by = $data['created_by'];
-                                    $busseats->reason = $data['reason'];   
-                                    $busseats->other_reason = $data['other_reson'];
-
-                                    $busseats->save(); 
+                                    foreach ($all_date as $dt) 
+                                    {
+                                        $busseats = new $this->busSeats;                            
+                                        $busseats->bus_id = $data['bus_id'];
+                                        $busseats->category = '0';
+                                        $busseats->seats_id = $upperBerthData['seatId'];
+                                        $busseats->ticket_price_id = $ticketpriceID;
+                                        $busseats->operation_date = $dt;
+                                        $busseats->status = '1';
+                                        $busseats->type = $data['type'];
+                                        $busseats->created_by = $data['created_by'];
+                                        $busseats->reason = $data['reason'];   
+                                        $busseats->other_reason = $data['other_reson'];
+                                        // Log::info($busseats);
+                                        $busseats->save(); 
+                                       
+                                    }                                   
                                 }
                             }
                         }                  
@@ -150,18 +172,25 @@ class SeatOpenRepository
                             {                         
                                 foreach($get_ticket_price_id as $ticketpriceID)
                                 {
-                                    $busseats = new $this->busSeats;                              
-                                    $busseats->bus_id = $data['bus_id'];
-                                    $busseats->category = '0';
-                                    $busseats->seats_id = $lowerBerthData['seatId'];
-                                    $busseats->ticket_price_id = $ticketpriceID;
-                                    $busseats->operation_date = $data['date'];
-                                    $busseats->status = '1';
-                                    $busseats->type = $data['type'];
-                                    $busseats->created_by = $data['created_by'];
-                                    $busseats->reason = $data['reason'];                  
-                                    $busseats->other_reason = $data['other_reson'];                                 
-                                    $busseats->save(); 
+                                     foreach ($all_date as $dt) 
+                                    {
+                                        $busseats = new $this->busSeats;                              
+                                        $busseats->bus_id = $data['bus_id'];
+                                        $busseats->category = '0';
+                                        $busseats->seats_id = $lowerBerthData['seatId'];
+                                        $busseats->ticket_price_id = $ticketpriceID;
+                                        $busseats->operation_date = $dt;
+                                        $busseats->status = '1';
+                                        $busseats->type = $data['type'];
+                                        $busseats->created_by = $data['created_by'];
+                                        $busseats->reason = $data['reason'];                  
+                                        $busseats->other_reason = $data['other_reson']; 
+
+                                        // Log::info($busseats);                                
+                                        $busseats->save(); 
+                                       
+                                    }         
+                                    
                                 }
                             }
                         }                      

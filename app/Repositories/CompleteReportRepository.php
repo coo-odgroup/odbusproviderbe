@@ -25,7 +25,7 @@ class CompleteReportRepository
     
     public function getData($request)
     {
-        //Log::info($request);
+        // Log::info($request);
         // exit;
         $start_date="";
         $end_date="";

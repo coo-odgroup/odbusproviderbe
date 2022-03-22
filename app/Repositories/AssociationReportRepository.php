@@ -25,6 +25,7 @@ class AssociationReportRepository
     
     public function assocBookingReport($request)
     {
+        // Log::info($request);
         $start_date="";
         $end_date="";
         $paginate = $request->rows_number;
@@ -36,6 +37,8 @@ class AssociationReportRepository
         $destination_id = $request->destination_id;
         $rangeFromDate  =  $request->rangeFromDate;
         $rangeToDate  =  $request->rangeToDate;
+        $userID = $request->userID ;
+        $role_id = $request->role_id ;
 
         if(!empty($rangeFromDate))
         {
@@ -78,6 +81,11 @@ class AssociationReportRepository
         }
         elseif ($paginate == null) {
             $paginate = 10 ;
+        }
+
+        if($userID!= null && $role_id!= 1 )
+        {
+            $data = $data->Where('user_id', $userID);
         }
 
         if(!empty($pnr))
@@ -161,6 +169,9 @@ class AssociationReportRepository
         $destination_id = $request->destination_id;
         $rangeFromDate  =  $request->rangeFromDate;
         $rangeToDate  =  $request->rangeToDate;
+         $userID = $request->userID ;
+        $role_id = $request->role_id ;
+
 
         if(!empty($rangeFromDate))
         {
@@ -204,7 +215,10 @@ class AssociationReportRepository
         elseif ($paginate == null) {
             $paginate = 10 ;
         }
-
+        if($userID!= null && $role_id!= 1 )
+        {
+            $data = $data->Where('user_id', $userID);
+        }
         if(!empty($pnr))
         {
            $data=$data->where('pnr', $pnr );

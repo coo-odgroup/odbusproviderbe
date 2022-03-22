@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Services;
-
-
 use App\Repositories\ExtraSeatBlockRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
