@@ -27,7 +27,7 @@ class AgentWalletService
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
 
-      $data= $this->agentWalletRepository->getAllWalletRecord();
+     return $data= $this->agentWalletRepository->getAllWalletRecord(); exit;
 
       if($paginate=='all') 
         {

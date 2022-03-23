@@ -161,8 +161,43 @@ class AgentWalletRepository
     } 
 
     public function agentAllTransaction($request){
+        // Log::info($request);
+        // exit;
+        $start_date="";
+        $end_date="";
         $paginate = $request->rows_number;
         $name = $request->name;
+        $user_id = $request->user_id;
+        $rangeFromDate  =  $request->rangeFromDate;
+        $rangeToDate  =  $request->rangeToDate;
+        if(!empty($rangeFromDate))
+        {
+            if(strlen($rangeFromDate['month'])==1)
+            {
+                $rangeFromDate['month']="0".$rangeFromDate['month'];
+            }
+            if(strlen($rangeFromDate['day'])==1)
+            {
+                $rangeFromDate['day']="0".$rangeFromDate['day'];
+            }
+
+            $start_date = $rangeFromDate['year'].'-'.$rangeFromDate['month'].'-'.$rangeFromDate['day'] ;     
+        }
+
+        if(!empty($rangeToDate))
+        {
+            if(strlen($rangeToDate['month'])==1)
+            {
+                $rangeToDate['month']="0".$rangeToDate['month'];
+            }
+            if(strlen($rangeToDate['day'])==1)
+            {
+                $rangeToDate['day']="0".$rangeToDate['day'];
+            }
+
+            $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
+        }
+
         
 
         $data= $this->agentWallet->with('user')->where('status', 1)->orderBy('id','DESC');
@@ -174,20 +209,28 @@ class AgentWalletRepository
         elseif ($paginate == null) {
             $paginate = 10 ;
         }
-          if(!empty($name))
+        if(!empty($name))
         {
-           // $data=$data->where('name', 'like', '%' .$name . '%')
-           //          ->orWhere('email','like', '%' .$name . '%')
-           //          ->orWhere('phone','like', '%' .$name . '%');
-           $data=$data->whereHas('user', function ($query) use ($name) 
+           $data=$data->where('transaction_id',$name)
+                    ->orwhereHas('user', function ($query) use ($name) 
                         {$query->where('name', 'like', '%' .$name . '%')
-                    ->orWhere('email','like', '%' .$name . '%')
-                    ->orWhere('phone','like', '%' .$name . '%');
+                        ->orWhere('email','like', '%' .$name . '%')
+                        ->orWhere('phone','like', '%' .$name . '%');
                     });
+        }
+        if($start_date != null && $end_date != null)
+        {
+            $data =$data->whereBetween('created_at', [$start_date, $end_date]);
+                       
+        }
+        if($user_id!= null)
+        {
+            $data =$data->where('user_id', $user_id);
+                       
         }
 
         $data=$data->paginate($paginate); 
-      
+        
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
