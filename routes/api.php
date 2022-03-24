@@ -65,6 +65,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\LogRoute;
 use Laravel\Passport\Passport;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\CouponTypeController;
 
 // ReportController
 use App\Http\Controllers\SeatOpenReportController;
@@ -116,7 +117,6 @@ use App\Http\Controllers\OprAssigBusController;
 use App\Http\Controllers\OprReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\CouponTypeController;
 use App\Http\Controllers\OprAssignAgentController;
 use App\Http\Controllers\PermissionToRoleController;
 
@@ -637,6 +637,15 @@ Route::get('/coupon/{id}', [CouponController::class, 'getBusCoupon']);
 Route::post('/getData', [CouponController::class, 'getData']);
 Route::put('/changeStatusCoupon/{id}', [CouponController::class, 'changeStatus']);
 
+Route::post('/createcoupontype', [CouponTypeController::class, 'createCouponType']);
+Route::post('/CouponTypeData', [CouponTypeController::class, 'CouponTypeData']);
+Route::get('/CouponType', [CouponTypeController::class, 'getAllCouponType']);
+Route::put('/CouponType/{id}', [CouponTypeController::class, 'updateCouponType']);
+Route::delete('/CouponType/{id}', [CouponTypeController::class, 'deleteCouponType']);
+Route::get('/CouponType/{id}', [CouponTypeController::class, 'getCouponType']);
+Route::post('/CouponTypeDT', [CouponTypeController::class, 'getCouponTypeDT']);
+Route::put('/changeStatusCouponType/{id}', [CouponTypeController::class, 'changeStatus']);
+
 
 //COUPON FOR BUS, ROUTE AND OPERATOR 
 Route::post('/couponBus', [CouponController::class, 'createCouponBus']);
@@ -916,17 +925,6 @@ Route::get('/Permission/{id}', [PermissionController::class, 'getPermission']);
 Route::post('/PermissionDT', [PermissionController::class, 'getPermissionDT']);
 Route::put('/changeStatusPermission/{id}', [PermissionController::class, 'changeStatus']);
 
-
-
-//Permission API
-Route::post('/createcoupontype', [CouponTypeController::class, 'createCouponType']);
-Route::post('/CouponTypeData', [CouponTypeController::class, 'CouponTypeData']);
-Route::get('/CouponType', [CouponTypeController::class, 'getAllCouponType']);
-Route::put('/CouponType/{id}', [CouponTypeController::class, 'updateCouponType']);
-Route::delete('/CouponType/{id}', [CouponTypeController::class, 'deleteCouponType']);
-Route::get('/CouponType/{id}', [CouponTypeController::class, 'getCouponType']);
-Route::post('/CouponTypeDT', [CouponTypeController::class, 'getCouponTypeDT']);
-Route::put('/changeStatusCouponType/{id}', [CouponTypeController::class, 'changeStatus']);
 
 
 //Permission To Role API
