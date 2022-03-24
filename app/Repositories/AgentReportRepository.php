@@ -82,6 +82,7 @@ class AgentReportRepository
         {
            $data=$data->where('user_id', $user_id );
         }
+        
 
         if(!empty($pnr))
         {
