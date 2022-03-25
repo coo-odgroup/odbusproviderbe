@@ -126,14 +126,20 @@ class AgentWalletRepository
     }
     
     public function agentWalletBalancedetails($request){
+       
         $paginate = $request->rows_number;
         $name = $request->name;
+        $user_id = $request->user_id;
         $data= $this->user->with(['agentWallet' => function ($a)
                                 {$a->where('status',1)
                                     ->orderBy('id','DESC');
                                     }])
                                     ->where('role_id',3)
                                     ->where('status',1);
+        if(!empty($user_id))
+        {
+           $data=$data->where('id', $user_id );
+        }
 
         if($paginate=='all')    
         {
@@ -142,9 +148,12 @@ class AgentWalletRepository
         elseif ($paginate == null) {
             $paginate = 10 ;
         }
-          if(!empty($name))
+
+        
+        
+        if(!empty($name))
         {
-           $data=$data->where('name', 'like', '%' .$name . '%')
+           $data=$data->where('name', 'like', '--%' .$name . '%')
                     ->orWhere('email','like', '%' .$name . '%')
                     ->orWhere('phone','like', '%' .$name . '%');
         }

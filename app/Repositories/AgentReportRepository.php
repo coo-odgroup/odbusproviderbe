@@ -151,7 +151,7 @@ class AgentReportRepository
         $start_date="";
         $end_date="";
         $paginate = $request->rows_number;    
-    
+        $user_id = $request->user_id;
         $pnr = $request->pnr;
         $date_type = $request->date_type;
         $rangeFromDate  =  $request->rangeFromDate;
@@ -200,6 +200,11 @@ class AgentReportRepository
             $paginate = 10 ;
         }
 
+        if(!empty($user_id))
+        {
+           $data=$data->where('user_id', $user_id );
+        }
+        
         if(!empty($pnr))
         {
            $data=$data->whereHas('User', function ($query) use ($pnr) {$query->where('name', $pnr );});
