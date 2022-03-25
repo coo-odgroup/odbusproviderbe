@@ -25,7 +25,7 @@ class PermissionToRoleRepository
     public function getAllPermissionToRole($request)
     {        
         $paginate = $request['rows_number'];
-        $agent_id = $request['agent_id'];
+        //$agent_id = $request['agent_id'];
 
         $data = $this->role->with('PermissionToRole.Permission')                                       
                                         ->orderBy('id','DESC');
@@ -39,10 +39,10 @@ class PermissionToRoleRepository
             $paginate = 10 ;
         }
 
-        if($agent_id)
-        {
-           $data = $data->where('user_id',$agent_id);
-        }   
+        // if($agent_id)
+        // {
+        //    $data = $data->where('user_id',$agent_id);
+        // }   
         
         $data = $data->paginate($paginate);    
         
@@ -69,15 +69,20 @@ class PermissionToRoleRepository
 
     public function addPermissionToRole($request)
     { 
-        //log::info($request);
+        //log::info($request); exit;
 
-        foreach ($request['permission_id'] as $k=>$permission_id) 
+        foreach ($request['submenu'] as $k=>$submenu) 
         {        
-            $oprAssignAgent = new $this->permissionToRole;
-            $oprAssignAgent->permission_id = $permission_id;
-            $oprAssignAgent->role_id = $request['role_id'];
-            $oprAssignAgent->created_by = $request['created_by'];
-            $oprAssignAgent->save();
+            $PTR = new $this->permissionToRole;            
+            $PTR->role_id = $request['role_id'];
+            $PTR->menu = $request['menu'];
+            $PTR->submenu = $submenu;
+            $PTR->add_status = ($request['add_status'] == true)?'1':'0'; 
+            $PTR->update_status = ($request['update_status'] == true)?'1':'0'; 
+            $PTR->view_status = ($request['view_status'] == true)?'1':'0'; 
+            $PTR->delete_status = ($request['delete_status'] == true)?'1':'0'; 
+            $PTR->created_by = $request['created_by'];
+            $PTR->save();
         }
         return 'done' ;
     } 
