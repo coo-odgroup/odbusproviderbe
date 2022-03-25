@@ -119,6 +119,10 @@ class AgentReportRepository
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
                // $v['source']=[];
                // $v['destination']=[];
+
+               $stoppages['source']=[];
+               $stoppages['destination']=[];
+               
                foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
                 {                          
                     $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();

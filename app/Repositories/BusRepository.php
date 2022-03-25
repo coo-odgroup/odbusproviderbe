@@ -606,11 +606,14 @@ class BusRepository
         $searchByBus = $data['busLists'];
         $search = $data['year']."-".$data['month'];
         $busData = array();
+        $today=date("Y-m-d");
+
         foreach($searchByBus as $busList){
             $busWithEntryDates = $this->bus
             ->where('bus.id' , $busList)
             ->with(['busSchedule.busScheduleDate' => function($query) use ($search){
             $query->where('entry_date', 'like', '%'.$search. '%');
+            $query->orderBy('entry_date',  'DESC');
             }])
             ->get();
             foreach($busWithEntryDates as $busWithEntryDate){
@@ -627,10 +630,15 @@ class BusRepository
                     {     
                         $bus_id = $dateRec->bus_id;              
                         $entryDate = $dateRec->entry_date; 
-                        $entryDates[] = array(
-                                              "busId" =>$bus_id,
-                                              "entry_date"=>date('j M Y ',strtotime($entryDate)),
-                                             );  
+                        if($today <= $entryDate){
+
+                            $entryDates[] = array(
+                                "busId" =>$bus_id,
+                                "entry_date"=>date('j M Y ',strtotime($entryDate)),
+                               ); 
+
+                        }
+                         
                     }
                 }
 
@@ -643,6 +651,7 @@ class BusRepository
             }
 
         }
+
         return ["busDatas" => $busData];
     }
 }

@@ -126,33 +126,49 @@ class CompleteReportRepository
                         ->orderBy('journey_dt','DESC');
         }
         $data=$data->paginate($paginate); 
+
+       
         
    
         if($data){
             foreach($data as $key=>$v){
 
+               
+
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 
-               $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-               // $v['source']=[];
-               // $v['destination']=[];
+               $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->where('status', 1)->get();
+                
+              // $v['source']=[];
+               // $v['destination']=[];   
+
+                $stoppages['source']=[];
+                $stoppages['destination']=[];
+
                foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-                {                          
+                {
+
                     $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
                     $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
                 }
+
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];
             }
         }
 
+
+       
       
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
             "data" => $data
-           );   
+           );  
+
+          
+
            return $response;      
 
     }
