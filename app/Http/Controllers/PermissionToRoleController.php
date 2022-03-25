@@ -39,7 +39,6 @@ class PermissionToRoleController extends Controller
 
 	public function addPermissionToRole(Request $request)
     {
-         //log::info($request);
          $response = $this->permissionToRoleService->addPermissionToRole($request);
          return $this->successResponse($response,"Permission assigned to Role", Response::HTTP_CREATED);   
 	}     

@@ -13,6 +13,8 @@ use App\Models\OdbusCharges;
 use App\Models\Cancellationslabs;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\AgentWallet;
+use App\Models\BusOperator;
+
 // use App\Models\AssocAssignBus;
 // use App\Models\AssocAssignOperator;
 
@@ -51,6 +53,11 @@ class User extends Model
     public function agentWallet()
     {
         return $this->hasMany(AgentWallet::class);        
+    } 
+
+     public function busOperator()
+    {
+        return $this->belongsTo(BusOperator::class);        
     } 
 
 

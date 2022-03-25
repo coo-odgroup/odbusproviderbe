@@ -895,6 +895,7 @@ Route::post('/getOprBuslist', [OprAssigBusController::class, 'getOprBuslist']);
 Route::post('/oprAssignBus', [OprAssigBusController::class, 'OprAssignBus']);
 Route::post('/getOprAssignBus', [OprAssigBusController::class, 'getOprAssignBus']);
 Route::post('/deleteOprAssignBus', [OprAssigBusController::class, 'deleteOprAssignBus']);
+Route::post('/getOperatorbuslist', [OprAssigBusController::class, 'getOperatorbuslist']);
 
 //Operator Assign Agent 
 Route::post('/addoprAssignAgent', [OprAssignAgentController::class, 'addAssignAgent']);

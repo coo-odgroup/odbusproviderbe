@@ -12,7 +12,7 @@ class PermissionToRole extends Model
 
     protected $table = 'role_permissions';    
 
-    protected $fillable = ['permission_id','role_id','created_at','updated_at','created_by'];
+    protected $fillable = ['role_id','menu','submenu','add_status','edit_status','view_status','delete_status','created_at','updated_at','created_by'];
 
     public function Role()
     {
