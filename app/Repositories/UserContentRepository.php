@@ -61,38 +61,61 @@ class UserContentRepository
 
     
    public function addusercontent($data)
-   {        
-       $usercontent = new $this->usercontent;
-       // $usercontent=$this->getModel($data, $usercontent);
-       $usercontent->name =$data['name'];
-       //$usercontent->bus_operator_id =$data['bus_operator_id'];
-       $usercontent->email =$data['email'];
-       $usercontent->phone =$data['phone'];
-       $usercontent->role_id ='4';
-       $usercontent->status ='1';
-       $usercontent->password =bcrypt($data['password']);
-       $usercontent->created_by ="Admin";
-       $usercontent->save();
+   {      
 
-       $BusOperator = new $this->userBusOperator;
-       $BusOperator->user_id=$usercontent->id;
-       $BusOperator->created_by ="Admin";
-       $BusOperator->status ="1";
-       $BusOperator->bus_operator_id=$data['bus_operator_id'];
-       $BusOperator->save();
-       return $usercontent;
+       $bus_opr_exist= $this->usercontent->where('bus_operator_id', $data['bus_operator_id'])->get();
+       $email_exist= $this->usercontent->where('email', $data['email'])->get();
+       $phone_exist= $this->usercontent->where('phone', $data['phone'])->get();
 
+       if(count($bus_opr_exist)==0){
+        if(count($email_exist)==0){
+          if(count($phone_exist)==0){
+             $usercontent = new $this->usercontent; 
+             $usercontent->name =$data['name'];
+             $usercontent->email =$data['email'];
+             $usercontent->phone =$data['phone'];
+             $usercontent->bus_operator_id =$data['bus_operator_id'];
+             $usercontent->role_id ='4';
+             $usercontent->user_type ='OPERATOR';
+             $usercontent->status ='1';
+             $usercontent->password =bcrypt($data['password']);
+             $usercontent->created_by ="Admin";
+             $usercontent->save();
+             return $usercontent;
+
+          }else{
+               return 'Phone Number Exist';
+          }
+        }else{
+            return 'Email Id Exist';
+        }
+       }else
+       {
+          return 'Bus Operator Exist';
+       }
    }
+
    public function updateusercontent($data, $id)
    {
-      $usercontent = $this->usercontent->find($id);
-      $usercontent->name =$data['name'];
-      //$usercontent->bus_operator_id =$data['bus_operator_id'];
-      $usercontent->email =$data['email'];
-      $usercontent->phone =$data['phone'];
-      $usercontent->created_by ="Admin";
-	  $usercontent->update();
-      return $usercontent;
+       $email_exist= $this->usercontent->where('email', $data['email'])->where('id','!=',$id)->get();
+       $phone_exist= $this->usercontent->where('phone', $data['phone'])->where('id','!=',$id)->get();
+
+       if(count($email_exist)==0){
+          if(count($phone_exist)==0){
+            $usercontent = $this->usercontent->find($id);
+            $usercontent->name =$data['name'];
+            $usercontent->email =$data['email'];
+            $usercontent->phone =$data['phone'];
+            $usercontent->created_by ="Admin";
+            $usercontent->update();
+            return $usercontent;
+          }else{
+            return 'Phone Number Exist';
+          }
+          }else{
+             return 'Email Id Exist';
+          }
+      
    } 
 
    public function changePassword($data, $id)

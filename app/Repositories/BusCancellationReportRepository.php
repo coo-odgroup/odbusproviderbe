@@ -24,44 +24,13 @@ class BusCancellationReportRepository
     }   
     public function getData($request)
     {
-        // Log::info($request);
-
-        $start_date="";
-        $end_date="";
         $paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
         $date_range = $request->date_range;
         $bus_id = $request->bus_id;
-        $rangeFromDate  =  $request->rangeFromDate;
-        $rangeToDate  =  $request->rangeToDate;
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate;
 
-        if(!empty($rangeFromDate))
-        {
-            if(strlen($rangeFromDate['month'])==1)
-            {
-                $rangeFromDate['month']="0".$rangeFromDate['month'];
-            }
-            if(strlen($rangeFromDate['day'])==1)
-            {
-                $rangeFromDate['day']="0".$rangeFromDate['day'];
-            }
-
-            $start_date = $rangeFromDate['year'].'-'.$rangeFromDate['month'].'-'.$rangeFromDate['day'] ;     
-        }
-
-        if(!empty($rangeToDate))
-        {
-            if(strlen($rangeToDate['month'])==1)
-            {
-                $rangeToDate['month']="0".$rangeToDate['month'];
-            }
-            if(strlen($rangeToDate['day'])==1)
-            {
-                $rangeToDate['day']="0".$rangeToDate['day'];
-            }
-
-            $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
-        }
                  
         $data=  $this->busCancelled
                      ->with('bus.BusSitting','bus.BusType','bus.busOperator','bus.ticketPrice','busCancelledDate')
@@ -91,9 +60,23 @@ class BusCancellationReportRepository
             $data=$data->whereHas('bus', function ($query) use ($bus_id) {$query->where('id', $bus_id );});
         }
         if (!empty($start_date) && !empty($end_date)) {
-            $data = $data->whereBetween('created_at', [$start_date, $end_date]);
+            
+            
+            if($start_date == $end_date)
+            {
+                  $data = $data->whereHas('busCancelledDate', function ($query) use ($start_date) {$query->where('cancelled_date', $start_date );});
+            }
+            else
+            {
+                 $data = $data->whereHas('busCancelledDate', function ($query) use ($start_date,$end_date) {$query->whereBetween('created_at', [$start_date, $end_date]);});
+
+
+
+                 // whereBetween('created_at', [$start_date, $end_date]);
+            }
             
         }
+
 
         $data=$data->paginate($paginate); 
 

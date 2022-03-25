@@ -24,9 +24,8 @@ class OprAssignAgentRepository
     public function getAllAssignAgent($request)
     {        
         $paginate = $request['rows_number'];
-        $agent_id = $request['agent_id'];
-
-        $data = $this->assocAssignAgent->with('User')
+        $user_id = $request['user_id'];
+        $data = $this->assocAssignAgent->with('User.busOperator')
                                         ->whereHas('User', function ($query){
                                                 $query->where('role_id', '4' );
                                          })    
@@ -41,9 +40,9 @@ class OprAssignAgentRepository
             $paginate = 10 ;
         }
 
-        if($agent_id)
+        if($user_id)
         {
-           $data = $data->where('user_id',$agent_id);
+           $data = $data->where('user_id',$user_id);
         }   
         
         $data = $data->paginate($paginate);    

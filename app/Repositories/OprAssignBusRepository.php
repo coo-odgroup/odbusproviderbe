@@ -46,6 +46,29 @@ class OprAssignBusRepository
         return $busData;
   } 
 
+  public function getOperatorbuslist($request)
+  {
+        $opr = $this->usercontent
+                    ->with('busOperator.bus')
+                    ->where('id',$request['assoc_id'])
+                    ->get();
+        $busData=[];
+
+        // Log::info($opr);
+        // exit;
+
+        foreach($opr as $k=>$data)
+        {
+          if(count($data->busOperator['bus'])>0){
+              foreach ($data->busOperator['bus'] as $v) {
+              $busData[]= $v;
+              }       
+          }
+        }
+        
+        return $busData;
+  } 
+
    public function getOprAssignBus($request)
    {
         // Log::info($request);
@@ -103,16 +126,29 @@ class OprAssignBusRepository
 
    public function OprAssignBus($request)
    {
-        foreach ($request['bus_id'] as $k=>$bus_id) {        
+    
+    $oldrecord=$this->OprAssignBus->where('user_id',$request['user_id'])->get();
+
+    // Log::info();
+    // exit;
+    if(count($oldrecord)==0){
+      foreach ($request['bus_id'] as $k=>$bus_id) {  
+            
         $OprAssignBus = new $this->OprAssignBus;
         $OprAssignBus->user_id = $request['user_id'];
         $OprAssignBus->created_by = $request['created_by'];
         $OprAssignBus->bus_id = $bus_id;
-
-            $OprAssignBus->save();
+        $OprAssignBus->save();
         }
-        return 'done' ;   
+          'done' ; 
+    }
+    else
+    {
+        return 'Operator Exist' ; 
+    }
+          
    } 
+
 
    public function deleteOprAssignBus($request)
    {

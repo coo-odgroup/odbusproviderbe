@@ -20,6 +20,11 @@ class OprAssignBusService
     public function getOprBuslist($request)
     {
         return $this->OprAssignBusRepository->getOprBuslist($request);
+    } 
+
+    public function getOperatorbuslist($request)
+    {
+        return $this->OprAssignBusRepository->getOperatorbuslist($request);
     }  
 
     public function getOprAssignBus($request)

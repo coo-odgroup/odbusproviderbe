@@ -54,31 +54,59 @@ class UserContentController extends Controller
         $errors = $usercontent->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }      
-      try {
-        $this->userContentService->addusercontent($request);
-        return $this->successResponse(null, "USER ADDED", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-      	// Log::info($e);
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }  
+      else
+        {
+          $response = $this->userContentService->addusercontent($request);
+
+           if($response=='Phone Number Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           elseif($response=='Email Id Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           elseif($response=='Bus Operator Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"USER ADDED", Response::HTTP_CREATED);
+           }
+        }
 
      }
      public function updateuser(Request $request , $id)
      {
-     	// Log::info($request);exit;
+     	// Log::info($id);exit;
 
      	 $data = $request->only([
           'name',
-          'bus_operator_id',
           'email',
           'phone',
         ]);
 
 
-     	 $this->userContentService->updateusercontent($request, $id);
-        return $this->successResponse(null,'USER DATA UPDATED' , Response::HTTP_CREATED);
+     	 // $this->userContentService->updateusercontent($request, $id);
+       //  return $this->successResponse(null,'USER DATA UPDATED' , Response::HTTP_CREATED);
 
+
+          $response = $this->userContentService->updateusercontent($request, $id);
+
+           if($response=='Phone Number Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           elseif($response=='Email Id Exist')
+           {
+              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response,"USER DATA UPDATED", Response::HTTP_CREATED);
+           }
+ 
     	 // $usercontent = $this->userContentValidator->validate($data);
 
 

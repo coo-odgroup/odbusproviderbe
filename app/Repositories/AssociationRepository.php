@@ -40,7 +40,7 @@ class AssociationRepository
 
    public function getAllUserOperator()
    {
-      return $this->usercontent->where('role_id',4)->where('status', 1)->get();
+      return $this->usercontent->with('busOperator')->where('role_id',4)->where('status', 1)->get();
    }
 
    public function getAllData($request)

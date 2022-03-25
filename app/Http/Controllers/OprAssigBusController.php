@@ -30,7 +30,13 @@ class OprAssigBusController extends Controller
      {
           return $this->OprAssignBusService->getOprBuslist($request);
             
-	 }  
+	   }  
+
+     public function getOperatorbuslist(Request $request)
+     {
+          return $this->OprAssignBusService->getOperatorbuslist($request);
+            
+     }  
 
 	 public function getOprAssignBus(Request $request)
      {
@@ -46,8 +52,15 @@ class OprAssigBusController extends Controller
 
 	 public function OprAssignBus(Request $request)
      {
-          log::info($request);
           $response = $this->OprAssignBusService->OprAssignBus($request);
-          return $this->successResponse($response,"Bus assigned to the Association", Response::HTTP_CREATED);   
+          if($response=='done')
+          {
+            return $this->successResponse($response,"Bus assigned to the Association", Response::HTTP_CREATED);
+          }
+          elseif($response=='Operator Exist')
+          {
+            return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+          }
+             
 	 } 
 }
