@@ -177,37 +177,8 @@ class AgentWalletRepository
         $paginate = $request->rows_number;
         $name = $request->name;
         $user_id = $request->user_id;
-        $rangeFromDate  =  $request->rangeFromDate;
-        $rangeToDate  =  $request->rangeToDate;
-        if(!empty($rangeFromDate))
-        {
-            if(strlen($rangeFromDate['month'])==1)
-            {
-                $rangeFromDate['month']="0".$rangeFromDate['month'];
-            }
-            if(strlen($rangeFromDate['day'])==1)
-            {
-                $rangeFromDate['day']="0".$rangeFromDate['day'];
-            }
-
-            $start_date = $rangeFromDate['year'].'-'.$rangeFromDate['month'].'-'.$rangeFromDate['day'] ;     
-        }
-
-        if(!empty($rangeToDate))
-        {
-            if(strlen($rangeToDate['month'])==1)
-            {
-                $rangeToDate['month']="0".$rangeToDate['month'];
-            }
-            if(strlen($rangeToDate['day'])==1)
-            {
-                $rangeToDate['day']="0".$rangeToDate['day'];
-            }
-
-            $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
-        }
-
-        
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate;
 
         $data= $this->agentWallet->with('user')->where('status', 1)->orderBy('id','DESC');
 
@@ -229,7 +200,13 @@ class AgentWalletRepository
         }
         if($start_date != null && $end_date != null)
         {
-            $data =$data->whereBetween('created_at', [$start_date, $end_date]);
+            if($start_date == $end_date){
+                $data =$data->where('created_at','like','%'.$start_date.'%')
+                        ->orderBy('created_at','DESC');
+                       
+            }else{
+                 $data =$data->whereBetween('created_at', [$start_date, $end_date]);
+            }
                        
         }
         if($user_id!= null)

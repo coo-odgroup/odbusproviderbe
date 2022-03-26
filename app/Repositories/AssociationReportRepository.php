@@ -142,8 +142,7 @@ class AssociationReportRepository
     {
         // Log::info($request);
         // exit;
-        $start_date="";
-        $end_date="";
+     
         $paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
         $payment_id = $request->payment_id;

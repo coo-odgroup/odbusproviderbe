@@ -25,8 +25,7 @@ class OprReportRepository
     
     public function oprBookingReport($request)
     {
-        $start_date="";
-        $end_date="";
+       
         $paginate = $request->rows_number;
         $user_id = $request->user_id;
         $payment_id = $request->payment_id;
@@ -34,36 +33,8 @@ class OprReportRepository
         $date_type = $request->date_type;
         $source_id = $request->source_id;
         $destination_id = $request->destination_id;
-        $rangeFromDate  =  $request->rangeFromDate;
-        $rangeToDate  =  $request->rangeToDate;
-
-        if(!empty($rangeFromDate))
-        {
-            if(strlen($rangeFromDate['month'])==1)
-            {
-                $rangeFromDate['month']="0".$rangeFromDate['month'];
-            }
-            if(strlen($rangeFromDate['day'])==1)
-            {
-                $rangeFromDate['day']="0".$rangeFromDate['day'];
-            }
-
-            $start_date = $rangeFromDate['year'].'-'.$rangeFromDate['month'].'-'.$rangeFromDate['day'] ;     
-        }
-
-        if(!empty($rangeToDate))
-        {
-            if(strlen($rangeToDate['month'])==1)
-            {
-                $rangeToDate['month']="0".$rangeToDate['month'];
-            }
-            if(strlen($rangeToDate['day'])==1)
-            {
-                $rangeToDate['day']="0".$rangeToDate['day'];
-            }
-
-            $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
-        }
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate;
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
@@ -98,24 +69,39 @@ class OprReportRepository
         }
 
 
+        
         if($date_type == 'booking' && $start_date == null && $end_date == null)
         {
             $data =$data->orderBy('created_at','DESC');
         }
         else if($date_type == 'booking' && $start_date != null && $end_date != null)
-        {
-            $data =$data->whereBetween('created_at', [$start_date, $end_date])
+        {         
+            if($start_date == $end_date){
+                $data =$data->where('created_at','like','%'.$start_date.'%')
                         ->orderBy('created_at','DESC');
+                       
+            }else{
+                $data =$data->whereBetween('created_at', [$start_date, $end_date])
+                        ->orderBy('created_at','DESC');
+            }
+            
         }
         else if($date_type == 'journey' && $start_date == null && $end_date == null)
         {
             $data =$data->orderBy('journey_dt','DESC');
         }
          else if($date_type == 'journey' && $start_date != null && $end_date != null)
-        {                 
-             $data =$data-> whereBetween('journey_dt', [$start_date, $end_date])
+        {
+             if($start_date == $end_date){
+                $data =$data->where('journey_dt', 'like','%'.$start_date.'%')
                         ->orderBy('journey_dt','DESC');
+            }else{
+                 $data =$data-> whereBetween('journey_dt', [$start_date, $end_date])
+                        ->orderBy('journey_dt','DESC');
+            }
         }
+
+
         $data=$data->paginate($paginate); 
         
    
@@ -161,36 +147,10 @@ class OprReportRepository
         $date_type = $request->date_type;
         $source_id = $request->source_id;
         $destination_id = $request->destination_id;
-        $rangeFromDate  =  $request->rangeFromDate;
-        $rangeToDate  =  $request->rangeToDate;
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate;
 
-        if(!empty($rangeFromDate))
-        {
-            if(strlen($rangeFromDate['month'])==1)
-            {
-                $rangeFromDate['month']="0".$rangeFromDate['month'];
-            }
-            if(strlen($rangeFromDate['day'])==1)
-            {
-                $rangeFromDate['day']="0".$rangeFromDate['day'];
-            }
-
-            $start_date = $rangeFromDate['year'].'-'.$rangeFromDate['month'].'-'.$rangeFromDate['day'] ;     
-        }
-
-        if(!empty($rangeToDate))
-        {
-            if(strlen($rangeToDate['month'])==1)
-            {
-                $rangeToDate['month']="0".$rangeToDate['month'];
-            }
-            if(strlen($rangeToDate['day'])==1)
-            {
-                $rangeToDate['day']="0".$rangeToDate['day'];
-            }
-
-            $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
-        }
+       
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
@@ -222,24 +182,40 @@ class OprReportRepository
             $data=$data->where('source_id',$source_id)->where('destination_id',$destination_id);
         }
         
+        
+        
         if($date_type == 'booking' && $start_date == null && $end_date == null)
         {
             $data =$data->orderBy('created_at','DESC');
         }
         else if($date_type == 'booking' && $start_date != null && $end_date != null)
-        {
-            $data =$data->whereBetween('created_at', [$start_date, $end_date])
+        {         
+            if($start_date == $end_date){
+                $data =$data->where('created_at','like','%'.$start_date.'%')
                         ->orderBy('created_at','DESC');
+                       
+            }else{
+                $data =$data->whereBetween('created_at', [$start_date, $end_date])
+                        ->orderBy('created_at','DESC');
+            }
+            
         }
         else if($date_type == 'journey' && $start_date == null && $end_date == null)
         {
             $data =$data->orderBy('journey_dt','DESC');
         }
          else if($date_type == 'journey' && $start_date != null && $end_date != null)
-        {                 
-             $data =$data-> whereBetween('journey_dt', [$start_date, $end_date])
+        {
+             if($start_date == $end_date){
+                $data =$data->where('journey_dt', 'like','%'.$start_date.'%')
                         ->orderBy('journey_dt','DESC');
+            }else{
+                 $data =$data-> whereBetween('journey_dt', [$start_date, $end_date])
+                        ->orderBy('journey_dt','DESC');
+            }
         }
+
+        
         $data=$data->paginate($paginate); 
         
    
