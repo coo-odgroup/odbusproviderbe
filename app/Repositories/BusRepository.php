@@ -682,8 +682,12 @@ class BusRepository
                         if(!in_array($b->bus_id,$busIds)){
 
                             array_push($busIds,$b->bus_id);
+
+
+                            $src = $this->location->where('id',$b->source_id)->get();
+                            $dest= $this->location->where('id',$b->destination_id)->get();
     
-                            $BusList['bus_name']=$b->bus->name." - ".$b->bus->bus_number." (".$b->busOperator->organisation_name.' - '.$b->busOperator->operator_name.") ";
+                            $BusList['bus_name']=$b->bus->name." - ".$b->bus->bus_number." - (".$src[0]->name."-".$dest[0]->name.") - (".$b->busOperator->organisation_name.' - '.$b->busOperator->operator_name.") ";
                             //$BusList['id']='src_'.$s_id.'-dest_'.$d_id.'-'.$b->bus_id;
                             $BusList['id']=$s_id.'-'.$d_id.'-'.$b->bus_id;
     
@@ -712,6 +716,8 @@ class BusRepository
  
             if($allBus){
                 foreach($allBus as $k => $b){
+
+                    
 
                     $allBusList[$k]['bus_name']=$b->bus->name." - ".$b->bus->bus_number." (".$b->bus->busOperator->organisation_name.' - '.$b->bus->busOperator->operator_name.") ";
                    // $allBusList[$k]['id']='opr_'.$b->bus->busOperator->id.'-'.$b->bus_id;
