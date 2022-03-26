@@ -39,37 +39,12 @@ class ReviewRepository
 
         $operator_id = $request->bus_operator_id ;
         $paginate = $request->rows_number; 
-        $rangeFromDate  =  $request->rangeFromDate;
-        $rangeToDate  =  $request->rangeToDate; 
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate; 
         $user_id = $request['user_id'] ;
         $role_id = $request['role_id'] ;
 
-        if(!empty($rangeFromDate))
-        {
-            if(strlen($rangeFromDate['month'])==1)
-            {
-                $rangeFromDate['month']="0".$rangeFromDate['month'];
-            }
-            if(strlen($rangeFromDate['day'])==1)
-            {
-                $rangeFromDate['day']="0".$rangeFromDate['day'];
-            }
-
-            $start_date = $rangeFromDate['year'].'-'.$rangeFromDate['month'].'-'.$rangeFromDate['day'] ;     
-        }
-         if(!empty($rangeToDate))
-        {
-            if(strlen($rangeToDate['month'])==1)
-            {
-                $rangeToDate['month']="0".$rangeToDate['month'];
-            }
-            if(strlen($rangeToDate['day'])==1)
-            {
-                $rangeToDate['day']="0".$rangeToDate['day'];
-            }
-
-            $end_date = $rangeToDate['year'].'-'.$rangeToDate['month'].'-'.$rangeToDate['day'] ;     
-        }
+        
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
@@ -82,8 +57,14 @@ class ReviewRepository
         $data= $this->review->with('bus.busOperator')->where('status','!=' ,2)
                             ->orderBy('id',"DESC");
         if (!empty($start_date) && !empty($end_date)) {
-            $data = $data->whereBetween('created_at', [$start_date, $end_date]);
-            
+            if($start_date == $end_date)
+            {
+                $data =$data->where('created_at','like','%'.$start_date.'%');     
+            }
+            else
+            {
+                $data = $data->whereBetween('created_at', [$start_date, $end_date]);   
+            }
         }
         if($operator_id!= null)
         {

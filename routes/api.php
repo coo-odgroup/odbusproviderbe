@@ -119,6 +119,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\OprAssignAgentController;
 use App\Http\Controllers\PermissionToRoleController;
+use App\Http\Controllers\AssocAssignReportController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -127,6 +128,11 @@ Route::post('/emailtest', [TestEmailController::class,'emailtest']);
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
+
+Route::post('/assocAssignAgentreport', [AssocAssignReportController::class, 'getAssignAgentData']);
+Route::post('/assocAssignBusreport', [AssocAssignReportController::class, 'getAssignBusData']);
+Route::post('/assocAssignOperatorreport', [AssocAssignReportController::class, 'getAssignOperatorData']);
+	
 
 //Ticket Information 
 
