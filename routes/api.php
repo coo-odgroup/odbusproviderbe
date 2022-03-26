@@ -938,3 +938,6 @@ Route::put('/changeStatusPermission/{id}', [PermissionController::class, 'change
 Route::post('/addPermissionToRole', [PermissionToRoleController::class, 'addPermissionToRole']);
 Route::post('/getPermissionToRole', [PermissionToRoleController::class, 'getAllPermissionToRole']);
 Route::delete('/deletePermissionToRole/{id}', [PermissionToRoleController::class, 'deletePermissionToRole']);
+
+Route::post('/AllRoute', [BusStoppageController::class, 'AllRoute']);
+Route::post('/GetBusList', [BusController::class, 'GetBusList']);

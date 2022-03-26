@@ -565,5 +565,12 @@ class BusController extends Controller
         return $this->successResponse($res,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
 
       }
+
+     public function GetBusList(Request $request){
+
+        $bus = $this->busService->GetBusList($request);
+        return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+     } 
      
 }

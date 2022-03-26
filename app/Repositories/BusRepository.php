@@ -654,4 +654,120 @@ class BusRepository
 
         return ["busDatas" => $busData];
     }
+
+    public function GetBusList($data){
+
+       // Log::info($data);
+
+        $allBusList=[];
+        $busIds=[];
+
+        if(isset($data['route']) && $data['route'] && !isset($data['bus_operator_id'])){
+            
+            foreach($data['route'] as $d){
+
+               $arr= explode('-',$d);
+
+               $s_id=$arr[0];
+               $d_id=$arr[1];
+
+               $allBus=$this->busStoppage->with('bus')->with('busOperator')
+                          ->where('source_id',$s_id)
+                          ->where('destination_id',$d_id)
+                          ->where('status',1)->get();
+
+                if($allBus){
+                    foreach($allBus as $b){
+
+                        if(!in_array($b->bus_id,$busIds)){
+
+                            array_push($busIds,$b->bus_id);
+    
+                            $BusList['bus_name']=$b->bus->name." - ".$b->bus->bus_number." (".$b->busOperator->organisation_name.' - '.$b->busOperator->operator_name.") ";
+                            //$BusList['id']='src_'.$s_id.'-dest_'.$d_id.'-'.$b->bus_id;
+                            $BusList['id']=$s_id.'-'.$d_id.'-'.$b->bus_id;
+    
+    
+                            array_push($allBusList,$BusList);
+
+                        }                      
+
+    
+                    }
+                } 
+                
+            }    
+
+
+        }
+        else if(isset($data['bus_operator_id']) && $data['bus_operator_id'] && !isset($data['route'])){
+
+            $allBus=$this->busStoppage->select('bus_id')
+                             ->with(['bus' => function($b){
+                                $b->with('busOperator');
+                             } ])                           
+                            ->whereIn('bus_operator_id',$data['bus_operator_id'])
+                            ->groupBy('bus_id')
+                            ->get();
+ 
+            if($allBus){
+                foreach($allBus as $k => $b){
+
+                    $allBusList[$k]['bus_name']=$b->bus->name." - ".$b->bus->bus_number." (".$b->bus->busOperator->organisation_name.' - '.$b->bus->busOperator->operator_name.") ";
+                   // $allBusList[$k]['id']='opr_'.$b->bus->busOperator->id.'-'.$b->bus_id;
+                    $allBusList[$k]['id']=$b->bus->busOperator->id.'-'.$b->bus_id;
+
+                }
+            }    
+        }
+
+        else if(isset($data['bus_operator_id']) && isset($data['route'])){
+
+            foreach($data['route'] as $d){
+
+                $arr= explode('-',$d);
+ 
+                $s_id=$arr[0];
+                $d_id=$arr[1];
+ 
+                $allBus=$this->busStoppage->with('bus')->with('busOperator')
+                           ->where('source_id',$s_id)
+                           ->where('destination_id',$d_id)
+                           ->where('status',1)
+                           ->whereIn('bus_operator_id',$data['bus_operator_id'])
+                           ->get();
+ 
+                  if($allBus){
+                      foreach($allBus as  $b){
+ 
+                        if(!in_array($b->bus_id,$busIds)){
+
+                            array_push($busIds,$b->bus_id);
+
+
+                            $src = $this->location->where('id',$b->source_id)->get();
+                            $dest= $this->location->where('id',$b->destination_id)->get();
+    
+                            $BusList['bus_name']=$b->bus->name." - ".$b->bus->bus_number." - (".$src[0]->name."-".$dest[0]->name.") - (".$b->busOperator->organisation_name.' - '.$b->busOperator->operator_name.") ";
+                            //$BusList['id']='opr_'.$b->busOperator->id.'-'.'src_'.$s_id.'-dest_'.$d_id.'-'.$b->bus_id;
+                            $BusList['id']=$b->busOperator->id.'-'.$s_id.'-'.$d_id.'-'.$b->bus_id;
+    
+    
+                            array_push($allBusList,$BusList);
+
+                        }    
+ 
+                      }
+                  }         
+ 
+             }
+
+           
+        }
+
+        //Log::info($allBusList);
+
+        return $allBusList;
+
+    }
 }

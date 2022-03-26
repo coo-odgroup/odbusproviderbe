@@ -81,58 +81,83 @@ class CouponRepository
 
     public function save($data)
     {
-        // Log::info($data);
-        $coupons = new $this->coupon;
-        $coupons->coupon_type_id = $data['coupon_type'];
-        $coupons->coupon_title = $data['coupon_title'];
-        $coupons->coupon_code = strtoupper($data['coupon_code']);      
-        $coupons->type = $data['coupon_discount_type'];
-        $coupons->valid_by = $data['valid_by'];
-        if($data['coupon_type'] == 1)
-        {
-            $coupons->bus_operator_id = $data['bus_operator_id'];
-            $coupons->source_id = null;
-            $coupons->destination_id = null;
+       
+        if($data['bus_id']){
+            foreach($data['bus_id'] as $b ){
+
+                $coupons = new $this->coupon;              
+
+
+                $coupons->coupon_type_id = $data['coupon_type'];
+                $coupons->coupon_title = $data['coupon_title'];
+                $coupons->coupon_code = strtoupper($data['coupon_code']);      
+                $coupons->type = $data['coupon_discount_type'];
+                $coupons->valid_by = $data['valid_by'];
+
+                    if($data['coupon_type'] == 1)
+                    {
+                        $ar=explode('-',$b);  
+                        $opr_id=$ar[0];                    
+                        $bus_id=$ar[1]; 
+
+                        $coupons->bus_operator_id = $opr_id;
+                        $coupons->bus_id = $bus_id;
+                    }
+                    else if($data['coupon_type'] == 2)
+                    {
+                        $ar=explode('-',$b);  
+                        $src_id=$ar[0];                     
+                        $dest_id=$ar[1];                     
+                        $bus_id=$ar[2]; 
+
+                        $coupons->source_id =  $src_id;
+                        $coupons->destination_id = $dest_id;
+                        $coupons->bus_id = $bus_id;
+                    }
+                    else
+                    { 
+                        $ar=explode('-',$b);  
+                        $opr_id=$ar[0];                     
+                        $src_id=$ar[1];                     
+                        $dest_id=$ar[2];                     
+                        $bus_id=$ar[3];  
+
+                        $coupons->bus_operator_id = $opr_id;
+                        $coupons->source_id =  $src_id;
+                        $coupons->destination_id = $dest_id;
+                        $coupons->bus_id = $bus_id;
+                    }
+
+                if($data['coupon_discount_type']==1)
+                {
+                    $coupons->percentage = $data['percentage'];
+                    $coupons->max_discount_price = $data['max_discount_price'];
+                    $coupons->amount = 0;
+                    $coupons->min_tran_amount = 0;
+                   
+                }
+                else
+                {
+                    $coupons->amount = $data['amount'];
+                    $coupons->min_tran_amount = $data['min_tran_amount'];
+                    $coupons->percentage = 0;
+                    $coupons->max_discount_price = 0;
+                }
+                
+                
+                $coupons->max_redeem = $data['max_redeem'];
+                $coupons->from_date = $data['from_date'];
+                $coupons->to_date = $data['to_date'];
+                $coupons->short_desc = $data['short_description'];
+                $coupons->full_desc = $data['full_description'];
+                $coupons->created_by = $data['created_by'];
+                $coupons->status = 0;
+               
+                $coupons->save();
+
+
+            }
         }
-        else if($data['coupon_type'] == 2)
-        {
-            $coupons->bus_operator_id = null;
-            $coupons->source_id = $data['source_id'];
-            $coupons->destination_id = $data['destination_id'];
-        }
-        else
-        {
-            $coupons->bus_operator_id = $data['bus_operator_id'];
-            $coupons->source_id = $data['source_id'];
-            $coupons->destination_id = $data['destination_id'];
-        }
-        if($data['coupon_discount_type']==1)
-        {
-            $coupons->percentage = $data['percentage'];
-            $coupons->max_discount_price = $data['max_discount_price'];
-            $coupons->amount = 0;
-            $coupons->min_tran_amount = 0;
-           
-        }
-        else
-        {
-            $coupons->amount = $data['amount'];
-            $coupons->min_tran_amount = $data['min_tran_amount'];
-            $coupons->percentage = 0;
-            $coupons->max_discount_price = 0;
-        }
-        
-        
-        $coupons->max_redeem = $data['max_redeem'];
-        $coupons->from_date = $data['from_date'];
-        $coupons->to_date = $data['to_date'];
-        $coupons->short_desc = $data['short_description'];
-        $coupons->full_desc = $data['full_description'];
-        $coupons->created_by = $data['created_by'];
-        $coupons->status = 1;
-        // Log::info($coupons);
-        // exit;
-        $coupons->save();
 
         return $coupons->fresh();
     }
@@ -204,7 +229,7 @@ class CouponRepository
         // Log:: info($request);
         $name=$request->name;
         $paginate = $request->rows_number;
-        $data= $this->coupon->with("BusOperator","couponType")->where('status','!=',2)->orderBy('id','DESC');
+        $data= $this->coupon->with("BusOperator","couponType","Bus")->where('status','!=',2)->orderBy('id','DESC');
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
             $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
