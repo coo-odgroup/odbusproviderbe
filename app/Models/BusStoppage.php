@@ -39,4 +39,9 @@ class BusStoppage extends Model
     {
         return $this->belongsTo(BookingSeized::class);
     }
+
+    public function busOperator()
+    {
+        return $this->belongsTo(BusOperator::class);
+    }
 }

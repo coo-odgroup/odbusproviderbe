@@ -131,4 +131,10 @@ class BusService
     {
         return $this->busRepository->getBusScheduleEntryDatesFilter($data);
     }
+
+    public function GetBusList($data)
+    {
+        return $this->busRepository->GetBusList($data);
+
+    }
 }

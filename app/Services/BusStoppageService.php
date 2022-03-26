@@ -109,4 +109,13 @@ class BusStoppageService
          $result = $this->busStoppageRepository->updateStatus($id);
         return $result;
     }
+
+
+    public function AllRoute($data)
+    {
+         $result = $this->busStoppageRepository->AllRoute($data);
+        return $result;
+    }
+
+    
 }

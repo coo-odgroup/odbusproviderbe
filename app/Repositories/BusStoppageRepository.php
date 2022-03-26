@@ -3,8 +3,10 @@ namespace App\Repositories;
 use App\Models\BusStoppage;
 use App\Models\Location;
 use Illuminate\Support\Facades\Config;
-
 use Illuminate\Support\Facades\Log;
+use DB;
+
+
 
 
 class BusStoppageRepository
@@ -13,7 +15,8 @@ class BusStoppageRepository
     public function __construct(BusStoppage $busStoppage,Location $location)
     {
         $this->busStoppage = $busStoppage;
-        $this->location = $location; 
+        $this->location = $location;
+
     }
     public function getAll()
     {
@@ -121,6 +124,50 @@ class BusStoppageRepository
         //$busstoppage->delete();
         return $busstoppage;
     }
+
+    public function getRoute($sourceId){ 
+        return $this->location->where('id',$sourceId)->get();
+    }
+
+    public function AllRoute($data)
+    {
+        $allRoutes = array();
+
+        $routenames = $this->busStoppage
+        ->select('source_id','destination_id');
+       
+
+        if(isset($data['bus_operator_id']) && $data['bus_operator_id']!=''){
+
+            $routenames = $routenames->whereIN("bus_operator_id",$data['bus_operator_id']);
+
+        }
+
+        $routenames =  $routenames->groupBy('source_id', 'destination_id')
+        ->get();
+       
+       
+
+        foreach($routenames as $route){
+           $srcId = $route->source_id;
+           $destId = $route->destination_id;
+           $count = $route->count;
+           $src = $this->getRoute($srcId);
+           $dest= $this->getRoute($destId);
+
+           if($src && isset($src[0]) && $dest && isset($dest[0])){
+
+            $allRoutes[] = array(
+                "route" => $src[0]->name.' - '.$dest[0]->name,
+                "id" => $src[0]->id.'-'.$dest[0]->id,
+            );
+           }
+           
+        } 
+        return $allRoutes;
+    }
+
+    
 
     
 
