@@ -162,12 +162,34 @@ class BusSpecialFareRepository
 
     public function save($data)
     {
-        $specialfare = new $this->specialFare;
-        $specialfare=$this->getModel($data,$specialfare);
-        $specialfare->status = 0;
-        $specialfare->save();
-        $bus_id = $this->bus::find($data['bus_id']);
-        $specialfare->bus()->attach($data['bus_id']);
+        foreach ($data['date'] as $d) {
+           $date=$d['day'];
+            if($d['day']<10)
+            {
+                $date='0'.$d['day'];
+            }
+            $month = $d['month'];
+            if($d['month']<10)
+            {
+               $month='0'.$d['month']; 
+            }
+
+            $dt = $d['year'].'-'.$month.'-'.$date;
+
+            $specialfare = new $this->specialFare;
+            $specialfare->bus_operator_id = $data['bus_operator_id'];
+            $specialfare->source_id = $data['source_id'];
+            $specialfare->destination_id = $data['destination_id'];
+            $specialfare->date = $dt;
+            $specialfare->seater_price = $data['seater_price'];
+            $specialfare->sleeper_price = $data['sleeper_price'];
+            $specialfare->reason = $data['reason'];
+            $specialfare->created_by = $data['created_by'];
+            $specialfare->status = 0;
+            $specialfare->save();
+            $bus_id = $this->bus::find($data['bus_id']);
+            $specialfare->bus()->attach($data['bus_id']);
+         }
         return $specialfare;
     }
     /**

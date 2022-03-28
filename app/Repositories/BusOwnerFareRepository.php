@@ -165,13 +165,42 @@ class BusOwnerFareRepository
      */
     public function save($data)
     {
-        $ownerFare = new $this->ownerFare;
-        $ownerFare=$this->getModel($data,$ownerFare);
-        $ownerFare->status = 0;
-        $ownerFare->save();
-        $bus_id = $this->bus::find($data['bus_id']);
-        $ownerFare->bus()->attach($data['bus_id']);
-        return $ownerFare;
+         
+        foreach ($data['date'] as $d) {
+           $date=$d['day'];
+            if($d['day']<10)
+            {
+                $date='0'.$d['day'];
+            }
+            $month = $d['month'];
+            if($d['month']<10)
+            {
+               $month='0'.$d['month']; 
+            }
+
+            $dt = $d['year'].'-'.$month.'-'.$date;
+
+
+            $ownerFare = new $this->ownerFare;
+            $ownerFare->bus_operator_id = $data['bus_operator_id'];
+            $ownerFare->source_id = $data['source_id'];
+            $ownerFare->destination_id = $data['destination_id'];
+            $ownerFare->date = $dt ;
+            $ownerFare->seater_price = $data['seater_price'];
+            $ownerFare->sleeper_price = $data['sleeper_price'];
+            $ownerFare->reason = $data['reason'];
+            $ownerFare->created_by = $data['created_by'];
+            $ownerFare->status = 0;
+            $ownerFare->save();
+            $bus_id = $this->bus::find($data['bus_id']);
+            $ownerFare->bus()->attach($data['bus_id']);
+      
+            
+        }
+          return 'Data Added Successfully';
+        // log::info($dt);
+        // exit;
+        
     }
     /**
      * Update Bus Owner fare

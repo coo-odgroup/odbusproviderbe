@@ -165,15 +165,39 @@ class FestivalFareRepository
      */
     public function save($data)
     {
+        
+        foreach ($data['date'] as $d) {
+           $date=$d['day'];
+            if($d['day']<10)
+            {
+                $date='0'.$d['day'];
+            }
+            $month = $d['month'];
+            if($d['month']<10)
+            {
+               $month='0'.$d['month']; 
+            }
 
-        $festivalFare = new $this->festivalFare;
-        $festivalFare=$this->getModel($data,$festivalFare);
-        $festivalFare->status = 0;
-        $festivalFare->save();
+            $dt = $d['year'].'-'.$month.'-'.$date;
 
-        $bus_id = $this->bus::find($data['bus_id']);
-        $festivalFare->bus()->attach($data['bus_id']);
-        return $festivalFare;
+
+            $festivalFare = new $this->festivalFare;
+            $festivalFare->bus_operator_id = $data['bus_operator_id'];
+            $festivalFare->source_id = $data['source_id'];
+            $festivalFare->destination_id = $data['destination_id'];
+            $festivalFare->date = $dt;
+            $festivalFare->seater_price = $data['seater_price'];
+            $festivalFare->sleeper_price = $data['sleeper_price'];
+            $festivalFare->reason = $data['reason'];
+            $festivalFare->created_by = $data['created_by'];
+            $festivalFare->status = 0;
+            $festivalFare->save();
+
+            $bus_id = $this->bus::find($data['bus_id']);
+            $festivalFare->bus()->attach($data['bus_id']);
+            }
+        
+        return 'Data Added Successfully';
     }
     /**
      * Update Bus Owner fare

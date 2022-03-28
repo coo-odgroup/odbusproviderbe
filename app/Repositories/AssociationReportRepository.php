@@ -138,7 +138,9 @@ class AssociationReportRepository
            );   
            return $response;      
 
-    } public function assocCancelReport($request)
+    } 
+
+    public function assocCancelReport($request)
     {
         // Log::info($request);
         // exit;
@@ -150,9 +152,9 @@ class AssociationReportRepository
         $date_type = $request->date_type;
         $source_id = $request->source_id;
         $destination_id = $request->destination_id;
-        $rangeFromDate  =  $request->rangeFromDate;
-        $rangeToDate  =  $request->rangeToDate;
-         $userID = $request->userID ;
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate;
+        $userID = $request->userID ;
         $role_id = $request->role_id ;
 
 
