@@ -156,20 +156,27 @@ class CouponRepository
                 $coupons->short_desc = $data['short_description'];
                 $coupons->full_desc = $data['full_description'];
                 $coupons->created_by = $data['created_by'];
+                $coupons->auto_apply = ($data['auto_apply']==true) ? 1 : 0;
                 $coupons->status = 0;
 
                 ////////// check duplicacy bus for same date range before insert
 
                 //\DB::connection()->enableQueryLog();
 
+                $from_date=$data['from_date'];
+                $to_date=$data['to_date'];
+
                 $chk= $this->coupon->where('bus_id',$bus_id)
-                                    ->whereBetween('from_date', [$data['from_date'], $data['to_date']])->orWhereBetween('to_date', [$data['from_date'], $data['to_date']])->get();
-   
-                //$queries  = \DB::getQueryLog(); 
-               // $last_query = end($queries);                              
-                //Log::info($last_query);
-               // Log::info($chk);
-               
+                                    ->where(function($query) use ($from_date, $to_date){
+                                        $query->whereBetween('from_date', [$from_date,$to_date])
+                                            ->orWhereBetween('to_date',[$from_date,$to_date]);
+                                    })->get();
+
+                // $queries  = \DB::getQueryLog(); 
+                // $last_query = end($queries);                              
+                // Log::info($queries);
+                // Log::info($chk);
+
                  if(count($chk) >0){
 
                     $getBus= $this->bus->where("id",$bus_id)->get();

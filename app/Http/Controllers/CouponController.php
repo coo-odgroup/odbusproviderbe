@@ -91,7 +91,7 @@ class CouponController extends Controller
                                 'from_date',
                                 'to_date',
                                 'bus_operator_id',
-                                'max_redeem','created_by']);
+                                'max_redeem','auto_apply','created_by']);
         
           $couponRules = [           
             'coupon_title' => 'required',
