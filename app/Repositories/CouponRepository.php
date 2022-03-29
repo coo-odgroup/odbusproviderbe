@@ -7,6 +7,7 @@ use App\Models\CouponAssignedBus;
 use App\Models\CouponRoute;
 use App\Models\CouponOperator;
 use App\Models\Location;
+use App\Models\Bus;
 use App\Models\CouponType;
 use Illuminate\Support\Facades\Log;
 class CouponRepository
@@ -18,8 +19,9 @@ class CouponRepository
     protected $couponOperator;
     protected $location;
     protected $CouponType;
+    protected $bus;
     
-    public function __construct(Coupon $coupon, CouponAssignedBus $couponAssignedBus, CouponRoute $couponRoute, CouponOperator $couponOperator,Location $location,CouponType $CouponType)
+    public function __construct(Coupon $coupon, CouponAssignedBus $couponAssignedBus, CouponRoute $couponRoute, CouponOperator $couponOperator,Location $location,CouponType $CouponType,Bus $bus)
     {
         $this->coupon = $coupon;
         $this->couponAssignedBus = $couponAssignedBus;
@@ -27,6 +29,7 @@ class CouponRepository
         $this->couponOperator = $couponOperator;
         $this->location = $location; 
         $this->CouponType = $CouponType; 
+        $this->bus=$bus;
     }
 
     
@@ -81,6 +84,8 @@ class CouponRepository
 
     public function save($data)
     {
+
+        $batch_insert_array=[];
        
         if($data['bus_id']){
             foreach($data['bus_id'] as $b ){
@@ -152,14 +157,43 @@ class CouponRepository
                 $coupons->full_desc = $data['full_description'];
                 $coupons->created_by = $data['created_by'];
                 $coupons->status = 0;
+
+                ////////// check duplicacy bus for same date range before insert
+
+                //\DB::connection()->enableQueryLog();
+
+                $chk= $this->coupon->where('bus_id',$bus_id)
+                                    ->whereBetween('from_date', [$data['from_date'], $data['to_date']])->orWhereBetween('to_date', [$data['from_date'], $data['to_date']])->get();
+   
+                //$queries  = \DB::getQueryLog(); 
+               // $last_query = end($queries);                              
+                //Log::info($last_query);
+               // Log::info($chk);
                
-                $coupons->save();
+                 if(count($chk) >0){
 
+                    $getBus= $this->bus->where("id",$bus_id)->get();
 
+                    $error['status'] ='exist';
+                    $error['message'] = 'Coupon is already added for '.$getBus[0]->name.' bus between '.$data['from_date']." - ".$data['to_date'];
+
+                      return $error;
+                 } 
+                 else{
+                    array_push($batch_insert_array,$coupons);
+                 }
+
+            }
+
+            if($batch_insert_array){
+                foreach($batch_insert_array as $coupons){
+                    $coupons->save();
+                }
+                
             }
         }
 
-        return $coupons->fresh();
+        return 'success';
     }
 
 

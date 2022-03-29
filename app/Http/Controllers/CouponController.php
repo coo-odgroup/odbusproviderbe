@@ -111,12 +111,24 @@ class CouponController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->couponService->savePostData($data);
+           $res= $this->couponService->savePostData($data);
+
+           if(isset($res['status']) && $res['status']=='exist'){
+
+            return $this->errorResponse($res['message'],Response::HTTP_PARTIAL_CONTENT);
+
+
+           }else{
+
+            return $this->successResponse($res,"Coupon Added",Response::HTTP_CREATED);
+
+           }
+            
         } 
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,"Coupon Added",Response::HTTP_CREATED);
+       
     } 
 
     public function updateCoupon(Request $request, $id) {
