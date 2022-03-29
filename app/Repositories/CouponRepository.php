@@ -291,7 +291,8 @@ class CouponRepository
                     $data = $query->whereHas('busOperator', function ($query) use ($name) {$query->where('operator_name',  'like', '%' .$name . '%' );})
                         ->orwhere('created_by', 'like', '%' .$name . '%')
                         ->orwhere('coupon_title', 'like', '%' .$name . '%')
-                        ->orwhere('coupon_code', 'like', '%' .$name . '%');
+                        ->orwhere('coupon_code', 'like', '%' .$name . '%')
+                        ->orderBy('id','DESC');
             }); 
         }
 
