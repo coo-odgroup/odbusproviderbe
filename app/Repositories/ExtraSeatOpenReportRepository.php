@@ -92,7 +92,7 @@ class ExtraSeatOpenReportRepository
                 $v['destination']= $stoppages['destination'];
             }
         }
-         Log::info($data);  
+         // Log::info($data);  
           $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
