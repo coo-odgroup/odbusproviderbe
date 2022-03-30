@@ -126,7 +126,7 @@ class BusScheduleRepository
       $count = 0;
          //$today='2022-02-22';
          $today=date('Y-m-d');
-       $checkdate =date('Y-m-d', strtotime($today. ' + 3 days'));
+       $checkdate =date('Y-m-d', strtotime($today. ' + 15 days'));
         $data = $this->busSchedule->with(['busScheduleDate' => function ($a) use ($today){
                                    $a->orderBy('id','DESC')
                                    ;}])->get();
