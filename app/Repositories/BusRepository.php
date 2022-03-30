@@ -194,7 +194,8 @@ class BusRepository
         $bus->bus_sitting_id = $data['bus_sitting_id'];
         $bus->bus_seat_layout_id = $data['bus_seat_layout_id'];
         $bus->running_cycle = "0";        
-        $bus->has_return_bus ="0";        
+        $bus->has_return_bus ="0"; 
+        $bus->type = $data['type'];       
         $bus->cancelation_points = $data['cancelation_points'];      
         $bus->cancellationslabs_id = $data['cancellationslabs_id'];    
         $bus->created_by = $data['created_by'];   
