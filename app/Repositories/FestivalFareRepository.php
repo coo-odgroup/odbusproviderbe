@@ -5,18 +5,22 @@ use App\Models\Bus;
 use App\Models\FestivalFare;
 use App\Models\BusFestivalFare;
 use Illuminate\Support\Facades\Log;
+use App\Models\Location;
+
 
 class FestivalFareRepository
 {
     protected $festivalFare;
     protected $busFestivalFare;
     protected $bus;
+    protected $Location;
     
-    public function __construct(BusFestivalFare $busFestivalFare,Bus $bus,FestivalFare $festivalFare)
+    public function __construct(Location $Location,BusFestivalFare $busFestivalFare,Bus $bus,FestivalFare $festivalFare)
     {
         $this->busFestivalFare = $busFestivalFare;
         $this->bus = $bus;
         $this->festivalFare = $festivalFare;
+        $this->Location = $Location;
     }
     /**
      * Get Bus Secial Fare List
@@ -60,6 +64,26 @@ class FestivalFareRepository
         }     
 
         $data=$data->paginate($paginate);
+
+        if($data){
+            foreach($data as $key=>$v){
+                 
+                foreach ($v->bus as $ky => $val) {
+                    $stoppage = $this->bus->with('ticketPrice')->where('id', $val->id)->where('status', 1)->get();
+
+                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                    {
+                         
+                        $stoppages['source'][$k]=$this->Location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k]=$this->Location->where('id', $a->destination_id)->get(); 
+                    }
+                $val['source']= $stoppages['source'];
+                $val['destination']= $stoppages['destination'];
+                // Log::info($val);
+                // exit;
+                }               
+            }
+        }
 
         $response = array(
              "count" => $data->count(), 

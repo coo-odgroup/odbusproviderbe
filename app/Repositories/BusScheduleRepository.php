@@ -204,11 +204,14 @@ class BusScheduleRepository
 
     public function busSchedulerData($request)
     {
-          $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;     
+      // log::info($request);
+         $paginate = $request['rows_number'] ;
+         $name = $request['name'] ;  
+         $source_id= $request['source_id'];   
+         $destination_id= $request['destination_id'];      
+         $bus_operator_id= $request['bus_operator_id'];      
 
         $data= $this->busSchedule->with('busScheduleDate','bus.busOperator','bus.ticketPrice')
-                              
                                  ->whereNotIn('status', [2])
                                  ->orderBy('id','DESC');
 
@@ -251,7 +254,24 @@ class BusScheduleRepository
             //            ->orwhereHas('bus.busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%' );})                        
             //            ->orWhereHas('bus', function ($query) use ($name) {$query->where('name','like', '%' .$name . '%');})
             //            ->orWhereHas('bus', function ($query) use ($name) {$query->where('bus_number','like', '%' .$name . '%' );});
-        }     
+        } 
+        if($bus_operator_id!=null){
+            $data=$data->whereHas('bus', function ($query) use ($bus_operator_id){
+                       $query->where('bus_operator_id', $bus_operator_id);               
+                   });
+        }   
+
+        if($source_id!=null && $destination_id!=null )
+        {
+            $loc = [];
+            $loc[1]=$source_id;
+            $loc[2]=$destination_id;
+
+             $data = $data->whereHas('bus.ticketPrice', function ($query) use ($loc)
+                         {$query->where('source_id',$loc[1] )
+                                ->where('destination_id',$loc[2] );});
+            
+        } 
 
         $data=$data->paginate($paginate);
         
@@ -259,7 +279,7 @@ class BusScheduleRepository
             foreach($data as $key=>$v){    
                 if(count($v->bus['ticketPrice'])>0)
                 {
-                     $v['from_location']=$this->location->where('id', $v->bus['ticketPrice'][0]['source_id'])->get();
+                    $v['from_location']=$this->location->where('id', $v->bus['ticketPrice'][0]['source_id'])->get();
                     $v['to_location']=$this->location->where('id',$v->bus['ticketPrice'][0]['destination_id'])->get();  
                 }                     
             }

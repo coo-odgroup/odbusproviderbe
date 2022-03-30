@@ -126,8 +126,15 @@ class BusCancelledRepository
 
     public function busCancelledData($request)
     {
+      // Log::info($request);
+
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
+        $source_id= $request['source_id'];      
+        $destination_id= $request['destination_id'];      
+        $toDate= $request['toDate'];      
+        $fromDate= $request['fromDate'];      
+        $bus_operator_id= $request['bus_operator_id'];  
 
         $data= $this->busCancelled->with('bus.busOperator','bus.busstoppage','busCancelledDate')
                                   ->with('bus.ticketPrice')->orderBy('id','DESC')
@@ -145,6 +152,32 @@ class BusCancelledRepository
         {
             $paginate = 10 ;
         }
+        if($bus_operator_id!= null)
+        {
+            $data = $data->where('bus_operator_id',$bus_operator_id);
+        }
+
+        if($toDate!= null && $fromDate!=null)
+        {
+          $dt =[];
+          $dt[1]= $fromDate ;
+          $dt[2]=$toDate;
+
+            $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
+                         {$query->whereBetween('cancelled_date', [$dt[1], $dt[2]]);
+                          });
+        }
+        if($source_id!=null && $destination_id!=null )
+        {
+            $loc = [];
+            $loc[1]=$source_id;
+            $loc[2]=$destination_id;
+
+             $data = $data->whereHas('bus.ticketPrice', function ($query) use ($loc)
+                         {$query->where('source_id',$loc[1] )
+                                ->where('destination_id',$loc[2] );});
+            
+        } 
 
         
         $data=$data->paginate($paginate);

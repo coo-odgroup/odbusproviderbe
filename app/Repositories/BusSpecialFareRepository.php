@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Models\Bus;
 use App\Models\SpecialFare;
 use App\Models\BusSpecialFare;
+use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 
 class BusSpecialFareRepository
@@ -11,12 +12,14 @@ class BusSpecialFareRepository
     protected $specialFare;
     protected $bus;
     protected $busSpecialFare;
+    protected $Location;
     
-    public function __construct(SpecialFare $specialFare,Bus $bus,BusSpecialFare $busSpecialFare)
+    public function __construct(Location $Location,SpecialFare $specialFare,Bus $bus,BusSpecialFare $busSpecialFare)
     {
         $this->specialFare = $specialFare;
         $this->bus = $bus;
         $this->busSpecialFare = $busSpecialFare;
+        $this->Location = $Location;
     }
     public function getPivotData($id){
         return $this->busSpecialFare->where('special_fare_id', $id)->get();
@@ -65,6 +68,26 @@ class BusSpecialFareRepository
 
         $data=$data->paginate($paginate);
 
+       
+
+        if($data){
+            foreach($data as $key=>$v){
+                
+                foreach ($v->bus as $ky => $val) {
+                    $stoppage = $this->bus->with('ticketPrice')->where('id', $val->id)->where('status', 1)->get();
+                    
+                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                    {
+                        $stoppages['source'][$k]=$this->Location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k]=$this->Location->where('id', $a->destination_id)->get(); 
+                    }
+                $val['source']= $stoppages['source'];
+                $val['destination']= $stoppages['destination'];
+                }               
+            }
+        }
+
+        // log::info($data);
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),

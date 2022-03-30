@@ -436,6 +436,8 @@ class BusRepository
         $user_id = $request['user_id'] ; 
         $operator= $request['operator'];   
         $status= $request['status'];   
+        $source_id= $request['source_id'];   
+        $destination_id= $request['destination_id'];   
 
         $data= $this->bus->with('busOperator','busstoppage','BusType','busAmenities.amenities','busSafety.safety','busContacts','busSeats.seats')
             ->with(['ticketPrice.getBusSeats' => function($query) {
@@ -465,6 +467,17 @@ class BusRepository
                                         {$query->where('id',$operator );
             }); 
             })  ;   
+        }
+        if($source_id!=null && $destination_id!=null )
+        {
+            $loc = [];
+            $loc[1]=$source_id;
+            $loc[2]=$destination_id;
+
+             $data = $data->whereHas('ticketPrice', function ($query) use ($loc)
+                         {$query->where('source_id',$loc[1] )
+                                ->where('destination_id',$loc[2] );});
+            
         }
         if($status!=null)
         {

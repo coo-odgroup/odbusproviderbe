@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Models\Bus;
 use App\Models\OwnerFare;
 use App\Models\BusOwnerFare;
+use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 
 class BusOwnerFareRepository
@@ -11,12 +12,14 @@ class BusOwnerFareRepository
     protected $ownerFare;
     protected $busOwnerFare;
     protected $bus;
+    protected $Location;
     
-    public function __construct(BusOwnerFare $busOwnerFare,Bus $bus,OwnerFare $ownerFare)
+    public function __construct(Location $Location,BusOwnerFare $busOwnerFare,Bus $bus,OwnerFare $ownerFare)
     {
         $this->busOwnerFare = $busOwnerFare;
         $this->bus = $bus;
         $this->ownerFare = $ownerFare;
+        $this->Location = $Location;
     }
     /**
      * Get Bus Secial Fare List
@@ -60,6 +63,26 @@ class BusOwnerFareRepository
         }     
 
         $data=$data->paginate($paginate);
+
+         if($data){
+            foreach($data as $key=>$v){
+                 
+                foreach ($v->bus as $ky => $val) {
+                    $stoppage = $this->bus->with('ticketPrice')->where('id', $val->id)->where('status', 1)->get();
+
+                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                    {
+                         
+                        $stoppages['source'][$k]=$this->Location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k]=$this->Location->where('id', $a->destination_id)->get(); 
+                    }
+                $val['source']= $stoppages['source'];
+                $val['destination']= $stoppages['destination'];
+                // Log::info($val);
+                // exit;
+                }               
+            }
+        }
 
         $response = array(
              "count" => $data->count(), 
