@@ -37,10 +37,11 @@ class BusSpecialFareRepository
 
     public function busSpecialFareData($request)
     {
-        
-
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
+         $fromDate = $request['fromDate'] ;
+         $toDate = $request['toDate'] ;
+         $bus_operator_id = $request['bus_operator_id'] ;
        
 
         $data= $this->specialFare->with('bus','bus.busOperator')
@@ -64,7 +65,25 @@ class BusSpecialFareRepository
                                  })
                             ->orWhereHas('bus.busOperator', function ($query) use ($name){
                              $query->where('operator_name', 'like', '%' .$name . '%');});                       
-        }     
+        } 
+
+        if($bus_operator_id!= null)
+        {
+            $data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id){
+               $query->where('bus_operator_id', $bus_operator_id);               
+           });
+        }
+
+
+        if($toDate!= null && $fromDate!=null)
+        {
+              if($fromDate==$toDate){
+                      $data = $data->where('date',$toDate);
+              }else{
+                  $data = $data->whereBetween('date', [$fromDate, $toDate]);
+              } 
+        }  
+
 
         $data=$data->paginate($paginate);
 

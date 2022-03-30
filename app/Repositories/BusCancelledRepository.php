@@ -162,10 +162,15 @@ class BusCancelledRepository
           $dt =[];
           $dt[1]= $fromDate ;
           $dt[2]=$toDate;
-
-            $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
+          if($fromDate==$toDate){
+                  $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
+                         {$query->where('cancelled_date', $dt[1]);
+                          });
+          }else{
+              $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
                          {$query->whereBetween('cancelled_date', [$dt[1], $dt[2]]);
                           });
+          }            
         }
         if($source_id!=null && $destination_id!=null )
         {

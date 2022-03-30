@@ -7,6 +7,7 @@ use App\Models\SeatOpen;
 use App\Models\SeatOpenSeats;
 use App\Models\ExtraSeatOpen;
 use App\Models\Bus;
+use App\Models\Location;
 
 use Illuminate\Support\Facades\Log;
 
@@ -20,14 +21,16 @@ class ExtraSeatOpenReportRepository
     protected $seatOpen;
     protected $extraseatOpen;
     protected $bus;
+    protected $Location;
 
     
-    public function __construct(SeatOpen $seatOpen , SeatOpenSeats $seatsOpenSeats,ExtraSeatOpen $extraseatOpen,Bus $bus)
+    public function __construct(SeatOpen $seatOpen , SeatOpenSeats $seatsOpenSeats,ExtraSeatOpen $extraseatOpen,Bus $bus,Location $Location)
     {
         $this->seatOpen = $seatOpen;
         $this->bus = $bus;
         $this->seatOpenSeats = $seatsOpenSeats;
         $this->extraseatOpen = $extraseatOpen;
+        $this->Location = $Location;
     }   
 
 
@@ -72,7 +75,24 @@ class ExtraSeatOpenReportRepository
 
          $data=$data->paginate($paginate);
 
-         // Log::info($data);  
+         if($data){
+            foreach($data as $key=>$v){
+              // log::info($v);exit;
+                $stoppages['source']=[];
+                $stoppages['destination']=[];
+
+               foreach ($v->ticketPrice as $k => $a) 
+                {
+
+                    $stoppages['source'][$k]=$this->Location->where('id', $a->source_id)->get();
+                    $stoppages['destination'][$k]=$this->Location->where('id', $a->destination_id)->get(); 
+                }
+
+                $v['source']= $stoppages['source'];
+                $v['destination']= $stoppages['destination'];
+            }
+        }
+         Log::info($data);  
           $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),

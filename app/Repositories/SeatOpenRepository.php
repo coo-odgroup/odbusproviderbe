@@ -206,10 +206,12 @@ class SeatOpenRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
         $page_no = $request['page_no'] ;
-        $date = $request['date'] ;
+        $fromDate = $request['fromDate'] ;
+        $toDate = $request['toDate'] ;
+        $bus_operator_id = $request['bus_operator_id'] ;
         $source_id = $request['source_id'] ;
         $destination_id = $request['destination_id'] ;
-        // log::info($request);exit;
+        // log::info($request);
     
         $data= $this->busSeats->with('bus.busOperator','seats','ticketPrice')
                               ->where('type',1)
@@ -231,6 +233,22 @@ class SeatOpenRepository
             $paginate = 10 ;
         } 
 
+        if($bus_operator_id!= null)
+        {
+            $data=$data->whereHas('bus', function ($query) use ($bus_operator_id){
+               $query->where('bus_operator_id', $bus_operator_id);               
+           });
+        }
+
+        if($toDate!= null && $fromDate!=null)
+        {
+              if($fromDate==$toDate){
+                      $data = $data->where('operation_date',$toDate);
+              }else{
+                  $data = $data->whereBetween('operation_date', [$fromDate, $toDate]);
+              } 
+        }  
+
         if($name!=null)
         {
             $data = $data->whereHas('bus', function ($query) use ($name){
@@ -248,10 +266,7 @@ class SeatOpenRepository
                $query->where('source_id',$request['source_id'] )->where('destination_id',$request['destination_id']);               
            });
         }  
-         if(!empty($date))
-        {
-            $data=$data->where('operation_date',$date);
-        }  
+         
  
        
         $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
