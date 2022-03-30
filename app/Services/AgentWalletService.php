@@ -23,9 +23,13 @@ class AgentWalletService
 
      public function getAllData($request)
     {
-      
+        
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
+         $user_id = $request['user_id'] ;
+        $start_date  =  $request['rangeFromDate'];
+        $end_date  =  $request['rangeToDate'];
+        $reqs_status  =  $request['status'];
 
       $data= $this->agentWalletRepository->getAllWalletRecord(); 
 
@@ -43,17 +47,51 @@ class AgentWalletService
             $data = $this->agentWalletRepository->Filter($data, $name);                     
         }     
 
+        if(!empty($user_id))
+        {     
+            $data = $this->agentWalletRepository->Filter_user($data, $user_id);        
+        }        
+            
+        if($start_date != null && $end_date != null)
+        {
+            if($start_date == $end_date){
+                $data =$data->where('created_at','like','%'.$start_date.'%')
+                        ->orderBy('created_at','DESC');
+                       
+            }else{
+                 $data =$data->whereBetween('created_at', [$start_date, $end_date]);
+            }
+                       
+        }
+        if($reqs_status != null)
+        {
+            if($reqs_status == 0)
+            {
+                $data = $data->where('status',0)
+                             ->orderBy('created_at','DESC');
+            }
+            if($reqs_status == 1)
+            {
+                $data = $data->where('status',1)
+                             ->orderBy('created_at','DESC');
+            }
+
+            if($reqs_status == 3)
+            {
+                $data = $data->where('status',3)
+                             ->orderBy('created_at','DESC');
+            }
+        }
+
         $data= $this->agentWalletRepository->Pagination($data,$paginate); 
 
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
-            "data" => $data
+             "data" => $data
            );   
 
-        // Log::info($data);
-           return $response;  
-
+        return $response;  
 
         //return $this->agentWalletRepository->getData($request);
     }
@@ -87,7 +125,8 @@ class AgentWalletService
         if($payment_via!=null)
         {
             $data = $this->agentWalletRepository->payViaFilter($data, $payment_via);                     
-        }     
+        }  
+           
 
         $data= $this->agentWalletRepository->Pagination($data,$paginate); 
 

@@ -27,8 +27,7 @@ class AgentWalletController extends Controller
     }
 
    public function getAllData(Request $request) 
-    {      
-     
+    {           
         $wallet = $this->agentWalletService->getAllData($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
