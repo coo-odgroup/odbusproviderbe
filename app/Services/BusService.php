@@ -77,6 +77,20 @@ class BusService
         }
         return $post;
     }
+
+    public function allCouponBusList($id)
+    {
+        try {
+            $post = $this->busRepository->allCouponBusList($id);
+
+        } catch (Exception $e) {
+           //Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+        }
+        return $post;
+    }
+
+    
     public function savePostData($data)
     {
         // log::info($data);

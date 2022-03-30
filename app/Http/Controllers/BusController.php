@@ -271,6 +271,13 @@ class BusController extends Controller
         return $this->successResponse($data, "Bus Contact Details Updated", Response::HTTP_ACCEPTED);
     }
 
+    public function allCouponBusList($id){
+
+        $buses = $this->busService->allCouponBusList($id);
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+    }
+
     public function save(Request $request) {
         
 

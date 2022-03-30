@@ -11,6 +11,7 @@ use App\Models\Amenities;
 use App\Models\Location;
 use App\Models\User;
 use App\Models\TicketPrice;
+use App\Models\Coupon;
 use App\Models\cancelationSlab;
 use App\Models\BoardingDroping;
 use Illuminate\Support\Collection;
@@ -23,9 +24,11 @@ class BusRepository
     protected $bus;
     protected $seats;
     protected $ticketPrice; 
+    protected $coupon; 
+    
     public function __construct(Bus $bus,BusSchedule $busSchedule, BusType $busType, BusSitting $busSitting,
      BusStoppage $busStoppage, BusAmenities $busAmenities, Amenities $amenities,
-      BoardingDroping $boardingDroping, User $user,BusScheduleDate $busScheduleDate, Seats $seats, TicketPrice $ticketPrice,Location $location)
+      BoardingDroping $boardingDroping, User $user,BusScheduleDate $busScheduleDate, Seats $seats, TicketPrice $ticketPrice,Location $location,Coupon $coupon)
     {
         $this->bus = $bus;
         $this->busSchedule = $busSchedule;
@@ -40,6 +43,7 @@ class BusRepository
         $this->Seats = $seats;
         $this->ticketPrice=$ticketPrice;
         $this->location = $location;       
+        $this->coupon = $coupon;       
     }
     public function getAll()
     {
@@ -790,4 +794,105 @@ class BusRepository
         return $allBusList;
 
     }
+
+    public function allCouponBusList($id){
+
+      $coupon_detail= $this->coupon->where("id",$id)->first();
+
+    
+      $operator_id= $coupon_detail->bus_operator_id;
+      $s_id=$coupon_detail->source_id;
+      $d_id=$coupon_detail->destination_id;
+
+      $allBusList=[];
+      $busIds=[];
+
+     
+
+
+        if($coupon_detail->source_id != null && $coupon_detail->destination_id != null && $coupon_detail->bus_operator_id == null){
+              
+               $allBus=$this->busStoppage->with('bus')->with('busOperator')
+                          ->where('source_id',$s_id)
+                          ->where('destination_id',$d_id)
+                          ->where('status',1)->get();
+
+                if($allBus){
+                    foreach($allBus as $b){
+
+                        if(!in_array($b->bus_id,$busIds)){
+
+                            array_push($busIds,$b->bus_id);
+
+
+                            $src = $this->location->where('id',$b->source_id)->get();
+                            $dest= $this->location->where('id',$b->destination_id)->get();
+    
+                            $BusList['bus_name']=$b->bus->name." - ".$b->bus->bus_number." - (".$src[0]->name."-".$dest[0]->name.") - (".$b->busOperator->organisation_name.' - '.$b->busOperator->operator_name.") ";
+                            $BusList['id']=$b->bus_id;
+    
+    
+                            array_push($allBusList,$BusList);
+
+                        }                      
+
+    
+                    }
+                }
+
+        }
+
+        else if($coupon_detail->source_id == null && $coupon_detail->destination_id == null && $coupon_detail->bus_operator_id != null){
+
+            $allBus=$this->busStoppage->select('bus_id')
+                             ->with(['bus' => function($b){
+                                $b->with('busOperator');
+                             } ])                           
+                            ->where('bus_operator_id',$operator_id)
+                            ->groupBy('bus_id')
+                            ->get();
+ 
+            if($allBus){
+                foreach($allBus as $k => $b){
+                    $allBusList[$k]['bus_name']=$b->bus->name." - ".$b->bus->bus_number." (".$b->bus->busOperator->organisation_name.' - '.$b->bus->busOperator->operator_name.") ";
+                    $allBusList[$k]['id']=$b->bus_id;
+
+                }
+            }    
+        }
+
+        else if($coupon_detail->source_id != null && $coupon_detail->destination_id != null && $coupon_detail->bus_operator_id != null){
+         
+                $allBus=$this->busStoppage->with('bus')->with('busOperator')
+                           ->where('source_id',$s_id)
+                           ->where('destination_id',$d_id)
+                           ->where('status',1)
+                           ->where('bus_operator_id',$operator_id)
+                           ->get();
+ 
+                  if($allBus){
+                      foreach($allBus as  $b){
+ 
+                        if(!in_array($b->bus_id,$busIds)){
+
+                            array_push($busIds,$b->bus_id);
+
+                            $src = $this->location->where('id',$b->source_id)->get();
+                            $dest= $this->location->where('id',$b->destination_id)->get();
+    
+                            $BusList['bus_name']=$b->bus->name." - ".$b->bus->bus_number." - (".$src[0]->name."-".$dest[0]->name.") - (".$b->busOperator->organisation_name.' - '.$b->busOperator->operator_name.") ";                           
+                            $BusList['id']=$b->bus_id;   
+    
+                            array_push($allBusList,$BusList);
+
+                        }    
+ 
+                      }
+                  }
+           
+        }
+
+        return $allBusList;
+}
+
 }

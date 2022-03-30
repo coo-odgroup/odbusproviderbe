@@ -941,3 +941,5 @@ Route::delete('/deletePermissionToRole/{id}', [PermissionToRoleController::class
 
 Route::post('/AllRoute', [BusStoppageController::class, 'AllRoute']);
 Route::post('/GetBusList', [BusController::class, 'GetBusList']);
+Route::get('/allCouponBusList/{id}', [BusController::class, 'allCouponBusList']);
+

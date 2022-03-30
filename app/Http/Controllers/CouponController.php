@@ -136,43 +136,43 @@ class CouponController extends Controller
         // Log::info($request);
         // exit;
 
-        $data = $request->only(['coupon_type',
-                                'coupon_title',
-                                'coupon_code',
-                                'short_description',
-                                'route',
-                                'bus_id',
-                               // 'destination_id',
-                                'full_description',                      
-                                'coupon_discount_type',
-                                'percentage',
-                                'max_discount_price',
-                                'amount',
-                                'min_tran_amount',
-                                'valid_by',
-                                'from_date',
-                                'to_date',
-                                'bus_operator_id',
-                                'max_redeem','created_by']);
+        // $data = $request->only(['coupon_type',
+        //                         'coupon_title',
+        //                         'coupon_code',
+        //                         'short_description',
+        //                         'route',
+        //                         'bus_id',
+        //                        // 'destination_id',
+        //                         'full_description',                      
+        //                         'coupon_discount_type',
+        //                         'percentage',
+        //                         'max_discount_price',
+        //                         'amount',
+        //                         'min_tran_amount',
+        //                         'valid_by',
+        //                         'from_date',
+        //                         'to_date',
+        //                         'bus_operator_id',
+        //                         'max_redeem','created_by']);
         
-          $couponRules = [           
-            'coupon_title' => 'required',
-            'coupon_type' => 'required',
-            'coupon_code' => 'required',
-            'coupon_discount_type' => 'required',
-            'valid_by' => 'required',
-            'max_redeem' => 'required',
-            'from_date' => 'required',
-            'to_date' => 'required',
-            'created_by' => 'required',
-        ];
-        $couponValidation = Validator::make($data, $couponRules);
-        if ($couponValidation->fails()) {
-            $errors = $couponValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        }
+        //   $couponRules = [           
+        //     'coupon_title' => 'required',
+        //     'coupon_type' => 'required',
+        //     'coupon_code' => 'required',
+        //     'coupon_discount_type' => 'required',
+        //     'valid_by' => 'required',
+        //     'max_redeem' => 'required',
+        //     'from_date' => 'required',
+        //     'to_date' => 'required',
+        //     'created_by' => 'required',
+        // ];
+        // $couponValidation = Validator::make($data, $couponRules);
+        // if ($couponValidation->fails()) {
+        //     $errors = $couponValidation->errors();
+        //     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        // }
         try {
-            $this->couponService->updatePost($data,$id);
+            $data= $this->couponService->updatePost($request,$id);
         } 
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

@@ -209,56 +209,57 @@ class CouponRepository
     public function update($data, $id)
     {
         $coupons = $this->coupon->find($id);
-        $coupons->coupon_type_id = $data['coupon_type'];
-        $coupons->coupon_title = $data['coupon_title'];
-        $coupons->coupon_code = strtoupper($data['coupon_code']);
-        $coupons->bus_operator_id = $data['bus_operator_id'];
-        $coupons->source_id = $data['source_id'];
-        $coupons->destination_id = $data['destination_id'];
-        $coupons->type = $data['coupon_discount_type'];
-        $coupons->valid_by = $data['valid_by'];
-        if($data['coupon_type'] == 1)
-        {
-            $coupons->bus_operator_id = $data['bus_operator_id'];
-            $coupons->source_id = null;
-            $coupons->destination_id = null;
-        }
-        else if($data['coupon_type'] == 2)
-        {
-            $coupons->bus_operator_id = null;
-            $coupons->source_id = $data['source_id'];
-            $coupons->destination_id = $data['destination_id'];
-        }
-        else
-        {
-            $coupons->bus_operator_id = $data['bus_operator_id'];
-            $coupons->source_id = $data['source_id'];
-            $coupons->destination_id = $data['destination_id'];
-        }
+        // $coupons->coupon_type_id = $data['coupon_type'];
+        // $coupons->coupon_title = $data['coupon_title'];
+        // $coupons->coupon_code = strtoupper($data['coupon_code']);
+        // $coupons->bus_operator_id = $data['bus_operator_id'];
+        // $coupons->source_id = $data['source_id'];
+        // $coupons->destination_id = $data['destination_id'];
+        // $coupons->type = $data['coupon_discount_type'];
+        // $coupons->valid_by = $data['valid_by'];
+        // if($data['coupon_type'] == 1)
+        // {
+        //     $coupons->bus_operator_id = $data['bus_operator_id'];
+        //     $coupons->source_id = null;
+        //     $coupons->destination_id = null;
+        // }
+        // else if($data['coupon_type'] == 2)
+        // {
+        //     $coupons->bus_operator_id = null;
+        //     $coupons->source_id = $data['source_id'];
+        //     $coupons->destination_id = $data['destination_id'];
+        // }
+        // else
+        // {
+        //     $coupons->bus_operator_id = $data['bus_operator_id'];
+        //     $coupons->source_id = $data['source_id'];
+        //     $coupons->destination_id = $data['destination_id'];
+        // }
 
-        if($data['coupon_discount_type']==1)
-        {
-            $coupons->percentage = $data['percentage'];
-            $coupons->max_discount_price = $data['max_discount_price'];
-            $coupons->amount = 0;
-            $coupons->min_tran_amount = 0;
+        // if($data['coupon_discount_type']==1)
+        // {
+        //     $coupons->percentage = $data['percentage'];
+        //     $coupons->max_discount_price = $data['max_discount_price'];
+        //     $coupons->amount = 0;
+        //     $coupons->min_tran_amount = 0;
            
-        }
-        else
-        {
-            $coupons->amount = $data['amount'];
-            $coupons->min_tran_amount = $data['min_tran_amount'];
-            $coupons->percentage = 0;
-            $coupons->max_discount_price = 0;
-        }
+        // }
+        // else
+        // {
+        //     $coupons->amount = $data['amount'];
+        //     $coupons->min_tran_amount = $data['min_tran_amount'];
+        //     $coupons->percentage = 0;
+        //     $coupons->max_discount_price = 0;
+        // }
 
-        $coupons->max_redeem = $data['max_redeem'];
-        $coupons->from_date = $data['from_date'];
-        $coupons->to_date = $data['to_date'];
+        // $coupons->max_redeem = $data['max_redeem'];
+        // $coupons->from_date = $data['from_date'];
+        // $coupons->to_date = $data['to_date'];
         $coupons->short_desc = $data['short_description'];
         $coupons->full_desc = $data['full_description'];
+        $coupons->auto_apply =($data['auto_apply']==true) ? 1 : 0;
         $coupons->created_by = $data['created_by'];
-        $coupons->status = 1;        
+        //$coupons->status = 1;        
 
         $coupons->update();
 
