@@ -73,10 +73,12 @@ class AgentRepository
 
     public function getAllAgentData($request)
     {
-        
+       
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
          $status = $request['status'];
+         $start_date  =  $request->rangeFromDate;
+         $end_date  =  $request->rangeToDate;
 
         $data= $this->agent
                     ->where('status', 0)
@@ -101,6 +103,9 @@ class AgentRepository
         //         $data = $data->where('status', 0); 
         //     }                                      
         // }
+
+        
+
         if($name!=null && $status!=null)
         {
             $data = $data->where('name', 'like', '%' .$name . '%')
@@ -126,6 +131,17 @@ class AgentRepository
         }
         
 
+        if($start_date != null && $end_date != null)
+        {
+            if($start_date == $end_date){
+                $data =$data->where('created_at','like','%'.$start_date.'%')
+                        ->orderBy('created_at','DESC');
+                       
+            }else{
+                 $data =$data->whereBetween('created_at', [$start_date, $end_date]);
+            }
+                       
+        }
         
 
         $data=$data->paginate($paginate);
