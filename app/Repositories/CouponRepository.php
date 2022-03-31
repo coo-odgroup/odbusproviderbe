@@ -10,6 +10,7 @@ use App\Models\Location;
 use App\Models\Bus;
 use App\Models\CouponType;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 class CouponRepository
 {
     
@@ -269,8 +270,18 @@ class CouponRepository
     public function getData($request)
     {
         // Log:: info($request);
+
         $name=$request->name;
         $paginate = $request->rows_number;
+        $bus_operator_id = $request->bus_operator_id;
+        $fromDate = $request->fromDate;
+        $toDate = $request->toDate;
+        $source_id = $request->source_id;
+        $destination_id = $request->destination_id;
+        $coupon_type = $request->coupon_type;
+        $status = $request->status;
+       
+
         $data= $this->coupon->with("BusOperator","couponType","Bus")->where('status','!=',2)->orderBy('id','DESC');
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
@@ -282,6 +293,32 @@ class CouponRepository
         }
         elseif ($paginate == null) {
             $paginate = 10 ;
+        }
+        if($status!= null)
+        {
+            $data = $data->where('status',$status);
+        }  
+
+        if($bus_operator_id!= null)
+        {
+            $data = $data->where('bus_operator_id',$bus_operator_id);
+        }  
+
+        if($fromDate!= null && $toDate!=null)
+        {
+            $data = $data->where(function($query) use ($fromDate, $toDate){
+                                        $query->whereBetween('from_date', [$fromDate,$toDate])
+                                            ->orWhereBetween('to_date',[$fromDate,$toDate]);});
+        } 
+
+        if($source_id!= null && $destination_id!=null)
+        {
+            $data = $data->where('source_id',$source_id)->where('destination_id',$destination_id);
+        } 
+
+        if($coupon_type!= null)
+        {
+            $data = $data->where('coupon_type_id',$coupon_type);
         }
 
         if(!empty($name))

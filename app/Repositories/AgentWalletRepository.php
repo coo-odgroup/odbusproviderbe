@@ -130,16 +130,32 @@ class AgentWalletRepository
         $paginate = $request->rows_number;
         $name = $request->name;
         $user_id = $request->user_id;
+        // $start_date  =  $request->rangeFromDate;
+        // $end_date  =  $request->rangeToDate;
+
+        // log::info($request);
+
         $data= $this->user->with(['agentWallet' => function ($a)
                                 {$a->where('status',1)
                                     ->orderBy('id','DESC');
                                     }])
                                     ->where('role_id',3)
-                                    ->where('status',1);
+                                    ->where('status',1);        
+       
         if(!empty($user_id))
         {
            $data=$data->where('id', $user_id );
         }
+
+        // if($start_date != null && $end_date != null)
+        // {
+        //     if($start_date == $end_date){
+        //         $data = $data->where('created_at','like','%'.$start_date.'%');
+        //     }else{
+        //         // log::info($start_date.'-'.$end_date);
+        //          $data =$data->whereBetween('created_at', [$start_date, $end_date]);
+        //     }                       
+        // }        
 
         if($paginate=='all')    
         {
@@ -147,9 +163,7 @@ class AgentWalletRepository
         }
         elseif ($paginate == null) {
             $paginate = 10 ;
-        }
-
-        
+        }        
         
         if(!empty($name))
         {
@@ -170,8 +184,7 @@ class AgentWalletRepository
     } 
 
     public function agentAllTransaction($request){
-        // Log::info($request);
-        // exit;
+        
         $start_date="";
         $end_date="";
         $paginate = $request->rows_number;
@@ -181,6 +194,9 @@ class AgentWalletRepository
         $end_date  =  $request->rangeToDate;
 
         $data= $this->agentWallet->with('user')->where('status', 1)->orderBy('id','DESC');
+
+        
+       //exit;
 
         if($paginate=='all')    
         {
@@ -252,6 +268,9 @@ class AgentWalletRepository
                         
                         ;   
     }
+    public function Filter_user($data,$user_id){
+        return  $data->where('user_id', $user_id);   
+     }
     public function payViaFilter($data,$name){
        return  $data->Where('payment_via', 'like', '%' .$name . '%');   
     }
