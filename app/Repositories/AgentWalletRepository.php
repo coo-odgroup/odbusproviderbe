@@ -195,7 +195,7 @@ class AgentWalletRepository
 
         $data= $this->agentWallet->with('user')->where('status', 1)->orderBy('id','DESC');
 
-        Log::info($data);
+        
        //exit;
 
         if($paginate=='all')    

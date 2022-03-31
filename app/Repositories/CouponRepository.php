@@ -10,6 +10,7 @@ use App\Models\Location;
 use App\Models\Bus;
 use App\Models\CouponType;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 class CouponRepository
 {
     
