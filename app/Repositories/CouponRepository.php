@@ -379,7 +379,9 @@ class CouponRepository
         if($post->status==0){
             $post->status = 1;
         }elseif($post->status==1){
-            $post->status = 0;
+            $post->status = 3;
+        }elseif($post->status==3){
+            $post->status = 1;
         }
         $post->update();
         return $post;
