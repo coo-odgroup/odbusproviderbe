@@ -73,6 +73,7 @@ class OdbusChargesRepository
         $odbusCharges->payment_gateway_charges = $data['payment_gateway_charges'];
         $odbusCharges->email_sms_charges = $data['email_sms_charges'];
         $odbusCharges->odbus_gst_charges = $data['odbus_gst_charges'];
+        $odbusCharges->customer_gst = $data['customer_gst'];
         $odbusCharges->bus_list_sequence = $data['busListingseq'];
         $odbusCharges->advance_days_show = $data['advance_days_show'];
         $odbusCharges->support_email = $data['support_email'];
