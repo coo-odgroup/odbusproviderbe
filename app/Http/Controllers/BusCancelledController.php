@@ -43,9 +43,10 @@ class BusCancelledController extends Controller
     }
 
     public function createBusCancelled(Request $request) {
+      Log::info($request);
         $data = $request->only([
         
-            'bus_id','bus_operator_id','cancelled_date','reason','cancelled_by','buses','month','year'
+            'bus_id','bus_operator_id','cancelled_date','reason','other_reson','cancelled_by','buses','month','year'
         ]);
           
           $busCancelledValidation = $this->cancelBusValidator->validate($data);
@@ -61,7 +62,7 @@ class BusCancelledController extends Controller
         }  
     } 
     public function updateBusCancelled(Request $request, $id) {
-        $data = $request->only(['bus_id','bus_operator_id','cancelled_date','reason','cancelled_by','dateLists','month','year' ,'buses'
+        $data = $request->only(['bus_id','bus_operator_id','cancelled_date','reason','other_reson','cancelled_by','dateLists','month','year' ,'buses'
         ]);
 
         $busCancelledValidation = $this->cancelBusValidator->validate($data);

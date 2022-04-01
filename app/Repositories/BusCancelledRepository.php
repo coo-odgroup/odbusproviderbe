@@ -242,6 +242,7 @@ class BusCancelledRepository
             $this->busCancelled->month = $data['month'];
             $this->busCancelled->year = $data['year'];
             $this->busCancelled->reason = $data['reason'];
+            $this->busCancelled->other_reson = $data['other_reson'];
             $this->busCancelled->bus_id = $bus['bus_id'];
            // $this->busCancelled = (Object) $bus;
             $this->busCancelled->save();
@@ -279,6 +280,7 @@ class BusCancelledRepository
                 $this->busCancelled->created_by = $data['cancelled_by'];
                 $this->busCancelled->status = 0;
                 $this->busCancelled->reason = $data['reason'];
+                $this->busCancelled->other_reson = $data['other_reson'];
                 $this->busCancelled->bus_id = $bus['bus_id'];
                 $this->busCancelled->update();
                 $this->busCancelledDate->where('bus_cancelled_id',$id)->delete();
