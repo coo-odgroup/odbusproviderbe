@@ -9,10 +9,8 @@ use App\Jobs\SendSuperAdminEmailJob;
 use App\Jobs\SendSupportEmailJob;
 use App\Jobs\SendWalletEmailJob;
 use App\Jobs\SendWalletApproveEmailJob;
-
-
-
 use Illuminate\Support\Facades\Log;
+use DB;
 
 class AgentWalletRepository
 {
@@ -130,32 +128,41 @@ class AgentWalletRepository
         $paginate = $request->rows_number;
         $name = $request->name;
         $user_id = $request->user_id;
-        // $start_date  =  $request->rangeFromDate;
-        // $end_date  =  $request->rangeToDate;
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate;
 
         // log::info($request);
 
-        $data= $this->user->with(['agentWallet' => function ($a)
-                                {$a->where('status',1)
-                                    ->orderBy('id','DESC');
-                                    }])
-                                    ->where('role_id',3)
-                                    ->where('status',1);        
+        // $data= $this->user->with(['agentWallet' => function ($a)
+        //                         {$a->where('status',1)
+        //                             ->orderBy('id','DESC');
+        //                             }])
+        //                             ->where('role_id',3)
+        //                             ->where('status',1);        
        
+        $data = $this->agentWallet->select('created_at','amount','user_id',(DB::raw('max(id) as max_id')))
+                                  ->where('status', 1)
+                                  ->orderBy('created_at','DESC')
+                                  ->groupBy('user_id')                                  
+                                  ->with('user');       
+
+
+
         if(!empty($user_id))
         {
-           $data=$data->where('id', $user_id );
-        }
+            $data = $data->where('user_id', $user_id );
+        }        
 
-        // if($start_date != null && $end_date != null)
-        // {
-        //     if($start_date == $end_date){
-        //         $data = $data->where('created_at','like','%'.$start_date.'%');
-        //     }else{
-        //         // log::info($start_date.'-'.$end_date);
-        //          $data =$data->whereBetween('created_at', [$start_date, $end_date]);
-        //     }                       
-        // }        
+        if($start_date != NULL && $end_date != NULL)
+        {
+            if($start_date == $end_date)
+            {
+                $data = $data->where('created_at','like','%'.$start_date.'%');               
+            }
+            else{
+                $data = $data->whereBetween('created_at', [$start_date, $end_date]);                                        
+            }                       
+        }    
 
         if($paginate=='all')    
         {
@@ -164,13 +171,7 @@ class AgentWalletRepository
         elseif ($paginate == null) {
             $paginate = 10 ;
         }        
-        
-        if(!empty($name))
-        {
-           $data=$data->where('name', 'like', '--%' .$name . '%')
-                    ->orWhere('email','like', '%' .$name . '%')
-                    ->orWhere('phone','like', '%' .$name . '%');
-        }
+     
 
         $data=$data->paginate($paginate); 
       
