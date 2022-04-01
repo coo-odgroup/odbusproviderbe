@@ -268,6 +268,22 @@ class AgentWalletRepository
                         
                         ;   
     }
+
+    public function FilterDate($data,$start_date,$end_date){
+           
+         if($start_date == $end_date)
+         { 
+           
+                $data =$data->where('created_at','like','%'.$start_date.'%')
+                        ->orderBy('created_at','DESC');
+                       
+            }else{
+                
+                 $data =$data->whereBetween('created_at', [$start_date, $end_date]);
+            }
+            return  $data;
+
+    }
     public function Filter_user($data,$user_id){
         return  $data->where('user_id', $user_id);   
      }

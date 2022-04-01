@@ -27,9 +27,11 @@ class AgentWalletService
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
          $user_id = $request['user_id'] ;
-        $start_date  =  $request['rangeFromDate'];
-        $end_date  =  $request['rangeToDate'];
-        $reqs_status  =  $request['status'];
+         $start_date  =  $request['rangeFromDate'];
+         $end_date  =  $request['rangeToDate'];
+         $reqs_status  =  $request['status'];
+
+        Log::info($request);
 
       $data= $this->agentWalletRepository->getAllWalletRecord(); 
 
@@ -54,13 +56,7 @@ class AgentWalletService
             
         if($start_date != null && $end_date != null)
         {
-            if($start_date == $end_date){
-                $data =$data->where('created_at','like','%'.$start_date.'%')
-                        ->orderBy('created_at','DESC');
-                       
-            }else{
-                 $data =$data->whereBetween('created_at', [$start_date, $end_date]);
-            }
+            $data = $this->agentWalletRepository->FilterDate($data, $start_date,$end_date);        
                        
         }
         if($reqs_status != null)
@@ -85,6 +81,7 @@ class AgentWalletService
 
         $data= $this->agentWalletRepository->Pagination($data,$paginate); 
 
+        // log::info($data);
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
