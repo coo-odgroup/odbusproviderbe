@@ -91,8 +91,7 @@ class SliderRepository
     }
     public function save($data)
     {
-        // log::info($data);
-        // exit;
+        
         $slide = new $this->slider;
         $slide = $this->getModel($data,$slide);
         $file = collect($data)->get('slider_img');

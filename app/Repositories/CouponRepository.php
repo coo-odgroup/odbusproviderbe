@@ -11,6 +11,10 @@ use App\Models\Bus;
 use App\Models\CouponType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use DB;
+
+
+
 class CouponRepository
 {
     
@@ -36,7 +40,18 @@ class CouponRepository
     
     public function getAll()
     {
-        return $this->coupon->with('couponType')->where('status','!=',2)->get();
+
+
+
+        $data = $this->coupon->select(DB::raw('*,max(id) as max_id'))
+                                  ->where('status', 1)
+                                  ->where('to_date','>',date('Y-m-d'))
+                                  ->orderBy('created_at','DESC')
+                                  ->groupBy('coupon_code')                                  
+                                  ->with('couponType')->get();   
+
+           // Log::info($data);
+        return $data;
     }
 
     public function getAllCouponType()

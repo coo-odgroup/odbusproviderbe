@@ -43,7 +43,7 @@ class BusCancelledController extends Controller
     }
 
     public function createBusCancelled(Request $request) {
-      Log::info($request);
+      // Log::info($request);
         $data = $request->only([
         
             'bus_id','bus_operator_id','cancelled_date','reason','other_reson','cancelled_by','buses','month','year'
