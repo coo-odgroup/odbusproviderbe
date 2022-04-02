@@ -10,7 +10,7 @@ class UserValidator
     public function validate($data) { 
         
         $rules = [
-            'phone' => 'required',
+            'phone' => 'required|min:10|max:10|digits:10',
             
         ];      
       

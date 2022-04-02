@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendForgetOtpEmailJob;
 use App\Jobs\SendResetPasswordEmailJob;
-
+use App\Models\Agent;
 
 class UserRepository
 {
@@ -22,16 +22,18 @@ class UserRepository
     protected $user;
     protected $userBankDetails;
     protected $channelRepository;
+    protected $agent;
     /**
      * PostRepository constructor.
      *
      * @param Post $BusType
      */
-    public function __construct(User $user, UserBankDetails $userBankDetails,ChannelRepository $channelRepository)
+    public function __construct(User $user, Agent $agent, UserBankDetails $userBankDetails,ChannelRepository $channelRepository)
     {
         $this->user = $user;
         $this->userBankDetails = $userBankDetails;
         $this->channelRepository = $channelRepository; 
+        $this->agent = $agent;
     }
 
     
@@ -391,7 +393,8 @@ public function getRoles()
   return Role::whereNotIn('status', [2])->where('id','!=', 3)->get();
 }
 
-public function agentRegister($request){    
+public function agentRegister($request){  
+
     $users = $this->user->where('id', $request['userId'])->update(array(
         'name' => $request['name'],
         'email' => $request['email'],
@@ -416,6 +419,46 @@ public function agentRegister($request){
         'email' => $request['email'],
         'status' => "0",
     ));
+
+    $email = $this->agent->where('email',$request['email'])->where('status','!=',2)->get();
+    $phone = $this->agent->where('phone',$request['phone'])->where('status','!=',2)->get();
+    $aadhaar = $this->agent->where('adhar_no',$request['adhar_no'])->where('status','!=',2)->get();
+    $pancard = $this->agent->where('pancard_no',$request['pancard_no'])->where('status','!=',2)->get();
+    
+    if(count($email)==0)
+    {
+        if(count($phone)==0)
+        {
+            if(count($aadhaar)==0)
+            {
+                if(count($pancard)==0)
+                {
+                        $agent = new $this->agent;
+                        $agent=$this->getModel($data,$agent);
+                        $agent->save();
+                        return $agent;
+                }
+                else
+                {
+                    return 'Pan Card Already Exist';
+                }
+            }
+            else
+            {
+                return 'Aadhaar Card Already Exist';
+            }
+
+        }
+        else
+        {
+            return 'Phone Already Exist';
+        }
+    }
+    else
+    {
+        return 'Email Already Exist';
+    }
+    
     $usersDetails = $this->user->where('id',  $request['userId'])->get();
     return $usersDetails; 
 

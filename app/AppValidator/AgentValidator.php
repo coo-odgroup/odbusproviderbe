@@ -10,7 +10,7 @@ class AgentValidator
     public function validate($data) { 
         
         $rules = [
-         'email' => 'required',
+         'email' => 'required|email:rfc,dns',
          'phone' => 'required',
         ];      
       
