@@ -129,7 +129,7 @@ class OprAssignBusRepository
     
     $oldrecord=$this->OprAssignBus->where('user_id',$request['user_id'])->get();
 
-    // Log::info();
+    // Log::info($request);
     // exit;
     if(count($oldrecord)==0){
       foreach ($request['bus_id'] as $k=>$bus_id) {  
@@ -140,7 +140,8 @@ class OprAssignBusRepository
         $OprAssignBus->bus_id = $bus_id;
         $OprAssignBus->save();
         }
-          'done' ; 
+         
+          return 'done' ;
     }
     else
     {

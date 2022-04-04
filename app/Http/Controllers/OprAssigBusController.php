@@ -55,7 +55,7 @@ class OprAssigBusController extends Controller
           $response = $this->OprAssignBusService->OprAssignBus($request);
           if($response=='done')
           {
-            return $this->successResponse($response,"Bus assigned to the Association", Response::HTTP_CREATED);
+            return $this->successResponse($response,"Bus assigned to the Operator", Response::HTTP_CREATED);
           }
           elseif($response=='Operator Exist')
           {
