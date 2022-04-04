@@ -237,9 +237,8 @@ class TicketInformationRepository
 
         $access_token_res = json_decode($API_RESP_TOKEN->getBody());
 
-        $access_token = $access_token_res->data->access_token;
-
-        //Log::info( $access_token);
+        $access_token = $access_token_res->data;
+        
 
         ///////////////////////////////
 
