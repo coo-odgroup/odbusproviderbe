@@ -284,6 +284,7 @@ class TicketInformationRepository
                 "name"=> $request['customerInfo']['name']
              ],
               "bookingInfo" => [
+                "coupon_code"=>'', 
                 "user_id"=> 1,
                 "bus_id"=> $request['bookingInfo']['bus_id'],
                 "source_id"=> $request['bookingInfo']['source_id'],
