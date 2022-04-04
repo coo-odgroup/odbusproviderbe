@@ -239,7 +239,7 @@ class TicketInformationRepository
 
         $access_token = $access_token_res->data->access_token;
 
-        Log::info( $access_token);
+        //Log::info( $access_token);
 
         ///////////////////////////////
 
@@ -288,7 +288,7 @@ class TicketInformationRepository
                 "bus_id"=> $request['bookingInfo']['bus_id'],
                 "source_id"=> $request['bookingInfo']['source_id'],
                 "destination_id"=>  $request['bookingInfo']['destination_id'],
-                "journey_dt"=>  $request['bookingInfo']['journey_dt'],
+                "journey_date"=>  $request['bookingInfo']['journey_dt'],
                 "boarding_point"=>   $request['bookingInfo']['boarding_point'],
                 "dropping_point"=>   $request['bookingInfo']['dropping_point'],
                 "boarding_time"=>  $request['bookingInfo']['boarding_time'],
@@ -301,6 +301,7 @@ class TicketInformationRepository
                 "addOwnerFare"=>  $request['bookingInfo']['addOwnerFare'],
                 "festiveFare"=>  $request['bookingInfo']['festiveFare'],
                 "owner_fare"=>  $request['bookingInfo']['owner_fare'],
+                "transactionFee"=> $request['bookingInfo']['odbus_gst'],
                 "odbus_service_Charges"=>  $request['bookingInfo']['odbus_service_Charges'],
                 "adj_note"=>  $request['bookingInfo']['adj_note'],
                 "status"=>  '4',
