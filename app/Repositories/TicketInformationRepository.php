@@ -118,8 +118,8 @@ class TicketInformationRepository
 
         if($name!=null)
         {
-           $data = $data->where('cancel_by', 'like', '%' .$name .'%')
-                        ->orwhere('pnr','like', '%' .$name . '%' );
+           $data = $data->where('cancel_by', $name)
+                        ->orwhere('pnr',$name );
         }     
 
         $data=$data->paginate($paginate);
@@ -179,8 +179,8 @@ class TicketInformationRepository
 
         if($name!=null)
         {
-           $data = $data->where('created_by', 'like', '%' .$name .'%')
-                        ->orwhere('pnr','like', '%' .$name . '%' );
+           $data = $data->where('created_by', $name )
+                        ->orwhere('pnr', $name  );
         }     
 
         $data=$data->paginate($paginate);
