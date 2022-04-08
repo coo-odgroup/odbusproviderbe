@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CancellationSlabInfo;
 use App\Models\Bus;
+use App\Models\User;
 
 class CancellationSlab extends Model
 {
@@ -13,29 +14,29 @@ class CancellationSlab extends Model
         'rule_name', 'status'
     ];
 
-    // public function SlabInfo()
-    // {
-    //     return $this->hasMany(CancellationSlabInfo::class);        
-    // }
+    public function SlabInfo()
+    {
+        return $this->hasMany(CancellationSlabInfo::class);        
+    }
 
     public function cancellationSlabInfo()
     {
         return $this->hasMany(CancellationSlabInfo::class);        
     }
-
+    
     public function Bus()
     {
     	return $this->hasMany(Bus::class);
     }
-    // public function busOperator()
-    // {
-    //     return $this->belongsTo(BusOperator::class);
+    public function busOperator()
+    {
+        return $this->belongsTo(BusOperator::class);
         
-    // }
+    }
 
-    // public function User()
-	// {        
-	// 	return $this->belongsTo(User::class);        
-	// } 
+    public function User()
+	{        
+		return $this->belongsTo(User::class);        
+	} 
 
 }

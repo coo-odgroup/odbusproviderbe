@@ -12,10 +12,10 @@ class CancellationSlabInfo extends Model
         'cancellation_slab_id ','duration','deduction','status','created_by'
     ];
 
-    // public function cancellationslabs()
-    // {        
-    //     return $this->belongsTo(CancellationSlab::class);        
-    // }
+    public function cancellationslabs()
+    {        
+        return $this->belongsTo(CancellationSlab::class);        
+    }
 
     
     public function cancelationSlab()
