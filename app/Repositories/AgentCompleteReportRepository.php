@@ -38,9 +38,14 @@ class AgentCompleteReportRepository
 
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
-                                    'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users','User')
-                             ->with('bus.busstoppage','bus.busContacts')
+                                    'BookingDetail.BusSeats.ticketPrice','Users','User')
+                                 ->with(["Bus" => function($bs){
+                                        $bs->with('cancellationslabs.cancellationSlabInfo');
+                                        $bs->with('busstoppage');                
+                                        $bs->with('busContacts');
+                                      } ] )  
+
+                            // ->with('bus.busstoppage','bus.busContacts','bus.cancellationslabs.cancellationSlabInfo')
                              ->where('user_id', $user_id )
                              ->where('status', 1 )
                              ->orderBy('id','DESC');

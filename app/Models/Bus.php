@@ -19,7 +19,9 @@ use App\Models\Review;
 use App\Models\BusSchedule;
 use App\Models\BusOperator;
 use App\Models\BusCancelled;
-use App\Models\Cancellationslabs;
+//use App\Models\Cancellationslabs;
+use App\Models\CancellationSlab;
+use App\Models\CancellationSlabInfo;
 use App\Models\TicketPrice;
 use App\Models\BusStoppageTiming;
 use App\Models\BookingSeized;
@@ -120,8 +122,14 @@ class Bus extends Model
 
     public function cancellationslabs()
     {        
-        return $this->belongsTo(Cancellationslabs::class);        
-    } 
+        return $this->belongsTo(CancellationSlab::class);        
+    }
+
+
+    // public function cancellationslabs()
+    // {        
+    //     return $this->belongsTo(Cancellationslabs::class);        
+    // } 
     public function busStoppageTimimg()
     {        
         return $this->hasMany(BusStoppageTiming::class)->where('status','!=',2);               
