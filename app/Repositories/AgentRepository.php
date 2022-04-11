@@ -166,7 +166,7 @@ class AgentRepository
          $name = $request['name'] ;
          $status = $request['status'];
 
-        $data= $this->agent
+        $data= $this->agent->where('role_id',3)
                     ->wherenotIn('status',[0,2  ])
                     ->orderBy('id','DESC');
 
