@@ -9,7 +9,9 @@ use App\Models\BusSeats;
 use App\Models\Bus;
 use App\Models\Location;
 
-// use App\Models\TicketPrice;
+use App\Models\TicketPrice;
+use App\Models\Booking;
+use App\Models\BookingDetail;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Config;
@@ -23,16 +25,22 @@ class ExtraSeatBlockRepository
 {
     
     protected $seatBlock;
+    protected $ticketPrice;
+    protected $booking;
+    protected $bookingDetail;
 
     
     public function __construct(SeatBlock $seatBlock , SeatBlockSeats $seatsBlockSeats,BusSeats 
-        $busSeats,Bus $bus,Location $location)
+        $busSeats,Bus $bus,Location $location, TicketPrice $ticketPrice,Booking $booking, BookingDetail $bookingDetail)
     {
         $this->seatBlock = $seatBlock;
         $this->seatBlockSeats = $seatsBlockSeats;
         $this->busSeats = $busSeats;
         $this->bus = $bus;
         $this->location = $location;  
+        $this->ticketPrice = $ticketPrice;  
+        $this->booking = $booking;  
+        $this->bookingDetail = $bookingDetail;  
        
     }    
     public function getAll()
