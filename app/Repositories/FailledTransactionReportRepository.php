@@ -79,7 +79,7 @@ class FailledTransactionReportRepository
 
         if($date_type == 'booking' && $start_date == null && $end_date == null)
         {
-            $data =$data->orderBy('created_at','DESC');
+            $data =$data->where('journey_dt', date('Y-m-d'))->orderBy('created_at','DESC');
         }
         else if($date_type == 'booking' && $start_date != null && $end_date != null)
         {         
