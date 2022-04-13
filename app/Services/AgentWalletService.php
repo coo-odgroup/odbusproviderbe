@@ -31,7 +31,7 @@ class AgentWalletService
          $end_date  =  $request['rangeToDate'];
          $reqs_status  =  $request['status'];
 
-        Log::info($request);
+        // Log::info($request);
 
       $data= $this->agentWalletRepository->getAllWalletRecord(); 
 
@@ -103,7 +103,7 @@ class AgentWalletService
          $user_id = $request['user_id'] ;
 
 
-          $data= $this->agentWalletRepository->getWalletRecord($user_id);
+          $data= $this->agentWalletRepository->getWalletRequestRecord($user_id);
 
       if($paginate=='all') 
         {
@@ -171,27 +171,29 @@ class AgentWalletService
    public function changeStatus($data,$id)
    {
            $otp_status= $this->agentWalletRepository->Otp($id,$data);
+           // log::info($otp_status);
+           // exit;
 
        if(sizeof($otp_status)>0)
        {
        
-            $post = $this->agentWalletRepository->update_Status($id);
+            return $post = $this->agentWalletRepository->update_Status($id,$otp_status[0],$data);
            
-            $user_id = $post->user_id;
+            // $user_id = $post->user_id;
             
-            $prvious_balance = $this->agentWalletRepository->balance($user_id);
+            // $prvious_balance = $this->agentWalletRepository->balance($user_id);
             
-               if($post->transaction_type == "c")
-                {           
-                    $balance=$prvious_balance[0]->balance + (int)$post->amount;
+               // if($post->transaction_type == "c")
+               //  {           
+               //      $balance=$prvious_balance[0]->balance + (int)$post->amount;
 
-                }
-                else if($post->transaction_type == "d")
-                {        
-                    $balance=$prvious_balance[0]->balance - (int)$post->amount;
-                } 
+               //  }
+               //  else if($post->transaction_type == "d")
+               //  {        
+               //      $balance=$prvious_balance[0]->balance - (int)$post->amount;
+               //  } 
                
-                 return $updated_balance =$this->agentWalletRepository->update_balance($id,$balance,$otp_status,$data);   
+               //   return $updated_balance =$this->agentWalletRepository->update_balance($id,$balance,$otp_status,$data);   
        }
        else
        {

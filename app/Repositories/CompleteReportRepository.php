@@ -25,7 +25,7 @@ class CompleteReportRepository
     
     public function getData($request)
     {
-        
+        // log::info($request);
       
         $paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
@@ -95,7 +95,7 @@ class CompleteReportRepository
         }
         else if($date_type == 'journey' && $start_date == null && $end_date == null)
         {
-            $data =$data->orderBy('journey_dt','DESC');
+            $data =$data->where('journey_dt', date('Y-m-d'))->orderBy('journey_dt','DESC');
         }
          else if($date_type == 'journey' && $start_date != null && $end_date != null)
         {

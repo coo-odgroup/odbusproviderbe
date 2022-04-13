@@ -213,7 +213,7 @@ class SeatOpenRepository
         $destination_id = $request['destination_id'] ;
         // log::info($request);
     
-        $data= $this->busSeats->with('bus.busOperator','seats','ticketPrice')
+        $data= $this->busSeats->with('bus.busOperator','bus.ticketPrice','seats','ticketPrice')
                               ->where('type',1)
                               ->whereNotIn('status', [2]);
 
@@ -282,9 +282,15 @@ class SeatOpenRepository
                     {
                        foreach ($seatOp as $SingleseatOp)
                         {
-                           // Log::info($SingleseatOp->ticketPrice->source_id);
+                          
                             $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
                             $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
+
+                            $SingleseatOp['bus_source']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
+                            $SingleseatOp['bus_destination']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
+
+                            Log::info($SingleseatOp['bus_destination']);
+                           // exit;
                         }
                     }
                 }
