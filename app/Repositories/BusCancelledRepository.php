@@ -238,7 +238,7 @@ class BusCancelledRepository
             $this->busCancelled = new BusCancelled();
             $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
             $this->busCancelled->created_by = $data['cancelled_by'];
-            $this->busCancelled->status = 0;
+            $this->busCancelled->status = 1;
             $this->busCancelled->month = $data['month'];
             $this->busCancelled->year = $data['year'];
             $this->busCancelled->reason = $data['reason'];
@@ -278,7 +278,7 @@ class BusCancelledRepository
         
                 $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
                 $this->busCancelled->created_by = $data['cancelled_by'];
-                $this->busCancelled->status = 0;
+                $this->busCancelled->status = 1;
                 $this->busCancelled->reason = $data['reason'];
                 $this->busCancelled->other_reson = $data['other_reson'];
                 $this->busCancelled->bus_id = $bus['bus_id'];

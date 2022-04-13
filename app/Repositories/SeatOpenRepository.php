@@ -289,7 +289,7 @@ class SeatOpenRepository
                             $SingleseatOp['bus_source']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
                             $SingleseatOp['bus_destination']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
 
-                            Log::info($SingleseatOp['bus_destination']);
+                            // Log::info($SingleseatOp['bus_destination']);
                            // exit;
                         }
                     }

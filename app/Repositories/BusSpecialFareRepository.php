@@ -227,7 +227,7 @@ class BusSpecialFareRepository
             $specialfare->sleeper_price = $data['sleeper_price'];
             $specialfare->reason = $data['reason'];
             $specialfare->created_by = $data['created_by'];
-            $specialfare->status = 0;
+            $specialfare->status = 1;
             $specialfare->save();
             $bus_id = $this->bus::find($data['bus_id']);
             $specialfare->bus()->attach($data['bus_id']);
