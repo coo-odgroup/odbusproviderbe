@@ -31,9 +31,21 @@ class ExtraSeatBlockController extends Controller
      public function addExtraSeatBlock(Request $request)
      {
 
+      try{
+        $res = $this->extraseatblockService->addExtraSeatBlock($request);
 
-        $seatblock = $this->extraseatblockService->addExtraSeatBlock($request);
-            return $this->successResponse($seatblock,"Seat Block Added",Response::HTTP_OK);
+        if(isset($res['status']) && $res['status'] == 'error'){
+
+          return $this->errorResponse($res['message'],Response::HTTP_OK);
+
+        }else{
+          return $this->successResponse($seatblock,"Extra Seat Block Added",Response::HTTP_OK);
+        }
+
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }      
 
      }     
 
