@@ -39,11 +39,12 @@ class ExtraSeatBlockController extends Controller
           return $this->errorResponse($res['message'],Response::HTTP_OK);
 
         }else{
-          return $this->successResponse($seatblock,"Extra Seat Block Added",Response::HTTP_OK);
+          return $this->successResponse($res,"Extra Seat Block Added",Response::HTTP_OK);
         }
 
       }
       catch (Exception $e){
+          //Log::info($e->getMessage());
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }      
 

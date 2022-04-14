@@ -137,6 +137,27 @@ class SeatBlockRepository
                                 { 
                                     foreach ($all_date as $dt) 
                                     {    
+
+
+                                         /////////////// check if same seat is already booked
+
+
+                                         $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
+                                         ->where("seats_id",$upperBerthData['seatId'])
+                                         ->where("ticket_price_id",$ticketpriceID)
+                                         ->where("operation_date",$dt)
+                                         ->where("type",$data['type'])                                         
+                                         ->where("status",1)
+                                         ->get(); 
+
+                                            if(count($chk_duplicate)>0){
+
+                                            $error['status']='error';
+                                            $error['message']="Seat no ".$upperBerthData['seatText']." is already blocked for date - ".$dt;
+
+                                            return $error;
+
+                                            }
                                         
                                         
                                         /////// before insert we need to check if the seat is booked by customer or not
@@ -222,6 +243,28 @@ class SeatBlockRepository
                                 {
                                     foreach ($all_date as $dt) 
                                     { 
+
+
+                                         /////////////// check if same seat is already booked
+
+
+                                         $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
+                                         ->where("seats_id",$lowerBerthData['seatId'])
+                                         ->where("ticket_price_id",$ticketpriceID)
+                                         ->where("operation_date",$dt)
+                                         ->where("type",$data['type'])                                         
+                                         ->where("status",1)
+                                         ->get(); 
+
+                                            if(count($chk_duplicate)>0){
+
+                                            $error['status']='error';
+                                            $error['message']="Seat no ".$lowerBerthData['seatText']." is already blocked for date - ".$dt;
+
+                                            return $error;
+
+                                            }
+
 
                                          /////// before insert we need to check if the seat is booked by customer or not
 
