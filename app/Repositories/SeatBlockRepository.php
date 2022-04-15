@@ -171,7 +171,7 @@ class SeatBlockRepository
                                                         ->where("journey_dt",$dt)
                                                         ->where("source_id",$src_id)
                                                         ->where("destination_id",$dest_id)
-                                                        ->where("status",'!=',2)
+                                                        ->where("status",[1,4])
                                                         ->get();
 
                                         if(count($bookedSeatList)>0){
@@ -277,7 +277,7 @@ class SeatBlockRepository
                                                         ->where("journey_dt",$dt)
                                                         ->where("source_id",$src_id)
                                                         ->where("destination_id",$dest_id)
-                                                        ->where("status",'!=',2)
+                                                        ->where("status",[1,4])
                                                         ->get();
 
                                         if(count($bookedSeatList)>0){
