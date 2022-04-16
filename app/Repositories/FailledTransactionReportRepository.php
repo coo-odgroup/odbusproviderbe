@@ -39,9 +39,6 @@ class FailledTransactionReportRepository
         $start_date  =  $request->rangeFromDate;
         $end_date  =  $request->rangeToDate;
 
-       
-        
-
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','Users','CustomerPayment')

@@ -270,8 +270,7 @@ class SeatOpenRepository
  
        
         $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
-         // log::info($data); 
-         // exit;
+     
 
         if($data)
         {
@@ -288,9 +287,6 @@ class SeatOpenRepository
 
                             $SingleseatOp['bus_source']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
                             $SingleseatOp['bus_destination']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
-
-                            // Log::info($SingleseatOp['bus_destination']);
-                           // exit;
                         }
                     }
                 }

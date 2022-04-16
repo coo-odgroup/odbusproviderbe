@@ -341,9 +341,7 @@ class ExtraSeatBlockRepository
  
        
         $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
-         // log::info($data); 
-         // exit;
-
+ 
         if($data)
         {
              foreach($data as $date){
@@ -353,8 +351,12 @@ class ExtraSeatBlockRepository
                     {
                        foreach ($seatOp as $SingleseatOp)
                         {
+                          
                             $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
                             $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
+
+                            $SingleseatOp['bus_source']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
+                            $SingleseatOp['bus_destination']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
                         }
                     }
                 }

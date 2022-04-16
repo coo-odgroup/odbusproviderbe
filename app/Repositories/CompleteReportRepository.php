@@ -121,13 +121,6 @@ class CompleteReportRepository
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get(); // where('status',1)
-                
-              // $v['source']=[];
-               // $v['destination']=[];   
-                // Log::info($v->bus_id);
-                // Log::info($stoppage);
-                // Log::info($v->pnr);
-
                 $stoppages['source']=[];
                 $stoppages['destination']=[];
 
