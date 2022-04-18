@@ -458,10 +458,6 @@ class SeatBlockRepository
             $data = $data->whereHas('bus', function ($query) use ($name){
                 $query->where('name', 'like', '%' .$name . '%');               
             }) ;          
-
-            // ->orWhereHas('bus.busOperator', function ($query) use ($name){
-            //     $query->where('operator_name', 'like', '%' .$name . '%');
-            // });
             
         }  
         if(!empty($source_id) && !empty($destination_id))
@@ -476,7 +472,8 @@ class SeatBlockRepository
         }  
  
        
-      
+         $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
+         
          if($data)
         {
              foreach($data as $date){
@@ -489,7 +486,6 @@ class SeatBlockRepository
                           
                             $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
                             $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
-
                             $SingleseatOp['bus_source']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
                             $SingleseatOp['bus_destination']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
                         }
@@ -497,7 +493,8 @@ class SeatBlockRepository
                 }
             }
         }
-       $result = $this->customPaginate($data,$paginate,$page_no)->withPath('/api/seatblockData');
+
+        $result = $this->customPaginate($data,$paginate,$page_no)->withPath('/api/seatblockData');
         return $result;          
  
     }
