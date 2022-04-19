@@ -196,11 +196,10 @@ class BusOperatorRepository
     public function getBusbyOperator($operatorId)
     {
 
-        $operatorWithBuses =  $this->busOperators->with('bus.ticketPrice')
-        
+        $operatorWithBuses =  $this->busOperators->with(["bus"=>function($s){$s->where('status',1)->with("ticketPrice"); }])  
          ->where('id', $operatorId)
          ->get('id');
-
+ 
         //Log::info($operatorWithBuses);
 
          $busData = array();

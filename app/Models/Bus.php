@@ -64,7 +64,7 @@ class Bus extends Model
     } 
     public function busCancelled()
     {        
-        return $this->hasOne(BusCancelled::class);        
+        return $this->hasMany(BusCancelled::class);        
     } 
     public function busstoppage()
     {        

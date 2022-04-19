@@ -23,14 +23,10 @@ use App\Services\BusContactsService;
 use App\Services\BookingSeizedService;
 use App\Models\BusStoppage;
 use App\Services\BusStoppageService;
-
 use App\Services\BusLocationSequenceService;
-
 use App\Models\BusStoppageTiming;
 use App\Services\BusStoppageTimingService;
 use App\Jobs\TestingEmailJob;
-
-
 use App\Models\BusSeats;
 use App\Services\BusSeatsService;
 use Illuminate\Support\Facades\Log;

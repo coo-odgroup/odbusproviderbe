@@ -67,8 +67,8 @@ class CompleteReportRepository
 
         if(!empty($payment_id))
         {
-            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
-                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id );});
+            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id)  {$query->where('razorpay_id', $payment_id )->where('payment_done', '1' );})
+                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id )->where('payment_done', '1' );});
         }
 
         if(!empty($source_id) && !empty($destination_id))
