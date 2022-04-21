@@ -32,6 +32,11 @@ class TicketInformationService
         return $this->ticketInformationRepository->getpnrdetails($request);
     } 
 
+    public function getPnrDetailsForSms($request)
+    {
+        return $this->ticketInformationRepository->getPnrDetailsForSms($request);
+    } 
+
     public function cancelticket($request)
     {
         return $this->ticketInformationRepository->cancelticket($request);

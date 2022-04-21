@@ -28,6 +28,31 @@ class TicketInformationRepository
         $this->booking = $booking;
         $this->customerPayment = $customerPayment;
     }
+    public function getPnrDetailsForSms($request)
+    {
+        $date = date('Y-m-d',strtotime("-1 days"));
+        
+        $pnr_Details = $this->booking->with('BookingDetail.BusSeats.seats',
+                                    'BookingDetail.BusSeats.ticketPrice',
+                                    'Bus','Users','CustomerPayment')
+                             ->with('bus.busstoppage')
+                             ->with('bus.BusType')
+                             ->with('bus.BusSitting')
+                             ->with('bus.busContacts')
+                             ->with('bus.BusType.BusClass')
+                             ->where('pnr',$request[0])
+                             ->whereIn('status', [1,2])
+                             ->orderBy('id','DESC')->get();
+        
+          if($pnr_Details){
+            foreach($pnr_Details as $key=>$v){
+               $v['from_location']=$this->location->where('id', $v->source_id)->get();
+               $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+               }
+           }
+        return $pnr_Details;
+    }
+
     public function getpnrdetails($request)
     {
         $date = date('Y-m-d',strtotime("-1 days"));
@@ -43,24 +68,12 @@ class TicketInformationRepository
                              ->where('pnr',$request[0])
                              ->where('status',1)
                              ->where('journey_dt','>',$date)
-                             // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
                              ->orderBy('id','DESC')->get();
         
           if($pnr_Details){
             foreach($pnr_Details as $key=>$v){
-
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
-
-               //   $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
- 
-               // foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-               //  {                          
-               //      $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-               //      $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
-               //  }
-               //  $v['source']= $stoppages['source'];
-               //  $v['destination']= $stoppages['destination'];
                }
            }
         return $pnr_Details;
@@ -68,8 +81,7 @@ class TicketInformationRepository
 
     public function cancelticket($request)
     {
-        // Log::info($request['email']);
-        // exit;
+       
         $id=$request->id ;
         $cancelticket = $this->booking->find($id);       
         $cancelticket->deduction_percent = $request['percentage_deduct'];

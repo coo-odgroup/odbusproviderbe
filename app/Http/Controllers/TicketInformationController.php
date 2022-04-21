@@ -28,6 +28,11 @@ class TicketInformationController extends Controller
       // return $request;
          $pnr_details = $this->ticketInformationService->getpnrdetails($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    public function getPnrDetailsForSms(Request $request)
+    {
+         $pnr_details = $this->ticketInformationService->getPnrDetailsForSms($request);
+        return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
     public function cancelticket(Request $request)

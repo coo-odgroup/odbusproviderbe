@@ -136,15 +136,14 @@ Route::post('/assocAssignOperatorreport', [AssocAssignReportController::class, '
 
 //Ticket Information 
 
+Route::post('/getPnrDetailsForSms',[TicketInformationController::class,'getPnrDetailsForSms']);
 Route::post('/getpnrdetails',[TicketInformationController::class,'getpnrdetails']);
 Route::post('/cancelticket',[TicketInformationController::class,'cancelticket']);
 Route::post('/cancelticketdata',[TicketInformationController::class,'cancelticketdata']);
-
 Route::post('/adjustticket',[TicketInformationController::class,'adjustticket']);
 Route::post('/adjustticketdata',[TicketInformationController::class,'adjustticketdata']);
 
 //Extra Seat Block
-
 Route::post('/extraSeatBlock',[ExtraSeatBlockController::class,'addExtraSeatBlock']);
 Route::post('/deleteExtraSeat', [ExtraSeatBlockController::class, 'deleteExtraSeatBlock']);
 Route::post('/extraSeatBlockData', [ExtraSeatBlockController::class, 'extraSeatBlockData']);
