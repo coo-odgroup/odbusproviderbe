@@ -232,6 +232,7 @@ class BusCancelledRepository
    
     public function save($data)
     { 
+      // log::info($data);
         $buses = $data['buses'];
         foreach ($buses as $bus)         
         {          
@@ -250,14 +251,16 @@ class BusCancelledRepository
             $busCanceledDateModels = [];
             foreach ($bus['dateLists'] as $busDateLists)   
             {
-                    if($busDateLists['datechecked'])
+                    if(isset($busDateLists['datechecked']) && $busDateLists['datechecked'] == true)
                     {
                         $busCanceledDate = new BusCancelledDate();
                         $busCanceledDate->cancelled_date = date('Y-m-d',strtotime($busDateLists['entryDates'])) ;
                         $busCanceledDate->created_by = $data['cancelled_by'] ;
                         $busCanceledDateModels[] =  $busCanceledDate;
                     }
+
             }
+            
             $this->busCancelled->busCancelledDate()->saveMany($busCanceledDateModels);
         }
         return $buses;
