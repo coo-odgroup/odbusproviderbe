@@ -43,7 +43,7 @@ class BusCancelledController extends Controller
     }
 
     public function createBusCancelled(Request $request) {
-      Log::info($request);
+      // Log::info($request);
       // exit;
         $data = $request->only([
         

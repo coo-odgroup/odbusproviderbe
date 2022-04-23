@@ -12,6 +12,7 @@ use App\Models\Location;
 use App\Models\User;
 use App\Models\TicketPrice;
 use App\Models\Coupon;
+use App\Models\BusDisplayInfo;
 use App\Models\cancelationSlab;
 use App\Models\BoardingDroping;
 use Illuminate\Support\Collection;
@@ -25,8 +26,9 @@ class BusRepository
     protected $seats;
     protected $ticketPrice; 
     protected $coupon; 
+    protected $BusDisplayInfo; 
     
-    public function __construct(Bus $bus,BusSchedule $busSchedule, BusType $busType, BusSitting $busSitting,
+    public function __construct(BusDisplayInfo $BusDisplayInfo,Bus $bus,BusSchedule $busSchedule, BusType $busType, BusSitting $busSitting,
      BusStoppage $busStoppage, BusAmenities $busAmenities, Amenities $amenities,
       BoardingDroping $boardingDroping, User $user,BusScheduleDate $busScheduleDate, Seats $seats, TicketPrice $ticketPrice,Location $location,Coupon $coupon)
     {
@@ -44,6 +46,7 @@ class BusRepository
         $this->ticketPrice=$ticketPrice;
         $this->location = $location;       
         $this->coupon = $coupon;       
+        $this->BusDisplayInfo = $BusDisplayInfo;       
     }
     public function getAll()
     {
@@ -144,6 +147,16 @@ class BusRepository
         return $this->bus
         ->with('cancelationSlab')
         ->where('id', $id)->get();
+    } 
+
+    public function busDisplayInfo()
+    {
+           $data=$this->BusDisplayInfo->get();
+           $arr=[];
+           foreach ($data as $key => $value) {
+               $arr[]=$value->name;
+           }
+           return $arr;
     }
 
     public function getLocationBus($source_id,$destination_id)
@@ -257,17 +270,12 @@ class BusRepository
         $bus = $this->bus->find($id);
         $bus->status = 2;
         $bus->update();
-
-        // $ticketPrice = $this->ticketPrice->find('bus_id',$id);
-        // $ticketPrice->status = 2;
-        // $ticketPrice->update();
         return $bus;
     }
     
     public function getAllBusDT( $request)
     {
-        // log::info($request);
-        // exit;
+      
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length");

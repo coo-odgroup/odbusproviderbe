@@ -274,6 +274,15 @@ class BusController extends Controller
 
     }
 
+    public function busDisplayInfo(){
+
+        $buses = $this->busService->busDisplayInfo();
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+    }
+
+
+
     public function save(Request $request) {
         
 

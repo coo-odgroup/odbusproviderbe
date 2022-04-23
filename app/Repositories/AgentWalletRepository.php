@@ -186,6 +186,7 @@ class AgentWalletRepository
 
     public function agentAllTransaction($request){
         
+        // log::info($request);
         $start_date="";
         $end_date="";
         $paginate = $request->rows_number;
@@ -193,6 +194,7 @@ class AgentWalletRepository
         $user_id = $request->user_id;
         $start_date  =  $request->rangeFromDate;
         $end_date  =  $request->rangeToDate;
+        $tranType  =  $request->tranType;
 
         $data= $this->agentWallet->with('user')->where('status', 1)->orderBy('id','DESC');
 
@@ -232,6 +234,28 @@ class AgentWalletRepository
                        
         }
 
+        if($tranType!= null && $tranType!= 'all_transaction')
+        {
+          
+            if($tranType == 'wallet_recharge')
+            {
+                $data =$data->where('payment_via','!=','')->where('transaction_type','c' );
+            } 
+            elseif($tranType == 'commission_received')
+            {
+                $data =$data->where('type','Commission')->where('transaction_type','c') ;
+            } 
+            elseif($tranType == 'pnr_booking')
+            {
+                 $data =$data->where('payment_via','')->where('transaction_type','d') ;
+            }
+            elseif($tranType == 'cancel_ticket')
+            {
+                $data =$data->where('type','Refund')->where('transaction_type','c') ;
+            }
+                       
+        }
+
         $data=$data->paginate($paginate); 
         
         $response = array(
@@ -240,7 +264,6 @@ class AgentWalletRepository
             "data" => $data
            ); 
            return $response;    
-
     }
 
     public function getWalletRequestRecord($user_id){

@@ -47,7 +47,13 @@ class BusService
     public function getById($id)
     {
         return $this->busRepository->getById($id);
+    } 
+
+    public function busDisplayInfo()
+    {
+        return $this->busRepository->busDisplayInfo();
     }
+
     public function updateBusName($data, $id)
     {
         try {
