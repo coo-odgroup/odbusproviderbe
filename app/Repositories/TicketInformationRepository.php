@@ -377,13 +377,15 @@ class TicketInformationRepository
                  
                if($request['customerInfo']['email']!= ''){
 
-                        $to_user = $request['customerInfo']['email'];         
-                        // $to_user = "bishal.seofied@gmail.com";         
+                        $to_user = $request['customerInfo']['email'];    
                         $subject = "Ticket Cancel ( PNR - ".$pnr." )";
                         $data= ['pnr'=> $pnr ,
                         'has been cancelled.'
                         ] ;
                         SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
+
+                        /////// send email to odbus support 
+                        SendCancelAdjTicketEmailJob::dispatch('support@odbus.in', $subject, $data);
                }
 
                  ///////////////////// final ticket booking and email/sms sending //////////////////////
@@ -415,13 +417,7 @@ class TicketInformationRepository
                "bustype"=>  $request['bookingInfo']['bustype'],
                "busTypeName"=>  $request['bookingInfo']['busTypeName'],
                "sittingType"=>  $request['bookingInfo']['sittingType'],
-               "conductor_number"=>  $request['bookingInfo']['conductor_number'],
-               "totalfare"=>  $request['bookingInfo']['total_fare'],
-               "discount"=>  0,
-               "payable_amount"=>  $request['bookingInfo']['total_fare'],
-               "odbus_charges"=>  $request['bookingInfo']['odbus_service_Charges'],
-               "odbus_gst"=>  $request['bookingInfo']['odbus_gst'],
-               "owner_fare"=>  $request['bookingInfo']['owner_fare'],
+               "conductor_number"=>  $request['bookingInfo']['conductor_number'],               
                "passengerDetails" => $bookingDetailarr
            ]; 
 
