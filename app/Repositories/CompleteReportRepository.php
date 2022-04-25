@@ -113,13 +113,16 @@ class CompleteReportRepository
         $totalfare = 0;
         $totalPayableAmount = 0;
         $owner_fare = 0;
+        $totalAgentComission = 0;
    
         if($data){
             foreach($data as $key=>$v){
-
+                // log::info($v->agent_commission);
                
                $totalfare = $totalfare + $v->total_fare;
+               $totalAgentComission = $totalAgentComission + $v->agent_commission;
                $totalPayableAmount = $totalPayableAmount + $v->payable_amount;
+            
                $owner_fare = $owner_fare + $v->owner_fare;
                // $totalfare = $totalfare + $v->total_fare;
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
@@ -142,13 +145,13 @@ class CompleteReportRepository
         }
 
 
-       
+          $totalReceivedAmount = $totalPayableAmount - $totalAgentComission ;
       
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
              "totalfare"=> number_format($totalfare, 2, ".", ""),
-             "totalPayableAmount"=>number_format($totalPayableAmount, 2, ".", ""),
+             "totalPayableAmount"=>number_format($totalReceivedAmount, 2, ".", ""),
              "owner_fare"=>number_format($owner_fare, 2, ".", ""),
             "data" => $data
            );  
