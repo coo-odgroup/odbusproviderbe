@@ -110,13 +110,18 @@ class CompleteReportRepository
         $data=$data->paginate($paginate); 
 
        
-        
+        $totalfare = 0;
+        $totalPayableAmount = 0;
+        $owner_fare = 0;
    
         if($data){
             foreach($data as $key=>$v){
 
                
-
+               $totalfare = $totalfare + $v->total_fare;
+               $totalPayableAmount = $totalPayableAmount + $v->payable_amount;
+               $owner_fare = $owner_fare + $v->owner_fare;
+               // $totalfare = $totalfare + $v->total_fare;
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 
@@ -142,6 +147,9 @@ class CompleteReportRepository
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
+             "totalfare"=> number_format($totalfare, 2, ".", ""),
+             "totalPayableAmount"=>number_format($totalPayableAmount, 2, ".", ""),
+             "owner_fare"=>number_format($owner_fare, 2, ".", ""),
             "data" => $data
            );  
 
