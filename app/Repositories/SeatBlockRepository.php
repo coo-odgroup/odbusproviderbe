@@ -579,20 +579,19 @@ class SeatBlockRepository
     }
 
     public function delete($request)
-    {        
+    {   
         $seatBlock = $this->busSeats
                          ->where('bus_id',$request['bus_id'])
-                         ->where('ticket_price_id',$request['ticketPriceId'])
                          ->where('operation_date',$request['operationDate'])
                          ->where('type',$request['type'])
-                         ->update(['status'=> '2']);
+                         ->delete();
         return $seatBlock;
     }
 
 
 
 
-     public function seatblockData($request)
+    public function seatblockData($request)
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
@@ -602,7 +601,8 @@ class SeatBlockRepository
         $bus_operator_id = $request['bus_operator_id'] ;
         $source_id = $request['source_id'] ;
         $destination_id = $request['destination_id'] ;
-    
+         $check_dt = date('Y-m-d', strtotime('today - 3 days'));
+
         $data= $this->busSeats->with('bus.busOperator','seats','ticketPrice')
                               ->where('type',2)
                               ->whereNotIn('status', [2]);
@@ -637,7 +637,10 @@ class SeatBlockRepository
               }else{
                   $data = $data->whereBetween('operation_date', [$fromDate, $toDate]);
               } 
-        }  
+        } else{
+
+                $data=$data->where('operation_date',date('Y-m-d'));
+        } 
 
 
         if($name!=null)
