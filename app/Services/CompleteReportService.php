@@ -26,4 +26,10 @@ class CompleteReportService
         return $this->completereportRepository->getData($request);
     }
 
+    //Created By Chakra 26-04-2022 11:56 AM
+    public function getPendingPNR($request)
+    {
+        return $this->completereportRepository->getPendingPNR($request);
+    }
+
 }

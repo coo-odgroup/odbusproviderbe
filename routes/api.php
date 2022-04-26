@@ -395,6 +395,8 @@ Route::post('seatblockreport',[SeatBlockReportController::class,'getData']);
 Route::post('extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
 ///CompleteReport////
 Route::post('completereport',[CompleteReportController::class,'getData']);
+///PendingPNRReport////
+Route::post('pendingpnrreport',[CompleteReportController::class,'getPendingPNR']);
 ///FailledTransactionReport////
 Route::post('failledtransactionreport',[FailledTransactionReportController::class,'getData']);
 ///BusCancellationReport////

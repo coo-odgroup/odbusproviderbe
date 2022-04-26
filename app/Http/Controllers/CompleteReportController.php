@@ -32,4 +32,14 @@ class CompleteReportController extends Controller
         return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    //Created By Chakra 26-04-2022 11:56 AM
+    public function getPendingPNR(Request $request)
+    {
+        // Log::info($request);
+        // exit;
+
+        $completeData = $this->completereportService->getPendingPNR($request);
+        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
 }
