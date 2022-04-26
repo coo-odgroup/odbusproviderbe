@@ -285,7 +285,7 @@ public function update($data, $id)
                             $upd_data['bus_id']=$data['bus_id'];
                             $upd_data['ticket_price_id']=$ticketpriceID->id;
                             $upd_data['category']='0';
-                            $upd_data['duration']=$upperBerthData['extraSeat'];
+                            $upd_data['duration']=(isset($upperBerthData['extraSeat'])) ? $upperBerthData['extraSeat'] : 0;
                             $upd_data['status']=1;
                             $upd_data['created_by']=(isset($data['created_by'])) ? $data['created_by'] : 'Admin';
                             
@@ -340,7 +340,7 @@ public function update($data, $id)
                             $upd_data['bus_id']=$data['bus_id'];
                             $upd_data['ticket_price_id']=$ticketpriceID->id;
                             $upd_data['category']='0';
-                            $upd_data['duration']=$lowerBerthData['extraSeat'];
+                            $upd_data['duration']=(isset($lowerBerthData['extraSeat'])) ? $lowerBerthData['extraSeat'] : 0;
                             $upd_data['status']=1;
                             $upd_data['created_by']=(isset($data['created_by'])) ? $data['created_by'] : 'Admin';
                             $busseats=$this->getModel($busseats,$upd_data,$lowerBerthData);

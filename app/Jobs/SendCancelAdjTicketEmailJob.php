@@ -21,19 +21,32 @@ class SendCancelAdjTicketEmailJob implements ShouldQueue
      *
      * @return void
      */
-    protected $to;
-    protected $subject;
+    protected $to;    
+    protected $email;
     protected $pnr;
-    // protected $refund_amount;
-    // protected $deduction_percent;
+    protected $journeydate;
+    protected $contactNo;
+    protected $route;
+    protected $deductionPercentage;
+    protected $refundAmount;
+    protected $seat_no;
+    protected $cancellationDateTime;
+    protected $totalfare;    
+    protected $subject;
 
-    public function __construct($to, $subject, $req)
+    public function __construct($to, $subject, $request)
     {
         $this->to = $to;
         $this->subject = $subject;
-        $this->pnr=$req['pnr'];
-        // $this->refund_amount=$req['refund_amount'];
-        // $this->deduction_percent=$req['deduction_percent'];
+        $this->pnr = $request['pnr'];
+        $this->journeydate = $request['journeydate'];
+        $this->contactNo = $request['contactNo'];
+        $this->route = $request['route'];
+        $this->deductionPercentage = $request['deductionPercentage'];
+        $this->refundAmount = number_format($request['refundAmount'],2);
+        $this->seat_no = $request['seat_no'];
+        $this->totalfare = $request['totalfare'];
+        $this->cancellationDateTime = $request['cancellationDateTime'];
         
     }
 
@@ -44,11 +57,22 @@ class SendCancelAdjTicketEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
+        $data = [
+            'email' => $this->to,
             'pnr' => $this->pnr,
-            // 'refund_amount' => $this->refund_amount,
-            // 'deduction_percent' => $this->deduction_percent
+            'contactNo'=> $this->contactNo,
+            'journeydate' => $this->journeydate ,
+            'route'=> $this->route,
+            'seat_no' => $this->seat_no,
+            'totalfare'=> $this->totalfare,
+            'deductionPercentage'=> $this->deductionPercentage,
+            'refundAmount'=> $this->refundAmount,
+            'cancellationDateTime'=> $this->cancellationDateTime,
+            
         ];
+
+        //Log::info($data);
+
         Mail::send('adjAdminTiceketCancel', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)

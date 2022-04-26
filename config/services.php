@@ -53,6 +53,7 @@ return [
             'message' => env('SMS_TEMPLATE'),
             'msgTicket' => env('SMS_TKT_TEMPLATE'),
             'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
+            'cancelTicketCMO' => env('CANCEL_TKT_TEMPLATE_CMO'),
             'senderid' => env('SENDER_ID'),
         ],
         'indiaHub' => [

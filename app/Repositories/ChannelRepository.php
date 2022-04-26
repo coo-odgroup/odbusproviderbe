@@ -112,7 +112,84 @@ class ChannelRepository
       
       
 
-     
+       public function sendSmsTicketCancelCMO($data,$contact_number) {
+      
+        $seatList = implode(",",$data['seat']);
+        $doj = $data['doj'];
+        $apiKey = $this->credentials->first()->sms_textlocal_key;
+        $textLocalUrl = config('services.sms.textlocal.url_send');
+        $sender = config('services.sms.textlocal.senderid');
+        $message = config('services.sms.textlocal.cancelTicketCMO');
+        $apiKey = urlencode( $apiKey);
+        $receiver = urlencode($contact_number);
+        $message = str_replace("<PNR>",$data['PNR'],$message);
+        $message = str_replace("<busdetails>",$data['busdetails'],$message);
+        $message = str_replace("<doj>",$doj,$message);
+        $message = str_replace("<route>",$data['route'],$message);
+        //$message = str_replace("<seat>",$data['seat'],$message);
+        $message = str_replace("<seat>",$seatList,$message);
+        //return $message;
+        $message = rawurlencode($message);
+        $response_type = "json"; 
+        $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+        
+
+        $ch = curl_init($textLocalUrl);   
+        curl_setopt($ch, CURLOPT_POST, true);
+        //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $response = json_decode($response);
+        return $response;
+        //$msgId = $response->messages[0]->id;  // Store msg id in DB
+        session(['msgId'=> $msgId]);
+
+  }
+      public function sendSmsTicketCancel($data) {
+      
+            $seatList = implode(",",$data['seat']);
+            $doj = $data['doj'];
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.cancelTicket');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($data['phone']);
+            $message = str_replace("<PNR>",$data['PNR'],$message);
+            $message = str_replace("<busdetails>",$data['busdetails'],$message);
+            $message = str_replace("<doj>",$doj,$message);
+            $message = str_replace("<route>",$data['route'],$message);
+            //$message = str_replace("<seat>",$data['seat'],$message);
+            $message = str_replace("<seat>",$seatList,$message);
+            $message = str_replace("<fare>",$data['refundAmount'],$message);
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+            
+
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);
+            return $response;
+            //$msgId = $response->messages[0]->id;  // Store msg id in DB
+            session(['msgId'=> $msgId]);
+
+      }
     
 
-}
+
+
+
+    }

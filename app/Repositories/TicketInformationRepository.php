@@ -2,6 +2,7 @@
 namespace App\Repositories;
 use App\Models\Bus;
 use App\Models\Booking;
+use App\Models\BusContacts;
 use App\Models\CustomerPayment;
 use App\Models\Location;
 use Illuminate\Support\Facades\Config;
@@ -9,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 use App\Jobs\SendCancelTicketEmailJob;
 use App\Jobs\SendCancelAdjTicketEmailJob;
+
+use App\Repositories\ChannelRepository;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
@@ -20,13 +23,15 @@ class TicketInformationRepository
     protected $booking;
     protected $customerPayment;
     protected $bus;
+    protected $channelRepository;
 
-    public function __construct(Location $location, Bus $bus,Booking $booking , CustomerPayment $customerPayment)
+    public function __construct(Location $location, Bus $bus,Booking $booking , CustomerPayment $customerPayment,ChannelRepository $channelRepository)
     {
         $this->location = $location;
         $this->bus = $bus;
         $this->booking = $booking;
         $this->customerPayment = $customerPayment;
+        $this->channelRepository = $channelRepository;
     }
     public function getPnrDetailsForSms($request)
     {
@@ -374,19 +379,68 @@ class TicketInformationRepository
 
                $pnr= $request['bookingInfo']['pnr'];
 
-                 
+                 ///// send email
+
                if($request['customerInfo']['email']!= ''){
 
                         $to_user = $request['customerInfo']['email'];    
-                        $subject = "Ticket Cancel ( PNR - ".$pnr." )";
-                        $data= ['pnr'=> $pnr ,
-                        'has been cancelled.'
-                        ] ;
+                        $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr;
+
+                        $current_date_time = date("Y-m-d H:i:s"); 
+
+                       
+                        $data= array(
+                            'email' => $to_user,
+                            'contactNo' => $request['customerInfo']['phone'],
+                            'pnr' => $pnr,
+                            'journeydate' => $request['bookingInfo']['journey_dt'], 
+                            'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
+                            'seat_no' => $request['bookingInfo']['seat_names'],
+                            'cancellationDateTime' => $current_date_time,
+                            'deductionPercentage' => 100,
+                            'refundAmount' => 0,
+                            'totalfare' => $request['bookingInfo']['payable_amount'],
+                        );
+
                         SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
+
+                    } 
+                        ////////
 
                         /////// send email to odbus support 
                         SendCancelAdjTicketEmailJob::dispatch('support@odbus.in', $subject, $data);
-               }
+
+                        ///// send sms to customer
+
+                        $getBus_id=$this->booking->with('Bus')->where("pnr",$pnr)->get();
+
+                        $bus_id= $getBus_id[0]->bus_id;
+                        $busName= $getBus_id[0]->Bus->name;
+                        $busNumber= $getBus_id[0]->Bus->bus_number;
+
+                        $smsData = array(
+                            'phone' => $request['customerInfo']['phone'],
+                            'PNR' => $pnr,
+                            'busdetails' => $busName.'-'.$busNumber,
+                            'doj' => $request['bookingInfo']['journey_dt'], 
+                            'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
+                            'seat' => $request['bookingInfo']['seat_names'],
+                            'refundAmount' =>0
+                        );
+
+                        $this->channelRepository->sendSmsTicketCancel($smsData,$request['customerInfo']['phone']);
+
+                        //////////// send sms to CMO
+
+                        $busContactDetails = BusContacts::where('bus_id',$bus_id)
+                        ->where('status','1')
+                        ->where('cancel_sms_send','1')
+                        ->get('phone');
+                        if($busContactDetails->isNotEmpty()){
+                            $contact_number = collect($busContactDetails)->implode('phone',',');
+                            $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                        }
+              
 
                  ///////////////////// final ticket booking and email/sms sending //////////////////////
            $booking_date = date("d-m-Y");
