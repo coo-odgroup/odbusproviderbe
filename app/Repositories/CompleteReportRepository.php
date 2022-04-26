@@ -124,7 +124,6 @@ class CompleteReportRepository
                $totalPayableAmount = $totalPayableAmount + $v->payable_amount;
             
                $owner_fare = $owner_fare + $v->owner_fare;
-               // $totalfare = $totalfare + $v->total_fare;
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 
