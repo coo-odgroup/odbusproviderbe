@@ -44,7 +44,7 @@ class TicketInformationRepository
         
         $pnr_Details = $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users','CustomerPayment')
+                                    'Bus','Users','User','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->with('bus.BusType')
                              ->with('bus.BusSitting')
@@ -472,44 +472,92 @@ class TicketInformationRepository
            $booking_date = date("d-m-Y");
            $journey_date = date("d-m-Y",strtotime($request['bookingInfo']['journey_dt']));
 
+           if($request['bookingInfo']['user_id']==null){
+
             $final_arr=  [
-               "transaction_id"=> $get_booking_data->data->transaction_id,
-               "razorpay_payment_id" => $request['bookingInfo']['razorpay_payment_id'],
-                "razorpay_order_id" => $request['bookingInfo']['razorpay_order_id'],
-                "razorpay_signature" => $request['bookingInfo']['razorpay_signature'] , 
-               "name"=> $request['customerInfo']['name'],
-               "phone"=>  $request['customerInfo']['phone'],
-               "email"=>  $request['customerInfo']['email'],
-               "routedetails"=>   $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
-               "bookingdate"=> $booking_date  ,
-               "journeydate"=> $journey_date ,
-               "boarding_point"=>  $request['bookingInfo']['boarding_point'],
-               "departureTime"=>  $request['bookingInfo']['boarding_time'],
-               "dropping_point"=>  $request['bookingInfo']['dropping_point'],
-               "arrivalTime"=>  $request['bookingInfo']['dropping_time'],
-               "seat_id"=>  $request['bookingInfo']['seat_ids'],
-               "seat_no"=>  $request['bookingInfo']['seat_names'],
-               "bus_id" => $request['bookingInfo']['bus_id'],
-               "source"=>  $request['bookingInfo']['source_name'],
-               "destination"=>  $request['bookingInfo']['destination_name'],
-               "busname"=>  $request['bookingInfo']['busname'],
-               "busNumber"=>  $request['bookingInfo']['busNumber'],
-               "bustype"=>  $request['bookingInfo']['bustype'],
-               "busTypeName"=>  $request['bookingInfo']['busTypeName'],
-               "sittingType"=>  $request['bookingInfo']['sittingType'],
-               "conductor_number"=>  $request['bookingInfo']['conductor_number'],               
-               "passengerDetails" => $bookingDetailarr
-           ]; 
+                "transaction_id"=> $get_booking_data->data->transaction_id,
+                "razorpay_payment_id" => $request['bookingInfo']['razorpay_payment_id'],
+                 "razorpay_order_id" => $request['bookingInfo']['razorpay_order_id'],
+                 "razorpay_signature" => $request['bookingInfo']['razorpay_signature'] , 
+                "name"=> $request['customerInfo']['name'],
+                "phone"=>  $request['customerInfo']['phone'],
+                "email"=>  $request['customerInfo']['email'],
+                "routedetails"=>   $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
+                "bookingdate"=> $booking_date  ,
+                "journeydate"=> $journey_date ,
+                "boarding_point"=>  $request['bookingInfo']['boarding_point'],
+                "departureTime"=>  $request['bookingInfo']['boarding_time'],
+                "dropping_point"=>  $request['bookingInfo']['dropping_point'],
+                "arrivalTime"=>  $request['bookingInfo']['dropping_time'],
+                "seat_id"=>  $request['bookingInfo']['seat_ids'],
+                "seat_no"=>  $request['bookingInfo']['seat_names'],
+                "bus_id" => $request['bookingInfo']['bus_id'],
+                "source"=>  $request['bookingInfo']['source_name'],
+                "destination"=>  $request['bookingInfo']['destination_name'],
+                "busname"=>  $request['bookingInfo']['busname'],
+                "busNumber"=>  $request['bookingInfo']['busNumber'],
+                "bustype"=>  $request['bookingInfo']['bustype'],
+                "busTypeName"=>  $request['bookingInfo']['busTypeName'],
+                "sittingType"=>  $request['bookingInfo']['sittingType'],
+                "conductor_number"=>  $request['bookingInfo']['conductor_number'],               
+                "passengerDetails" => $bookingDetailarr
+            ]; 
+ 
+ 
+            $url = $api_url.'PaymentStatus';
+            $resp = $client->request('POST', $url,  [
+               'verify' => false,
+               'headers'=> ['Authorization' =>   "Bearer " . $access_token],
+               'form_params' => $final_arr
+           ]);
+ 
+            Log::info($resp->getBody());
+
+           }else{
+
+            $final_arr=  [
+                "transaction_id"=> $get_booking_data->data->transaction_id,               
+                "name"=> $request['customerInfo']['name'],
+                "phone"=>  $request['customerInfo']['phone'],
+                "email"=>  $request['customerInfo']['email'],
+                "routedetails"=>   $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
+                "bookingdate"=> $booking_date  ,
+                "journeydate"=> $journey_date ,
+                "boarding_point"=>  $request['bookingInfo']['boarding_point'],
+                "departureTime"=>  $request['bookingInfo']['boarding_time'],
+                "dropping_point"=>  $request['bookingInfo']['dropping_point'],
+                "arrivalTime"=>  $request['bookingInfo']['dropping_time'],
+                "seat_id"=>  $request['bookingInfo']['seat_ids'],
+                "seat_no"=>  $request['bookingInfo']['seat_names'],
+                "bus_id" => $request['bookingInfo']['bus_id'],
+                "source"=>  $request['bookingInfo']['source_name'],
+                "destination"=>  $request['bookingInfo']['destination_name'],
+                "busname"=>  $request['bookingInfo']['busname'],
+                "busNumber"=>  $request['bookingInfo']['busNumber'],
+                "bustype"=>  $request['bookingInfo']['bustype'],
+                "busTypeName"=>  $request['bookingInfo']['busTypeName'],
+                "sittingType"=>  $request['bookingInfo']['sittingType'],
+                "conductor_number"=>  $request['bookingInfo']['conductor_number'],               
+                "passengerDetails" => $bookingDetailarr,
+                "agent_number" => $request['bookingInfo']['agent_number'],
+                "customer_comission" =>$request['bookingInfo']['customer_comission']
+
+            ]; 
+ 
+ 
+            $url = $api_url.'PaymentStatus';
+            $resp = $client->request('POST', $url,  [
+               'verify' => false,
+               'headers'=> ['Authorization' =>   "Bearer " . $access_token],
+               'form_params' => $final_arr
+           ]);
+ 
+            Log::info($resp->getBody());
 
 
-           $url = $api_url.'PaymentStatus';
-           $resp = $client->request('POST', $url,  [
-              'verify' => false,
-              'headers'=> ['Authorization' =>   "Bearer " . $access_token],
-              'form_params' => $final_arr
-          ]);
+           }
 
-           Log::info($resp->getBody());
+           
 
          // return $resp->getBody();
 
