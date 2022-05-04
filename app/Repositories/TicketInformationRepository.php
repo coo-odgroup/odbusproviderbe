@@ -5,6 +5,7 @@ use App\Models\Booking;
 use App\Models\BusContacts;
 use App\Models\CustomerPayment;
 use App\Models\Location;
+use App\Models\AgentWallet;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
@@ -15,6 +16,8 @@ use App\Repositories\ChannelRepository;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use Carbon\Carbon;
+use DateTime;
 
 class TicketInformationRepository
 {
@@ -24,14 +27,16 @@ class TicketInformationRepository
     protected $customerPayment;
     protected $bus;
     protected $channelRepository;
+    protected $AgentWallet;
 
-    public function __construct(Location $location, Bus $bus,Booking $booking , CustomerPayment $customerPayment,ChannelRepository $channelRepository)
+    public function __construct(AgentWallet $AgentWallet,Location $location, Bus $bus,Booking $booking , CustomerPayment $customerPayment,ChannelRepository $channelRepository)
     {
         $this->location = $location;
         $this->bus = $bus;
         $this->booking = $booking;
         $this->customerPayment = $customerPayment;
         $this->channelRepository = $channelRepository;
+        $this->AgentWallet = $AgentWallet;
     }
     public function getPnrDetailsForSms($request)
     {
@@ -86,22 +91,42 @@ class TicketInformationRepository
 
     public function cancelticket($request)
     {
-       
         $id=$request->id ;
-        $cancelticket = $this->booking->find($id);       
-        $cancelticket->deduction_percent = $request['percentage_deduct'];
-        $cancelticket->refund_amount = $request['refund_amount'];
-        $cancelticket->cancel_reason = $request['reason'];             
-        $cancelticket->cancel_by = $request['cancelled_by'];
-        $cancelticket->status = $request['status'];
+        $user_id=$request->user_id ;
+        if($user_id!= NULL && $user_id>0)
+        {
+            $transactionId = date('YmdHis') . gettimeofday()['usec'];
 
-        $cancelticket->update();
-        
-           // $to_user = 'bishal.seofied@gmail.com';
+            $balance = $this->AgentWallet->where('user_id',$user_id)->where('status',1)->orderBy('id','DESC')->limit(1)->get();
+         
+            $newBalance= $request['refund_amount'] +  $balance[0]->balance;
+            
+            $AgentWallet =  new $this->AgentWallet();
+            $AgentWallet->balance = number_format((float)$newBalance, 2, '.', '');
+            $AgentWallet->amount = $request['refund_amount'] ;
+            $AgentWallet->user_id = $user_id;
+            $AgentWallet->type= "Refund";
+            $AgentWallet->status= 1;
+            $AgentWallet->booking_id= $id;
+            $AgentWallet->transaction_type= 'c';
+            $AgentWallet->created_by = $request->cancelled_by;
+            $AgentWallet->transaction_id = $transactionId;
+            $AgentWallet->save();
+        }
+          
+            $cancelticket = $this->booking->find($id);       
+            $cancelticket->deduction_percent = $request['percentage_deduct'];
+            $cancelticket->refund_amount = $request['refund_amount'];
+            $cancelticket->cancel_reason = $request['reason'];             
+            $cancelticket->cancel_by = $request['cancelled_by'];
+            $cancelticket->status = $request['status'];
+            $cancelticket->update();
+          
+            // $to_user = 'bishal.seofied@gmail.com';
            $to_user = $request['email'];
          
-           $subject = "Ticket Cancel( Pnr.no-".$request->pnr." )";
-           $data= ['pnr'=>$request['pnr'],
+            $subject = "Ticket Cancel( Pnr.no-".$request->pnr." )";
+            $data= ['pnr'=>$request['pnr'],
                     'refund_amount' => $request['refund_amount'],
                     'deduction_percent'=> $request['percentage_deduct']
                   ] ;
@@ -121,7 +146,7 @@ class TicketInformationRepository
                                     'BookingDetail.BusSeats.ticketPrice','Bus','Users',
                                     'CustomerPayment')
                              ->where('status',2)
-                             ->where('cancel_by','!=',NULL)
+                             ->whereNotNull('cancel_by')
                              ->orderBy('id','DESC');      
 
         if($paginate=='all') 
@@ -135,8 +160,8 @@ class TicketInformationRepository
 
         if($name!=null)
         {
-           $data = $data->where('cancel_by', $name)
-                        ->orwhere('pnr',$name );
+           $data = $data->where('pnr',$name );
+                        
         }     
 
         $data=$data->paginate($paginate);
