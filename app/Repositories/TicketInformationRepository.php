@@ -302,7 +302,7 @@ class TicketInformationRepository
              ],
               "bookingInfo" => [
                 "coupon_code"=>'', 
-                "user_id"=> 1,
+                "user_id"=>$request['bookingInfo']['user_id'],
                 "bus_id"=> $request['bookingInfo']['bus_id'],
                 "source_id"=> $request['bookingInfo']['source_id'],
                 "destination_id"=>  $request['bookingInfo']['destination_id'],
@@ -353,28 +353,29 @@ class TicketInformationRepository
                 // Log::info($cancelticket);exit;
                 $cancelticket->update();
 
-                /////// update customer payment table with adjust keywork concat for 3 payment columns
-                $customer_payment_id=$request['bookingInfo']['customer_payment_id'] ;
-                $customerPayment=$this->customerPayment->find($customer_payment_id);
-                $customerPayment->order_id  = 'ADJUST_'.time().'_'.$request['bookingInfo']['razorpay_order_id'];             
-                $customerPayment->razorpay_id  = 'ADJUST_'.time().'_'.$request['bookingInfo']['razorpay_payment_id'];
-                $customerPayment->razorpay_signature = 'ADJUST-'.time().'_'.$request['bookingInfo']['razorpay_signature'];
+                if($request['bookingInfo']['user_id']!=null){
 
-                $customerPayment->update();
-
-                ////////// insert latest booking id to customer payment table /////
-
-                $user_pay = new $this->customerPayment();
-                $user_pay->name = $request['customerInfo']['name'];
-                $user_pay->booking_id = $get_booking_data->data->id;
-                $user_pay->amount = $request['bookingInfo']['total_fare'];
-                $user_pay->order_id = $request['bookingInfo']['razorpay_order_id'];
-                $user_pay->razorpay_id  = $request['bookingInfo']['razorpay_payment_id'];
-                $user_pay->razorpay_signature = $request['bookingInfo']['razorpay_signature'];
-                $user_pay->payment_done = 1;                 
-                 $user_pay->save();
-
-                ////////////////////////////// send email /////////////////////////
+                    /////// update customer payment table with adjust keywork concat for 3 payment columns
+                    $customer_payment_id=$request['bookingInfo']['customer_payment_id'] ;
+                    $customerPayment=$this->customerPayment->find($customer_payment_id);
+                    $customerPayment->order_id  = 'ADJUST_'.time().'_'.$request['bookingInfo']['razorpay_order_id'];             
+                    $customerPayment->razorpay_id  = 'ADJUST_'.time().'_'.$request['bookingInfo']['razorpay_payment_id'];
+                    $customerPayment->razorpay_signature = 'ADJUST-'.time().'_'.$request['bookingInfo']['razorpay_signature'];
+                    
+                    $customerPayment->update();
+                    ////////// insert latest booking id to customer payment table /////
+                    
+                    $user_pay = new $this->customerPayment();
+                    $user_pay->name = $request['customerInfo']['name'];
+                    $user_pay->booking_id = $get_booking_data->data->id;
+                    $user_pay->amount = $request['bookingInfo']['total_fare'];
+                    $user_pay->order_id = $request['bookingInfo']['razorpay_order_id'];
+                    $user_pay->razorpay_id  = $request['bookingInfo']['razorpay_payment_id'];
+                    $user_pay->razorpay_signature = $request['bookingInfo']['razorpay_signature'];
+                    $user_pay->payment_done = 1;                 
+                    $user_pay->save();
+                    
+                    }
 
 
                $pnr= $request['bookingInfo']['pnr'];
