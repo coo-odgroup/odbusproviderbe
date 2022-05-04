@@ -69,7 +69,7 @@ class TicketInformationRepository
         
         $pnr_Details = $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users','CustomerPayment')
+                                    'Bus','Users','User','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->with('bus.BusType')
                              ->with('bus.BusSitting')
@@ -207,7 +207,7 @@ class TicketInformationRepository
                                     'CustomerPayment')
                              ->where('status',1)
                              ->where('booking_type','Adjust')
-                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
+                             //->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
                              ->orderBy('id','DESC');      
 
         if($paginate=='all') 
@@ -319,42 +319,93 @@ class TicketInformationRepository
                 }
 
             }
+            
 
-             $BookTicketBody = [ "customerInfo" => [
-                "email" => $request['customerInfo']['email'],
-                "phone"=> $request['customerInfo']['phone'],
-                "name"=> $request['customerInfo']['name']
-             ],
-              "bookingInfo" => [
-                "coupon_code"=>'', 
-                "user_id"=>$request['bookingInfo']['user_id'],
-                "bus_id"=> $request['bookingInfo']['bus_id'],
-                "source_id"=> $request['bookingInfo']['source_id'],
-                "destination_id"=>  $request['bookingInfo']['destination_id'],
-                "journey_date"=>  $request['bookingInfo']['journey_dt'],
-                "boarding_point"=>   $request['bookingInfo']['boarding_point'],
-                "dropping_point"=>   $request['bookingInfo']['dropping_point'],
-                "boarding_time"=>  $request['bookingInfo']['boarding_time'],
-                "dropping_time"=>  $request['bookingInfo']['dropping_time'],
-                "origin"=>  $request['bookingInfo']['origin'],
-                "app_type"=>  $request['bookingInfo']['app_type'],
-                "typ_id"=>  $request['bookingInfo']['typ_id'],
-                "total_fare"=>  $request['bookingInfo']['total_fare'],
-                "specialFare"=>  $request['bookingInfo']['specialFare'],
-                "addOwnerFare"=>  $request['bookingInfo']['addOwnerFare'],
-                "festiveFare"=>  $request['bookingInfo']['festiveFare'],
-                "owner_fare"=>  $request['bookingInfo']['owner_fare'],
-                "transactionFee"=> $request['bookingInfo']['odbus_gst'],
-                "odbus_service_Charges"=>  $request['bookingInfo']['odbus_service_Charges'],
-                "adj_note"=>  $request['bookingInfo']['adj_note'],
-                "status"=>  '4',
-                "booking_type" =>'Adjust',
-                "created_by"=>  $request['bookingInfo']['created_by'],
-                "bookingDetail" => $bookingDetailarr
-              ],              
-            ];
+            if($request['bookingInfo']['user_id']==0){
 
-             $url = $api_url.'BookTicket';
+                $BookTicketBody = [ "customerInfo" => [
+                    "email" => $request['customerInfo']['email'],
+                    "phone"=> $request['customerInfo']['phone'],
+                    "name"=> $request['customerInfo']['name']
+                 ],
+                  "bookingInfo" => [
+                    "coupon_code"=>'', 
+                    "user_id"=>$request['bookingInfo']['user_id'],
+                    "bus_id"=> $request['bookingInfo']['bus_id'],
+                    "source_id"=> $request['bookingInfo']['source_id'],
+                    "destination_id"=>  $request['bookingInfo']['destination_id'],
+                    "journey_date"=>  $request['bookingInfo']['journey_dt'],
+                    "boarding_point"=>   $request['bookingInfo']['boarding_point'],
+                    "dropping_point"=>   $request['bookingInfo']['dropping_point'],
+                    "boarding_time"=>  $request['bookingInfo']['boarding_time'],
+                    "dropping_time"=>  $request['bookingInfo']['dropping_time'],
+                    "origin"=>  $request['bookingInfo']['origin'],
+                    "app_type"=>  $request['bookingInfo']['app_type'],
+                    "typ_id"=>  $request['bookingInfo']['typ_id'],
+                    "total_fare"=>  $request['bookingInfo']['total_fare'],
+                    "specialFare"=>  $request['bookingInfo']['specialFare'],
+                    "addOwnerFare"=>  $request['bookingInfo']['addOwnerFare'],
+                    "festiveFare"=>  $request['bookingInfo']['festiveFare'],
+                    "owner_fare"=>  $request['bookingInfo']['owner_fare'],
+                    "transactionFee"=> $request['bookingInfo']['odbus_gst'],
+                    "odbus_service_Charges"=>  $request['bookingInfo']['odbus_service_Charges'],
+                    "adj_note"=>  $request['bookingInfo']['adj_note'],
+                    "status"=>  '4',
+                    "booking_type" =>'Adjust',
+                    "created_by"=>  $request['bookingInfo']['created_by'],
+                    "bookingDetail" => $bookingDetailarr
+                  ],              
+                ];
+
+                $url = $api_url.'BookTicket';
+            }else{
+
+                $BookTicketBody = [ 
+
+                "agentInfo" => [
+                    "email" => $request['bookingInfo']['agent_email'],
+                    "phone"=> $request['bookingInfo']['agent_number'],
+                    "name"=> $request['bookingInfo']['agent_name']
+                ],     
+                    
+                "customerInfo" => [
+                    "email" => $request['customerInfo']['email'],
+                    "phone"=> $request['customerInfo']['phone'],
+                    "name"=> $request['customerInfo']['name']
+                ],
+                  "bookingInfo" => [
+                    "bus_id"=> $request['bookingInfo']['bus_id'],
+                    "source_id"=> $request['bookingInfo']['source_id'],
+                    "destination_id"=>  $request['bookingInfo']['destination_id'],
+                    "journey_dt"=>  $request['bookingInfo']['journey_dt'],
+                    "boarding_point"=>   $request['bookingInfo']['boarding_point'],
+                    "dropping_point"=>   $request['bookingInfo']['dropping_point'],
+                    "boarding_time"=>  $request['bookingInfo']['boarding_time'],
+                    "dropping_time"=>  $request['bookingInfo']['dropping_time'],
+                    "origin"=>  $request['bookingInfo']['origin'],
+                    "app_type"=>  $request['bookingInfo']['app_type'],
+                    "typ_id"=>  $request['bookingInfo']['typ_id'],
+                    "total_fare"=>  $request['bookingInfo']['total_fare'],
+                    "specialFare"=>  $request['bookingInfo']['specialFare'],
+                    "addOwnerFare"=>  $request['bookingInfo']['addOwnerFare'],
+                    "festiveFare"=>  $request['bookingInfo']['festiveFare'],
+                    "owner_fare"=>  $request['bookingInfo']['owner_fare'],
+                    "transactionFee"=> $request['bookingInfo']['odbus_gst'],
+                    "odbus_service_Charges"=>  $request['bookingInfo']['odbus_service_Charges'],
+                    "adj_note"=>  $request['bookingInfo']['adj_note'],
+                    "status"=>  '4',
+                    "booking_type" =>'Adjust',
+                    "created_by"=>  $request['bookingInfo']['created_by'],
+                    "bookingDetail" => $bookingDetailarr
+                  ],              
+                ];
+
+                Log::info($BookTicketBody);
+
+                $url = $api_url.'AgentBooking';
+            }
+
+             
              $res = $client->request('POST', $url,  [
                 'verify' => false,
                 'headers'=> ['Authorization' =>   "Bearer " . $access_token],
@@ -364,6 +415,8 @@ class TicketInformationRepository
            $get_booking_data = json_decode($res->getBody());
 
           // return $get_booking_data->data->id;
+
+          Log::info($res->getBody());
 
          
 
@@ -378,7 +431,7 @@ class TicketInformationRepository
                 // Log::info($cancelticket);exit;
                 $cancelticket->update();
 
-                if($request['bookingInfo']['user_id']==null){
+                if($request['bookingInfo']['user_id']==0){
 
                     /////// update customer payment table with adjust keywork concat for 3 payment columns
                     $customer_payment_id=$request['bookingInfo']['customer_payment_id'] ;
@@ -400,7 +453,7 @@ class TicketInformationRepository
                     $user_pay->payment_done = 1;                 
                     $user_pay->save();
                     
-                    }
+                }
 
 
                $pnr= $request['bookingInfo']['pnr'];
@@ -472,7 +525,9 @@ class TicketInformationRepository
            $booking_date = date("d-m-Y");
            $journey_date = date("d-m-Y",strtotime($request['bookingInfo']['journey_dt']));
 
-           if($request['bookingInfo']['user_id']==null){
+           Log::info($request);
+
+           if($request['bookingInfo']['user_id']==0){
 
             $final_arr=  [
                 "transaction_id"=> $get_booking_data->data->transaction_id,
@@ -513,6 +568,8 @@ class TicketInformationRepository
  
             Log::info($resp->getBody());
 
+            return 'Booking is successful';
+
            }else{
 
             $final_arr=  [
@@ -543,9 +600,12 @@ class TicketInformationRepository
                 "customer_comission" =>$request['bookingInfo']['customer_comission']
 
             ]; 
+
+
+            Log::info($final_arr);
  
  
-            $url = $api_url.'PaymentStatus';
+            $url = $api_url.'AgentPaymentStatus';
             $resp = $client->request('POST', $url,  [
                'verify' => false,
                'headers'=> ['Authorization' =>   "Bearer " . $access_token],
@@ -553,6 +613,8 @@ class TicketInformationRepository
            ]);
  
             Log::info($resp->getBody());
+
+            return 'Booking is successful';
 
 
            }
@@ -563,7 +625,7 @@ class TicketInformationRepository
 
           //$get_final_response = json_decode($resp->getBody());
 
-            return 'Booking is successful';
+            
 
               
            }else{
@@ -573,37 +635,7 @@ class TicketInformationRepository
         }else{
             return 'SEAT NOT AVAIL';
         }
-
        
-
-        // $PNR = substr(str_shuffle("0123456789"), 0, 8);
-        // $booking->pnr = $PNR;
-        // $booking->bus_id = $request['bus_id'];
-        // $busId = $request['bus_id'];
-        // $booking->source_id = $request['source_id'];
-        // $booking->destination_id =  $request['destination_id'];
-        // $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$request['source_id'])
-        //                                         ->where('destination_id',$request['destination_id'])->get();
-        // $booking->j_day = $ticketPriceDetails[0]->j_day;
-        // $booking->journey_dt = $request['journey_dt'];
-        // $booking->boarding_point = $request['boarding_point'];
-        // $booking->dropping_point = $request['dropping_point'];
-        // $booking->boarding_time = $request['boarding_time'];
-        // $booking->dropping_time =  $request['dropping_time'];
-        // $booking->origin = $request['origin'];
-        // $booking->app_type = $request['app_type'];
-        // $booking->typ_id = $request['typ_id'];
-        // $booking->owner_fare = $request['owner_fare'];
-        // $booking->total_fare = $request['total_fare'];
-        // $booking->odbus_Charges = $request['odbus_service_Charges'];
-        // $odbusGstPercent = OdbusCharges::where('bus_operator_id',$request['bus_operator_id'])->first()->odbus_gst_charges;
-        // $booking->odbus_gst_charges = $odbusGstPercent;
-        // $odbusGstAmount = $request['owner_fare'] * $odbusGstPercent/100;
-        //  $booking->odbus_gst_amount = $odbusGstAmount;
-        // //$operatorId = $ticketPriceDetails[0]->bus_operator_id;
-        // //$busOperator = BusOperator::where("id",$operatorId)->get();
-        //  $busOperator = BusOperator::where("id",$request['bus_operator_id'])->get();
-
       
     }
 
