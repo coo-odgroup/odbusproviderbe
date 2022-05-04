@@ -378,7 +378,7 @@ class TicketInformationRepository
                 // Log::info($cancelticket);exit;
                 $cancelticket->update();
 
-                if($request['bookingInfo']['user_id']!=null){
+                if($request['bookingInfo']['user_id']==null){
 
                     /////// update customer payment table with adjust keywork concat for 3 payment columns
                     $customer_payment_id=$request['bookingInfo']['customer_payment_id'] ;
