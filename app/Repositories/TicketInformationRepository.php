@@ -460,10 +460,12 @@ class TicketInformationRepository
 
                  ///// send email
 
+                 $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr;  
+
                if($request['customerInfo']['email']!= ''){
 
                         $to_user = $request['customerInfo']['email'];    
-                        $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr;
+                       
 
                         $current_date_time = date("Y-m-d H:i:s"); 
 
