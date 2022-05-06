@@ -6,6 +6,8 @@ use App\Models\BusContacts;
 use App\Models\CustomerPayment;
 use App\Models\Location;
 use App\Models\AgentWallet;
+use App\Models\ManageSMS;
+use App\Models\CustomSMS;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
@@ -28,8 +30,10 @@ class TicketInformationRepository
     protected $bus;
     protected $channelRepository;
     protected $AgentWallet;
+    protected $manageSMS;
+    protected $customSMS;
 
-    public function __construct(AgentWallet $AgentWallet,Location $location, Bus $bus,Booking $booking , CustomerPayment $customerPayment,ChannelRepository $channelRepository)
+    public function __construct(AgentWallet $AgentWallet,Location $location, Bus $bus,Booking $booking , CustomerPayment $customerPayment,ChannelRepository $channelRepository,ManageSMS $manageSMS,CustomSMS $customSMS)
     {
         $this->location = $location;
         $this->bus = $bus;
@@ -37,6 +41,8 @@ class TicketInformationRepository
         $this->customerPayment = $customerPayment;
         $this->channelRepository = $channelRepository;
         $this->AgentWallet = $AgentWallet;
+        $this->manageSMS = $manageSMS;
+        $this->customSMS = $customSMS;
     }
     public function getPnrDetailsForSms($request)
     {
@@ -636,9 +642,70 @@ class TicketInformationRepository
 
         }else{
             return 'SEAT NOT AVAIL';
-        }
-       
-      
+        }     
     }
 
+    public function getDetailsSms($request)
+    {
+        $pnr = $request['pnr'] ;
+        $action = $request['action'];        
+
+        if($action == 'smsToCustomer')
+        {
+            $type = 'customer';
+
+            $sms_Details = $this->manageSMS->where('pnr',$pnr)                                       
+                                           ->where('type',$type)
+                                           ->get();                                                                         
+        }
+        else if($action == 'smsToConductor')
+        {
+            $type = 'cmo';
+
+            $sms_Details = $this->manageSMS->where('pnr',$pnr)                                       
+                                           ->where('type',$type)
+                                           ->get();                                                     
+        }                     
+            
+        return $sms_Details;
+    }
+
+    public function getBookingID($request)
+    {
+        $pnr = $request['pnr'];
+        $BookingID = $this->booking->select('id')
+                                 ->where('pnr',$pnr)
+                                 ->get();                                 
+        return $BookingID;                                 
+    }
+
+    public function getModel($data, CustomSMS $customSMS)
+    {
+        $customSMS->pnr = $data['pnr'];
+        $customSMS->booking_id  = $data['booking_id'];    
+        $customSMS->type = $data['type'];    
+        $customSMS->mobile_no = $data['mobile_no'];
+        $customSMS->contents = $data['contents'];
+        $customSMS->reason = $data['reason'];
+        $customSMS->added_by = $data['added_by'];
+        return $customSMS;
+    }
+
+    public function save_customSMS($data)
+    {           
+        $smsdata = array(
+                        'mobile_no'=>$data['mobile_no'],
+                        'message'=>$data['contents']
+                   );      
+
+        //$SMS = $this->channelRepository->sendSmsTicket($smsdata);
+
+        // if($SMS)
+        // {
+            $customSMS = new $this->customSMS;
+            $customSMS = $this->getModel($data,$customSMS);
+            $customSMS->save();
+            return $customSMS;
+       // }       
+    }
 }

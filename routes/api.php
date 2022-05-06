@@ -143,6 +143,11 @@ Route::post('/cancelticketdata',[TicketInformationController::class,'cancelticke
 Route::post('/adjustticket',[TicketInformationController::class,'adjustticket']);
 Route::post('/adjustticketdata',[TicketInformationController::class,'adjustticketdata']);
 
+//Added on 29th April, -- Chakra
+Route::post('/getDetailsSms',[TicketInformationController::class,'getDetailsSms']);
+Route::post('/getBookingID',[TicketInformationController::class,'getBookingID']);
+Route::post('/save_customSMS',[TicketInformationController::class,'save_customSMS']);
+
 //Extra Seat Block
 Route::post('/extraSeatBlock',[ExtraSeatBlockController::class,'addExtraSeatBlock']);
 Route::post('/deleteExtraSeat', [ExtraSeatBlockController::class, 'deleteExtraSeatBlock']);

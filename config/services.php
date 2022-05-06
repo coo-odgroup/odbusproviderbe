@@ -52,6 +52,7 @@ return [
             'url_status' => env('TXTLOCAL_STATUS_SMS_URL'),
             'message' => env('SMS_TEMPLATE'),
             'msgTicket' => env('SMS_TKT_TEMPLATE'),
+            'msgTicketCMO' => env('SMS_TKT_TEMPLATE_CMO'),
             'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
             'cancelTicketCMO' => env('CANCEL_TKT_TEMPLATE_CMO'),
             'senderid' => env('SENDER_ID'),

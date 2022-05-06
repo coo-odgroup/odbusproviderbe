@@ -60,6 +60,23 @@ class TicketInformationController extends Controller
       // return $request;
          $pnr_details = $this->ticketInformationService->adjustticket($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }    
+    } 
+    
+    public function getDetailsSms(Request $request)
+    {
+        $sms_details = $this->ticketInformationService->getDetailsSms($request);
+        return $this->successResponse($sms_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
 
+    public function getBookingID(Request $request)
+    {
+        $BookingID = $this->ticketInformationService->getBookingID($request);
+        return $this->successResponse($BookingID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function save_customSMS(Request $request)
+    {
+        $savedata = $this->ticketInformationService->save_customSMS($request);
+        return $this->successResponse($savedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
 }

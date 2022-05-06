@@ -56,7 +56,18 @@ class TicketInformationService
         return $this->ticketInformationRepository->adjustticket($request);
     }
 
-   
-   
-    
+    public function getDetailsSms($request)
+    {
+        return $this->ticketInformationRepository->getDetailsSms($request);
+    } 
+
+    public function getBookingID($request)
+    {
+        return $this->ticketInformationRepository->getBookingID($request);
+    }  
+
+    public function save_customSMS($request)
+    {
+        return $this->ticketInformationRepository->save_customSMS($request);
+    } 
 }
