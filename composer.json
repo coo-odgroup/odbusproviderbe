@@ -19,7 +19,8 @@
         "laravel/framework": "^8.0",
         "laravel/passport": "^10.1",
         "laravel/tinker": "^2.0",
-        "mailjet/laravel-mailjet": "^3.0"
+        "mailjet/laravel-mailjet": "^3.0",
+        "razorpay/razorpay": "^2.8"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

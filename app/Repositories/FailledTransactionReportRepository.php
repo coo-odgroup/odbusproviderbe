@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Config;
 
+use Razorpay\Api\Api;
+use App\Models\Credentials;
+use Razorpay\Api\Errors\SignatureVerificationError;
+
 
 /*Priyadarshi to Review*/
 class FailledTransactionReportRepository
@@ -17,13 +21,23 @@ class FailledTransactionReportRepository
     protected $booking;
     protected $location;
     protected $bus;
+    protected $credentials;
 
-    public function __construct(Booking $booking ,Location $location ,Bus $bus)
+    public function __construct(Booking $booking ,Location $location ,Bus $bus,Credentials $credentials)
     {       
         $this->booking = $booking;       
         $this->location = $location;       
-        $this->bus = $bus;       
-    }    
+        $this->bus = $bus;    
+        $this->credentials = $credentials;   
+    }  
+
+      public function getRazorpayKey(){
+          return $this->credentials->first()->razorpay_key;
+      }
+
+      public function getRazorpaySecret(){
+        return $this->credentials->first()->razorpay_secret;
+    }  
 
     public function getData($request)
     {    
@@ -108,19 +122,27 @@ class FailledTransactionReportRepository
 
         
          $data=$data->paginate($paginate); 
+          
+          $key = $this->getRazorpayKey();
+          $secretKey = $this->getRazorpaySecret();
+   
 
-
-
-        
+        $api = new Api($key, $secretKey); 
         if($data){
             foreach($data as $key=>$v){
-
+                // log::info($v->CustomerPayment->order_id);
+                $res = $api->order->fetch($v->CustomerPayment->order_id)->payments();
+                if(isset($res->items[0])){
+                  $paymentStatus = $res->items[0]->status;      
+                  if($paymentStatus == 'captured'){ //captured(Live), authorized(testing).
+                     $v['razerPayStatus']=$paymentStatus;
+                     $v['razerPayPaymentId']=$res->items[0]->id;
+                  }
+              }
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-               // $v['source']=[];
-               // $v['destination']=[];
                foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
                 {                          
                     $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
