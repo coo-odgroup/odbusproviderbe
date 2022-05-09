@@ -541,29 +541,7 @@ class TicketInformationRepository
                 "transaction_id"=> $get_booking_data->data->transaction_id,
                 "razorpay_payment_id" => $request['bookingInfo']['razorpay_payment_id'],
                  "razorpay_order_id" => $request['bookingInfo']['razorpay_order_id'],
-                 "razorpay_signature" => $request['bookingInfo']['razorpay_signature'] , 
-                "name"=> $request['customerInfo']['name'],
-                "phone"=>  $request['customerInfo']['phone'],
-                "email"=>  $request['customerInfo']['email'],
-                "routedetails"=>   $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
-                "bookingdate"=> $booking_date  ,
-                "journeydate"=> $journey_date ,
-                "boarding_point"=>  $request['bookingInfo']['boarding_point'],
-                "departureTime"=>  $request['bookingInfo']['boarding_time'],
-                "dropping_point"=>  $request['bookingInfo']['dropping_point'],
-                "arrivalTime"=>  $request['bookingInfo']['dropping_time'],
-                "seat_id"=>  $request['bookingInfo']['seat_ids'],
-                "seat_no"=>  $request['bookingInfo']['seat_names'],
-                "bus_id" => $request['bookingInfo']['bus_id'],
-                "source"=>  $request['bookingInfo']['source_name'],
-                "destination"=>  $request['bookingInfo']['destination_name'],
-                "busname"=>  $request['bookingInfo']['busname'],
-                "busNumber"=>  $request['bookingInfo']['busNumber'],
-                "bustype"=>  $request['bookingInfo']['bustype'],
-                "busTypeName"=>  $request['bookingInfo']['busTypeName'],
-                "sittingType"=>  $request['bookingInfo']['sittingType'],
-                "conductor_number"=>  $request['bookingInfo']['conductor_number'],               
-                "passengerDetails" => $bookingDetailarr
+                 "razorpay_signature" => $request['bookingInfo']['razorpay_signature']
             ]; 
  
  
@@ -581,30 +559,7 @@ class TicketInformationRepository
            }else{
 
             $final_arr=  [
-                "transaction_id"=> $get_booking_data->data->transaction_id,               
-                "name"=> $request['customerInfo']['name'],
-                "phone"=>  $request['customerInfo']['phone'],
-                "email"=>  $request['customerInfo']['email'],
-                "routedetails"=>   $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
-                "bookingdate"=> $booking_date  ,
-                "journeydate"=> $journey_date ,
-                "boarding_point"=>  $request['bookingInfo']['boarding_point'],
-                "departureTime"=>  $request['bookingInfo']['boarding_time'],
-                "dropping_point"=>  $request['bookingInfo']['dropping_point'],
-                "arrivalTime"=>  $request['bookingInfo']['dropping_time'],
-                "seat_id"=>  $request['bookingInfo']['seat_ids'],
-                "seat_no"=>  $request['bookingInfo']['seat_names'],
-                "bus_id" => $request['bookingInfo']['bus_id'],
-                "source"=>  $request['bookingInfo']['source_name'],
-                "destination"=>  $request['bookingInfo']['destination_name'],
-                "busname"=>  $request['bookingInfo']['busname'],
-                "busNumber"=>  $request['bookingInfo']['busNumber'],
-                "bustype"=>  $request['bookingInfo']['bustype'],
-                "busTypeName"=>  $request['bookingInfo']['busTypeName'],
-                "sittingType"=>  $request['bookingInfo']['sittingType'],
-                "conductor_number"=>  $request['bookingInfo']['conductor_number'],               
-                "passengerDetails" => $bookingDetailarr,
-                "agent_number" => $request['bookingInfo']['agent_number'],
+                "transaction_id"=> $get_booking_data->data->transaction_id, 
                 "customer_comission" =>$request['bookingInfo']['customer_comission']
 
             ]; 
