@@ -79,4 +79,29 @@ class TicketInformationController extends Controller
         $savedata = $this->ticketInformationService->save_customSMS($request);
         return $this->successResponse($savedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
+
+    public function GetCancelSmsToCustomer(Request $request)
+    {
+        $getdata = $this->ticketInformationService->GetCancelSmsToCustomer($request);
+        return $this->successResponse($getdata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function GetCancelSmsToCMO(Request $request)
+    {
+        $getdata = $this->ticketInformationService->GetCancelSmsToCMO($request);
+        return $this->successResponse($getdata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function save_CancelcustomSMSToCustomer(Request $request)
+    {
+        $savedata = $this->ticketInformationService->save_CancelcustomSMSToCustomer($request);
+        return $this->successResponse($savedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function save_CancelcustomSMSToCMO(Request $request)
+    {
+        $savedata = $this->ticketInformationService->save_CancelcustomSMSToCMO($request);
+        return $this->successResponse($savedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+    
 }

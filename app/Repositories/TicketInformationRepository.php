@@ -653,14 +653,131 @@ class TicketInformationRepository
                         'message'=>$data['contents']
                    );      
 
-        //$SMS = $this->channelRepository->sendSmsTicket($smsdata);
+        $SMS = $this->channelRepository->sendSmsTicket($smsdata);
 
-        // if($SMS)
-        // {
+        if($SMS)
+        {
             $customSMS = new $this->customSMS;
             $customSMS = $this->getModel($data,$customSMS);
             $customSMS->save();
             return $customSMS;
-       // }       
+        }       
+    }
+
+    public function save_CancelcustomSMSToCustomer($data)
+    {           
+        $smsdata = array(
+                        'mobile_no'=>$data['mobile_no'],
+                        'message'=>$data['contents']
+                   );      
+
+         $SMS = $this->channelRepository->sendCancelSmsToCustomer($smsdata);
+
+        if($SMS)
+        {
+            $customSMS = new $this->customSMS;
+            $customSMS = $this->getModel($data,$customSMS);
+            $customSMS->save();
+            return $customSMS;
+        }       
+    }
+
+    public function save_CancelcustomSMSToCMO($data)
+    {           
+        $smsdata = array(
+                        'mobile_no'=>$data['mobile_no'],
+                        'message'=>$data['contents']
+                   );      
+
+         $SMS = $this->channelRepository->sendCancelSmsToCMO($smsdata);
+
+        if($SMS)
+        {
+            $customSMS = new $this->customSMS;
+            $customSMS = $this->getModel($data,$customSMS);
+            $customSMS->save();
+            return $customSMS;
+        }       
+    }
+
+    public function GetCancelSmsToCustomer($request)
+    {
+        $pnr = $request['pnr'];
+
+        $data = $this->booking->with('Bus','Users','BookingDetail.BusSeats.seats')->where("pnr",$pnr)->get();
+
+         $all_seats = '';
+         foreach($data[0]->BookingDetail as $k=>$v)
+         {
+              //log::info($v->BusSeats->seats->seatText);
+              $all_seats.= $v->BusSeats->seats->seatText.',';
+         }         
+        $all_seats = rtrim($all_seats, ','); 
+        $source_name = $this->location->where('id', $data[0]->source_id)->get();
+        $destination_name = $this->location->where('id', $data[0]->destination_id)->get();
+
+        $bus_id= $data[0]->bus_id;
+        $busName= $data[0]->Bus->name;
+        $busNumber= $data[0]->Bus->bus_number;
+
+        $smsData = array(
+            'phone' => $data[0]->users->phone,
+            'PNR' => $pnr,
+            'busdetails' => $busName.'-'.$busNumber,
+            'doj' => $data[0]->journey_dt, 
+            'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+            'seat' => $all_seats,
+            'refundAmount' => $data[0]->refund_amount
+        );
+       
+        $result = $this->channelRepository->createCancelTktFormatToCustomer($smsData);    
+        return $result ;
+    }
+
+    public function GetCancelSmsToCMO($request)
+    {
+        $pnr = $request['pnr'];
+        $data = $this->booking->with('Bus','Users','User','BookingDetail.BusSeats.seats')->where("pnr",$pnr)->get(); 
+
+        $seats = '';      
+
+        $all_seats = '';
+        foreach($data[0]->BookingDetail as $k=>$v)
+        {
+              //log::info($v->BusSeats->seats->seatText);
+              $all_seats.= $v->BusSeats->seats->seatText.',';
+        }         
+        $all_seats = rtrim($all_seats, ','); 
+
+        $source_name = $this->location->where('id', $data[0]->source_id)->get();
+        $destination_name = $this->location->where('id', $data[0]->destination_id)->get();
+
+        $bus_id= $data[0]->bus_id;
+        $busName= $data[0]->Bus->name;
+        $busNumber= $data[0]->Bus->bus_number;
+
+        $busContactDetails = BusContacts::where('bus_id',$data[0]->bus_id)
+                        ->where('status','1')
+                        ->where('cancel_sms_send','1')
+                        ->get('phone');                  
+
+        if($busContactDetails->isNotEmpty()){
+            $contact_number = collect($busContactDetails)->implode('phone',',');
+        }
+
+        $smsData = array(
+            'phone' => $contact_number,
+            'PNR' => $pnr,
+            'busdetails' => $busName.'-'.$busNumber,
+            'doj' => $data[0]->journey_dt, 
+            'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+            'seat' => $all_seats,
+            'refundAmount' => $data[0]->refund_amount
+        );
+
+        //log::info($smsData);exit;
+
+        $result = $this->channelRepository->createCancelTktFormatToCMO($smsData);    
+        return $result ;
     }
 }

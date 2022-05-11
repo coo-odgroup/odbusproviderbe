@@ -147,6 +147,10 @@ Route::post('/adjustticketdata',[TicketInformationController::class,'adjustticke
 Route::post('/getDetailsSms',[TicketInformationController::class,'getDetailsSms']);
 Route::post('/getBookingID',[TicketInformationController::class,'getBookingID']);
 Route::post('/save_customSMS',[TicketInformationController::class,'save_customSMS']);
+Route::post('/GetCancelSmsToCustomer',[TicketInformationController::class,'GetCancelSmsToCustomer']);
+Route::post('/GetCancelSmsToCMO',[TicketInformationController::class,'GetCancelSmsToCMO']);
+Route::post('/save_CancelcustomSMSToCustomer',[TicketInformationController::class,'save_CancelcustomSMSToCustomer']);
+Route::post('/save_CancelcustomSMSToCMO',[TicketInformationController::class,'save_CancelcustomSMSToCMO']);
 
 //Extra Seat Block
 Route::post('/extraSeatBlock',[ExtraSeatBlockController::class,'addExtraSeatBlock']);
