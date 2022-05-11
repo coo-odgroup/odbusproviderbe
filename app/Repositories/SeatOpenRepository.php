@@ -9,6 +9,8 @@ use App\Models\SeatOpenSeats;
 use App\Models\BusSeats;
 use App\Models\Bus;
 use App\Models\Location;
+use App\Models\TicketPrice;
+
 
 // use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
@@ -26,15 +28,17 @@ class SeatOpenRepository
     protected $seatOpen;
     protected $busSeats;
     protected $bus;
+     protected $ticketPrice;
     
     public function __construct(SeatOpen $seatOpen , SeatOpenSeats $seatsOpenSeats ,BusSeats  
-        $busSeats,Bus $bus,Location $location )
+        $busSeats,Bus $bus,Location $location, TicketPrice $ticketPrice )
     {
         $this->seatOpen = $seatOpen;
         $this->seatOpenSeats = $seatsOpenSeats;
         $this->busSeats = $busSeats;
         $this->bus = $bus;
         $this->location = $location;  
+        $this->ticketPrice = $ticketPrice; 
        
     }    
     public function getAll()
@@ -307,22 +311,19 @@ class SeatOpenRepository
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
+    public function alreadyOpen($request)
+    {
+        $check_dt = date('Y-m-d', strtotime('today - 1 days'));
 
-
-
- // public function customPaginate($items, $perPage, $page = null, $options = [])
- //    {
- //        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
- //        $items = $items instanceof Collection ? $items : Collection::make($items);
- //        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
- //    }
-
-
-    // public function updateseatopen($data)
-    // {
-    //      Log::info($data);
-    //     return $data;
-    // }
+        $ticketPrice = $this->ticketPrice->where('bus_id',$request->bus_id)->get();
+        $data = $this->busSeats->with('seats')
+                          ->where('bus_id',$request->bus_id)
+                          ->where('operation_date','>',$check_dt)
+                          ->where('ticket_price_id',$ticketPrice[0]->id)
+                          ->where('type',1)
+                          ->where('status', 1)->get()->groupBy(['operation_date']);
+        return $data;
+    } 
 
     public function updateseatopen($data, $id)
     {
