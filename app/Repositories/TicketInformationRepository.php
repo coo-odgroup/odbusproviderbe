@@ -600,6 +600,11 @@ class TicketInformationRepository
         }     
     }
 
+    public function SendEmailToCustomer($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount) 
+    {
+        return SendEmailTicketJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);  
+    }
+
     public function getDetailsSms($request)
     {
         $pnr = $request['pnr'] ;
@@ -632,6 +637,61 @@ class TicketInformationRepository
                                  ->where('pnr',$pnr)
                                  ->get();                                 
         return $BookingID;                                 
+    }
+
+    public function getEmailID($request)
+    {
+        $pnr = $request['pnr'];
+        $action = $request['action'];        
+
+        if($action == 'emailToCustomer')
+        {
+            $result = $this->booking->with('users')
+                                 ->where('pnr',$pnr)
+                                 ->get();
+        }
+        else  if($action == 'emailToBooking')
+        {
+            $data = $this->booking->with('Bus','Users','bus.busContacts','BookingDetail.BusSeats.seats')->where("pnr",$pnr)->get();
+
+            $all_seats = '';
+            $all_customers = '';
+            
+            foreach($data[0]->BookingDetail as $k=>$v)
+            {
+                //log::info($v->BusSeats->seats->seatText);
+                $all_seats.= $v->BusSeats->seats->seatText.',';
+                $all_customers .= $v->passenger_name.'('.$v->passenger_gender.'),';
+            }  
+
+            $all_seats = rtrim($all_seats, ','); 
+            $all_customers = rtrim($all_customers, ', '); 
+            $source_name = $this->location->where('id', $data[0]->source_id)->get();
+            $destination_name = $this->location->where('id', $data[0]->destination_id)->get();
+
+            $bus_id = $data[0]->bus_id;
+            $busName = $data[0]->Bus->name;
+            $busNumber = $data[0]->Bus->bus_number;
+
+            $conductor_mobile = $data[0]->Bus->BusContacts[0]->phone;
+
+            $smsData = array(
+                'contactmob' => $data[0]->users->phone,
+                'PNR' => $pnr,
+                'busdetails' => $busName.'-'.$busNumber,
+                'DOJ' => $data[0]->journey_dt, 
+                'routedetails' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                'dep' => date('h:i A', strtotime($data[0]->boarding_time)),
+                'seat' => $all_seats,
+                'fare' => $data[0]->total_fare,
+                'conmob'=>$conductor_mobile,
+                'name'  => $all_customers
+            );
+        
+            $result = $this->channelRepository->createSMSTktFormatToBooking($smsData); 
+        }
+
+        return $result;                                 
     }
 
     public function getModel($data, CustomSMS $customSMS)
@@ -779,5 +839,23 @@ class TicketInformationRepository
 
         $result = $this->channelRepository->createCancelTktFormatToCMO($smsData);    
         return $result ;
+    }
+
+    public function getBookingDetails($mobile,$pnr)
+    { 
+        return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+            $u->where('booking.pnr', '=', $pnr);            
+            $u->with(["bus" => function($bs){
+                $bs->with('cancellationslabs.cancellationSlabInfo');
+                $bs->with('BusType.busClass');
+                $bs->with('BusSitting');                
+                $bs->with('busContacts');
+            } ] );             
+            $u->with(["bookingDetail" => function($b){
+                $b->with(["busSeats" => function($s){
+                    $s->with("seats");
+                }]);
+                }]); 
+            }])->get();
     }
 }

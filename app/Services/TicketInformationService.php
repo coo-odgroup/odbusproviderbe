@@ -24,8 +24,6 @@ class TicketInformationService
     {
         $this->ticketInformationRepository = $ticketInformationRepository;
     }
-
-
     
     public function getpnrdetails($request)
     {
@@ -90,4 +88,9 @@ class TicketInformationService
     {
         return $this->ticketInformationRepository->save_CancelcustomSMSToCMO($request);
     } 
+
+    public function getEmailID($request)
+    {
+        return $this->ticketInformationRepository->getEmailID($request);
+    }
 }

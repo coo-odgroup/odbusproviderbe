@@ -42,11 +42,12 @@ class ChannelRepository
         $this->bookingDetail = $bookingDetail;
     } 
      
-    public function sendSms($data, $otp) {
-
+    public function sendSms($data, $otp) 
+    {
         $SmsGW = config('services.sms.otpservice');
-        if($SmsGW =='textLocal'){
 
+        if($SmsGW =='textLocal')
+        {
             //Environment Variables
             //$apiKey = config('services.sms.textlocal.key');
             $apiKey = $this->credentials->first()->sms_textlocal_key;
@@ -105,53 +106,49 @@ class ChannelRepository
     
                 // $response = file_get_contents($api);
                 //return $response;
-
         }
       }
-      //public function sendSmsTicket($data){
-      
-      
+     
 
-       public function sendSmsTicketCancelCMO($data,$contact_number) {
-      
-        $seatList = implode(",",$data['seat']);
-        $doj = $data['doj'];
-        $apiKey = $this->credentials->first()->sms_textlocal_key;
-        $textLocalUrl = config('services.sms.textlocal.url_send');
-        $sender = config('services.sms.textlocal.senderid');
-        $message = config('services.sms.textlocal.cancelTicketCMO');
-        $apiKey = urlencode( $apiKey);
-        $receiver = urlencode($contact_number);
-        $message = str_replace("<PNR>",$data['PNR'],$message);
-        $message = str_replace("<busdetails>",$data['busdetails'],$message);
-        $message = str_replace("<doj>",$doj,$message);
-        $message = str_replace("<route>",$data['route'],$message);
-        //$message = str_replace("<seat>",$data['seat'],$message);
-        $message = str_replace("<seat>",$seatList,$message);
-        //return $message;
-        $message = rawurlencode($message);
-        $response_type = "json"; 
-        $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
-        
+       public function sendSmsTicketCancelCMO($data,$contact_number) 
+       {     
+            $seatList = implode(",",$data['seat']);
+            $doj = $data['doj'];
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.cancelTicketCMO');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($contact_number);
+            $message = str_replace("<PNR>",$data['PNR'],$message);
+            $message = str_replace("<busdetails>",$data['busdetails'],$message);
+            $message = str_replace("<doj>",$doj,$message);
+            $message = str_replace("<route>",$data['route'],$message);
+            //$message = str_replace("<seat>",$data['seat'],$message);
+            $message = str_replace("<seat>",$seatList,$message);
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);            
 
-        $ch = curl_init($textLocalUrl);   
-        curl_setopt($ch, CURLOPT_POST, true);
-        //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $response = curl_exec($ch);
-        curl_close($ch);
-        $response = json_decode($response);
-        return $response;
-        //$msgId = $response->messages[0]->id;  // Store msg id in DB
-        session(['msgId'=> $msgId]);
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);
+            return $response;
+            //$msgId = $response->messages[0]->id;  // Store msg id in DB
+            session(['msgId'=> $msgId]);
+       }
 
-    }
+
       public function sendSmsTicketCancel($data) 
-      {
-      
+      {      
             $seatList = implode(",",$data['seat']);
             $doj = $data['doj'];
             $apiKey = $this->credentials->first()->sms_textlocal_key;
@@ -170,8 +167,7 @@ class ChannelRepository
             //return $message;
             $message = rawurlencode($message);
             $response_type = "json"; 
-            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
-            
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);            
 
             $ch = curl_init($textLocalUrl);   
             curl_setopt($ch, CURLOPT_POST, true);
@@ -186,7 +182,6 @@ class ChannelRepository
             return $response;
             //$msgId = $response->messages[0]->id;  // Store msg id in DB
             session(['msgId'=> $msgId]);
-
       }
 
       public function sendSmsTicket($smsdata) 
@@ -271,7 +266,7 @@ class ChannelRepository
                 curl_close($ch);
                 $response = json_decode($response);               
                 return $response;
-        }
+            }
       } 
 
       public function createCancelTktFormatToCustomer($data)
@@ -302,6 +297,27 @@ class ChannelRepository
 
             $data = array(
                         'Phone'  => $data['phone'],
+                        'Message'=> $message
+                    );                           
+            return [$data];        
+      }
+
+      public function createSMSTktFormatToBooking($data)
+      {             
+            $message = config('services.sms.textlocal.msgTicketBooking');                  
+            $message = str_replace("<PNR>",$data['PNR'],$message);
+            $message = str_replace("<busdetails>",$data['busdetails'],$message);
+            $message = str_replace("<DOJ>", $data['DOJ'],$message);
+            $message = str_replace("<routedetails>",$data['routedetails'],$message);
+            $message = str_replace("<seat>",$data['seat'],$message);
+            $message = str_replace("<fare>",$data['fare'],$message);   
+            $message = str_replace("<dep>",$data['dep'],$message);              
+            $message = str_replace("<contactmob>",$data['contactmob'],$message);          
+            $message = str_replace("<conmob>",$data['conmob'],$message);          
+            $message = str_replace("<name>",$data['name'],$message);          
+
+            $data = array(
+                        'Booking_email'  =>'booking@odbus.in',
                         'Message'=> $message
                     );                           
             return [$data];        

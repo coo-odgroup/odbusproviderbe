@@ -146,6 +146,7 @@ Route::post('/adjustticketdata',[TicketInformationController::class,'adjustticke
 //Added on 29th April, -- Chakra
 Route::post('/getDetailsSms',[TicketInformationController::class,'getDetailsSms']);
 Route::post('/getBookingID',[TicketInformationController::class,'getBookingID']);
+Route::post('/getEmailID',[TicketInformationController::class,'getEmailID']);
 Route::post('/save_customSMS',[TicketInformationController::class,'save_customSMS']);
 Route::post('/GetCancelSmsToCustomer',[TicketInformationController::class,'GetCancelSmsToCustomer']);
 Route::post('/GetCancelSmsToCMO',[TicketInformationController::class,'GetCancelSmsToCMO']);
