@@ -1,5 +1,6 @@
 <?php
 namespace App\Repositories;
+use App\Models\Users;
 use App\Models\Bus;
 use App\Models\Booking;
 use App\Models\BusContacts;
@@ -13,8 +14,10 @@ use Illuminate\Support\Facades\Log;
 
 use App\Jobs\SendCancelTicketEmailJob;
 use App\Jobs\SendCancelAdjTicketEmailJob;
-
 use App\Repositories\ChannelRepository;
+
+use App\Jobs\SendingEmailToSupportJob;
+use App\Jobs\SendEmailToCustomerJob;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
@@ -22,8 +25,8 @@ use Carbon\Carbon;
 use DateTime;
 
 class TicketInformationRepository
-{
- 
+{  
+    protected $users; 
     protected $location;
     protected $booking;
     protected $customerPayment;
@@ -33,8 +36,9 @@ class TicketInformationRepository
     protected $manageSMS;
     protected $customSMS;
 
-    public function __construct(AgentWallet $AgentWallet,Location $location, Bus $bus,Booking $booking , CustomerPayment $customerPayment,ChannelRepository $channelRepository,ManageSMS $manageSMS,CustomSMS $customSMS)
+    public function __construct(AgentWallet $AgentWallet,Location $location, Bus $bus,Users $users,Booking $booking , CustomerPayment $customerPayment,ChannelRepository $channelRepository,ManageSMS $manageSMS,CustomSMS $customSMS)
     {
+        $this->users = $users;
         $this->location = $location;
         $this->bus = $bus;
         $this->booking = $booking;
@@ -598,12 +602,7 @@ class TicketInformationRepository
         }else{
             return 'SEAT NOT AVAIL';
         }     
-    }
-
-    public function SendEmailToCustomer($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount) 
-    {
-        return SendEmailTicketJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);  
-    }
+    }  
 
     public function getDetailsSms($request)
     {
@@ -648,7 +647,7 @@ class TicketInformationRepository
         {
             $result = $this->booking->with('users')
                                  ->where('pnr',$pnr)
-                                 ->get();
+                                 ->get();                                             
         }
         else  if($action == 'emailToBooking')
         {
@@ -656,7 +655,7 @@ class TicketInformationRepository
 
             $all_seats = '';
             $all_customers = '';
-            
+
             foreach($data[0]->BookingDetail as $k=>$v)
             {
                 //log::info($v->BusSeats->seats->seatText);
@@ -858,4 +857,90 @@ class TicketInformationRepository
                 }]); 
             }])->get();
     }
+
+    public function sendEmailToBooking($request)
+    {
+        SendingEmailToSupportJob::dispatch($request);
+    }
+
+    public function sendEmailToCustomer($request)
+    {        
+        $b = $this->getBookingDetails($request['mobile'],$request['pnr']);
+
+       // log::info($b); exit;
+
+        if($b && isset($b[0]))
+        {
+            $b=$b[0];
+            $seat_arr=[];
+            $seat_no='';
+            foreach($b->booking[0]->bookingDetail as $bd){
+                array_push($seat_arr,$bd->busSeats->seats->seatText);                 
+            }            
+            $body = [
+                'name' => $b->name,
+                'phone' => $b->phone,
+                'email' => $b->email,
+                'pnr' => $b->booking[0]->pnr,
+                'bookingdate'=> $b->booking[0]->created_at,
+                'journeydate' => $b->booking[0]->journey_dt ,
+                'boarding_point'=> $b->booking[0]->boarding_point,
+                'dropping_point' => $b->booking[0]->dropping_point,
+                'departureTime'=> $b->booking[0]->boarding_time,
+                'arrivalTime'=> $b->booking[0]->dropping_time,
+                'seat_no' => $seat_arr,
+                'busname'=> $b->booking[0]->bus->name,
+                // 'source'=> $b->booking[0]->source[0]->name,
+                // 'destination'=> $b->booking[0]->destination[0]->name,
+                'busNumber'=> $b->booking[0]->bus->bus_number,
+                'bustype' => $b->booking[0]->bus->busType->name,
+                'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
+                'sittingType' => $b->booking[0]->bus->busSitting->name, 
+                'conductor_number'=> $b->booking[0]->bus->busContacts->phone,
+                'passengerDetails' => $b->booking[0]->bookingDetail ,
+                'totalfare'=> $b->booking[0]->total_fare,
+                'discount'=> $b->booking[0]->coupon_discount,
+                'payable_amount'=> $b->booking[0]->payable_amount,
+                'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
+                'odbus_charges'=> $b->booking[0]->odbus_charges,
+                'owner_fare'=> $b->booking[0]->owner_fare,
+                'routedetails' => $b->booking[0]->source[0]->name."-".$b->booking[0]->destination[0]->name    
+            ];
+
+            log::info($body);exit;
+
+            $cancellationslabs = $b->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+
+            $transactionFee=$b->booking[0]->transactionFee;
+
+            $customer_gst_status=$b->booking[0]->customer_gst_status;
+            $customer_gst_number=$b->booking[0]->customer_gst_number;
+            $customer_gst_business_name=$b->booking[0]->customer_gst_business_name;
+            $customer_gst_business_email=$b->booking[0]->customer_gst_business_email;
+            $customer_gst_business_address=$b->booking[0]->customer_gst_business_address;
+            $customer_gst_percent=$b->booking[0]->customer_gst_percent;
+            $customer_gst_amount=$b->booking[0]->customer_gst_amount;
+            $coupon_discount=$b->booking[0]->coupon_discount;
+            $totalfare=$b->booking[0]->total_fare;
+            $discount=$b->booking[0]->coupon_discount;
+            $payable_amount=$b->booking[0]->payable_amount;
+            $odbus_charges = $b->booking[0]->odbus_charges;
+            $odbus_gst = $b->booking[0]->odbus_gst_charges;
+            $owner_fare = $b->booking[0]->owner_fare;
+
+
+          
+            if($b->email != ''){  
+                 $sendEmailTicket = SendEmailToCustomerJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+            }
+           
+            return "Email has been sent to ".$b->email;
+
+        }else{
+            return "Invalid request";   
+        }
+        
+    }
+    
+
 }

@@ -93,4 +93,14 @@ class TicketInformationService
     {
         return $this->ticketInformationRepository->getEmailID($request);
     }
+
+    public function sendEmailToBooking($request)
+    {
+        return $this->ticketInformationRepository->sendEmailToBooking($request);
+    }
+
+    public function sendEmailToCustomer($request)
+    {
+        return $this->ticketInformationRepository->sendEmailToCustomer($request);
+    }
 }

@@ -105,5 +105,17 @@ class TicketInformationController extends Controller
         $EmailID = $this->ticketInformationService->getEmailID($request);
         return $this->successResponse($EmailID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function sendEmailToBooking(Request $request)
+    {
+        $result = $this->ticketInformationService->sendEmailToBooking($request);
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function sendEmailToCustomer(Request $request)
+    {
+        $result = $this->ticketInformationService->sendEmailToCustomer($request);
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
     
 }

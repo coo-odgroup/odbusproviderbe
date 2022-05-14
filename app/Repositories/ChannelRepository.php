@@ -307,7 +307,7 @@ class ChannelRepository
             $message = config('services.sms.textlocal.msgTicketBooking');                  
             $message = str_replace("<PNR>",$data['PNR'],$message);
             $message = str_replace("<busdetails>",$data['busdetails'],$message);
-            $message = str_replace("<DOJ>", $data['DOJ'],$message);
+            $message = str_replace("<DOJ>", date('d-m-Y',strtotime($data['DOJ'])),$message);
             $message = str_replace("<routedetails>",$data['routedetails'],$message);
             $message = str_replace("<seat>",$data['seat'],$message);
             $message = str_replace("<fare>",$data['fare'],$message);   
@@ -317,6 +317,7 @@ class ChannelRepository
             $message = str_replace("<name>",$data['name'],$message);          
 
             $data = array(
+                        'PNR' => $data['PNR'],
                         'Booking_email'  =>'booking@odbus.in',
                         'Message'=> $message
                     );                           
@@ -430,55 +431,5 @@ class ChannelRepository
                     //return $response;
             }
       }
-
-
-       public function SendAgentCreationSms($data)
-      {       
-
-        
-       // log::info($data);
-            $apiKey = $this->credentials->first()->sms_textlocal_key;
-            $textLocalUrl = config('services.sms.textlocal.url_send');
-            $sender = config('services.sms.textlocal.senderid');
-            $message = config('services.sms.textlocal.CREAT_AGENT');
-            $apiKey = urlencode( $apiKey);
-            $receiver = urlencode($data['phone']);
-            $message = str_replace("<agentName>",$data['agentName'],$message);
-            $message = str_replace("<url>",$data['url'],$message);
-            $message = str_replace("<agentEmail>",$data['agentEmail'],$message);
-            $message = str_replace("<agentPassword>", $data['agentPassword'],$message);  
-            // Log::info($message); 
-            $message = rawurlencode($message);
-            $response_type = "json"; 
-            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);            
-
-            $ch = curl_init($textLocalUrl);   
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            $response = curl_exec($ch);
-            curl_close($ch);
-            $response = json_decode($response);
-            return $response;
-
-
-
-            // $message = config('services.sms.textlocal.CREAT_AGENT');                  
-            // $message = str_replace("<agentName>",$data['agentName'],$message);
-            // $message = str_replace("<url>",$data['url'],$message);
-            // $message = str_replace("<agentEmail>",$data['agentEmail'],$message);
-            // $message = str_replace("<agentPassword>", $data['agentPassword'],$message);          
-
-            // $data = array(
-            //             'Phone'  => $data['phone'],
-            //             'Message'=> $message
-            //         );                           
-            // return [$data];        
-      }
-
-   
-
-
+      
 }

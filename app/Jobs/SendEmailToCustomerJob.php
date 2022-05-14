@@ -8,10 +8,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
-class SendEmailJob implements ShouldQueue
+
+class SendEmailToCustomerJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -66,6 +67,7 @@ class SendEmailJob implements ShouldQueue
     protected $p_names;
 
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
+
     {
         $this->name = $request['name'];
         $this->to = $request['email'];
@@ -108,18 +110,18 @@ class SendEmailJob implements ShouldQueue
         $this->customer_number = $request['phone'];
         $this->passengerDetails = $request['passengerDetails'];
         $this->total_seats = count($request['passengerDetails']); 
-        ///////////////////////////
+///////////////////////////
         $collection = collect($request['seat_no']);
         $this->seat_names = $collection->implode(',');
         ///$this->seat_names = implode(',',$request['seat_no']);
-        ///////////////////////////
+///////////////////////////
         $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;
     
-        $this->email_pnr = $email_pnr;
+        $this->email_pnr= $email_pnr;
 
-        $CONSUMER_FRONT_URL = Config::get('constants.CONSUMER_FRONT_URL');
+       $CONSUMER_FRONT_URL=Config::get('constants.CONSUMER_FRONT_URL');
 
-        $this->qrCodeText= $CONSUMER_FRONT_URL."pnr/".$this->email_pnr;
+       $this->qrCodeText= $CONSUMER_FRONT_URL."pnr/".$this->email_pnr;
 
        //Log::info($this->qrCodeText);
 
@@ -130,19 +132,22 @@ class SendEmailJob implements ShouldQueue
         $this->subject ='';
         $this->qrcode_image_path = url('public/qrcode/'.$this->email_pnr.'.png');
 
+
         $p_name=[];
         foreach($request['passengerDetails'] as $p){
             $pp = $p['passenger_name']." (".$p['passenger_gender'].") ";
             array_push($p_name,$pp);
         }
 
-        $pp_names = '';
+        $pp_names='';
 
         if($p_name){
             $pp_names = implode(',',$p_name);
         }
 
-        $this->p_names=$pp_names;       
+        $this->p_names=$pp_names;
+
+       
     }
 
     /**
@@ -197,7 +202,7 @@ class SendEmailJob implements ShouldQueue
             'p_names' => $this->p_names,            
         ];
 
-        //Log::info($data);
+        Log::info($data);
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
@@ -213,5 +218,6 @@ class SendEmailJob implements ShouldQueue
             return new Error(Mail::failures()); 
             //return "Email failed";
         }
+
     }
 }
