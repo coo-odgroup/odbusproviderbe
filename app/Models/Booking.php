@@ -22,7 +22,7 @@ class Booking extends Model
                             'total_fare','ownr_fare','is_coupon','coupon_code','coupon_discount',
                             'discounted_fare','origin','app_type','typ_id','created_by'];
 
-     public function Users()
+      public function Users()
       {
             return $this->belongsTo(Users::class);
       } 
@@ -41,6 +41,7 @@ class Booking extends Model
       {
             return $this->hasMany(BookingDetail::class);
       }
+      
       public function CustomerPayment()
       {
             return $this->hasOne(CustomerPayment::class);

@@ -634,7 +634,7 @@ border: 0;
     <div class="container">
         <div class="od-body mb25">
            <div class="row mb40">
-               <div class="col-md-3 mid-10"><img src="{{url('public/template/logo.png')}}" class="od-logo"/></div>
+               <div class="col-md-3 mid-10"><img src="{{'https://consumer.odbus.co.in/public/template/logo.png'}}" class="od-logo"/></div>
                <div class="col-md-6 odtext32"><span>ODBUS</span> e-Ticketing Service<br/> Electronic Reservation Slip</div>
                <div class="col-md-3">
                    <div class="od-bktext">Booking Date</div>
@@ -740,8 +740,7 @@ border: 0;
                       </tr>
                     </thead>
                     <tbody>
-                    
-                    @foreach($passengerDetails as $passenger) 
+                     @foreach($passengerDetails as $passenger) 
 
                       <tr>
                         <th scope="row">{{$loop->iteration}}</th>
@@ -751,7 +750,8 @@ border: 0;
                         <td>{{$seat_no[$loop->index]}}</td>
                       </tr>
 
-                      @endforeach                    
+                      @endforeach  
+                                     
                     </tbody>
                   </table>
             </div>

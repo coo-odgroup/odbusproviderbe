@@ -858,6 +858,23 @@ class TicketInformationRepository
             }])->get();
     }
 
+    public function GetLocationName($location_id){
+        return $this->location->where('id',$location_id)->get();
+    }
+
+    public function getPassengerDetails($mobile,$pnr)
+    { 
+       return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+                                                $u->where('booking.pnr', '=', $pnr);
+                                                $u->with(["bookingDetail" => function($b){
+                                                    $b->with(["busSeats" => function($s){
+                                                        $s->with("seats");
+                                                    } ]);
+                                                } ]);
+                                            }])->get();
+       
+    }
+
     public function sendEmailToBooking($request)
     {
         SendingEmailToSupportJob::dispatch($request);
@@ -867,20 +884,30 @@ class TicketInformationRepository
     {        
         $b = $this->getBookingDetails($request['mobile'],$request['pnr']);
 
-       // log::info($b); exit;
-
         if($b && isset($b[0]))
         {
             $b=$b[0];
             $seat_arr=[];
             $seat_no='';
-            foreach($b->booking[0]->bookingDetail as $bd){
+            $passengerDetails = [];
+            $i = 0;
+            foreach($b->booking[0]->bookingDetail as $bd)
+            {
                 array_push($seat_arr,$bd->busSeats->seats->seatText);                 
-            }            
+                
+                $passengerDetails[$i]['passenger_name'] = $bd->passenger_name;
+                $passengerDetails[$i]['passenger_gender'] = $bd->passenger_gender;
+                $passengerDetails[$i]['passenger_age'] = $bd->passenger_age;
+                $i++;
+            }  
+            
+            $source_nm = $this->GetLocationName($b->booking[0]->source_id);
+            $destination_nm = $this->GetLocationName($b->booking[0]->destination_id);          
+
             $body = [
                 'name' => $b->name,
                 'phone' => $b->phone,
-                'email' => $b->email,
+                'email' => $request['email'],
                 'pnr' => $b->booking[0]->pnr,
                 'bookingdate'=> $b->booking[0]->created_at,
                 'journeydate' => $b->booking[0]->journey_dt ,
@@ -890,29 +917,27 @@ class TicketInformationRepository
                 'arrivalTime'=> $b->booking[0]->dropping_time,
                 'seat_no' => $seat_arr,
                 'busname'=> $b->booking[0]->bus->name,
-                // 'source'=> $b->booking[0]->source[0]->name,
-                // 'destination'=> $b->booking[0]->destination[0]->name,
+                'source'=> $source_nm[0]->name,
+                'destination'=> $destination_nm[0]->name,
                 'busNumber'=> $b->booking[0]->bus->bus_number,
                 'bustype' => $b->booking[0]->bus->busType->name,
                 'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
                 'sittingType' => $b->booking[0]->bus->busSitting->name, 
-                'conductor_number'=> $b->booking[0]->bus->busContacts->phone,
-                'passengerDetails' => $b->booking[0]->bookingDetail ,
+                'conductor_number'=> $b->booking[0]->bus->busContacts[0]->phone,
+                'passengerDetails' => $passengerDetails ,
                 'totalfare'=> $b->booking[0]->total_fare,
                 'discount'=> $b->booking[0]->coupon_discount,
                 'payable_amount'=> $b->booking[0]->payable_amount,
                 'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                 'odbus_charges'=> $b->booking[0]->odbus_charges,
                 'owner_fare'=> $b->booking[0]->owner_fare,
-                'routedetails' => $b->booking[0]->source[0]->name."-".$b->booking[0]->destination[0]->name    
+                'routedetails' => $source_nm[0]->name."-".$destination_nm[0]->name   
             ];
 
-            log::info($body);exit;
+            //log::info($body);exit;
 
             $cancellationslabs = $b->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
-
             $transactionFee=$b->booking[0]->transactionFee;
-
             $customer_gst_status=$b->booking[0]->customer_gst_status;
             $customer_gst_number=$b->booking[0]->customer_gst_number;
             $customer_gst_business_name=$b->booking[0]->customer_gst_business_name;
@@ -927,11 +952,11 @@ class TicketInformationRepository
             $odbus_charges = $b->booking[0]->odbus_charges;
             $odbus_gst = $b->booking[0]->odbus_gst_charges;
             $owner_fare = $b->booking[0]->owner_fare;
+            $pnr = $b->booking[0]->pnr;
 
-
-          
-            if($b->email != ''){  
-                 $sendEmailTicket = SendEmailToCustomerJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+            if($request['email'] != '')
+            {  
+                 $sendEmailTicket = SendEmailToCustomerJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
             }
            
             return "Email has been sent to ".$b->email;

@@ -67,7 +67,6 @@ class SendEmailToCustomerJob implements ShouldQueue
     protected $p_names;
 
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
-
     {
         $this->name = $request['name'];
         $this->to = $request['email'];
@@ -110,28 +109,25 @@ class SendEmailToCustomerJob implements ShouldQueue
         $this->customer_number = $request['phone'];
         $this->passengerDetails = $request['passengerDetails'];
         $this->total_seats = count($request['passengerDetails']); 
-///////////////////////////
+        ///////////////////////////
         $collection = collect($request['seat_no']);
         $this->seat_names = $collection->implode(',');
-        ///$this->seat_names = implode(',',$request['seat_no']);
-///////////////////////////
-        $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;
-    
+        $this->seat_names = implode(',',$request['seat_no']);
+        ///////////////////////////
+        $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;    
         $this->email_pnr= $email_pnr;
+        $CONSUMER_FRONT_URL=Config::get('constants.CONSUMER_FRONT_URL');
 
-       $CONSUMER_FRONT_URL=Config::get('constants.CONSUMER_FRONT_URL');
-
-       $this->qrCodeText= $CONSUMER_FRONT_URL."pnr/".$this->email_pnr;
+        // $this->qrCodeText= $CONSUMER_FRONT_URL."pnr/".$this->email_pnr;
 
        //Log::info($this->qrCodeText);
 
-        \QrCode::size(500)
-        ->format('png')
-        ->generate($this->qrCodeText, public_path('qrcode/'.$this->email_pnr.'.png')); 
+        // \QrCode::size(500)
+        // ->format('png')
+        // ->generate($this->qrCodeText, public_path('qrcode/'.$this->email_pnr.'.png')); 
 
         $this->subject ='';
-        $this->qrcode_image_path = url('public/qrcode/'.$this->email_pnr.'.png');
-
+        $this->qrcode_image_path = 'https://consumer.odbus.co.in/public/qrcode/'.$this->email_pnr.'.png';
 
         $p_name=[];
         foreach($request['passengerDetails'] as $p){
@@ -146,7 +142,6 @@ class SendEmailToCustomerJob implements ShouldQueue
         }
 
         $this->p_names=$pp_names;
-
        
     }
 
@@ -201,22 +196,21 @@ class SendEmailToCustomerJob implements ShouldQueue
             'cancelation_policy' => $this->cancelation_policy,
             'p_names' => $this->p_names,            
         ];
-
-        Log::info($data);
+        // Log::info($this->to);
+        // Log::info($data); exit;
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
-        //dd($this->subject);
-        Mail::send('emailTicket', $data, function ($messageNew) {
+        Mail::send('EmailToCustomer', $data, function ($messageNew) {
             $messageNew->to($this->to)
-            //->subject(config('services.email.subjectTicket'));
             ->subject($this->subject);
+            return 'Email Sent';
         });
       
         // check for failures
         if (Mail::failures()) {
             return new Error(Mail::failures()); 
-            //return "Email failed";
+            return "Email failed";
         }
 
     }
