@@ -3,21 +3,26 @@
 namespace App\Repositories;
 use Illuminate\Support\Facades\Log;
 use App\Models\Agent;
+use App\Jobs\SendAgentCreationEmailJob;
+use App\Repositories\ChannelRepository;
+
 class AgentRepository
 {
     /**
      * @var Agent
      */
     protected $agent;
+       protected $channelRepository;
 
     /**
      * AgentRepository constructor.
      *
      * @param Post $agent
      */
-    public function __construct(Agent $agent)
+    public function __construct(Agent $agent,ChannelRepository $channelRepository)
     {
-        $this->agent = $agent;
+        $this->agent = $agent;  
+        $this->channelRepository = $channelRepository;
     }
 
     
@@ -260,8 +265,7 @@ class AgentRepository
     }
     public function save($data)
     {
-        // log::info($data);
-        // exit;
+    
         $email = $this->agent->where('email',$data['email'])->where('status','!=',2)->get();
         $phone = $this->agent->where('phone',$data['phone'])->where('status','!=',2)->get();
         $aadhaar = $this->agent->where('adhar_no',$data['adhar_no'])->where('status','!=',2)->get();
@@ -278,9 +282,35 @@ class AgentRepository
                             $agent = new $this->agent;
                             $agent=$this->getModel($data,$agent);
                             $agent->save();
-                            return $agent;
+
+
+                            $smsData = array(
+                            'phone' => $data->phone,
+                            'agentName' => $data->name,
+                            'url' => 'https://agent.odbus.in/#/login', 
+                            'agentEmail' => $data->email,
+                            'agentPassword' => $data->password
+                        );
+
+                        $this->channelRepository->SendAgentCreationSms($smsData);
+
+
+                               $to_user = $data->email;
+                               $subject = "Agent Creation Email";
+                               $agentData= [
+                                        'userName'=>$data->name,
+                                        'userEmail'=> $data->email,
+                                        'userPassword'=> $data->password,
+                                        'loginUrl'=>'https://agent.odbus.in/#/login',
+                                    
+                                       ] ;
+                                SendAgentCreationEmailJob::dispatch($to_user, $subject, $agentData);
+                          
+                            // return $agent;
+                   
+
                     }
-                    else
+                    else 
                     {
                         return 'Pan Card Already Exist';
                     }
@@ -315,19 +345,6 @@ class AgentRepository
         $phone = $this->agent->where('phone',$data['phone'])->where('id','!=',$id )->where('status','!=',2)->get();
         $aadhaar = $this->agent->where('adhar_no',$data['adhar_no'])->where('id','!=',$id )->where('status','!=',2)->get();
         $pancard = $this->agent->where('pancard_no',$data['pancard_no'])->where('id','!=',$id )->where('status','!=',2)->get();
-          
-        // $duplicate_email = $this->agent
-        //                        ->where('email',$data['email'])
-        //                        ->where('id','!=',$id )
-        //                        ->where('status','!=',2)
-        //                        ->get(); 
-        // $duplicate_phone = $this->agent
-        //                        ->where('phone',$data['phone'])
-        //                        ->where('id','!=',$id )
-        //                        ->where('status','!=',2)
-        //                        ->get();
-        // log::info($data);
-        // exit;
          if(count($email)==0)
         {
             if(count($phone)==0)

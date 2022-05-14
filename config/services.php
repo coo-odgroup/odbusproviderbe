@@ -56,6 +56,7 @@ return [
             'msgTicketBooking' => env('SMS_TKT_BOOKING_TEMPLATE'),
             'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
             'cancelTicketCMO' => env('CANCEL_TKT_TEMPLATE_CMO'),
+            'CREAT_AGENT' => env('CREAT_AGENT'),
             'senderid' => env('SENDER_ID'),
         ],
         'indiaHub' => [
