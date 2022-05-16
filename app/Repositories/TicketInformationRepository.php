@@ -17,6 +17,7 @@ use App\Jobs\SendCancelAdjTicketEmailJob;
 use App\Repositories\ChannelRepository;
 
 use App\Jobs\SendingEmailToSupportJob;
+use App\Jobs\SendCancelEmailToSupportJob;
 use App\Jobs\SendEmailToCustomerJob;
 
 use Illuminate\Http\Request;
@@ -147,8 +148,7 @@ class TicketInformationRepository
     }
 
     public function cancelticketdata($request)
-    {
-       
+    {       
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
@@ -643,7 +643,7 @@ class TicketInformationRepository
         $pnr = $request['pnr'];
         $action = $request['action'];        
 
-        if($action == 'emailToCustomer')
+        if($action == 'emailToCustomer' || $action == 'cancelemailToCustomer')
         {
             $result = $this->booking->with('users')
                                  ->where('pnr',$pnr)
@@ -688,7 +688,7 @@ class TicketInformationRepository
             );
         
             $result = $this->channelRepository->createSMSTktFormatToBooking($smsData); 
-        }
+        }        
 
         return $result;                                 
     }
@@ -966,6 +966,64 @@ class TicketInformationRepository
         }
         
     }
+
+    public function cancelTicketInfo($mobile,$pnr)
+    {
+            return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+            $u->where('booking.pnr', '=', $pnr); 
+            $u->with(["customerPayment" => function($b){
+                $b->where('payment_done',1);
+            }]);           
+            $u->with(["bus" => function($bs){
+                $bs->with('cancellationslabs.cancellationSlabInfo');
+            }]);          
+            $u->with(["bookingDetail" => function($b){
+                $b->with(["busSeats" => function($s){
+                    $s->with("seats");
+                }]);
+            }]);
+            }])->get();    
+     }
+
+     public function sendCancelEmailToSupport($request)
+     {
+         $b =  $this->getBookingDetails($request['mobile'],$request['pnr']);
+
+         if($b && isset($b[0]))
+         {
+             $b=$b[0];
+             $seat_arr=[];
+             $seat_no='';             
+             foreach($b->booking[0]->bookingDetail as $bd)
+             {
+                 array_push($seat_arr,$bd->busSeats->seats->seatText);                 
+             } 
+
+             $source_nm = $this->GetLocationName($b->booking[0]->source_id);
+             $destination_nm = $this->GetLocationName($b->booking[0]->destination_id); 
+
+             $Email_Data = [
+                'support_email' => $request['email'],
+                'pnr' => $b->booking[0]->pnr, 
+                'email' => $b->email,
+                'contactNo' => $b->phone,
+                'route' => $source_nm[0]->name."-".$destination_nm[0]->name,
+                'journeydate' => $b->booking[0]->journey_dt, 
+                'seat_no' => $seat_arr,
+                'totalfare'=> $b->booking[0]->total_fare,
+                'deductionPercentage'=>$b->booking[0]->deduction_percent,
+                'refundAmount' => $b->booking[0]->refund_amount,
+                'cancellationDateTime' => date('Y-m-d H:i:s',strtotime($b->booking[0]->updated_at))
+            ];
+
+            //log::info($Email_Data); exit;
+
+            if($Email_Data['support_email'] !='')
+            {
+               $sendCancelEmailToSupport = SendCancelEmailToSupportJob::dispatch($Email_Data);
+            }            
+         }   
+     }
     
 
 }

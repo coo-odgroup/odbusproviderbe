@@ -154,6 +154,7 @@ Route::post('/save_CancelcustomSMSToCustomer',[TicketInformationController::clas
 Route::post('/save_CancelcustomSMSToCMO',[TicketInformationController::class,'save_CancelcustomSMSToCMO']);
 Route::post('/sendEmailToBooking',[TicketInformationController::class,'sendEmailToBooking']);
 Route::post('/sendEmailToCustomer',[TicketInformationController::class,'sendEmailToCustomer']);
+Route::post('/sendCancelEmailToSupport',[TicketInformationController::class,'sendCancelEmailToSupport']);
 
 //Extra Seat Block
 Route::post('/extraSeatBlock',[ExtraSeatBlockController::class,'addExtraSeatBlock']);
