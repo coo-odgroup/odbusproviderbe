@@ -65,6 +65,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\LogRoute;
 use Laravel\Passport\Passport;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\ApiUserController;
 use App\Http\Controllers\CouponTypeController;
 
 // ReportController
@@ -146,7 +147,15 @@ Route::post('/adjustticketdata',[TicketInformationController::class,'adjustticke
 //Added on 29th April, -- Chakra
 Route::post('/getDetailsSms',[TicketInformationController::class,'getDetailsSms']);
 Route::post('/getBookingID',[TicketInformationController::class,'getBookingID']);
+Route::post('/getEmailID',[TicketInformationController::class,'getEmailID']);
 Route::post('/save_customSMS',[TicketInformationController::class,'save_customSMS']);
+Route::post('/GetCancelSmsToCustomer',[TicketInformationController::class,'GetCancelSmsToCustomer']);
+Route::post('/GetCancelSmsToCMO',[TicketInformationController::class,'GetCancelSmsToCMO']);
+Route::post('/save_CancelcustomSMSToCustomer',[TicketInformationController::class,'save_CancelcustomSMSToCustomer']);
+Route::post('/save_CancelcustomSMSToCMO',[TicketInformationController::class,'save_CancelcustomSMSToCMO']);
+Route::post('/sendEmailToBooking',[TicketInformationController::class,'sendEmailToBooking']);
+Route::post('/sendEmailToCustomer',[TicketInformationController::class,'sendEmailToCustomer']);
+Route::post('/sendCancelEmailToSupport',[TicketInformationController::class,'sendCancelEmailToSupport']);
 
 //Extra Seat Block
 Route::post('/extraSeatBlock',[ExtraSeatBlockController::class,'addExtraSeatBlock']);
@@ -275,6 +284,7 @@ Route::post('/deleteSeatopen', [SeatOpenController::class, 'deleteseatopen']);
 Route::post('/getseatopenDT', [SeatOpenController::class, 'getseatopenDT']);
 Route::post('/seatopenData', [SeatOpenController::class, 'seatopenData']);
 Route::put('/changeseatopenStatus/{id}', [SeatOpenController::class, 'changeStatus']);
+Route::post('/alreadyOpen',[SeatOpenController::class,'alreadyOpen']);
 
 ////////////SEAT BLOCK//////
 Route::get('/seatblock',[SeatBlockController::class,'getAllseatblock']);
@@ -284,6 +294,10 @@ Route::post('/deleteSeatblock', [SeatBlockController::class, 'deleteseatblock'])
 Route::post('/getseatblockDT', [SeatBlockController::class, 'getseatblockDT']);
 Route::post('/seatblockData', [SeatBlockController::class, 'seatblockData']);
 Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeStatus']);
+Route::post('/alreadyBlocks',[SeatBlockController::class,'alreadyBlocks']);
+
+
+
 
 
 
@@ -941,8 +955,6 @@ Route::get('/Permission/{id}', [PermissionController::class, 'getPermission']);
 Route::post('/PermissionDT', [PermissionController::class, 'getPermissionDT']);
 Route::put('/changeStatusPermission/{id}', [PermissionController::class, 'changeStatus']);
 
-
-
 //Permission To Role API
 Route::post('/addPermissionToRole', [PermissionToRoleController::class, 'addPermissionToRole']);
 Route::post('/getPermissionToRole', [PermissionToRoleController::class, 'getAllPermissionToRole']);
@@ -952,3 +964,17 @@ Route::post('/AllRoute', [BusStoppageController::class, 'AllRoute']);
 Route::post('/GetBusList', [BusController::class, 'GetBusList']);
 Route::get('/allCouponBusList/{id}', [BusController::class, 'allCouponBusList']);
 
+//API for API USER
+Route::post('/ApiUser', [ApiUserController::class, 'createApiUser']);
+Route::post('/ApiUserData', [ApiUserController::class, 'getAllApiUserData']);
+Route::put('/ApiUser/{id}', [AgentController::class, 'updateApiUser']);
+// Route::post('/ourAgentData', [AgentController::class, 'ourAgentData']);
+// Route::get('/Agent', [AgentController::class, 'getAllAgent']);
+// Route::put('/Agent/{id}', [AgentController::class, 'updateAgent']);
+// Route::delete('/Agent/{id}', [AgentController::class, 'deleteAgent']);
+// Route::get('/Agent/{id}', [AgentController::class, 'getAgent']);
+// Route::put('/AgentChangeStatus', [AgentController::class, 'changeStatus']);
+// Route::post('/blockAgent', [AgentController::class, 'blockAgent']);
+
+// Route::post('/Agentprofile', [AgentController::class, 'agentprofile']);
+// Route::post('/updateAgentProfile', [AgentController::class, 'updateAgentProfile']);

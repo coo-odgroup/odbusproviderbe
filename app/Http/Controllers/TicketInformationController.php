@@ -12,7 +12,6 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-
 class TicketInformationController extends Controller
 {
     use ApiResponser;   
@@ -24,41 +23,38 @@ class TicketInformationController extends Controller
     }
 
     public function getpnrdetails(Request $request)
-    {
-      // return $request;
-         $pnr_details = $this->ticketInformationService->getpnrdetails($request);
+    {        
+        $pnr_details = $this->ticketInformationService->getpnrdetails($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
     public function getPnrDetailsForSms(Request $request)
     {
-         $pnr_details = $this->ticketInformationService->getPnrDetailsForSms($request);
+        $pnr_details = $this->ticketInformationService->getPnrDetailsForSms($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
     public function cancelticket(Request $request)
     {
-      // return $request;
-         $pnr_details = $this->ticketInformationService->cancelticket($request);
+        $pnr_details = $this->ticketInformationService->cancelticket($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }  
 
     public function cancelticketdata(Request $request)
     {
-      // return $request;
-         $pnr_details = $this->ticketInformationService->cancelticketdata($request);
+        $pnr_details = $this->ticketInformationService->cancelticketdata($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
-     public function adjustticketdata(Request $request)
+
+    public function adjustticketdata(Request $request)
     {
-      // return $request;
-         $pnr_details = $this->ticketInformationService->adjustticketdata($request);
+        $pnr_details = $this->ticketInformationService->adjustticketdata($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
     public function adjustticket(Request $request)
     {
-      // return $request;
-         $pnr_details = $this->ticketInformationService->adjustticket($request);
+        $pnr_details = $this->ticketInformationService->adjustticket($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
     
@@ -79,4 +75,53 @@ class TicketInformationController extends Controller
         $savedata = $this->ticketInformationService->save_customSMS($request);
         return $this->successResponse($savedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
+
+    public function GetCancelSmsToCustomer(Request $request)
+    {
+        $getdata = $this->ticketInformationService->GetCancelSmsToCustomer($request);
+        return $this->successResponse($getdata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function GetCancelSmsToCMO(Request $request)
+    {
+        $getdata = $this->ticketInformationService->GetCancelSmsToCMO($request);
+        return $this->successResponse($getdata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function save_CancelcustomSMSToCustomer(Request $request)
+    {
+        $savedata = $this->ticketInformationService->save_CancelcustomSMSToCustomer($request);
+        return $this->successResponse($savedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function save_CancelcustomSMSToCMO(Request $request)
+    {
+        $savedata = $this->ticketInformationService->save_CancelcustomSMSToCMO($request);
+        return $this->successResponse($savedata,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function getEmailID(Request $request)
+    {
+        $EmailID = $this->ticketInformationService->getEmailID($request);
+        return $this->successResponse($EmailID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function sendEmailToBooking(Request $request)
+    {
+        $result = $this->ticketInformationService->sendEmailToBooking($request);
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function sendEmailToCustomer(Request $request)
+    {
+        $result = $this->ticketInformationService->sendEmailToCustomer($request);
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function sendCancelEmailToSupport(Request $request)
+    {
+        $result = $this->ticketInformationService->sendCancelEmailToSupport($request);
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    
 }

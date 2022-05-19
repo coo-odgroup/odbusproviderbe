@@ -24,8 +24,6 @@ class TicketInformationService
     {
         $this->ticketInformationRepository = $ticketInformationRepository;
     }
-
-
     
     public function getpnrdetails($request)
     {
@@ -70,4 +68,44 @@ class TicketInformationService
     {
         return $this->ticketInformationRepository->save_customSMS($request);
     } 
+
+    public function GetCancelSmsToCustomer($request)
+    {
+        return $this->ticketInformationRepository->GetCancelSmsToCustomer($request);
+    }
+
+    public function GetCancelSmsToCMO($request)
+    {
+        return $this->ticketInformationRepository->GetCancelSmsToCMO($request);
+    }
+
+    public function save_CancelcustomSMSToCustomer($request)
+    {
+        return $this->ticketInformationRepository->save_CancelcustomSMSToCustomer($request);
+    } 
+
+    public function save_CancelcustomSMSToCMO($request)
+    {
+        return $this->ticketInformationRepository->save_CancelcustomSMSToCMO($request);
+    } 
+
+    public function getEmailID($request)
+    {
+        return $this->ticketInformationRepository->getEmailID($request);
+    }
+
+    public function sendEmailToBooking($request)
+    {
+        return $this->ticketInformationRepository->sendEmailToBooking($request);
+    }
+
+    public function sendEmailToCustomer($request)
+    {
+        return $this->ticketInformationRepository->sendEmailToCustomer($request);
+    }
+
+    public function sendCancelEmailToSupport($request)
+    {
+        return $this->ticketInformationRepository->sendCancelEmailToSupport($request);
+    }
 }

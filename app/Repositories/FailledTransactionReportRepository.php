@@ -130,14 +130,19 @@ class FailledTransactionReportRepository
         $api = new Api($key, $secretKey); 
         if($data){
             foreach($data as $key=>$v){
-                // log::info($v->CustomerPayment->order_id);
                 $res = $api->order->fetch($v->CustomerPayment->order_id)->payments();
-                if(isset($res->items[0])){
-                  $paymentStatus = $res->items[0]->status;      
-                  if($paymentStatus == 'captured'){ //captured(Live), authorized(testing).
-                     $v['razerPayStatus']=$paymentStatus;
-                     $v['razerPayPaymentId']=$res->items[0]->id;
-                  }
+                if($res->items)
+                {
+                  foreach ($res->items as $value) 
+                  {
+                    $paymentStatus = $value->status;   
+                       
+                    if($paymentStatus == 'captured'){ //captured(Live), authorized(testing).
+                       $v['razerPayStatus']=$paymentStatus;
+                       $v['razerPayPaymentId']=$value->id;
+                       break;
+                    } 
+                  }                  
               }
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
@@ -159,7 +164,7 @@ class FailledTransactionReportRepository
              "total" => $data->total(),
             "data" => $data
            );   
-        // Log:: info($response); 
+        // Log:: info($response['data']); 
         
            return $response;      
 

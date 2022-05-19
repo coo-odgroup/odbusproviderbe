@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 // use App\Models\User;
 use App\Models\Bus;
+use App\Models\Booking;
 class Users extends Model
 {
     use HasFactory;
@@ -21,5 +22,10 @@ class Users extends Model
       {
             return $this->belongsTo(Bus::class);
       }
+
+      public function booking()
+      {
+            return $this->hasMany(Booking::class);   
+      } 
 
 }

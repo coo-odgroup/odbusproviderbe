@@ -75,6 +75,11 @@ class SeatOpenService
     {
         return $this->seatopenRepository->seatopenData($request);
     }
+
+    public function alreadyOpen($request)
+    {
+        return $this->seatopenRepository->alreadyOpen($request);
+    }
    
     
     public function getById($id)

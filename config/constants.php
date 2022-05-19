@@ -27,6 +27,7 @@ return [
     //'CONSUMER_API_URL' => 'https://consumer.odbus.co.in/api/',    
     'CONSUMER_API_URL' => 'https://testing.odbus.co.in/api/',    
     //'CONSUMER_API_URL' => 'http://127.0.0.1:8000/api/',    
-    'EXCEPTION_ERROR' => 'Error Occured',    
+    'EXCEPTION_ERROR' => 'Error Occured',   
+    'CONSUMER_FRONT_URL' => 'https://www.odbus.in/', 
 ];
 

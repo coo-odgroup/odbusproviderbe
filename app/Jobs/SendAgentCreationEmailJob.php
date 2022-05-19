@@ -8,10 +8,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
-class SendEmailJob implements ShouldQueue
+
+class SendAgentCreationEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -22,19 +23,23 @@ class SendEmailJob implements ShouldQueue
      */
     protected $to;
     protected $subject;
-    protected $email_body;
     protected $name;
-    protected $Age;
-
+    protected $userEmail;
+    protected $userPassword;
+    protected $userName;
+    protected $loginUrl;
     public function __construct($to, $subject, $req)
     {
-        // Log::info($req);
+        
         $this->to = $to;
         $this->subject = $subject;
-        $this->message= "Good Morning";
-        $this->name=$req['name'];
-        $this->Age=$req['Age'];
+        $this->userName=$req['userName'];
+        $this->userEmail=$req['userEmail'];
+        $this->userPassword=$req['userPassword'];
+        $this->loginUrl=$req['loginUrl'];
+
     }
+
     /**
      * Execute the job.
      *
@@ -43,15 +48,17 @@ class SendEmailJob implements ShouldQueue
     public function handle()
     {
         $data=[
-            'content'=>$this->to,
-            'name' => $this->name,
-            'Age' => $this->Age
-        ];
-        Mail::send('email', $data, function ($messageNew) {
-            $messageNew
-            //->from('support@odbus.in', 'ODBUS')
+            'userName'=>$this->userName,
+            'userEmail' => $this->userEmail,
+            'userPassword' => $this->userPassword,
+            'loginUrl' => $this->loginUrl
+        ]; 
+        Mail::send('sendAgentCreationEmail', $data, function ($messageNew) {              
+            $messageNew->from(config('mail.contact.address'))           
             ->to($this->to)
             ->subject($this->subject);
         });
+
+
     }
 }
