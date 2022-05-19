@@ -267,7 +267,7 @@ class TicketInformationRepository
     }
     public function adjustticket($request)
     {
-      // Log::info($request);
+       Log::info($request);
       // exit;
         /////// first check the seat is booked or on hold before cancelling pnr and insert new record to booking table
 
@@ -549,7 +549,7 @@ class TicketInformationRepository
             ]; 
  
  
-            $url = $api_url.'PaymentStatus';
+            $url = $api_url.'UpdateAdjustStatus';
             $resp = $client->request('POST', $url,  [
                'verify' => false,
                'headers'=> ['Authorization' =>   "Bearer " . $access_token],
@@ -878,6 +878,8 @@ class TicketInformationRepository
     public function sendEmailToBooking($request)
     {
         SendingEmailToSupportJob::dispatch($request);
+
+        return 'success';
     }
 
     public function sendEmailToCustomer($request)
@@ -1021,7 +1023,9 @@ class TicketInformationRepository
             if($Email_Data['support_email'] !='')
             {
                $sendCancelEmailToSupport = SendCancelEmailToSupportJob::dispatch($Email_Data);
-            }            
+            } 
+            
+            return 'success';
          }   
      }
     

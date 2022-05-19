@@ -202,16 +202,17 @@ class SendEmailToCustomerJob implements ShouldQueue
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
         Mail::send('EmailToCustomer', $data, function ($messageNew) {
-            $messageNew->to($this->to)
+            $messageNew->from(config('mail.contact.address'))
+             ->to($this->to)
             ->subject($this->subject);
             return 'Email Sent';
         });
       
         // check for failures
-        if (Mail::failures()) {
-            return new Error(Mail::failures()); 
-            return "Email failed";
-        }
+        // if (Mail::failures()) {
+        //     return new Error(Mail::failures()); 
+        //     return "Email failed";
+        // }
 
     }
 }
