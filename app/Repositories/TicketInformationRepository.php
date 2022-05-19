@@ -473,6 +473,9 @@ class TicketInformationRepository
                  $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr; 
 
                  
+                 $current_date_time = date("Y-m-d H:i:s"); 
+
+                 
                  $data= array(
                     'contactNo' => $request['customerInfo']['phone'],
                     'pnr' => $pnr,
@@ -485,8 +488,7 @@ class TicketInformationRepository
                     'totalfare' => $request['bookingInfo']['payable_amount'],
                 );
 
-                  $current_date_time = date("Y-m-d H:i:s"); 
-
+                 
 
                     if($request['customerInfo']['email']!= ''){
                         $to_user = $request['customerInfo']['email']; 
@@ -497,6 +499,7 @@ class TicketInformationRepository
 
                         /////// send email to odbus support 
                         SendCancelAdjTicketEmailJob::dispatch('support@odbus.in', $subject, $data);
+
 
                         ///// send sms to customer
 
