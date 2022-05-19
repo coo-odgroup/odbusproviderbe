@@ -466,29 +466,26 @@ class TicketInformationRepository
 
                  ///// send email
 
-                 $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr;  
+                 $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr; 
 
-               if($request['customerInfo']['email']!= ''){
+                 
+                 $data= array(
+                    'contactNo' => $request['customerInfo']['phone'],
+                    'pnr' => $pnr,
+                    'journeydate' => $request['bookingInfo']['journey_dt'], 
+                    'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
+                    'seat_no' => $request['bookingInfo']['seat_names'],
+                    'cancellationDateTime' => $current_date_time,
+                    'deductionPercentage' => 100,
+                    'refundAmount' => 0,
+                    'totalfare' => $request['bookingInfo']['payable_amount'],
+                );
 
-                        $to_user = $request['customerInfo']['email'];    
-                       
+                  $current_date_time = date("Y-m-d H:i:s"); 
 
-                        $current_date_time = date("Y-m-d H:i:s"); 
 
-                       
-                        $data= array(
-                            'email' => $to_user,
-                            'contactNo' => $request['customerInfo']['phone'],
-                            'pnr' => $pnr,
-                            'journeydate' => $request['bookingInfo']['journey_dt'], 
-                            'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
-                            'seat_no' => $request['bookingInfo']['seat_names'],
-                            'cancellationDateTime' => $current_date_time,
-                            'deductionPercentage' => 100,
-                            'refundAmount' => 0,
-                            'totalfare' => $request['bookingInfo']['payable_amount'],
-                        );
-
+                    if($request['customerInfo']['email']!= ''){
+                        $to_user = $request['customerInfo']['email']; 
                         SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
 
                     } 
