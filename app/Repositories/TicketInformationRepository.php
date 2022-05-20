@@ -267,7 +267,7 @@ class TicketInformationRepository
     }
     public function adjustticket($request)
     {
-       Log::info($request);
+      // Log::info($request);
       // exit;
         /////// first check the seat is booked or on hold before cancelling pnr and insert new record to booking table
 
@@ -349,7 +349,6 @@ class TicketInformationRepository
                     "dropping_point"=>   $request['bookingInfo']['dropping_point'],
                     "boarding_time"=>  $request['bookingInfo']['boarding_time'],
                     "dropping_time"=>  $request['bookingInfo']['dropping_time'],
-                    "origin"=>  $request['bookingInfo']['origin'],
                     "app_type"=>  $request['bookingInfo']['app_type'],
                     "typ_id"=>  $request['bookingInfo']['typ_id'],
                     "total_fare"=>  $request['bookingInfo']['total_fare'],
@@ -392,7 +391,6 @@ class TicketInformationRepository
                     "dropping_point"=>   $request['bookingInfo']['dropping_point'],
                     "boarding_time"=>  $request['bookingInfo']['boarding_time'],
                     "dropping_time"=>  $request['bookingInfo']['dropping_time'],
-                    "origin"=>  $request['bookingInfo']['origin'],
                     "app_type"=>  $request['bookingInfo']['app_type'],
                     "typ_id"=>  $request['bookingInfo']['typ_id'],
                     "total_fare"=>  $request['bookingInfo']['total_fare'],
@@ -410,7 +408,7 @@ class TicketInformationRepository
                   ],              
                 ];
 
-                Log::info($BookTicketBody);
+                //Log::info($BookTicketBody);
 
                 $url = $api_url.'AgentBooking';
             }
@@ -426,7 +424,7 @@ class TicketInformationRepository
 
           // return $get_booking_data->data->id;
 
-          Log::info($res->getBody());
+         // Log::info($res->getBody());
 
          
 
@@ -537,7 +535,7 @@ class TicketInformationRepository
            $booking_date = date("d-m-Y");
            $journey_date = date("d-m-Y",strtotime($request['bookingInfo']['journey_dt']));
 
-           Log::info($request);
+           //Log::info($request);
 
            if($request['bookingInfo']['user_id']==0){
 
@@ -556,7 +554,7 @@ class TicketInformationRepository
                'form_params' => $final_arr
            ]);
  
-            Log::info($resp->getBody());
+            //Log::info($resp->getBody());
 
             return 'Booking is successful';
 
@@ -569,7 +567,7 @@ class TicketInformationRepository
             ]; 
 
 
-            Log::info($final_arr);
+            //Log::info($final_arr);
  
  
             $url = $api_url.'AgentPaymentStatus';
@@ -579,7 +577,7 @@ class TicketInformationRepository
                'form_params' => $final_arr
            ]);
  
-            Log::info($resp->getBody());
+           // Log::info($resp->getBody());
 
             return 'Booking is successful';
 
