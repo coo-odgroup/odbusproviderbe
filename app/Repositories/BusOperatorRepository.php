@@ -55,6 +55,7 @@ class BusOperatorRepository
                 function($query) use ($name) {
                     return $query->where('email_id','like', '%' . $name . '%')
                                  ->orWhere('operator_name','like', '%' . $name . '%')
+                                 ->orWhere('organisation_name','like', '%' . $name . '%')
                                  ->orWhere('contact_number','like', '%' . $name . '%');
             });        
         } 
