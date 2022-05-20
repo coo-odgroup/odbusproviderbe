@@ -123,6 +123,7 @@ use App\Http\Controllers\PermissionToRoleController;
 use App\Http\Controllers\AssocAssignReportController;
 
 use App\Http\Controllers\ApiClientWalletController;
+use App\Http\Controllers\ApiUserComissionController;
 
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
@@ -729,12 +730,9 @@ Route::put('/bookingDetail/{id}', [BookingDetailController::class, 'updateBookin
 Route::delete('/bookingDetail/{id}', [BookingDetailController::class, 'deleteBookingDetail']);
 Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'getBookingDetail']);
 
-
 Route::post('/cancellationslabsDT', [CancellationSlabController::class, 'getCancellationSlabDT']);
 Route::post('/cancellationslab', [CancellationSlabController::class, 'createCancellationSlab']);
 Route::post('/cancellationslabsOperator', [CancellationSlabController::class, 'cancellationslabsOperator']);
-
-
 
 Route::post('/cancellationslabData', [CancellationSlabController::class, 'cancellationslabData']);
 Route::put('/cancellationslab/{id}', [CancellationSlabController::class, 'updateCancellationSlab']);
@@ -803,10 +801,6 @@ Route::delete('/festivalFare/{id}', [FestivalFareController::class, 'deleteFesti
 Route::get('/festivalFare/{id}', [FestivalFareController::class, 'getFestivalFare']);
 Route::post('/festivalFareDT', [FestivalFareController::class, 'getFestivalFareDT']);
 Route::put('/changeStatusfestivalFare/{id}', [FestivalFareController::class, 'changeStatus']);
-
-
-
-
 Route::get('/listing', [ListingController::class, 'getAllListing']);
 
 
@@ -842,16 +836,12 @@ Route::get('/ownerpayment',[OwnerPaymentController::class,'getAllOwnerPayment'])
 Route::post('/ownerpayment',[OwnerPaymentController::class,'createOwnerPayment']);
 Route::post('/getownerpaymentDT', [OwnerPaymentController::class, 'getOwnerPaymentDT']);
 
-
-
-
 Route::post('/locationsData', [locationController::class, 'locationsData']);
 Route::post('/boardingData', [BoardingDropingController::class, 'boardingData']);
 Route::post('/busSeatsFareData', [BusController::class, 'busSeatsFareData']);
 Route::post('/busupdatesequenceData', [BusController::class, 'busupdatesequenceData']);
 Route::post('/busCancelledData', [BusCancelledController::class, 'busCancelledData']);
 Route::post('/ownerpaymentData', [OwnerPaymentController::class, 'ownerpaymentData']);
-
 
 Route::post('/Register', [UserController::class, 'Register']);
 Route::post('/VerifyOtp', [UserController::class, 'verifyOtp']);
@@ -885,13 +875,10 @@ Route::post('/blockAgent', [AgentController::class, 'blockAgent']);
 Route::post('/Agentprofile', [AgentController::class, 'agentprofile']);
 Route::post('/updateAgentProfile', [AgentController::class, 'updateAgentProfile']);
 
-
 ////////// testing Email
 Route::post('/TestEmail', [BusController::class, 'testingEmail']);
 
-
 //Association Content
-
 Route::post('AssociationData',[AssociationController::class,'getAllData']);
 Route::post('Association',[AssociationController::class,'adduser']);
 Route::put('Association/{id}',[AssociationController::class,'updateuser']);
@@ -900,11 +887,9 @@ Route::put('changeAssociationPassword/{id}', [AssociationController::class, 'cha
 Route::put('/changeAssociationStatus/{id}', [AssociationController::class, 'changeStatus']);
 Route::get('/allAssoc', [AssociationController::class, 'getAllAssoc']);
 
-
 Route::post('/assocAssignOperator', [AssociationAssignOperatorController::class, 'addAssignOperator']);
 Route::post('/getassocAssignOperator', [AssociationAssignOperatorController::class, 'getAllAssignOperator']);
 Route::post('/deleteassocAssignOperator', [AssociationAssignOperatorController::class, 'deleteassocAssignOperator']);
-
 
 Route::post('/getAssocBuslist', [AssociationAssigBusController::class, 'getAssocBuslist']);
 Route::post('/assocAssignBus', [AssociationAssigBusController::class, 'assocAssignBus']);
@@ -924,14 +909,11 @@ Route::post('agentbookingreport',[AgentReportController::class,'getData']);
 Route::post('agentcancelreport',[AgentReportController::class,'agentcancelreport']);
 Route::post('agentCommissionreport',[AgentReportController::class,'agentCommissionreport']);
 
-
-
 //Operator Assign operators
 Route::get('/allUserOperator', [AssociationController::class, 'getAllUserOperator']);
 Route::post('/oprAssignOperator', [OprAssignOperatorController::class, 'addAssignOperator']);
 Route::post('/getoprAssignOperator', [OprAssignOperatorController::class, 'getAllAssignOperator']);
 Route::post('/deleteoprAssignOperator', [OprAssignOperatorController::class, 'deleteOprAssignOperator']);
-
 
 //Operator Assign Bus
 Route::post('/getOprBuslist', [OprAssigBusController::class, 'getOprBuslist']);
@@ -958,7 +940,6 @@ Route::get('/Role/{id}', [RoleController::class, 'getRole']);
 Route::post('/RoleDT', [RoleController::class, 'getRoleDT']);
 Route::put('/changeStatusRole/{id}', [RoleController::class, 'changeStatus']);
 
-
 //Permission API
 Route::post('/createpermission', [PermissionController::class, 'createPermission']);
 Route::post('/PermissionData', [PermissionController::class, 'PermissionData']);
@@ -983,3 +964,11 @@ Route::post('/ApiUser', [ApiUserController::class, 'createApiUser']);
 Route::post('/ApiUserData', [ApiUserController::class, 'getAllApiUserData']);
 Route::put('/ApiUser/{id}', [ApiUserController::class, 'updateApiUser']);
 Route::put('/ApiUserChangeStatus', [AgentController::class, 'changeStatus']);
+
+//API USER Commission Slab
+Route::post('/ApiUserCommission', [ApiUserComissionController::class, 'createApiUserCommission']);
+Route::post('/ApiUserCommissionData', [ApiUserComissionController::class, 'getAllApiUserCommissionData']);
+Route::get('/ApiUserCommission', [ApiUserComissionController::class, 'getAllApiUserCommission']);
+Route::put('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'updateApiUserCommission']);
+Route::delete('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'deleteApiUserCommission']);
+Route::get('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'getApiUserCommission']);
