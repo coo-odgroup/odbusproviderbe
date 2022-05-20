@@ -967,7 +967,8 @@ Route::get('/allCouponBusList/{id}', [BusController::class, 'allCouponBusList'])
 //API for API USER
 Route::post('/ApiUser', [ApiUserController::class, 'createApiUser']);
 Route::post('/ApiUserData', [ApiUserController::class, 'getAllApiUserData']);
-Route::put('/ApiUser/{id}', [AgentController::class, 'updateApiUser']);
+Route::put('/ApiUser/{id}', [ApiUserController::class, 'updateApiUser']);
+Route::put('/ApiUserChangeStatus', [AgentController::class, 'changeStatus']);
 // Route::post('/ourAgentData', [AgentController::class, 'ourAgentData']);
 // Route::get('/Agent', [AgentController::class, 'getAllAgent']);
 // Route::put('/Agent/{id}', [AgentController::class, 'updateAgent']);

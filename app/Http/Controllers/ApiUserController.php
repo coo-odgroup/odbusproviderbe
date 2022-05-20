@@ -117,7 +117,7 @@ class ApiUserController extends Controller
 
     public function updateApiUser(Request $request, $id) 
     {
-        $data = $request->only([
+          $data = $request->only([
                             'name',
                             'email',
                             'phone',
@@ -126,13 +126,18 @@ class ApiUserController extends Controller
                             'location',
                             'pancard_no',
                             'organization_name',
+                            'city',
+                            'street',
+                            'location', 
                             'address',
                             'landmark',
                             'pincode',                           
                             'created_by'
-        ]);
+                 ]);                              
 
-        $response =  $this->apiUserService->update($data, $id);
+           //log::info($request);exit;
+
+           $response =  $this->apiUserService->update($data, $id);
 
            if($response=='Email Already Exist')
            {

@@ -363,18 +363,15 @@ class ApiUserRepository
     }
     public function changeStatus($request)
     {
-        $agent_id =random_int(100000, 999999);
         $post = $this->user->find($request->id);
-     // log::info($agent_id);
-     // exit;
-        if($post->status==0){
-            $post->status = 1;
-            $post->created_by = $request->created_by;
-            $post->unique_id = $agent_id;
-        }elseif($post->status==1){
-            $post->status = 0;
-            $post->created_by = $request->created_by;
-            $post->unique_id = $agent_id;
+
+        if($post->status==0)
+        {
+            $post->status = 1;            
+        }
+        elseif($post->status==1)
+        {
+            $post->status = 0;         
         }
         $post->update();
         return $post;
