@@ -61,16 +61,7 @@ class ApiUserService
     public function getAll($request)
     {
         return $this->apiUserRepository->getAll($request);
-    }
-
-    public function agentprofile($request)
-    {
-        return $this->apiUserRepository->agentprofile($request);
-    }
-     public function updateAgentProfile($request)
-    {
-        return $this->apiUserRepository->updateAgentProfile($request);
-    }
+    }    
 
    
     /**
@@ -111,11 +102,7 @@ class ApiUserService
     {
         return $this->apiUserRepository->getAllApiUserData($request);
     } 
-
-    public function ourAgentData($request)
-    {
-        return $this->apiUserRepository->ourAgentData($request);
-    }
+   
     public function changeStatus($request)
     {
         try {
@@ -125,16 +112,6 @@ class ApiUserService
         }
         return $agent;
 
-    }
-     public function blockAgent($request)
-    {
-        try {
-            $agent = $this->apiUserRepository->blockAgent($request);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
-        }
-        return $agent;
-
-    }
+    }  
 
 }

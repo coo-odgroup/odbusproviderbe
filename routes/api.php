@@ -969,13 +969,3 @@ Route::post('/ApiUser', [ApiUserController::class, 'createApiUser']);
 Route::post('/ApiUserData', [ApiUserController::class, 'getAllApiUserData']);
 Route::put('/ApiUser/{id}', [ApiUserController::class, 'updateApiUser']);
 Route::put('/ApiUserChangeStatus', [AgentController::class, 'changeStatus']);
-// Route::post('/ourAgentData', [AgentController::class, 'ourAgentData']);
-// Route::get('/Agent', [AgentController::class, 'getAllAgent']);
-// Route::put('/Agent/{id}', [AgentController::class, 'updateAgent']);
-// Route::delete('/Agent/{id}', [AgentController::class, 'deleteAgent']);
-// Route::get('/Agent/{id}', [AgentController::class, 'getAgent']);
-// Route::put('/AgentChangeStatus', [AgentController::class, 'changeStatus']);
-// Route::post('/blockAgent', [AgentController::class, 'blockAgent']);
-
-// Route::post('/Agentprofile', [AgentController::class, 'agentprofile']);
-// Route::post('/updateAgentProfile', [AgentController::class, 'updateAgentProfile']);

@@ -82,38 +82,14 @@ class ApiUserController extends Controller
       //   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       // }   
       // return $this->successResponse($data,"Agent Created Successfully",Response::HTTP_CREATED); 
-    } 
-
-    public function agentprofile(Request $request) 
-    {
-      $agents = $this->apiUserService->agentprofile($request);
-      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
-
-    public function updateAgentProfile(Request $request) {
-
-      $agents = $this->apiUserService->updateAgentProfile($request);
-      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
-
-    public function getAllAgent(Request $request) {
-
-      $agents = $this->apiUserService->getAll($request);
-      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
+    }    
 
 
     public function getAllApiUserData(Request $request) 
     {
         $agents = $this->apiUserService->getAllApiUserData($request);
         return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
-
-    public function ourAgentData(Request $request) 
-    {
-        $agents = $this->apiUserService->ourAgentData($request);
-        return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    }    
+    }        
 
     public function updateApiUser(Request $request, $id) 
     {
@@ -158,36 +134,11 @@ class ApiUserController extends Controller
            else
            {
                return $this->successResponse($response,"Agent Updated", Response::HTTP_CREATED);
-           }
-        
-    }
+           }        
+    }     
 
-    public function deleteAgent ($id) {
-
-      try {
-        $this->apiUserService->deleteById($id);
-        
-      } 
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse(Null,"Agent has been deleted Successfully",Response::HTTP_ACCEPTED); 
-     
-    }
-
-    public function getAgent($id) {
-      try {
-        $AgentID= $this->apiUserService->getById($id);
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse($AgentID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-      
-    }   
-
-    public function changeStatus(Request $request) {
-      // Log::info($request);exit;
+    public function changeStatus(Request $request) 
+    {      
         try{
           $this->apiUserService->changeStatus($request);
         }
@@ -195,16 +146,5 @@ class ApiUserController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
-      }
-
-      public function blockAgent(Request $request) {
-        try{
-          $this->apiUserService->blockAgent($request);
-        }
-        catch (Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
-      }
-    
+    }    
 }

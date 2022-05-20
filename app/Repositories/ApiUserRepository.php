@@ -86,41 +86,7 @@ class ApiUserRepository
     {
         return $this->user->get();
 
-    }
-
-    public function updateAgentProfile($request)
-    {
-        // log::info($request);
-        // exit;
-        $user = $this->user->find($request['user_id']);        
-        $user->name = $request['name'];
-        $user->email = $request['email'];    
-        $user->phone = $request['phone'];
-
-        if($request['pwd_check']==true && $request['password']!='')
-        {
-            $user->password = bcrypt($request['password']);
-        }
-
-        $user->location = $request['location'];
-        $user->pancard_no = $request['pancard_no'];
-        $user->organization_name = $request['organization_name'];
-        $user->address = $request['address'];
-        $user->street = $request['street'];
-        $user->city = $request['city'];
-        $user->landmark = $request['landmark'];
-        $user->pincode = $request['pincode'];
-        $user->update();
-        // log::info($user);
-        return $user;
-    }
-
-     public function agentprofile($request)
-     {       
-        $data= $this->user->where('id',$request['user_id'])->get();
-        // log::info($data);
-         return $data;
-     }
+    }   
 
     public function getAllApiUserData($request)
     {       
@@ -128,14 +94,13 @@ class ApiUserRepository
          $name = $request['name'] ;
          $status = $request['status'];
          $start_date  =  $request->rangeFromDate;
-         $end_date  =  $request->rangeToDate;
+         $end_date  =  $request->rangeToDate;        
 
-         //
+         $data = $this->user->where('role_id', 6)
+                            ->orderBy('id','DESC');                              
+                                     
 
-         $data= $this->user->where('role_id', 6)
-                          ->orderBy('id','DESC');                   
-
-        if($paginate=='all') 
+        if($paginate == 'all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
         }
@@ -144,126 +109,60 @@ class ApiUserRepository
             $paginate = 10 ;
         }
 
-        //  if($status!=null)
-        // {
-        //     if($status== 1){
-        //         $data = $data->where('status', 1); 
-        //     }
-        //     elseif($status== 0)
-        //     {
-        //         $data = $data->where('status', 0); 
-        //     }                                      
-        // }
-
-        
+        if($status!=null)
+        {
+            if($status == 1)
+            {
+                $data = $data->where('status', 1); 
+            }
+            elseif($status == 0)
+            {
+                $data = $data->where('status', 0); 
+            }                                      
+        }        
 
         if($name!=null && $status!=null)
         {
             $data = $data->where('name', 'like', '%' .$name . '%')
                          ->orWhere('email', 'like', '%' .$name . '%')
-                         ->orWhere('phone', 'like', '%' .$name . '%')                        
-                         ->orWhere('organization_name', 'like', '%' .$name . '%')
+                         ->orWhere('phone', 'like', '%' .$name . '%')                  
                          ->where('status', $status);                        
         }
         elseif($name!=null && $status==null)
         {
             $data = $data->where('name', 'like', '%' .$name . '%')
                          ->orWhere('email', 'like', '%' .$name . '%')
-                         ->orWhere('phone', 'like', '%' .$name . '%')                        
-                         ->orWhere('organization_name', 'like', '%' .$name . '%');                        
+                         ->orWhere('phone', 'like', '%' .$name . '%');                                                 
         }
         elseif($name==null && $status!=null)
         {
             $data = $data->where('status', $status);                        
         }
-        
 
         if($start_date != null && $end_date != null)
         {
-            if($start_date == $end_date){
-                $data =$data->where('created_at','like','%'.$start_date.'%')
-                        ->orderBy('created_at','DESC');
-                       
-            }else{
-                 $data =$data->whereBetween('created_at', [$start_date, $end_date]);
-            }                       
+            if($start_date == $end_date)
+            {
+                $data = $data->where('created_at','like','%'.$start_date.'%')
+                             ->orderBy('created_at','DESC');                       
+            }
+            else
+            {
+                $data = $data->whereBetween('created_at', [$start_date, $end_date]);
+            }  
         }      
 
-        $data=$data->paginate($paginate);
-        // Log::info($data);
+        $data = $data->paginate($paginate);
+        log::info($data); 
 
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
-            "data" => $data
+             "data"  => $data
            );   
         return $response;       
     }
-
-
-    public function ourAgentData($request)
-    {
-        // log::info($request);
-        
-         $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;
-         $status = $request['status'];
-
-        $data= $this->user->where('role_id',6)
-                    ->wherenotIn('status',[0,2  ])
-                    ->orderBy('id','DESC');
-
-        if($paginate=='all') 
-        {
-            $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
-            $paginate = 10 ;
-        }
-
-        //  if($status!=null)
-        // {
-        //     if($status== 1){
-        //         $data = $data->where('status', 1); 
-        //     }
-        //     elseif($status== 0)
-        //     {
-        //         $data = $data->where('status', 0); 
-        //     }                                      
-        // }
-        if($name!=null && $status!=null)
-        {
-            $data = $data->where('name', 'like', '%' .$name . '%')
-                         ->orWhere('email', 'like', '%' .$name . '%')
-                         ->orWhere('phone', 'like', '%' .$name . '%')                       
-                         ->orWhere('organization_name', 'like', '%' .$name . '%')
-                         ->where('status', $status);                        
-        }
-        elseif($name!=null && $status==null)
-        {
-            $data = $data->where('name', 'like', '%' .$name . '%')
-                         ->orWhere('email', 'like', '%' .$name . '%')
-                         ->orWhere('phone', 'like', '%' .$name . '%')                       
-                         ->orWhere('organization_name', 'like', '%' .$name . '%');                        
-        }
-        elseif($name==null && $status!=null)
-        {
-            $data = $data->where('status', $status);                        
-        }      
-
-        $data=$data->paginate($paginate);
-        // Log::info($data);
-
-        $response = array(
-             "count" => $data->count(), 
-             "total" => $data->total(),
-             "data" => $data
-           );   
-           return $response;
-
-       
-    }
+    
     public function getModel($data, User $user)
     {
         $user->name = $data['name'];
@@ -289,11 +188,10 @@ class ApiUserRepository
     public function getById($id)
     {
         return $this->user->where('id', $id)->get();
-    }
-   
+    }   
 
     /**
-     * Update Agent
+     * Update API User
      *
      * @param $data
      * @return Post
@@ -348,7 +246,7 @@ class ApiUserRepository
     }
 
     /**
-     * Delete Agent
+     * Delete API User
      *
      * @param $data
      * @return Post
@@ -376,23 +274,4 @@ class ApiUserRepository
         $post->update();
         return $post;
     }
-
-    public function blockAgent($request)
-    {
-        $post = $this->user->find($request->id);
-
-        if($post->status==1){
-            $post->status = 3;
-        }elseif($post->status==3){
-            $post->status = 1;
-            $post->reason ="";
-        }
-        if($request->reason!= NULL)
-        {
-             $post->reason =$request->reason;
-        }
-        $post->update();
-        return $post;
-    }
-    
 }
