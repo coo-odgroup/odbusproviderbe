@@ -50,17 +50,18 @@ class SendingEmailToSupportJob implements ShouldQueue
         $this->subject = str_replace("<PNR>",$this->pnr,$this->subject);
         
         Mail::send('EmailToBooking', $data, function ($messageNew) {
-                    $messageNew->to($this->to)            
+            $messageNew->from(config('mail.contact.address'))
+            ->to($this->to)            
                                ->subject($this->subject);
         });
         
         // check for failures
-        if (Mail::failures()) {
-            return new Error(Mail::failures()); 
-            return "Email failed";
-        }else{
-            return 'success';
-        }
+        // if (Mail::failures()) {
+        //     return new Error(Mail::failures()); 
+        //     return "Email failed";
+        // }else{
+        //     return 'success';
+        // }
 
     }
 }

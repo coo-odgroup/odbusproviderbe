@@ -58,6 +58,11 @@ class UserService
     public function getallAgent()
     {
        return $this->userRepository->getallAgent();  
+    } 
+
+    public function allApiClient()
+    {
+       return $this->userRepository->allApiClient();  
     }
 
     /**

@@ -122,6 +122,8 @@ use App\Http\Controllers\OprAssignAgentController;
 use App\Http\Controllers\PermissionToRoleController;
 use App\Http\Controllers\AssocAssignReportController;
 
+use App\Http\Controllers\ApiClientWalletController;
+
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
 
@@ -133,7 +135,18 @@ Route::post('/emailtest', [TestEmailController::class,'emailtest']);
 Route::post('/assocAssignAgentreport', [AssocAssignReportController::class, 'getAssignAgentData']);
 Route::post('/assocAssignBusreport', [AssocAssignReportController::class, 'getAssignBusData']);
 Route::post('/assocAssignOperatorreport', [AssocAssignReportController::class, 'getAssignOperatorData']);
-	
+
+/////////////////Api Client ////////////////////
+Route::get('/apiClientWalletBalance/{id}',[ApiClientWalletController::class,'agentWalletBalance']);
+Route::post('/apiClientWallet',[ApiClientWalletController::class,'addAgentWallet']);
+Route::post('/apiClientWalletData',[ApiClientWalletController::class,'getData']);
+Route::post('/apiClientWalletAllData',[ApiClientWalletController::class,'getAllData']);
+Route::post('/apiClientWalletBalance',[ApiClientWalletController::class,'agentWalletBalancedetails']);
+Route::post('/apiClientAllTransaction',[ApiClientWalletController::class,'agentAllTransaction']);
+Route::put('/changeapiClientWalletStatus/{id}',[ApiClientWalletController::class,'changeStatus']);
+Route::put('/declineWlletReqStatus/{id}',[ApiClientWalletController::class,'declineWlletReqStatus']);
+
+Route::post('/allTransactionData',[ApiClientWalletController::class,'allTransactionData']);
 
 //Ticket Information 
 
@@ -252,6 +265,7 @@ Route::get('/user/{id}', [UserController::class, 'getUserbyID']);
 
 Route::get('/customer/{id}', [UserController::class, 'getCustomerInformation']);
 Route::get('/allAgent', [UserController::class, 'getallAgent']);
+Route::get('/allApiClient', [UserController::class, 'allApiClient']);
 //Route::post('/login', [UserController::class, 'Login']);
 
 Route::post('/BusSitting', [BusSittingController::class, 'createBusSitting']);

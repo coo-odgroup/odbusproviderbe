@@ -349,7 +349,6 @@ class TicketInformationRepository
                     "dropping_point"=>   $request['bookingInfo']['dropping_point'],
                     "boarding_time"=>  $request['bookingInfo']['boarding_time'],
                     "dropping_time"=>  $request['bookingInfo']['dropping_time'],
-                    "origin"=>  $request['bookingInfo']['origin'],
                     "app_type"=>  $request['bookingInfo']['app_type'],
                     "typ_id"=>  $request['bookingInfo']['typ_id'],
                     "total_fare"=>  $request['bookingInfo']['total_fare'],
@@ -392,7 +391,6 @@ class TicketInformationRepository
                     "dropping_point"=>   $request['bookingInfo']['dropping_point'],
                     "boarding_time"=>  $request['bookingInfo']['boarding_time'],
                     "dropping_time"=>  $request['bookingInfo']['dropping_time'],
-                    "origin"=>  $request['bookingInfo']['origin'],
                     "app_type"=>  $request['bookingInfo']['app_type'],
                     "typ_id"=>  $request['bookingInfo']['typ_id'],
                     "total_fare"=>  $request['bookingInfo']['total_fare'],
@@ -410,7 +408,7 @@ class TicketInformationRepository
                   ],              
                 ];
 
-                Log::info($BookTicketBody);
+                //Log::info($BookTicketBody);
 
                 $url = $api_url.'AgentBooking';
             }
@@ -426,7 +424,7 @@ class TicketInformationRepository
 
           // return $get_booking_data->data->id;
 
-          Log::info($res->getBody());
+         // Log::info($res->getBody());
 
          
 
@@ -470,29 +468,28 @@ class TicketInformationRepository
 
                  ///// send email
 
-                 $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr;  
+                 $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr; 
 
-               if($request['customerInfo']['email']!= ''){
+                 
+                 $current_date_time = date("Y-m-d H:i:s"); 
 
-                        $to_user = $request['customerInfo']['email'];    
-                       
+                 
+                 $data= array(
+                    'contactNo' => $request['customerInfo']['phone'],
+                    'pnr' => $pnr,
+                    'journeydate' => $request['bookingInfo']['journey_dt'], 
+                    'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
+                    'seat_no' => $request['bookingInfo']['seat_names'],
+                    'cancellationDateTime' => $current_date_time,
+                    'deductionPercentage' => 100,
+                    'refundAmount' => 0,
+                    'totalfare' => $request['bookingInfo']['payable_amount'],
+                );
 
-                        $current_date_time = date("Y-m-d H:i:s"); 
+                 
 
-                       
-                        $data= array(
-                            'email' => $to_user,
-                            'contactNo' => $request['customerInfo']['phone'],
-                            'pnr' => $pnr,
-                            'journeydate' => $request['bookingInfo']['journey_dt'], 
-                            'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
-                            'seat_no' => $request['bookingInfo']['seat_names'],
-                            'cancellationDateTime' => $current_date_time,
-                            'deductionPercentage' => 100,
-                            'refundAmount' => 0,
-                            'totalfare' => $request['bookingInfo']['payable_amount'],
-                        );
-
+                    if($request['customerInfo']['email']!= ''){
+                        $to_user = $request['customerInfo']['email']; 
                         SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
 
                     } 
@@ -500,6 +497,7 @@ class TicketInformationRepository
 
                         /////// send email to odbus support 
                         SendCancelAdjTicketEmailJob::dispatch('support@odbus.in', $subject, $data);
+
 
                         ///// send sms to customer
 
@@ -537,7 +535,7 @@ class TicketInformationRepository
            $booking_date = date("d-m-Y");
            $journey_date = date("d-m-Y",strtotime($request['bookingInfo']['journey_dt']));
 
-           Log::info($request);
+           //Log::info($request);
 
            if($request['bookingInfo']['user_id']==0){
 
@@ -549,14 +547,14 @@ class TicketInformationRepository
             ]; 
  
  
-            $url = $api_url.'PaymentStatus';
+            $url = $api_url.'UpdateAdjustStatus';
             $resp = $client->request('POST', $url,  [
                'verify' => false,
                'headers'=> ['Authorization' =>   "Bearer " . $access_token],
                'form_params' => $final_arr
            ]);
  
-            Log::info($resp->getBody());
+            //Log::info($resp->getBody());
 
             return 'Booking is successful';
 
@@ -569,7 +567,7 @@ class TicketInformationRepository
             ]; 
 
 
-            Log::info($final_arr);
+            //Log::info($final_arr);
  
  
             $url = $api_url.'AgentPaymentStatus';
@@ -579,7 +577,7 @@ class TicketInformationRepository
                'form_params' => $final_arr
            ]);
  
-            Log::info($resp->getBody());
+           // Log::info($resp->getBody());
 
             return 'Booking is successful';
 
@@ -878,6 +876,8 @@ class TicketInformationRepository
     public function sendEmailToBooking($request)
     {
         SendingEmailToSupportJob::dispatch($request);
+
+        return 'success';
     }
 
     public function sendEmailToCustomer($request)
@@ -1021,7 +1021,9 @@ class TicketInformationRepository
             if($Email_Data['support_email'] !='')
             {
                $sendCancelEmailToSupport = SendCancelEmailToSupportJob::dispatch($Email_Data);
-            }            
+            } 
+            
+            return 'success';
          }   
      }
     

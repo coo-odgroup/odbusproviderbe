@@ -49,6 +49,12 @@ class UserRepository
         return $this->user->where('user_type','Agent')->where('status',1)->get();
     }
 
+    public function allApiClient()
+    {
+
+        return $this->user->where('user_type','API USER')->where('role_id',6)->where('status',1)->get();
+    }
+
     
     public function getById($id)
     {

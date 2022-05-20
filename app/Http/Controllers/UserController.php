@@ -152,8 +152,14 @@ class UserController extends Controller
 
     public function getallAgent()
     {
-        $wallet = $this->userService->getallAgent();
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+        $data = $this->userService->getallAgent();
+        return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    }
+
+    public function allApiClient()
+    {
+        $data = $this->userService->allApiClient();
+        return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
     public function AllUser()
