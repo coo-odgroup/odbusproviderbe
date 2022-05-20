@@ -31,6 +31,7 @@ class ApiUserService
             $ApiUser = $this->apiUserRepository->save($data);
         } catch (Exception $e) {
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+            
         }
         return $ApiUser;
     }

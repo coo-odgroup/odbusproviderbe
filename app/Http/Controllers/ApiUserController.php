@@ -109,6 +109,7 @@ class ApiUserController extends Controller
                             'landmark',
                             'pincode',                           
                             'created_by'
+                            
                  ]);                              
 
            //log::info($request);exit;

@@ -23,6 +23,7 @@ class ApiUserRepository
     {
         $this->user = $user;  
         $this->channelRepository = $channelRepository;
+        
     }
 
     public function save($data)
