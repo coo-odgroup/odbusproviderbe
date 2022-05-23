@@ -123,6 +123,7 @@ use App\Http\Controllers\PermissionToRoleController;
 use App\Http\Controllers\AssocAssignReportController;
 
 use App\Http\Controllers\ApiClientWalletController;
+use App\Http\Controllers\ApiClientReportController;
 use App\Http\Controllers\ApiUserComissionController;
 
 
@@ -146,8 +147,14 @@ Route::post('/apiClientWalletBalance',[ApiClientWalletController::class,'agentWa
 Route::post('/apiClientAllTransaction',[ApiClientWalletController::class,'agentAllTransaction']);
 Route::put('/changeapiClientWalletStatus/{id}',[ApiClientWalletController::class,'changeStatus']);
 Route::put('/declineWlletReqStatus/{id}',[ApiClientWalletController::class,'declineWlletReqStatus']);
-
 Route::post('/allTransactionData',[ApiClientWalletController::class,'allTransactionData']);
+
+// api client report
+Route::post('/apiclientbookingreport',[ApiClientReportController::class,'getAllData']);
+Route::post('/apiclientcancelreport',[ApiClientReportController::class,'getAllCancelData']);
+
+Route::post('/datewiseroute',[ApiClientReportController::class,'datewiseroute']);
+
 
 //Ticket Information 
 
