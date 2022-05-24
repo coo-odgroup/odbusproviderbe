@@ -613,7 +613,110 @@ class TicketInformationRepository
 
             $sms_Details = $this->manageSMS->where('pnr',$pnr)                                       
                                            ->where('type',$type)
-                                           ->get();                                                                         
+                                           ->get();  
+            //log::info($sms_Details);exit;                                             
+                                           
+            if($sms_Details == '[]')                                           
+            {
+                $data = $this->booking->with('Bus','Users','bus.busContacts','BookingDetail.BusSeats.seats')->where("pnr",$pnr)->get();
+
+                $all_seats = '';
+                
+                $nameList = "";
+                $genderList = "";
+                $passengerDetails = $data[0]->BookingDetail;
+                $i = 0;
+                $m = 0;
+                $f = 0;
+                $O = 0;
+
+                foreach($passengerDetails as $pDetail)
+                {
+                    if($i==0){
+                      $nameList = "{$nameList},{$pDetail->passenger_name}";
+                    }
+                   
+                    $i++;
+                    switch($pDetail->passenger_gender)
+                    {
+                        case("M"):
+                            $m++;
+                        break;
+                        case("F"):
+                            $f++;
+                        break;
+                        case("O"):
+                            $O++;
+                        break;
+                    }
+
+                    $all_seats.= $pDetail->BusSeats->seats->seatText.',';
+                } 
+              
+                if($m>0 && $f>0 && $O > 0){
+                    $genderList = "{$m}M/{$f}F/{$O}O";
+                }
+        
+                else if($m>0 && $f>0 && $O == 0){
+                    $genderList = "{$m}M/{$f}F";
+                }
+        
+                else if($m>0 && $f==0 && $O > 0){
+                    $genderList = "{$m}M/{$O}O";
+                }
+        
+                else if($m==0 && $f>0 && $O > 0){
+                    $genderList = "{$f}F/{$O}O";
+                }
+        
+                else if($m>0 && $f==0 && $O == 0){
+                    $genderList = "{$m}M";
+                }
+        
+                else if($m==0 && $f>0 && $O == 0){
+                    $genderList = "{$f}F";
+                }
+        
+                else if($m==0 && $f==0 && $O > 0){
+                    $genderList = "{$O}O";
+                }
+        
+                if(count($passengerDetails) > 1)
+                {
+                    $restNo = count($passengerDetails) -1 ;            
+                    $nameList = "{$nameList}+{$restNo}";         
+                }               
+                $nameList = substr($nameList,1);
+                $all_seats = rtrim($all_seats, ','); 
+                //log::info($genderList); exit;        
+                
+                $source_name = $this->location->where('id', $data[0]->source_id)->get();
+                $destination_name = $this->location->where('id', $data[0]->destination_id)->get();
+    
+                $bus_id = $data[0]->bus_id;
+                $busName = $data[0]->Bus->name;
+                $busNumber = $data[0]->Bus->bus_number;    
+                $conductor_mobile = $data[0]->Bus->BusContacts[0]->phone;
+                $customer_mobile = $data[0]->Users->phone;
+
+                $smsData = array(                   
+                    'PNR' => $pnr,
+                    'busdetails' => $busName.'-'.$busNumber,
+                    'DOJ' => date('d-m-Y',strtotime($data[0]->journey_dt)), 
+                    'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                    'dep' => $data[0]->boarding_time,
+                    'Name' => $nameList,
+                    'Gender' => $genderList,
+                    'seat' => $all_seats,
+                    'fare' => $data[0]->total_fare,   
+                    'contactmob' => $conductor_mobile,  
+                    'customermobile'=>$customer_mobile   
+                ); 
+                
+                $sms_Details =  $this->channelRepository->createBookingTktFormatToCustomer($smsData); 
+
+                //log::info($SMS); exit;     
+            }                                         
         }
         else if($action == 'smsToConductor')
         {
@@ -621,7 +724,107 @@ class TicketInformationRepository
 
             $sms_Details = $this->manageSMS->where('pnr',$pnr)                                       
                                            ->where('type',$type)
-                                           ->get();                                                     
+                                           ->get(); 
+            if($sms_Details == '[]')                                           
+            {
+                $data = $this->booking->with('Bus','Users','bus.busContacts','BookingDetail.BusSeats.seats')->where("pnr",$pnr)->get();
+
+                $all_seats = '';
+                
+                $nameList = "";
+                $genderList = "";
+                $passengerDetails = $data[0]->BookingDetail;
+                $i = 0;
+                $m = 0;
+                $f = 0;
+                $O = 0;
+
+                foreach($passengerDetails as $pDetail)
+                {
+                    if($i==0){
+                        $nameList = "{$nameList},{$pDetail->passenger_name}";
+                    }
+                    
+                    $i++;
+                    switch($pDetail->passenger_gender)
+                    {
+                        case("M"):
+                            $m++;
+                        break;
+                        case("F"):
+                            $f++;
+                        break;
+                        case("O"):
+                            $O++;
+                        break;
+                    }
+
+                    $all_seats.= $pDetail->BusSeats->seats->seatText.',';
+                } 
+                
+                if($m>0 && $f>0 && $O > 0){
+                    $genderList = "{$m}M/{$f}F/{$O}O";
+                }
+        
+                else if($m>0 && $f>0 && $O == 0){
+                    $genderList = "{$m}M/{$f}F";
+                }
+        
+                else if($m>0 && $f==0 && $O > 0){
+                    $genderList = "{$m}M/{$O}O";
+                }
+        
+                else if($m==0 && $f>0 && $O > 0){
+                    $genderList = "{$f}F/{$O}O";
+                }
+        
+                else if($m>0 && $f==0 && $O == 0){
+                    $genderList = "{$m}M";
+                }
+        
+                else if($m==0 && $f>0 && $O == 0){
+                    $genderList = "{$f}F";
+                }
+        
+                else if($m==0 && $f==0 && $O > 0){
+                    $genderList = "{$O}O";
+                }
+        
+                if(count($passengerDetails) > 1)
+                {
+                    $restNo = count($passengerDetails) -1 ;            
+                    $nameList = "{$nameList}+{$restNo}";         
+                }               
+                $nameList = substr($nameList,1);
+                $all_seats = rtrim($all_seats, ','); 
+                //log::info($genderList); exit;        
+                
+                $source_name = $this->location->where('id', $data[0]->source_id)->get();
+                $destination_name = $this->location->where('id', $data[0]->destination_id)->get();
+    
+                $bus_id = $data[0]->bus_id;
+                $busName = $data[0]->Bus->name;
+                $busNumber = $data[0]->Bus->bus_number;    
+                $conductor_mobile = $data[0]->Bus->BusContacts[0]->phone;
+                $customer_mobile = $data[0]->Users->phone;
+
+                $smsData = array(                   
+                    'PNR' => $pnr,
+                    'busdetails' => $busName.'-'.$busNumber,
+                    'DOJ' => date('d-m-Y',strtotime($data[0]->journey_dt)), 
+                    'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                    'dep' => $data[0]->boarding_time,
+                    'Name' => $nameList,
+                    'Gender' => $genderList,
+                    'seat' => $all_seats,                     
+                    'contactmob' => $conductor_mobile,  
+                    'customermobile'=>$customer_mobile   
+                ); 
+                
+                $sms_Details =  $this->channelRepository->createBookingTktFormatToCMO($smsData); 
+
+                //log::info($sms_Details); exit;     
+            }                                           
         }                     
             
         return $sms_Details;
@@ -728,7 +931,7 @@ class TicketInformationRepository
                         'message'=>$data['contents']
                    );      
 
-         $SMS = $this->channelRepository->sendCancelSmsToCustomer($smsdata);
+        $SMS = $this->channelRepository->sendCancelSmsToCustomer($smsdata);
 
         if($SMS)
         {

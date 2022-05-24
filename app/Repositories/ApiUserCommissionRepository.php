@@ -42,9 +42,7 @@ class ApiUserCommissionRepository
         elseif ($paginate == null) 
         {
             $paginate = 10 ;
-        }
-
-        
+        }       
 
         $data=$data->paginate($paginate);
         // Log::info($data);
@@ -64,9 +62,8 @@ class ApiUserCommissionRepository
         $apiUserCommission->starting_fare = $data['starting_fare'];
         $apiUserCommission->upto_fare = $data['upto_fare'];    
         $apiUserCommission->commision = $data['commision'];    
-        $apiUserCommission->created_by = $data['user_name'];
-        $apiUserCommission->status = 1;
-        //log::info($apiUserCommission);
+        $apiUserCommission->commision = $data['created_by'];    
+        $apiUserCommission->status = 1;        
         return $apiUserCommission;
     }
     
@@ -75,10 +72,9 @@ class ApiUserCommissionRepository
         return $this->apiUserCommission->where('id', $id)->get();
     }
     public function save($data)
-    {       
-        //Log::info($data);
+    {   
         $apiUserCommission = new $this->apiUserCommission;
-        $apiUserCommission=$this->getModel($data,$apiUserCommission);
+        $apiUserCommission = $this->getModel($data,$apiUserCommission);        
         $apiUserCommission->save();
         return $apiUserCommission;
     }

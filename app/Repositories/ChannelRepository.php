@@ -431,5 +431,46 @@ class ChannelRepository
                     //return $response;
             }
       }
+
+      public function createBookingTktFormatToCustomer($data)
+      {             
+            $message = config('services.sms.textlocal.msgTicket');                  
+            $message = str_replace("<PNR>",$data['PNR'],$message);
+            $message = str_replace("<busdetails>",$data['busdetails'],$message);
+            $message = str_replace("<DOJ>", $data['DOJ'],$message);
+            $message = str_replace("<routedetails>",$data['route'],$message);
+            $message = str_replace("<dep>",$data['dep'],$message);
+            $message = str_replace("<name>",$data['Name'],$message);
+            $message = str_replace("<gender>",$data['Gender'],$message);
+            $message = str_replace("<seat>",$data['seat'],$message);
+            $message = str_replace("<fare>",$data['fare'],$message);          
+            $message = str_replace("<conmob>",$data['contactmob'],$message);          
+
+            $data = array(
+                        'to'      => $data['customermobile'],
+                        'contents'=> $message
+                    );                           
+            return [$data];        
+      }
+
+      public function createBookingTktFormatToCMO($data)
+      {             
+            $message = config('services.sms.textlocal.msgTicketCMO');                  
+            $message = str_replace("<PNR>",$data['PNR'],$message);
+            $message = str_replace("<busdetails>",$data['busdetails'],$message);
+            $message = str_replace("<DOJ>", $data['DOJ'],$message);
+            $message = str_replace("<routedetails>",$data['route'],$message);
+            $message = str_replace("<dep>",$data['dep'],$message);
+            $message = str_replace("<name>",$data['Name'],$message);
+            $message = str_replace("<gender>",$data['Gender'],$message);
+            $message = str_replace("<seat>",$data['seat'],$message);
+            $message = str_replace("<contactmob>",$data['contactmob'],$message);          
+
+            $data = array(
+                        'to'      => $data['customermobile'],
+                        'contents'=> $message
+                    );                           
+            return [$data];        
+      }
       
 }

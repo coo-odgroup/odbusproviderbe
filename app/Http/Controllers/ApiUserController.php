@@ -127,14 +127,10 @@ class ApiUserController extends Controller
            else if($response=='Pan Card Already Exist')
            {
               return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           else if($response=='Aadhaar Card Already Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
+           }          
            else
            {
-               return $this->successResponse($response,"Agent Updated", Response::HTTP_CREATED);
+               return $this->successResponse($response,"Api User Updated", Response::HTTP_CREATED);
            }        
     }     
 
@@ -146,6 +142,6 @@ class ApiUserController extends Controller
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
+        return $this->successResponse(null, "Api User Status Updated", Response::HTTP_ACCEPTED);
     }    
 }

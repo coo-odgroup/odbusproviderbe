@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Services\ApiUserCommissionService;
 use Illuminate\Support\Facades\Validator;
@@ -44,19 +43,19 @@ class ApiUserComissionController extends Controller
                     'user_id',
                     'starting_fare',
                     'upto_fare',
-                    'commision'                    
-        ]);
+                    'commision',
+                    'created_by'                    
+                ]);
 
         //log::info($data);exit;
 
         $ApiUserCommissionValidation = $this->apiuserCommissionValidator->validate($data);
         
-        if ($ApiUserCommissionValidation->fails())
+        if($ApiUserCommissionValidation->fails())
         {
             $errors = $ApiUserCommissionValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
-
         try 
         {
             $this->apiuserCommissionService->savePostData($data);          
@@ -65,7 +64,7 @@ class ApiUserComissionController extends Controller
         {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }   
-        return $this->successResponse($data,"Agent Commission Slab Added",Response::HTTP_CREATED); 
+        return $this->successResponse($data,"API User Commission Slab Added",Response::HTTP_CREATED); 
     } 
 
     public function updateApiUserCommission(Request $request, $id) 
@@ -87,7 +86,7 @@ class ApiUserComissionController extends Controller
         try 
         {
             $this->apiuserCommissionService->update($data, $id);
-            return $this->successResponse(null, "Agent Commission Slab Updated",Response::HTTP_CREATED);         
+            return $this->successResponse(null, "API User Commission Slab Updated",Response::HTTP_CREATED);         
         }
         catch (Exception $e) 
         {
@@ -105,14 +104,14 @@ class ApiUserComissionController extends Controller
         {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(Null,"Agent Commission Slab Deleted",Response::HTTP_ACCEPTED);      
+        return $this->successResponse(Null,"API User Commission Slab Deleted",Response::HTTP_ACCEPTED);      
     }
 
     public function getApiUserCommission($id) 
     {
         try 
         {
-            $ApiUserCommissionID= $this->apiuserCommissionService->getById($id);
+            $ApiUserCommissionID = $this->apiuserCommissionService->getById($id);
         }
         catch (Exception $e) 
         {
