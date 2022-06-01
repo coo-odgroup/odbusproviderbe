@@ -8,7 +8,6 @@ use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 /*Priyadarshi to Review*/
 class ApiClientReportRepository
 {
@@ -25,24 +24,196 @@ class ApiClientReportRepository
     
     public function getAllData($request)
     {
-        return $request;      
+
+        // $data= $this->booking->where('user_id',$request->user_id)->where('status',1)->get();
+        // log::info($data);
+        $paginate = $request->rows_number;
+        $date_type = $request->date_type;
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate;
+        $user_id  =  $request->user_id;
+
+        $data= $this->booking->with('BookingDetail.BusSeats.seats',
+                                    'BookingDetail.BusSeats.ticketPrice','Users','User')
+                             ->with(["Bus" => function($bs){
+                                        $bs->with('cancellationslabs.cancellationSlabInfo');
+                                        $bs->with('busstoppage');                
+                                        $bs->with('busContacts');
+                                      } ] )  
+                             ->where('user_id', $user_id )
+                             ->where('status', 1 )
+                             ->orderBy('id','DESC');
+
+         if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) {
+            $paginate = 10 ;
+        }
+
+        if($date_type == 'booking' && $start_date == null && $end_date == null)
+        {
+            $data =$data->orderBy('created_at','DESC');
+        }
+        else if($date_type == 'booking' && $start_date != null && $end_date != null)
+        {         
+            if($start_date == $end_date){
+                $data =$data->where('created_at','like','%'.$start_date.'%')
+                        ->orderBy('created_at','DESC');
+                       
+            }else{
+                $data =$data->whereBetween('created_at', [$start_date, $end_date])
+                        ->orderBy('created_at','DESC');
+            }
+            
+        }
+        else if($date_type == 'journey' && $start_date == null && $end_date == null)
+        {
+            $data =$data->orderBy('journey_dt','DESC');
+        }
+        else if($date_type == 'journey' && $start_date != null && $end_date != null)
+        {
+             if($start_date == $end_date){
+                $data =$data->where('journey_dt', 'like','%'.$start_date.'%')
+                        ->orderBy('journey_dt','DESC');
+            }else{
+                 $data =$data-> whereBetween('journey_dt', [$start_date, $end_date])
+                        ->orderBy('journey_dt','DESC');
+            }
+        }
+        
+        $data=$data->paginate($paginate); 
+
+        if($data){
+            foreach($data as $key=>$v){
+
+               $v['from_location']=$this->location->where('id', $v->source_id)->get();
+               $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+
+               $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
+               // $v['source']=[];
+               // $v['destination']=[];
+
+               $stoppages['source']=[];
+               $stoppages['destination']=[];
+               
+               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                {                          
+                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                }
+                $v['source']= $stoppages['source'];
+                $v['destination']= $stoppages['destination'];
+            }
+        }
+           $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+
+      
+           return $response; 
 
     }
 
-
-
     public function getAllCancelData($request)
     {
-        return $request;      
+        $paginate = $request->rows_number;
+        $date_type = $request->date_type;
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate;
+        $user_id  =  $request->user_id;
 
+        $data= $this->booking->with('BookingDetail.BusSeats.seats',
+                                    'BookingDetail.BusSeats.ticketPrice','Users','User')
+                             ->with(["Bus" => function($bs){
+                                        $bs->with('cancellationslabs.cancellationSlabInfo');
+                                        $bs->with('busstoppage');                
+                                        $bs->with('busContacts');
+                                      } ] )  
+                             ->where('user_id', $user_id )
+                             ->where('status', 2 )
+                             ->orderBy('id','DESC');
+
+         if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) {
+            $paginate = 10 ;
+        }
+
+        if($date_type == 'booking' && $start_date == null && $end_date == null)
+        {
+            $data =$data->orderBy('created_at','DESC');
+        }
+        else if($date_type == 'booking' && $start_date != null && $end_date != null)
+        {         
+            if($start_date == $end_date){
+                $data =$data->where('created_at','like','%'.$start_date.'%')
+                        ->orderBy('created_at','DESC');
+                       
+            }else{
+                $data =$data->whereBetween('created_at', [$start_date, $end_date])
+                        ->orderBy('created_at','DESC');
+            }
+            
+        }
+        else if($date_type == 'journey' && $start_date == null && $end_date == null)
+        {
+            $data =$data->orderBy('journey_dt','DESC');
+        }
+        else if($date_type == 'journey' && $start_date != null && $end_date != null)
+        {
+             if($start_date == $end_date){
+                $data =$data->where('journey_dt', 'like','%'.$start_date.'%')
+                        ->orderBy('journey_dt','DESC');
+            }else{
+                 $data =$data-> whereBetween('journey_dt', [$start_date, $end_date])
+                        ->orderBy('journey_dt','DESC');
+            }
+        }
+        
+        $data=$data->paginate($paginate); 
+
+        if($data){
+            foreach($data as $key=>$v){
+
+               $v['from_location']=$this->location->where('id', $v->source_id)->get();
+               $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+
+               $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
+               // $v['source']=[];
+               // $v['destination']=[];
+
+               $stoppages['source']=[];
+               $stoppages['destination']=[];
+               
+               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                {                          
+                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                }
+                $v['source']= $stoppages['source'];
+                $v['destination']= $stoppages['destination'];
+            }
+        }
+           $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+
+      
+           return $response;       
     }
 
 
     public function datewiseroute($request)
     {
-        // log::info($request->source_id);
-        // exit;
-        // return $request;  
+         
         /////// first check the seat is booked or on hold before cancelling pnr and insert new record to booking table
         $dt = '';
         $client = new \GuzzleHttp\Client();       

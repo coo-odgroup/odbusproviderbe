@@ -378,7 +378,7 @@ class ApiClientWalletRepository
     public function declineWalletReq($data,$id)
     {
 
-        log::info($data);
+        // log::info($data);
         
         $ApiClientWalletRequest = $this->ApiClientWalletRequest->find($id);       
         $ApiClientWalletRequest->status = 3;
@@ -458,16 +458,27 @@ class ApiClientWalletRepository
             $paginate = 10 ;
         }
 
-        // if($name!=null)
-        // {
-        //     $data = $data->where('transaction_id', 'like', '%' .$name . '%')
-        //                  ->orWhere('reference_id', 'like', '%' .$name . '%')
-        //                  ->orWhere('amount', 'like', '%' .$name . '%')
-        //                  ->orWhere('remarks', 'like', '%' .$name . '%')
-        //                  ->orWhere('payment_via', 'like', '%' .$name . '%')
-        //                 ;                        
-        // } 
-
+        if($name!= null && $name!= 'all_transaction')
+        {
+          
+            if($name == 'recharge')
+            {
+                $data =$data->where('payment_via','!=','')->where('transaction_type','c' );
+            } 
+            elseif($name == 'commission_received')
+            {
+                $data =$data->where('type','Commission')->where('transaction_type','c') ;
+            } 
+            elseif($name == 'booking')
+            {
+                 $data =$data->where('payment_via','')->where('transaction_type','d') ;
+            }
+            elseif($name == 'cancellation')
+            {
+                $data =$data->where('type','Refund')->where('transaction_type','c') ;
+            }
+                       
+        }
         if($startDate!=null && $endDate!=null)
         {
             if($startDate == $endDate){
