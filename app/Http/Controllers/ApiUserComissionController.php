@@ -118,5 +118,6 @@ class ApiUserComissionController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }
         return $this->successResponse($AgentCommissionID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);       
-    }       
+    }     
+   
 }

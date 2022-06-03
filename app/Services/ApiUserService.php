@@ -26,12 +26,12 @@ class ApiUserService
      * @return String
      */
     public function savePostData($data)
-    {
-        try {
-            $ApiUser = $this->apiUserRepository->save($data);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-            
+    {        
+        try {            
+             return  $this->apiUserRepository->save($data);          
+        } 
+        catch (Exception $e) {
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));            
         }
         return $ApiUser;
     }
@@ -114,5 +114,7 @@ class ApiUserService
         return $agent;
 
     }  
+
+   
 
 }

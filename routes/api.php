@@ -125,7 +125,8 @@ use App\Http\Controllers\AssocAssignReportController;
 use App\Http\Controllers\ApiClientWalletController;
 use App\Http\Controllers\ApiClientReportController;
 use App\Http\Controllers\ApiUserComissionController;
-
+use App\Http\Controllers\ApiUserCompleteReportController;
+use App\Http\Controllers\ApiUserCancelTicketReportController;
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
 
@@ -979,3 +980,7 @@ Route::get('/ApiUserCommission', [ApiUserComissionController::class, 'getAllApiU
 Route::put('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'updateApiUserCommission']);
 Route::delete('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'deleteApiUserCommission']);
 Route::get('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'getApiUserCommission']);
+///API User CompleteReport////
+Route::post('ApiUsercompletereport',[ApiUserCompleteReportController::class,'getData']);
+//API User CancelTicketReport
+Route::post('ApiUsercancelticketreport',[ApiUserCancelTicketReportController::class,'getData']);

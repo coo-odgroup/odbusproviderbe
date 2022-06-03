@@ -3,6 +3,9 @@
 namespace App\Repositories;
 use Illuminate\Support\Facades\Log;
 use App\Models\ApiUserCommission;
+use App\Models\Bus;
+use App\Models\Booking;
+use App\Models\Location;
 
 class ApiUserCommissionRepository
 {
@@ -10,15 +13,21 @@ class ApiUserCommissionRepository
      * @var apiUserCommission
      */
     protected $apiUserCommission;
+    protected $booking;
+    protected $location;
+    protected $bus;
 
     /**
      * apiUserCommissionRepository constructor.
      *
      * @param Post $apiUserCommission
      */
-    public function __construct(ApiUserCommission $apiUserCommission)
+    public function __construct(ApiUserCommission $apiUserCommission,Booking $booking ,Location $location ,Bus $bus)
     {
         $this->apiUserCommission = $apiUserCommission;
+        $this->booking = $booking;       
+        $this->location = $location;       
+        $this->bus = $bus;     
     }
 
     
@@ -119,6 +128,6 @@ class ApiUserCommissionRepository
         }
         $post->update();
         return $post;
-    }
+    }   
     
 }

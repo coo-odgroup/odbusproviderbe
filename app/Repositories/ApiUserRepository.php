@@ -13,6 +13,7 @@ class ApiUserRepository
      */
     protected $user;
     protected $channelRepository;
+   
 
     /**
      * AgentRepository constructor.
@@ -23,48 +24,29 @@ class ApiUserRepository
     {
         $this->user = $user;  
         $this->channelRepository = $channelRepository;
-
+        
     }
 
     public function save($data)
-    {    
+    {   
         $email = $this->user->where('email',$data['email'])->where('status','!=',2)->get();
         $phone = $this->user->where('phone',$data['phone'])->where('status','!=',2)->get();
         $pancard = $this->user->where('pancard_no',$data['pancard_no'])->where('status','!=',2)->get();
-       
+
         if(count($email) == 0)
         {
             if(count($phone) == 0)
             {                
                 if(count($pancard) == 0)
                 {
-                    $user = new $this->user;
-                    $user = $this->getModel($data,$user);
-                    // log::info($user);exit;
+                    $users = new $this->user;
+                    $users = $this->getModel($data,$users);                         
+                    //log::info($users); exit;
+                    $users->save();    
 
-                    $user->save();
-
-                    $smsData = array(
-                        'phone' => $data->phone,
-                        'agentName' => $data->name,
-                        'url' => 'https://agent.odbus.in/#/login', 
-                        'agentEmail' => $data->email,
-                        'agentPassword' => $data->password
-                    );
-
-                   // $this->channelRepository->SendAgentCreationSms($smsData);
-
-                    $to_user = $data->email;
-                    $subject = "Agent Creation Email";
-                    $agentData= [
-                                    'userName'=>$data->name,
-                                    'userEmail'=> $data->email,
-                                    'userPassword'=> $data->password,
-                                    'loginUrl'=>'https://agent.odbus.in/#/login'                        
-                                ];
-                    //SendAgentCreationEmailJob::dispatch($to_user, $subject, $agentData);
-
-                    return $user;
+                    log::info($users);
+                    //exit;  
+                    return $users;
                 }
                 else 
                 {
@@ -82,11 +64,9 @@ class ApiUserRepository
         }
     }
 
-    
     public function getAll($request)
     {
         return $this->user->get();
-
     }   
 
     public function getAllApiUserData($request)
@@ -275,4 +255,8 @@ class ApiUserRepository
         $post->update();
         return $post;
     }
+
+  
+
+
 }

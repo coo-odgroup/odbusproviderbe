@@ -143,5 +143,7 @@ class ApiUserController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Api User Status Updated", Response::HTTP_ACCEPTED);
-    }    
+    } 
+    
+   
 }

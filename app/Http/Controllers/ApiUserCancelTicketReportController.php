@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\CancelTicketReportService;
+use App\Services\ApiUserCancelTicketReportService;
 
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
@@ -13,20 +13,20 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-class CancelTicketReportController extends Controller
+class ApiUserCancelTicketReportController extends Controller
 {
     use ApiResponser;
    
-    protected $cancelticketreportService;    
+    protected $apiusercancelticketreportService;    
     
-    public function __construct(CancelTicketReportService $cancelticketreportService)
+    public function __construct(ApiUserCancelTicketReportService $apiusercancelticketreportService)
     {
-        $this->cancelticketreportService = $cancelticketreportService;
+        $this->apiusercancelticketreportService = $apiusercancelticketreportService;
         
     } 
     public function getData(Request $request)
     {
-        $cancelticketData = $this->cancelticketreportService->getData($request);
+        $cancelticketData = $this->apiusercancelticketreportService->getData($request);
         return $this->successResponse($cancelticketData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
