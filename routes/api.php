@@ -973,6 +973,9 @@ Route::post('/ApiUserData', [ApiUserController::class, 'getAllApiUserData']);
 Route::put('/ApiUser/{id}', [ApiUserController::class, 'updateApiUser']);
 Route::put('/ApiUserChangeStatus', [AgentController::class, 'changeStatus']);
 
+Route::post('/apiclientprofile', [ApiUserController::class, 'apiclientprofile']);
+Route::post('/updateapiclient', [ApiUserController::class, 'updateapiclient']);
+
 //API USER Commission Slab
 Route::post('/ApiUserCommission', [ApiUserComissionController::class, 'createApiUserCommission']);
 Route::post('/ApiUserCommissionData', [ApiUserComissionController::class, 'getAllApiUserCommissionData']);

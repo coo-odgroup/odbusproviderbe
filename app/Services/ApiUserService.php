@@ -113,6 +113,15 @@ class ApiUserService
         }
         return $agent;
 
+    } 
+
+    public function apiclientprofile($request)
+    {
+         return $this->apiUserRepository->apiclientprofile($request);
+    }
+    public function updateapiclient($request)
+    {
+         return $this->apiUserRepository->updateapiclient($request);
     }  
 
    

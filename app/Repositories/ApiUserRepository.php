@@ -256,6 +256,42 @@ class ApiUserRepository
         return $post;
     }
 
+    public function apiclientprofile($request)
+    {
+        return $this->user->where('id',$request['user_id'])->get();
+    } 
+
+    public function updateapiclient($request)
+    {
+        $apiuser=$this->user->find($request['user_id']);
+        $apiuser->name = $request['name'];
+        $apiuser->email = $request['email'];    
+        $apiuser->phone = $request['phone'];
+        if($request['pwd_check']==true && $request['password']!='')
+        {
+            $apiuser->password = bcrypt($request['password']);
+        }
+        $apiuser->location = $request['location'];
+        $apiuser->adhar_no = $request['adhar_no'];
+        $apiuser->pancard_no = $request['pancard_no'];
+        $apiuser->organization_name = $request['organization_name'];
+        $apiuser->address = $request['address'];
+        $apiuser->street = $request['street'];
+        $apiuser->city = $request['city'];
+        $apiuser->landmark = $request['landmark'];
+        $apiuser->pincode = $request['pincode'];
+        $apiuser->name_on_bank_account = $request['name_on_bank_account'];
+        $apiuser->branch_name = $request['branch_name'];
+        $apiuser->bank_name = $request['bank_name'];
+        $apiuser->ifsc_code = $request['ifsc_code'];
+        $apiuser->bank_account_no = $request['bank_account_no'];
+        $apiuser->upi_id = $request['upi_id'];
+        $apiuser->update();
+
+        return $apiuser;
+    }   
+
+
   
 
 

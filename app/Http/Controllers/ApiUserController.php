@@ -144,6 +144,18 @@ class ApiUserController extends Controller
         }
         return $this->successResponse(null, "Api User Status Updated", Response::HTTP_ACCEPTED);
     } 
+
+     public function apiclientprofile(Request $request) 
+    {      
+       $agents = $this->apiUserService->apiclientprofile($request);
+        return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+     } 
+
+     public function updateapiclient(Request $request) 
+      {      
+         $agents = $this->apiUserService->updateapiclient($request);
+          return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+       }  
     
    
 }
