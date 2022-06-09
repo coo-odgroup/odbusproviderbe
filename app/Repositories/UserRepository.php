@@ -367,10 +367,12 @@ public function login($request){
             if(Hash::check($request['password'], $password )){
                 $role = $query->first()->role_id;
 
-                if($role == $request['user_type']){  
+                if($role == $request['user_type']){ 
+
+                // return $query->first(); 
                     if($request['user_type']==4)
                     {
-                        return $query->with('UserBusOperator.BusOperator')->first();
+                        return $query->with('busOperator')->first();
                     }
                     else{
                         return $query->first();

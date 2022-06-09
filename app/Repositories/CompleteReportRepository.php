@@ -36,6 +36,7 @@ class CompleteReportRepository
         $destination_id = $request->destination_id;
         $start_date  =  $request->rangeFromDate;
         $end_date  =  $request->rangeToDate;
+        $bus_id = $request->bus_id;
        
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
@@ -56,6 +57,12 @@ class CompleteReportRepository
         if(!empty($pnr))
         {
            $data=$data->where('pnr', $pnr );
+        }
+
+
+        if(!empty($bus_id))
+        {
+           $data=$data->where('bus_id', $bus_id );
         }
 
        

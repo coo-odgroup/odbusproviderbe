@@ -56,7 +56,6 @@ use App\Http\Controllers\ListingController;
 use App\Http\Controllers\OdbusChargesController;
 use App\Http\Controllers\ExtraSeatBlockController;
 use App\Http\Controllers\AgentReportController;
-
 use App\Http\Controllers\OffersController;
 
 
@@ -124,6 +123,7 @@ use App\Http\Controllers\AssocAssignReportController;
 
 use App\Http\Controllers\ApiClientWalletController;
 use App\Http\Controllers\ApiClientReportController;
+use App\Http\Controllers\ApiClientIssueController;
 use App\Http\Controllers\ApiUserComissionController;
 use App\Http\Controllers\ApiUserCompleteReportController;
 use App\Http\Controllers\ApiUserCancelTicketReportController;
@@ -139,7 +139,7 @@ Route::post('/assocAssignAgentreport', [AssocAssignReportController::class, 'get
 Route::post('/assocAssignBusreport', [AssocAssignReportController::class, 'getAssignBusData']);
 Route::post('/assocAssignOperatorreport', [AssocAssignReportController::class, 'getAssignOperatorData']);
 
-/////////////////Api Client ////////////////////
+///////////////// Api Client ////////////////////
 Route::get('/apiClientWalletBalance/{id}',[ApiClientWalletController::class,'agentWalletBalance']);
 Route::post('/apiClientWallet',[ApiClientWalletController::class,'addAgentWallet']);
 Route::post('/apiClientWalletData',[ApiClientWalletController::class,'getData']);
@@ -153,8 +153,10 @@ Route::post('/allTransactionData',[ApiClientWalletController::class,'allTransact
 // api client report
 Route::post('/apiclientbookingreport',[ApiClientReportController::class,'getAllData']);
 Route::post('/apiclientcancelreport',[ApiClientReportController::class,'getAllCancelData']);
-
 Route::post('/datewiseroute',[ApiClientReportController::class,'datewiseroute']);
+///////////////////////api client issue ///////////////////////
+Route::post('/apiclientissuetype',[ApiClientIssueController::class,'apiclientissuetype']);
+Route::post('/apiclientissuesubtype',[ApiClientIssueController::class,'apiclientissuesubtype']);
 
 
 //Ticket Information 
