@@ -605,7 +605,7 @@ class TicketInformationRepository
     public function getDetailsSms($request)
     {
         $pnr = $request['pnr'] ;
-        $action = $request['action'];        
+        $action = $request['action'];     
 
         if($action == 'smsToCustomer')
         {
@@ -614,8 +614,6 @@ class TicketInformationRepository
             $sms_Details = $this->manageSMS->where('pnr',$pnr)                                       
                                            ->where('type',$type)
                                            ->get();  
-            //log::info($sms_Details);exit;                                             
-                                           
             if($sms_Details == '[]')                                           
             {
                 $data = $this->booking->with('Bus','Users','bus.busContacts','BookingDetail.BusSeats.seats')->where("pnr",$pnr)->get();
@@ -719,18 +717,20 @@ class TicketInformationRepository
             }                                         
         }
         else if($action == 'smsToConductor')
-        {
+        {            
             $type = 'cmo';
 
             $sms_Details = $this->manageSMS->where('pnr',$pnr)                                       
                                            ->where('type',$type)
                                            ->get(); 
+
             if($sms_Details == '[]')                                           
             {
                 $data = $this->booking->with('Bus','Users','bus.busContacts','BookingDetail.BusSeats.seats')->where("pnr",$pnr)->get();
 
-                $all_seats = '';
-                
+                //log::info($data);exit;
+
+                $all_seats = '';                
                 $nameList = "";
                 $genderList = "";
                 $passengerDetails = $data[0]->BookingDetail;
@@ -808,6 +808,16 @@ class TicketInformationRepository
                 $conductor_mobile = $data[0]->Bus->BusContacts[0]->phone;
                 $customer_mobile = $data[0]->Users->phone;
 
+                $busContactDetails = BusContacts::where('bus_id',$bus_id)
+                                                ->where('status','1')
+                                                ->where('booking_sms_send','1')
+                                                ->get('phone');
+                
+                if($busContactDetails->isNotEmpty())
+                {
+                    $CMO_mobile = collect($busContactDetails)->implode('phone',',');                                    
+                }                       
+
                 $smsData = array(                   
                     'PNR' => $pnr,
                     'busdetails' => $busName.'-'.$busNumber,
@@ -817,13 +827,13 @@ class TicketInformationRepository
                     'Name' => $nameList,
                     'Gender' => $genderList,
                     'seat' => $all_seats,                     
-                    'contactmob' => $conductor_mobile,  
-                    'customermobile'=>$customer_mobile   
+                    'contactmob' => $customer_mobile,  
+                    'CMO_mobile'=>$CMO_mobile   
                 ); 
-                
-                $sms_Details =  $this->channelRepository->createBookingTktFormatToCMO($smsData); 
 
-                //log::info($sms_Details); exit;     
+                //log::info($smsData);exit;
+
+                $sms_Details =  $this->channelRepository->createBookingTktFormatToCMO($smsData); 
             }                                           
         }                     
             

@@ -190,11 +190,12 @@ class ApiUserRepository
                 if(count($pancard)==0)
                 {
                         $user = $this->user->find($id);
+
                         if($user->password != $data['password'])
                         {
-                                $user->password = bcrypt($data['password']);
-                        }    
-
+                            $user->password = bcrypt($data['password']);
+                        }  
+                        
                         $user->name = $data['name'];
                         $user->email = $data['email'];    
                         $user->phone = $data['phone'];   
@@ -205,7 +206,9 @@ class ApiUserRepository
                         $user->organization_name = $data['organization_name'];
                         $user->address = $data['address'];
                         $user->landmark = $data['landmark'];
-                        $user->pincode = $data['pincode'];                        
+                        $user->pincode = $data['pincode'];    
+                        $user->street = $data['street'];
+                        $user->city = $data['city'];                    
                         $user->created_by = $data['created_by'];
                         $user->update();
                         return $user;

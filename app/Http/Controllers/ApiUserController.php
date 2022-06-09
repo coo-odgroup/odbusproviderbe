@@ -109,10 +109,9 @@ class ApiUserController extends Controller
                             'landmark',
                             'pincode',                           
                             'created_by'
-                            
                  ]);                              
 
-           //log::info($request);exit;
+           //log::info($data);
 
            $response =  $this->apiUserService->update($data, $id);
 
@@ -146,16 +145,14 @@ class ApiUserController extends Controller
     } 
 
      public function apiclientprofile(Request $request) 
-    {      
-       $agents = $this->apiUserService->apiclientprofile($request);
-        return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+     {      
+         $agents = $this->apiUserService->apiclientprofile($request);
+         return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
      } 
 
      public function updateapiclient(Request $request) 
-      {      
-         $agents = $this->apiUserService->updateapiclient($request);
+     {      
+          $agents = $this->apiUserService->updateapiclient($request);
           return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-       }  
-    
-   
+     }  
 }

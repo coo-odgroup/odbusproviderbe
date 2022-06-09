@@ -467,7 +467,7 @@ class ChannelRepository
             $message = str_replace("<contactmob>",$data['contactmob'],$message);          
 
             $data = array(
-                        'to'      => $data['customermobile'],
+                        'to'      => $data['CMO_mobile'],
                         'contents'=> $message
                     );                           
             return [$data];        
