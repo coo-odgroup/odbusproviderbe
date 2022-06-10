@@ -134,7 +134,7 @@ class ApiUserRepository
         }      
 
         $data = $data->paginate($paginate);
-        log::info($data); 
+       // log::info($data); 
 
         $response = array(
              "count" => $data->count(), 
@@ -146,9 +146,12 @@ class ApiUserRepository
     
     public function getModel($data, User $user)
     {
+        $client_id = random_int(1123456, 9999999);
+
         $user->name = $data['name'];
         $user->email = $data['email'];    
         $user->phone = $data['phone'];    
+        $user->client_id = $client_id;    
         $user->password = bcrypt($data['password']);
         $user->user_type = "API USER";
         $user->role_id = "6";
@@ -162,7 +165,6 @@ class ApiUserRepository
         $user->pincode = $data['pincode'];      
         $user->created_by = $data['created_by'];
         $user->status = 1;
-        //log::info($user);exit;
         return $user;
     }
     

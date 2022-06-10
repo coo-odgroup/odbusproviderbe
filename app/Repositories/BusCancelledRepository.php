@@ -137,8 +137,10 @@ class BusCancelledRepository
         $bus_operator_id= $request['bus_operator_id'];  
 
         $data= $this->busCancelled->with('bus.busOperator','bus.busstoppage','busCancelledDate')
-                                  ->with('bus.ticketPrice')->orderBy('id','DESC')
+                                  ->with('bus.ticketPrice')
+                                  ->orderBy('id','DESC')
                                   ->whereNotIn('status', [2]);
+
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
             $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
@@ -157,21 +159,32 @@ class BusCancelledRepository
             $data = $data->where('bus_operator_id',$bus_operator_id);
         }
 
+       
+
         if($toDate!= null && $fromDate!=null)
-        {
-          $dt =[];
-          $dt[1]= $fromDate ;
-          $dt[2]=$toDate;
-          if($fromDate==$toDate){
-                  $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
-                         {$query->where('cancelled_date', $dt[1]);
-                          });
-          }else{
-              $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
-                         {$query->whereBetween('cancelled_date', [$dt[1], $dt[2]]);
-                          });
-          }            
+        {            
+            $dt =[];
+            $dt[1]= $fromDate ;
+            $dt[2]=$toDate;
+            if($fromDate==$toDate){
+                    $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
+                            {$query->where('cancelled_date', $dt[1]);
+                            });
+            }else{
+                $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
+                            {$query->whereBetween('cancelled_date', [$dt[1], $dt[2]]);
+                            });
+            }            
         }
+        else
+        {
+            $c_dt = [];
+            $c_dt[1] = date('Y-m-d');
+            $data = $data->whereHas('busCancelledDate', function ($query) use ($c_dt)
+                                    {$query->where('cancelled_date', $c_dt[1]);
+                                    });
+        }
+
         if($source_id!=null && $destination_id!=null )
         {
             $loc = [];
@@ -183,11 +196,11 @@ class BusCancelledRepository
                                 ->where('destination_id',$loc[2] );});
             
         } 
-
         
-        $data=$data->paginate($paginate);
-        // Log::info($data);
+        $data = $data->paginate($paginate);
+        // log::info($data);
         // exit;
+        
         if($data){
             foreach($data as $v){ 
                foreach($v->bus->ticketPrice as $k => $a)

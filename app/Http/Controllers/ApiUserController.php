@@ -34,6 +34,7 @@ class ApiUserController extends Controller
                                 'name',
                                 'email',
                                 'phone',
+                                'client_id',
                                 'password',
                                 'user_type',                    
                                 'city',

@@ -191,9 +191,11 @@ class BusScheduleRepository
 
     public function busScheduleById($id)
     {
-     
-        $data = $this->busSchedule->with(["busScheduleDate" => function($b){
-                                          $b->orderBy('id','DESC')->limit(30);
+        // $cur_dt = [];
+        // $cur_dt[1] = date('Y-m-d');
+        $data = $this->busSchedule->with(["busScheduleDate" => function($b){                                          
+                                          $b->orderBy('id','DESC')->limit(30)
+                                            ->where('entry_date','>=',date('Y-m-d'));                                         
                                            }])                                      
                                   ->where('bus_id',$id)
                                   ->where('status',1)
