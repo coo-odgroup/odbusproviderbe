@@ -76,12 +76,7 @@ class ApiClientIssueRepository
         $user = $this->User->where('id',$request['user_id'])->where('status',1)->get();
         $issuetype =  $this->ApiClientIssueType->where('id',$request['issueType_id'])->where('status',1)->get();
         $issuesubtype = $this->ApiClientIssueSubType->where('id',$request['issueSubType_id'])->get();
-        // log::info($user[0]->name);
-        // log::info($issuetype[0]->name);
-        // log::info($issuesubtype[0]->name);
-        // exit;
-
-
+        
         $ApiClientIssue = new $this->ApiClientIssue;
         $ApiClientIssue->user_id = $request['user_id'];
         $ApiClientIssue->apiclientissuetype_id = $request['issueType_id'];
@@ -95,8 +90,8 @@ class ApiClientIssueRepository
         $ApiClientIssue->created_by = $request['created_by'];
         $ApiClientIssue->save();
 
-               $to_user = 'bishal.seofied@gmail.com';
-               // $to_user = 'support@odbus.in';
+               // $to_user = 'bishal.seofied@gmail.com';
+               $to_user = 'support@odbus.in';
                $subject = "Api Client Issue from ".$user[0]->name." on ".$issuetype[0]->name ;
                $agentData= [
                         'userName'=>$user[0]->name,
@@ -115,7 +110,7 @@ class ApiClientIssueRepository
     {
         $agent_id =random_int(100000, 999999);
         $post = $this->agent->find($request->id);
-        
+
         if($post->status==0){
             $post->status = 1;
             $post->created_by = $request->created_by;
