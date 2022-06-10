@@ -28,6 +28,15 @@ class ApiClientIssueService
         return $this->ApiClientIssueRepository->apiclientissuesubtype($request);
     }
 
+    public function apiclientissuedata($request)
+    {
+        return $this->ApiClientIssueRepository->apiclientissuedata($request);
+    }
+    public function addapiclientissue($request)
+    {
+        return $this->ApiClientIssueRepository->addapiclientissue($request);
+    }
+
     
     // public function changeStatus($id)
     // {

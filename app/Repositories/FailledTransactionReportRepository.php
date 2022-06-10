@@ -130,20 +130,20 @@ class FailledTransactionReportRepository
         $api = new Api($key, $secretKey); 
         if($data){
             foreach($data as $key=>$v){
-                $res = $api->order->fetch($v->CustomerPayment->order_id)->payments();
-                if($res->items)
-                {
-                  foreach ($res->items as $value) 
-                  {
-                    $paymentStatus = $value->status;   
+              //   $res = $api->order->fetch($v->CustomerPayment->order_id)->payments();
+              //   if($res->items)
+              //   {
+              //     foreach ($res->items as $value) 
+              //     {
+              //       $paymentStatus = $value->status;   
                        
-                    if($paymentStatus == 'captured'){ //captured(Live), authorized(testing).
-                       $v['razerPayStatus']=$paymentStatus;
-                       $v['razerPayPaymentId']=$value->id;
-                       break;
-                    } 
-                  }                  
-              }
+              //       if($paymentStatus == 'captured'){ //captured(Live), authorized(testing).
+              //          $v['razerPayStatus']=$paymentStatus;
+              //          $v['razerPayPaymentId']=$value->id;
+              //          break;
+              //       } 
+              //     }                  
+              // }
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 

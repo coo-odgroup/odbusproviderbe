@@ -1,12 +1,12 @@
 <?php
 namespace App\Repositories;
 use Illuminate\Support\Facades\Log;
-// use App\Models\Agent;
+use App\Models\User;
 use App\Models\ApiClientIssue;
 use App\Models\ApiClientIssueType;
 use App\Models\ApiClientIssueSubType;
 
-use App\Jobs\SendAgentCreationEmailJob;
+use App\Jobs\SendApiClientIssueEmailJob;
 use App\Repositories\ChannelRepository;
 
 class ApiClientIssueRepository
@@ -15,133 +15,107 @@ class ApiClientIssueRepository
     protected $ApiClientIssueType;
     protected $ApiClientIssueSubType;
     protected $channelRepository;
+    protected $user;
 
     public function __construct(ApiClientIssueType $ApiClientIssueType,
 						    	ApiClientIssue $ApiClientIssue,
 						    	ApiClientIssueSubType $ApiClientIssueSubType,
-						    	ChannelRepository $channelRepository)
+						    	ChannelRepository $channelRepository,
+                                User $User)
     {
         $this->ApiClientIssueType = $ApiClientIssueType;  
         $this->ApiClientIssue = $ApiClientIssue;  
         $this->ApiClientIssueSubType = $ApiClientIssueSubType;  
         $this->channelRepository = $channelRepository;
+        $this->User = $User;
     }
 
     
     public function apiclientissuetype()
     {
-        return $this->ApiClientIssueType->get();
+        return $this->ApiClientIssueType->where('status',1)->get();
     }
 
     public function apiclientissuesubtype($request)
     {
-        return $this->ApiClientIssueSubType->where('apiclientissuetype_id',$request->id)->get();
+        return $this->ApiClientIssueSubType->where('apiclientissuetype_id',$request->id)->where('status',1)->get();
     }
 
-
-    // public function getModel($data, Agent $agent)
-    // {
-    //     $agent->name = $data['name'];
-    //     $agent->email = $data['email'];    
-    //     $agent->phone = $data['phone'];    
-    //     $agent->password = bcrypt($data['password']);
-    //     $agent->user_type = "Agent";
-    //     $agent->role_id = "3";
-    //     $agent->location = $data['location'];
-    //     $agent->adhar_no = $data['adhar_no'];
-    //     $agent->pancard_no = $data['pancard_no'];
-    //     $agent->organization_name = $data['organization_name'];
-    //     $agent->address = $data['address'];
-    //     $agent->street = $data['street'];
-    //     $agent->city = $data['city'];
-    //     $agent->landmark = $data['landmark'];
-    //     $agent->pincode = $data['pincode'];
-    //     $agent->name_on_bank_account = $data['name_on_bank_account'];
-    //     $agent->bank_name = $data['bank_name'];
-    //     $agent->ifsc_code = $data['ifsc_code'];
-    //     $agent->bank_account_no = $data['bank_account_no'];
-    //     $agent->created_by = $data['created_by'];
-    //     $agent->status = 0;
-    //     return $agent;
-    // }
-    
-    
-    // public function save($data)
-    // {
-    
-    //     $email = $this->agent->where('email',$data['email'])->where('status','!=',2)->get();
-    //     $phone = $this->agent->where('phone',$data['phone'])->where('status','!=',2)->get();
-    //     $aadhaar = $this->agent->where('adhar_no',$data['adhar_no'])->where('status','!=',2)->get();
-    //     $pancard = $this->agent->where('pancard_no',$data['pancard_no'])->where('status','!=',2)->get();
+    public function apiclientissuedata($request)
+    {
        
-    //     if(count($email)==0)
-    //     {
-    //         if(count($phone)==0)
-    //         {
-    //             if(count($aadhaar)==0)
-    //             {
-    //                 if(count($pancard)==0)
-    //                 {
-    //                         $agent = new $this->agent;
-    //                         $agent=$this->getModel($data,$agent);
-    //                         $agent->save();
+        $paginate = $request['rows_number'] ;
+
+        $data= ApiClientIssue::with('apiclientissuetype','apiclientissuesubtype','bus')
+                    ->where('user_id', $request['user_id'] )
+                    ->orderBy('id','DESC');
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        $data=$data->paginate($paginate);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;
+
+       
+    }
+
+    public function addapiclientissue($request)
+    {
+        $user = $this->User->where('id',$request['user_id'])->where('status',1)->get();
+        $issuetype =  $this->ApiClientIssueType->where('id',$request['issueType_id'])->where('status',1)->get();
+        $issuesubtype = $this->ApiClientIssueSubType->where('id',$request['issueSubType_id'])->get();
+        // log::info($user[0]->name);
+        // log::info($issuetype[0]->name);
+        // log::info($issuesubtype[0]->name);
+        // exit;
 
 
-    //                         $smsData = array(
-    //                         'phone' => $data->phone,
-    //                         'agentName' => $data->name,
-    //                         'url' => 'https://agent.odbus.in/#/login', 
-    //                         'agentEmail' => $data->email,
-    //                         'agentPassword' => $data->password
-    //                     );
+        $ApiClientIssue = new $this->ApiClientIssue;
+        $ApiClientIssue->user_id = $request['user_id'];
+        $ApiClientIssue->apiclientissuetype_id = $request['issueType_id'];
+        $ApiClientIssue->apiclientissuesubtype_id = $request['issueSubType_id'];
+        $ApiClientIssue->reference_id = $request['reference_id'];
+        $ApiClientIssue->bus_id = $request['busId'];
+        $ApiClientIssue->bus_operator_id = $request['operatorId'];
+        $ApiClientIssue->source_id = $request['source'];
+        $ApiClientIssue->destination_id = $request['destination'];
+        $ApiClientIssue->message = $request['message'];
+        $ApiClientIssue->created_by = $request['created_by'];
+        $ApiClientIssue->save();
 
-    //                     $this->channelRepository->SendAgentCreationSms($smsData);
-
-
-    //                            $to_user = $data->email;
-    //                            $subject = "Agent Creation Email";
-    //                            $agentData= [
-    //                                     'userName'=>$data->name,
-    //                                     'userEmail'=> $data->email,
-    //                                     'userPassword'=> $data->password,
-    //                                     'loginUrl'=>'https://agent.odbus.in/#/login',
-                                    
-    //                                    ] ;
-    //                             SendAgentCreationEmailJob::dispatch($to_user, $subject, $agentData);
-                          
-    //                         // return $agent;
-                   
-
-    //                 }
-    //                 else 
-    //                 {
-    //                     return 'Pan Card Already Exist';
-    //                 }
-    //             }
-    //             else
-    //             {
-    //                 return 'Aadhaar Card Already Exist';
-    //             }
-
-    //         }
-    //         else
-    //         {
-    //             return 'Phone Already Exist';
-    //         }
-    //     }
-    //     else
-    //     {
-    //         return 'Email Already Exist';
-    //     }
-    // }
+               $to_user = 'bishal.seofied@gmail.com';
+               // $to_user = 'support@odbus.in';
+               $subject = "Api Client Issue from ".$user[0]->name." on ".$issuetype[0]->name ;
+               $agentData= [
+                        'userName'=>$user[0]->name,
+                        'userEmail'=> $user[0]->email,
+                        'issueType' => $issuetype[0]->name,
+                        'issueSubType'=>$issuesubtype[0]->name,
+                        'mesasage' =>$request['message'],
+                       ] ;
+                SendApiClientIssueEmailJob::dispatch($to_user, $subject, $agentData);
+  
+      return $ApiClientIssue;
+    }
 
 
     public function changeStatus($request)
     {
         $agent_id =random_int(100000, 999999);
         $post = $this->agent->find($request->id);
-     // log::info($agent_id);
-     // exit;
+        
         if($post->status==0){
             $post->status = 1;
             $post->created_by = $request->created_by;

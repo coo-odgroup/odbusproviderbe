@@ -157,6 +157,8 @@ Route::post('/datewiseroute',[ApiClientReportController::class,'datewiseroute'])
 ///////////////////////api client issue ///////////////////////
 Route::post('/apiclientissuetype',[ApiClientIssueController::class,'apiclientissuetype']);
 Route::post('/apiclientissuesubtype',[ApiClientIssueController::class,'apiclientissuesubtype']);
+Route::post('/addapiclientissue',[ApiClientIssueController::class,'addapiclientissue']);
+Route::post('/apiclientissuedata',[ApiClientIssueController::class,'apiclientissuedata']);
 
 
 //Ticket Information 
