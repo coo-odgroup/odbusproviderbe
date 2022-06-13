@@ -209,6 +209,7 @@ class SeatOpenRepository
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
+        $bus_id = $request['bus_id'] ;
         $page_no = $request['page_no'] ;
         $fromDate = $request['fromDate'] ;
         $toDate = $request['toDate'] ;
@@ -251,26 +252,29 @@ class SeatOpenRepository
               }else{
                   $data = $data->whereBetween('operation_date', [$fromDate, $toDate]);
               } 
-        }  
+        } else{
+
+                $data=$data->where('operation_date',date('Y-m-d'));
+        } 
 
         if($name!=null)
         {
             $data = $data->whereHas('bus', function ($query) use ($name){
                 $query->where('name', 'like', '%' .$name . '%');               
-            }) ;          
+            }) ;                      
+        }  
 
-            // ->orWhereHas('bus.busOperator', function ($query) use ($name){
-            //     $query->where('operator_name', 'like', '%' .$name . '%');
-            // });
-            
-        }     
         if(!empty($source_id) && !empty($destination_id))
         {
             $data=$data->whereHas('ticketPrice', function ($query)use ($request){
                $query->where('source_id',$request['source_id'] )->where('destination_id',$request['destination_id']);               
            });
         }  
-         
+        
+        if(!empty($bus_id))
+        {
+            $data=$data->where('bus_id',$bus_id);
+        }  
  
        
         $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
@@ -379,17 +383,16 @@ class SeatOpenRepository
 
     public function delete($request)
     {
+        // log::info($request);
         
         $seatOpen = $this->busSeats
                          ->where('bus_id',$request['bus_id'])
-                         ->where('ticket_price_id',$request['ticketPriceId'])
                          ->where('operation_date',$request['operationDate'])
                          ->where('type',$request['type'])
-                         ->update(['status'=> '2']);
-
+                         ->delete();
         return $seatOpen;
     }
-
+    
 
 
      public function getseatopenDT($request)

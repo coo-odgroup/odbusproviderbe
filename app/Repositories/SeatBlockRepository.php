@@ -595,6 +595,7 @@ class SeatBlockRepository
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
+        $bus_id = $request['bus_id'] ;
         $page_no = $request['page_no'] ;
         $fromDate = $request['fromDate'] ;
         $toDate = $request['toDate'] ;
@@ -630,6 +631,8 @@ class SeatBlockRepository
            });
         }
 
+       
+
         if($toDate!= null && $fromDate!=null)
         {
               if($fromDate==$toDate){
@@ -659,6 +662,11 @@ class SeatBlockRepository
          if(!empty($date))
         {
             $data=$data->where('operation_date',$date);
+        }   
+
+        if(!empty($bus_id))
+        {
+            $data=$data->where('bus_id',$bus_id);
         }  
  
        

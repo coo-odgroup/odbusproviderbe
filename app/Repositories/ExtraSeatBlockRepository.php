@@ -467,20 +467,24 @@ class ExtraSeatBlockRepository
     {        
         $seatBlock = $this->busSeats
                          ->where('bus_id',$request['bus_id'])
-                         ->where('ticket_price_id',$request['ticketPriceId'])
+                         // ->where('ticket_price_id',$request['ticketPriceId'])
                          ->where('operation_date',$request['operationDate'])
-                         ->update(['status'=> '2']);
+                         ->delete();;
         return $seatBlock;
     }
 
     public function extraSeatBlockData($request)
     {
+        log::info($request);
+        
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
         $page_no = $request['page_no'] ;
         $date = $request['date'] ;
         $source_id = $request['source_id'] ;
         $destination_id = $request['destination_id'] ;
+        $bus_operator_id = $request['bus_operator_id'] ;
+        $bus_id = $request['bus_id'] ;
     
         $data= $this->busSeats->with('bus.busOperator','seats','ticketPrice')
                               ->where('type',null)
@@ -492,7 +496,13 @@ class ExtraSeatBlockRepository
            //  $data=$data->whereHas('bus', function ($query) use ($request){
            //     $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
            // });
-        }                                 
+        } 
+        if($bus_operator_id!= null)
+        {
+            $data=$data->whereHas('bus', function ($query) use ($bus_operator_id){
+               $query->where('bus_operator_id', $bus_operator_id);               
+           });
+        }                                
 
         if($paginate=='all') 
         {
@@ -515,9 +525,20 @@ class ExtraSeatBlockRepository
                $query->where('source_id',$request['source_id'] )->where('destination_id',$request['destination_id']);               
            });
         }  
-         if(!empty($date))
+         
+        if(!empty($date))
         {
             $data=$data->where('operation_date',$date);
+        }
+         else{
+
+            $data=$data->where('operation_date',date('Y-m-d'));
+        }   
+
+        
+         if(!empty($bus_id))
+        {
+            $data=$data->where('bus_id',$bus_id);
         }  
  
        

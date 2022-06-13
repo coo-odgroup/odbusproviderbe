@@ -126,10 +126,9 @@ class BusCancelledRepository
 
     public function busCancelledData($request)
     {
-      // Log::info($request);
-
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
+        $bus_id = $request['bus_id'] ;
         $source_id= $request['source_id'];      
         $destination_id= $request['destination_id'];      
         $toDate= $request['toDate'];      
@@ -157,6 +156,11 @@ class BusCancelledRepository
         if($bus_operator_id!= null)
         {
             $data = $data->where('bus_operator_id',$bus_operator_id);
+        }
+
+        if($bus_id!= null)
+        {
+            $data = $data->where('bus_id',$bus_id);
         }
 
        
@@ -245,7 +249,6 @@ class BusCancelledRepository
    
     public function save($data)
     { 
-      // log::info($data);
         $buses = $data['buses'];
         foreach ($buses as $bus)         
         {          

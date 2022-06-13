@@ -212,6 +212,7 @@ class BusScheduleRepository
          $source_id= $request['source_id'];   
          $destination_id= $request['destination_id'];      
          $bus_operator_id= $request['bus_operator_id'];      
+         $bus_id= $request['bus_id'];      
 
         $data= $this->busSchedule->with('busScheduleDate','bus.busOperator','bus.ticketPrice')
                                  ->whereNotIn('status', [2])
@@ -261,6 +262,10 @@ class BusScheduleRepository
             $data=$data->whereHas('bus', function ($query) use ($bus_operator_id){
                        $query->where('bus_operator_id', $bus_operator_id);               
                    });
+        }    
+
+        if($bus_id!=null){
+            $data=$data->where('bus_id', $bus_id);               
         }   
 
         if($source_id!=null && $destination_id!=null )

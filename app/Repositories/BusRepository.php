@@ -628,7 +628,6 @@ class BusRepository
     }
     public function getBusScheduleEntryDatesFilter($data)
     {
-
         $searchByBus = $data['busLists'];
         $search = $data['year']."-".$data['month'];
         $busData = array();
@@ -642,7 +641,7 @@ class BusRepository
             $query->orderBy('entry_date',  'DESC');
             }])
             ->get();
-            // Log::info($busWithEntryDates);
+           
             foreach($busWithEntryDates as $busWithEntryDate){
                 $dateRecord = $busWithEntryDate->busSchedule;
                 $cancelRecord = $busWithEntryDate->busCancelled ;
