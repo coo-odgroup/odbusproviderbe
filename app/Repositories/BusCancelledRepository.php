@@ -237,7 +237,13 @@ class BusCancelledRepository
      */
     public function getByBusId($id)
     {
-        return $this->busCancelled->with('busCancelledDate')->where('bus_id', $id)->get();
+        return $this->busCancelled->with(['busCancelledDate'=> function($b){                                          
+            $b->orderBy('id','DESC')->limit(30)
+            ->where('entry_date','>=',date('Y-m-d'));                                         
+            }])
+        ->where('bus_id', $id)->get();
+        
+       // return $this->busCancelled->with('busCancelledDate')->where('bus_id', $id)->get();
     }
 
     /**
