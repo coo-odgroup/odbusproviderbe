@@ -61,6 +61,35 @@ class BusCancelledController extends Controller
         } catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }  
+    }  
+
+    public function busCancelledbyowner(Request $request) {
+        $message='';
+        $data = $request->only([
+        
+            'bus_id','bus_operator_id','cancelled_date','reason','other_reson','cancelled_by','buses','month','year'
+        ]);
+          
+          $busCancelledValidation = $this->cancelBusValidator->validate($data);
+        if ($busCancelledValidation->fails()) {
+           $errors = $busCancelledValidation->errors();
+           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+         }
+         else
+        {
+          $response = $this->busCancelledService->busCancelledbyowner($request);
+          Log::info($response['msg']);
+
+           if($response['msg']=='Some seat already booked on')
+           {
+              $message = $response['msg'].' '.$response['dt']; 
+              return $this->errorResponse($message,Response::HTTP_PARTIAL_CONTENT);
+           }
+           else
+           {
+               return $this->successResponse($response['msg'], Response::HTTP_CREATED);
+           }
+        }
     } 
     public function updateBusCancelled(Request $request, $id) {
         $data = $request->only(['bus_id','bus_operator_id','cancelled_date','reason','other_reson','cancelled_by','dateLists','month','year' ,'buses'

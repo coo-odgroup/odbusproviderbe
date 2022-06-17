@@ -150,6 +150,11 @@ class BusService
     public function getBusScheduleEntryDatesFilter($data)
     {
         return $this->busRepository->getBusScheduleEntryDatesFilter($data);
+    } 
+
+    public function getBusScheduleEntry($data)
+    {
+        return $this->busRepository->getBusScheduleEntry($data);
     }
 
     public function GetBusList($data)

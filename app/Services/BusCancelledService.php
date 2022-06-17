@@ -109,6 +109,19 @@ class BusCancelledService
         }
         return $busCancel;
     }
+
+    public function busCancelledbyowner($data)
+    {
+        try {
+            $busCancel = $this->busCancelledRepository->busCancelledbyowner($data);
+
+        } catch (Exception $e) {
+            // Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $busCancel;
+    }
+    
     public function changeStatus($id)
     {
         try {

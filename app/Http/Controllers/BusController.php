@@ -567,6 +567,13 @@ class BusController extends Controller
     
       }
 
+      public function getBusScheduleEntry(Request $request) {
+
+      $bus = $this->busService->getBusScheduleEntry($request);
+      return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    
+      }
+
 
       public function testingEmail(Request $request) {
 

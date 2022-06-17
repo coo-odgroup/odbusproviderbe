@@ -7,6 +7,7 @@ use App\Models\BusCancelledDate;
 use App\Models\BusOperator;
 use App\Models\BusStoppage;
 use App\Models\Location;
+use App\Models\Booking;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
@@ -19,7 +20,8 @@ class BusCancelledRepository
     protected $busOperator;
     protected $busStoppage;
     protected $location;
-    public function __construct(BusCancelled $busCancelled,Bus $bus,BusOperator $busOperator,BusStoppage $busStoppage,Location $location,BusCancelledDate $busCancelledDate)
+    protected $Booking;
+    public function __construct(BusCancelled $busCancelled,Bus $bus,BusOperator $busOperator,BusStoppage $busStoppage,Location $location,BusCancelledDate $busCancelledDate,Booking $Booking)
     {
         $this->busCancelled = $busCancelled;
         $this->bus = $bus;
@@ -27,6 +29,7 @@ class BusCancelledRepository
         $this->busStoppage = $busStoppage;
         $this->location = $location;
         $this->busCancelledDate = $busCancelledDate;
+        $this->Booking = $Booking;
     }
     /**
      * Get Bus Cancelled List
@@ -286,6 +289,67 @@ class BusCancelledRepository
             $this->busCancelled->busCancelledDate()->saveMany($busCanceledDateModels);
         }
         return $buses;
+       
+    } 
+
+    public function busCancelledbyowner($data)
+    { 
+        $buses = $data['buses'];
+        $message=[];
+        foreach ($buses as $k) 
+        {
+            foreach ($k['dateLists'] as $i => $DateLists)   
+            {
+                if(isset($DateLists['datechecked']) && $DateLists['datechecked'] == true)
+                {
+                    $newDt = date("Y-m-d", strtotime($DateLists['entryDates']));
+                    $checkDt = $this->Booking->where('bus_id',$k['bus_id'])
+                                        ->where('journey_dt',$newDt)
+                                        ->where('status',1)
+                                        ->get();
+
+                  if(count($checkDt) > 0){
+                    $message['msg'] = 'Some seat already booked on';
+                    $message['dt'] = $DateLists['entryDates'];
+
+                    return $message;
+                  }
+                }
+            }
+        }
+     
+             foreach ($buses as $bus)         
+        {          
+            $this->busCancelled = new BusCancelled();
+            $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
+            $this->busCancelled->created_by = $data['cancelled_by'];
+            $this->busCancelled->status = 1;
+            $this->busCancelled->month = $data['month'];
+            $this->busCancelled->year = $data['year'];
+            $this->busCancelled->reason = $data['reason'];
+            $this->busCancelled->other_reson = $data['other_reson'];
+            $this->busCancelled->bus_id = $bus['bus_id'];
+            $this->busCancelled->save();
+
+            $busCanceledDateModels = [];
+            foreach ($bus['dateLists'] as $busDateLists)   
+            {
+                    if(isset($busDateLists['datechecked']) && $busDateLists['datechecked'] == true)
+                    {
+                        $busCanceledDate = new BusCancelledDate();
+                        $busCanceledDate->cancelled_date = date('Y-m-d',strtotime($busDateLists['entryDates'])) ;
+                        $busCanceledDate->created_by = $data['cancelled_by'] ;
+                        $busCanceledDateModels[] =  $busCanceledDate;
+                    }
+
+            }
+            
+            $this->busCancelled->busCancelledDate()->saveMany($busCanceledDateModels);
+            $message['msg']  = 'Bus Cancellation Record Added';
+        }
+        return $message;
+     
+       
        
     }
     /**

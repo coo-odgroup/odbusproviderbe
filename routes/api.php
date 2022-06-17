@@ -581,6 +581,7 @@ Route::put('/changeStatusBus/{id}', [BusController::class, 'changeStatus']);
 Route::get('/getBusbyBuschedule/{id}', [BusController::class, 'getBusbyBuschedule']);
 Route::get('/getBusScheduleEntryDates/{busId}', [BusController::class, 'getBusScheduleEntryDates']);
 Route::post('/getBusScheduleEntryDatesFilter', [BusController::class, 'getBusScheduleEntryDatesFilter']);
+Route::post('/getBusScheduleEntry', [BusController::class, 'getBusScheduleEntry']);
 
 Route::get('/BusListingPageInformation', [BusController::class, 'getAllBusListingPageInformation']);
 Route::get('/BusListingReplica', [BusController::class, 'getAllBusListingReplica']);
@@ -659,6 +660,7 @@ Route::get('/busStoppageTiming/{id}', [BusStoppageTimingController::class, 'getB
 
 Route::get('/busCancelled', [BusCancelledController::class, 'getAllBusCancelled']);
 Route::post('/busCancelled', [BusCancelledController::class, 'createBusCancelled']);
+Route::post('/busCancelledbyowner', [BusCancelledController::class, 'busCancelledbyowner']);
 Route::put('/busCancelled/{id}', [BusCancelledController::class, 'updateBusCancelled']);
 Route::delete('/busCancelled/{id}', [BusCancelledController::class, 'deleteBusCancelled']);
 Route::get('/busCancelled/{id}', [BusCancelledController::class, 'getBusCancelled']);

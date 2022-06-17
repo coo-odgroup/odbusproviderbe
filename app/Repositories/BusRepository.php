@@ -628,6 +628,8 @@ class BusRepository
     }
     public function getBusScheduleEntryDatesFilter($data)
     {
+        // Log::info($data);
+        // exit;
         $searchByBus = $data['busLists'];
         $search = $data['year']."-".$data['month'];
         $busData = array();
@@ -699,6 +701,86 @@ class BusRepository
             }
 
         }
+
+        return ["busDatas" => $busData];
+    } 
+
+
+    public function getBusScheduleEntry($data)
+    {
+        // Log::info($data);
+        // exit;
+        $searchByBus = $data['busLists'];
+        $search = $data['year']."-".$data['month'];
+        $busData = array();
+        $today=date("Y-m-d");
+
+       
+            $busWithEntryDates = $this->bus->with('busstoppage','busCancelled.busCancelledDate')
+            ->where('bus.id' , $searchByBus)
+            ->with(['busSchedule.busScheduleDate' => function($query) use ($search){
+            $query->where('entry_date', 'like', '%'.$search. '%');
+            $query->orderBy('entry_date',  'DESC');
+            }])
+            ->get();
+           
+            foreach($busWithEntryDates as $busWithEntryDate){
+                $dateRecord = $busWithEntryDate->busSchedule;
+                $cancelRecord = $busWithEntryDate->busCancelled ;
+                
+                $busWithEntryDate['source']=$this->location->where('id',$busWithEntryDate['busstoppage'][0]->source_id)->get();
+                $busWithEntryDate['destination']=$this->location->where('id', $busWithEntryDate['busstoppage'][0]->destination_id)->get();
+
+                $entryDates = array();
+                foreach($dateRecord as $items)
+                {
+                     foreach($items->busScheduleDate as $dateRec) 
+                    {     
+                        $bus_id = $items->bus_id;              
+                        $entryDate = $dateRec->entry_date; 
+                        if($today <= $entryDate){
+
+                            $entryDates[] = array(
+                                "busId" =>$bus_id,
+                                "entry_date"=>date('j M Y ',strtotime($entryDate)),
+                               ); 
+
+                        }                         
+                    }
+                }
+
+                $cancelDates = array();
+                foreach($cancelRecord as $items)
+                {
+                     foreach($items->busCancelledDate as $dateRec) 
+                    {     
+                        $bus_id = $items->bus_id;              
+                        $cancelDate = $dateRec->cancelled_date; 
+                        if($today <= $cancelDate){
+
+                            $cancelDates[] = array(
+                                "busId" =>$searchByBus,
+                                "cancelled_date"=>date('j M Y',strtotime($cancelDate)),
+                               ); 
+
+                        }                         
+                    }
+                }
+
+               
+
+                $busName = $busWithEntryDate->name; 
+                $busName = $busName." [ ".$busWithEntryDate->bus_number." ] [".$busWithEntryDate->source[0]->name. ">>" .$busWithEntryDate->destination[0]->name." ]"   ;
+               
+                $busData[] = array(
+                    "bus_id"=>$searchByBus,
+                    "busName"=>$busName,
+                    "entryDates"=>$entryDates,   
+                    "cancelDates"=>$cancelDates,   
+                );              
+            }
+
+       
 
         return ["busDatas" => $busData];
     }
