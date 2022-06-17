@@ -28,7 +28,7 @@ class ApiUserCompleteReportRepository
         // log::info($request);
       
         $paginate = $request->rows_number;
-        $bus_operator_id = $request->bus_operator_id;
+        $user_id = $request->user_id;
         $payment_id = $request->payment_id;
         $pnr = $request->pnr;
         $date_type = $request->date_type;
@@ -43,6 +43,7 @@ class ApiUserCompleteReportRepository
                                     'Bus','Users','CustomerPayment','User.role')
                              ->with('bus.busstoppage')
                              ->where('status',1)
+                             ->where('app_type','CLNTWEB')                             
                              // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
                              ->orderBy('id','DESC');
         if($paginate=='all') 
@@ -58,16 +59,17 @@ class ApiUserCompleteReportRepository
            $data=$data->where('pnr', $pnr );
         }       
 
-        if(!empty($bus_operator_id))
+        if(!empty($user_id))
         {
-           $data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
+           $data=$data->where('origin', $user_id );
+           //$data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
         }
 
-        if(!empty($payment_id))
-        {
-            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id)  {$query->where('razorpay_id', $payment_id )->where('payment_done', '1' );})
-                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id )->where('payment_done', '1' );});
-        }
+        // if(!empty($payment_id))
+        // {
+        //     $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id)  {$query->where('razorpay_id', $payment_id )->where('payment_done', '1' );})
+        //               ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id )->where('payment_done', '1' );});
+        // }
 
         if(!empty($source_id) && !empty($destination_id))
         {
@@ -149,11 +151,9 @@ class ApiUserCompleteReportRepository
              "totalPayableAmount"=>number_format($totalReceivedAmount, 2, ".", ""),
              "owner_fare"=>number_format($owner_fare, 2, ".", ""),
             "data" => $data
-           );  
+           );            
 
-          
-
-           return $response;      
+           return $response;     
 
     }  
     

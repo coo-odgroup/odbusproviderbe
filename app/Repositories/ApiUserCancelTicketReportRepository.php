@@ -27,7 +27,7 @@ class ApiUserCancelTicketReportRepository
     public function getData($request)
     {
         $paginate = $request->rows_number;
-        $bus_operator_id = $request->bus_operator_id;
+        $user_id = $request->user_id;
         $pnr = $request->pnr;
         $date_range = $request->date_range;
         $payment_id = $request->payment_id;
@@ -42,6 +42,7 @@ class ApiUserCancelTicketReportRepository
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
+                             ->where('app_type','CLNTWEB')    
                              ->where('status', 2);
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
@@ -63,16 +64,17 @@ class ApiUserCancelTicketReportRepository
            $data=$data->where('pnr', $pnr );
         }
 
-        if(!empty($bus_operator_id))
+        if(!empty($user_id))
         {
-            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
+            $data=$data->where('origin', $user_id);
+            //$data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
         }
         
-        if(!empty($payment_id))
-        {
-            $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
-                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id );});
-        }
+        // if(!empty($payment_id))
+        // {
+        //     $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
+        //               ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id );});
+        // }
 
          if(!empty($source_id) && !empty($destination_id))
         {
