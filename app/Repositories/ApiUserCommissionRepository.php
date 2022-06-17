@@ -40,7 +40,7 @@ class ApiUserCommissionRepository
     {
         $paginate = $request['rows_number'] ;
 
-        $data= $this->apiUserCommission
+        $data= $this->apiUserCommission->with('User')
                     ->whereNotIn('status', [2])
                     ->orderBy('id','DESC');
 
@@ -66,13 +66,14 @@ class ApiUserCommissionRepository
        
     }
     public function getModel($data, apiUserCommission $apiUserCommission)
-    {
+    {     
+              
         $apiUserCommission->user_id = $data['user_id'];
         $apiUserCommission->starting_fare = $data['starting_fare'];
         $apiUserCommission->upto_fare = $data['upto_fare'];    
         $apiUserCommission->commision = $data['commision'];    
-        $apiUserCommission->commision = $data['created_by'];    
-        $apiUserCommission->status = 1;        
+        $apiUserCommission->created_by = $data['created_by'];    
+        $apiUserCommission->status = 1;   
         return $apiUserCommission;
     }
     
@@ -81,9 +82,9 @@ class ApiUserCommissionRepository
         return $this->apiUserCommission->where('id', $id)->get();
     }
     public function save($data)
-    {   
+    {     
         $apiUserCommission = new $this->apiUserCommission;
-        $apiUserCommission = $this->getModel($data,$apiUserCommission);        
+        $apiUserCommission = $this->getModel($data,$apiUserCommission);            
         $apiUserCommission->save();
         return $apiUserCommission;
     }
@@ -96,7 +97,7 @@ class ApiUserCommissionRepository
      */
     public function update($data, $id)
     {
-        // Log::info($data);exit;
+       // Log::info($data);exit;
         $apiUserCommission = $this->apiUserCommission->find($id);
         $apiUserCommission=$this->getModel($data,$apiUserCommission);
         $apiUserCommission->update();

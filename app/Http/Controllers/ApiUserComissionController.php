@@ -47,8 +47,6 @@ class ApiUserComissionController extends Controller
                     'created_by'                    
                 ]);
 
-        //log::info($data);exit;
-
         $ApiUserCommissionValidation = $this->apiuserCommissionValidator->validate($data);
         
         if($ApiUserCommissionValidation->fails())
@@ -73,7 +71,8 @@ class ApiUserComissionController extends Controller
                     'user_id',
                     'starting_fare',
                     'upto_fare',
-                    'commision'
+                    'commision',
+                    'created_by'  
         ]);
         
         $ApiUserCommissionValidation = $this->apiuserCommissionValidator->validate($data);

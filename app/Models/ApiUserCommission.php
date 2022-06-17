@@ -9,5 +9,10 @@ class ApiUserCommission extends Model
     use HasFactory; 
     protected $table = 'client_commission_slab';
     protected $fillable = ['user_id','starting_fare','upto_fare','commision','created_by','status'];
+
+    public function User()
+    {
+        return $this->belongsTo(User::class);
+    }
     
 }
