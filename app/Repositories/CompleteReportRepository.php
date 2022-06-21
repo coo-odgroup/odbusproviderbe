@@ -59,13 +59,10 @@ class CompleteReportRepository
            $data=$data->where('pnr', $pnr );
         }
 
-
         if(!empty($bus_id))
         {
            $data=$data->where('bus_id', $bus_id );
-        }
-
-       
+        }       
 
         if(!empty($bus_operator_id))
         {
@@ -83,7 +80,6 @@ class CompleteReportRepository
             $data=$data->where('source_id',$source_id)->where('destination_id',$destination_id);
         }
 
-
         if($date_type == 'booking' && $start_date == null && $end_date == null)
         {
             $data =$data->orderBy('created_at','DESC');
@@ -97,8 +93,7 @@ class CompleteReportRepository
             }else{
                 $data =$data->whereBetween('created_at', [$start_date, $end_date])
                         ->orderBy('created_at','DESC');
-            }
-            
+            }            
         }
         else if($date_type == 'journey' && $start_date == null && $end_date == null)
         {
@@ -114,18 +109,18 @@ class CompleteReportRepository
                         ->orderBy('journey_dt','DESC');
             }
         }
-        $data=$data->paginate($paginate); 
-
-       
+        $data=$data->paginate($paginate);   
+        //log::info($data);  
         $totalfare = 0;
         $totalPayableAmount = 0;
         $owner_fare = 0;
         $totalAgentComission = 0;
+        $totalSeats = 0;
    
         if($data){
             foreach($data as $key=>$v){
-                // log::info($v->agent_commission);
-               
+
+              $totalSeats = $totalSeats +  count($v->BookingDetail);               
                $totalfare = $totalfare + $v->total_fare;
                $totalAgentComission = $totalAgentComission + $v->agent_commission;
                $totalPayableAmount = $totalPayableAmount + $v->payable_amount;
@@ -139,23 +134,22 @@ class CompleteReportRepository
                 $stoppages['destination']=[];
 
                foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-                {
-
-                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
-                }
-
+               {
+                   $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                   $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+               }
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];
             }
         }
 
 
-          $totalReceivedAmount = $totalPayableAmount - $totalAgentComission ;
-      
+        $totalReceivedAmount = $totalPayableAmount - $totalAgentComission;
+
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
+             "totalSeats" => $totalSeats,
              "totalfare"=> number_format($totalfare, 2, ".", ""),
              "totalPayableAmount"=>number_format($totalReceivedAmount, 2, ".", ""),
              "owner_fare"=>number_format($owner_fare, 2, ".", ""),
