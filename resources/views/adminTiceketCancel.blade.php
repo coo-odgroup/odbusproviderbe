@@ -113,7 +113,8 @@
                         <td style="padding: 15px 0px 15px 0px;">
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
-                                    <td align="center"><a href="https://www.odbus.in/" target="_blank"><img alt="Logo" src="https://www.odbus.in/frontassets/emailimages/logo1.png" width="180"  style="display: block;" border="0"></a></td>
+                                    <td align="center"><a href="https://www.odbus.in/" target="_blank">
+                                    <img alt="Logo" src="https://www.odbus.in/assets/img/logo.png" width="180"  style="display: block;" border="0"></a></td>
                                     
                                 </tr>
                             </table>
@@ -169,8 +170,7 @@
 													<p><br></p>
 													<p><br></p>
 													<p><br></p>
-													<p><br></p>
-													
+													<p><br></p>													
 												  </td>
 												  </tr>
 												</tbody>
@@ -275,17 +275,17 @@ www.odbus.in</a></td>
                                             <tr class="no-print">
                                                 <td>
                                                    <a target="_blank" href="https://www.facebook.com/odbus">
-                                                      <img src="https://www.odbus.in/frontassets/emailimages/charity-40x40x1.png" style="width: 30px;
+                                                      <img src="https://www.odbus.in/assets/img/facebook.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
-                                                <td><a target="_blank" href="https://twitter.com/od_bus"><img src="https://www.odbus.in/frontassets/emailimages/charity-40x40x2.png" style="width: 30px;
+                                                <td><a target="_blank" href="https://twitter.com/od_bus"><img src="https://www.odbus.in/assets/img/twitter.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
                                                
-                                                <td><a target="_blank" href="https://www.pinterest.com/ODBUS2015/"><img src="https://www.odbus.in/frontassets/emailimages/charity-40x40x5.png" style="width: 30px;
+                                                <td><a target="_blank" href="https://www.pinterest.com/ODBUS2015/"><img src="https://www.odbus.in/assets/img/pinterest.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
-                                                <td><a target="_blank" href="https://www.instagram.com/od_bus"><img src="https://www.odbus.in/frontassets/emailimages/instagram.png" style="width: 30px;
+                                                <td><a target="_blank" href="https://www.instagram.com/od_bus"><img src="https://www.odbus.in/assets/img/instagram.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
                                                   <td><a target="_blank" href="https://www.linkedin.com/company/odbus">
-                                                    <img src="https://www.odbus.in/frontassets/emailimages/linkedin.png" style="width: 30px;
+                                                    <img src="https://www.odbus.in/assets/img/linkedin.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
                                                 
                                                 </td>

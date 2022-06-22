@@ -101,9 +101,11 @@ class TicketInformationRepository
     }
 
     public function cancelticket($request)
-    {
+    {   
+        $pnr = $request->pnr;
         $id=$request->id ;
         $user_id=$request->user_id ;
+
         if($user_id!= NULL && $user_id>0)
         {
             $transactionId = date('YmdHis') . gettimeofday()['usec'];
@@ -132,20 +134,101 @@ class TicketInformationRepository
             $cancelticket->cancel_by = $request['cancelled_by'];
             $cancelticket->status = $request['status'];
             $cancelticket->update();
+            
+            $PNR_Details = $this->CancelPNRDetails($pnr);            
+
+            $current_date_time = date("Y-m-d H:i:s");
+            
+            $all_seats = '';
+            foreach($PNR_Details[0]->BookingDetail as $k=>$v)
+            {
+                 $all_seats.= $v->BusSeats->seats->seatText.',';
+            }       
+
+            $all_seats = rtrim($all_seats, ','); 
+            $source_name = $this->location->where('id', $PNR_Details[0]->source_id)->get();
+            $destination_name = $this->location->where('id', $PNR_Details[0]->destination_id)->get();
+
+            $data= array(
+                'contactNo' => $PNR_Details[0]->users->phone,
+                'pnr' => $pnr,
+                'journeydate' => date('d-m-Y',strtotime($PNR_Details[0]->journey_dt)), 
+                'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                'seat_no' => explode(',',$all_seats),
+                'cancellationDateTime' => $current_date_time,
+                'deductionPercentage' => $request->percentage_deduct,
+                'refundAmount' => $request->refund_amount,
+                'totalfare' => $PNR_Details[0]->total_fare,
+            );
+
+            $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr; 
+
+            //Send Email To Customer
+            if($request['email'] != '')
+            {
+                $to_user = $request['email']; 
+                SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
+            } 
+            /////// send email to odbus support 
+            SendCancelAdjTicketEmailJob::dispatch('support@odbus.in', $subject, $data);
+
+            ///// send sms to customer
+            $getBus_id = $this->booking->with('Bus')->where("pnr",$pnr)->get();
+
+            $bus_id = $getBus_id[0]->bus_id;
+            $busName = $getBus_id[0]->Bus->name;
+            $busNumber = $getBus_id[0]->Bus->bus_number;
+
+            $smsData = array(
+                'phone' =>  $PNR_Details[0]->users->phone,
+                'PNR' => $pnr,
+                'busdetails' => $busName.'-'.$busNumber,
+                'doj' => date('d-m-Y',strtotime($PNR_Details[0]->journey_dt)), 
+                'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                'seat' => explode(',',$all_seats),
+                'refundAmount' =>$request->refund_amount
+            );
+
+            //Send SMS To Customer
+            $this->channelRepository->sendSmsTicketCancel($smsData,$PNR_Details[0]->users->phone);
+
+            //Send SMS to CMO
+            $busContactDetails = BusContacts::where('bus_id',$bus_id)
+                                ->where('status','1')
+                                ->where('cancel_sms_send','1')
+                                ->get('phone');
+
+            if($busContactDetails->isNotEmpty()){
+                $contact_number = collect($busContactDetails)->implode('phone',',');
+                $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+            }
           
-            // $to_user = 'bishal.seofied@gmail.com';
-           $to_user = $request['email'];
-         
-            $subject = "Ticket Cancel( Pnr.no-".$request->pnr." )";
-            $data= ['pnr'=>$request['pnr'],
-                    'refund_amount' => $request['refund_amount'],
-                    'deduction_percent'=> $request['percentage_deduct']
-                  ] ;
-           SendCancelTicketEmailJob::dispatch($to_user, $subject, $data);
+            //    $to_user = 'chakra.seoinfotechsolution@gmail.com';
+            //    //$to_user = $request['email'];
+            
+            //     $subject = "Ticket Cancel( Pnr.no-".$request->pnr." )";
+            //     $data= ['pnr'=>$request['pnr'],
+            //             'refund_amount' => $request['refund_amount'],
+            //             'deduction_percent'=> $request['percentage_deduct']
+            //           ] ;
+            //    //Send Email To Customer
+            //    SendCancelTicketEmailJob::dispatch($to_user, $subject, $data);
 
         return $cancelticket;
        
     }
+
+    public function CancelPNRDetails($pnr)
+    {
+        $pnr_Details = $this->booking->with('BookingDetail.BusSeats.seats',                                            
+                                            'Bus','Users')
+                                    ->where('pnr',$pnr)
+                                    ->orderBy('id','DESC')->get();       
+     
+        return $pnr_Details;
+    }
+
+    
 
     public function cancelticketdata($request)
     {       
@@ -265,6 +348,7 @@ class TicketInformationRepository
           
         
     }
+
     public function adjustticket($request)
     {
       // Log::info($request);
@@ -491,7 +575,6 @@ class TicketInformationRepository
                     if($request['customerInfo']['email']!= ''){
                         $to_user = $request['customerInfo']['email']; 
                         SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
-
                     } 
                         ////////
 

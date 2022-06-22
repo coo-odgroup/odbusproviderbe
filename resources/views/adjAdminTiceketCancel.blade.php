@@ -113,9 +113,7 @@
 .watermarked:after {
   
 }
-    }
-    
-    
+    }    
 </style>
 </head>
 <body style="margin: 0; padding: 0;">
@@ -128,8 +126,11 @@
                         <td style="padding: 30px 0px 30px 0px;">
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
-                                    <td align="center"><a href="https://www.odbus.in/" target="_blank"><img alt="Logo" src="https://www.odbus.in/frontassets/emailimages/logo1.png"  style="display: block;" border="0"></a></td>
-                                    
+                                    <td align="center">
+                                      <a href="https://www.odbus.in/" target="_blank">
+                                        <img alt="Logo" src="https://www.odbus.in/assets/img/logo.png"  style="display: block;" border="0">
+                                      </a>
+                                    </td>                                    
                                 </tr>
                             </table>
                         </td>
@@ -139,10 +140,16 @@
                         <td>
                             <table border="0" cellpadding="0" cellspacing="0" width="90%" align="center">
                                 <tr class="mobile-td">
-                                    <td align="left" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; text-decoration: none;"><a href="tel:9583918888" style="color: #0f204c; text-decoration: none; font-weight:bold;">Call us: +91 9583918888</a></td>
-                                    
-                                    <td align="right" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; text-decoration: none;"><a href="mailto:support@odbus.in" style="color: #0f204c; text-decoration: none; font-weight:bold;">Email: <!--email_off-->support@odbus.in<!--/email_off--></a></td>
-                                    
+                                    <td align="left" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; text-decoration: none;">
+                                       <a href="tel:9583918888" style="color: #0f204c; text-decoration: none; font-weight:bold;">
+                                           Call us: +91 9583918888
+                                       </a>
+                                    </td>                                    
+                                    <td align="right" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; text-decoration: none;">
+                                        <a href="mailto:support@odbus.in" style="color: #0f204c; text-decoration: none; font-weight:bold;">
+                                           Email: <!--email_off-->support@odbus.in<!--/email_off-->
+                                        </a>
+                                    </td>                                    
                                 </tr>
                             </table>
                         </td>
@@ -271,13 +278,13 @@
                     </tbody>
                    </table>
                   </td>
-              </tr>
-                            
-                        </tbody></table>
-                    </td>
-                </tr>
-            </tbody></table>
-            
+                 </tr>                            
+                </tbody>
+               </table>
+              </td>
+             </tr>
+            </tbody>
+           </table>            
         </td>
     </tr>
 </tbody></table>
@@ -302,28 +309,30 @@
                                             <td>
                                                  <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                                     <tr style="border-bottom: solid 1px #fff;">
-                                                        <td align="left" style="padding: 10px; font-size: 15px; font-family: Tahoma, sans-serif; color: #444; font-weight:normal; padding-left:40px;"><strong>Cancellation Time</strong>
+                                                        <td align="left" style="padding: 10px; font-size: 15px; font-family: Tahoma, sans-serif; color: #444; font-weight:normal; padding-left:40px;">
+                                                           <strong>Cancellation Time</strong>
                                                         </td>
                                                         
-                                                        <td align="right" style="padding: 10px; font-size: 15px; font-family: Tahoma, sans-serif; color: #444; font-weight:normal; padding-left:40px;"><strong>Cancellation Charges</strong>
+                                                        <td align="right" style="padding: 10px; font-size: 15px; font-family: Tahoma, sans-serif; color: #444; font-weight:normal; padding-left:40px;">
+                                                          <strong>Cancellation Charges</strong>
                                                         </td>                                                        
                                                     </tr>                                                    
                                                 </table>
                                             </td>
                                         </tr>
-                                                                             <tr>
+                                         <tr>
                                             <td>
                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                                     <tr style="border-bottom: solid 1px #fff;">
                                                          <td align="left" style="padding: 10px; font-size: 14px; font-family: Arial, sans-serif; color: #444; font-weight:normal; padding-left:40px; border-right: solid 1px #f9f9f9;">
-                                                            25 and above Hours Before Departure                                                        </td>
-                                                        
+                                                            25 and above Hours Before Departure    
+                                                         </td>                                                        
                                                         <td align="right" style="padding: 10px; font-size: 14px; font-family: Arial, sans-serif; color: #444; font-weight:normal; padding-left:40px;">20%</td>      
                                                     </tr>
                                                 </table>
                                             </td>
                                         </tr>
-                                                                            <tr>
+                                       <tr>
                                             <td>
                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                                     <tr style="border-bottom: solid 1px #fff;">
@@ -335,7 +344,7 @@
                                                 </table>
                                             </td>
                                         </tr>
-                                                                            <tr>
+                                        <tr>
                                             <td>
                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                                     <tr style="border-bottom: solid 1px #fff;">
@@ -347,16 +356,16 @@
                                                 </table>
                                             </td>
                                         </tr>
-                                                                        </tbody>
+                                     </tbody>
                                     </table>
                                 </td>
-                            </tr>
-                            
-                        </tbody></table>
+                            </tr>                            
+                        </tbody>
+                        </table>
                     </td>
                 </tr>
-            </tbody></table>
-            
+            </tbody>
+            </table>            
         </td>
     </tr>
 </tbody></table>
@@ -390,28 +399,21 @@
 	<li>In respect of refunds due to cancellation of service by Operator , passenger is required to send an e-mail to <a href="mailto:support@odbus.in"><!--email_off-->support@odbus.in<!--/email_off--></a> mentioning PNR of the ticket. We will verify and refund the amount to the concerned Credit card / Internet banking account.</li>
 	<li>Refunds for Ticket cancellations / Failed Transactions to passengers will be given normally in 10 - 12 Bank working days by&nbsp;<a href="https://www.odbus.in"><strong>ODBUS</strong></a>, after the cancellation of ticket or receipt of e-mail. If refunds are delayed, passengers may contact&nbsp;<a href="https://www.odbus.in" target="_blank"><strong>ODBUS</strong></a>&nbsp;Executive at <strong><a href="tel:9583918888">9583918888</a></strong>&nbsp;( 09:00 AM to 06:00 PM&nbsp;)</li>
 </ol>
-                                                        </td>
-                                                        
+                                                        </td>                                                        
                                                     </tr>
-                                                    
-                                                    
-                                                    
                                                 </table>
                                             </td>
-                                        </tr>
-                                        
-                                        
-                                      
+                                        </tr>                                      
                                     </tbody>
                                     </table>
                                 </td>
-                            </tr>
-                            
-                        </tbody></table>
+                            </tr>                            
+                        </tbody>
+                        </table>
                     </td>
                 </tr>
-            </tbody></table>
-            
+            </tbody>
+            </table>            
         </td>
     </tr>
 </tbody></table>
@@ -469,17 +471,20 @@ www.odbus.in</a></td>
                                             <tr>
                                                 <td>
                                                    <a target="_blank" href="https://www.facebook.com/odbus">
-                                                      <img src="https://www.odbus.in/frontassets/emailimages/charity-40x40x1.png" style="width: 30px;
+                                                      <img src="https://www.odbus.in/assets/img/facebook.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
-                                                <td><a target="_blank" href="https://twitter.com/od_bus"><img src="https://www.odbus.in/frontassets/emailimages/charity-40x40x2.png" style="width: 30px;
+                                                <td><a target="_blank" href="https://twitter.com/od_bus">
+                                                  <img src="https://www.odbus.in/assets/img/twitter.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
                                                
-                                                <td><a target="_blank" href="https://www.pinterest.com/ODBUS2015/"><img src="https://www.odbus.in/frontassets/emailimages/charity-40x40x5.png" style="width: 30px;
+                                                <td><a target="_blank" href="https://www.pinterest.com/ODBUS2015/">
+                                                   <img src="https://www.odbus.in/assets/img/pinterest.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
-                                                <td><a target="_blank" href="https://www.instagram.com/od_bus"><img src="https://www.odbus.in/frontassets/emailimages/instagram.png" style="width: 30px;
+                                                <td><a target="_blank" href="https://www.instagram.com/od_bus">
+                                                    <img src="https://www.odbus.in/assets/img/instagram.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
                                                   <td><a target="_blank" href="https://www.linkedin.com/company/odbus">
-                                                    <img src="https://www.odbus.in/frontassets/emailimages/linkedin.png" style="width: 30px;
+                                                    <img src="https://www.odbus.in/assets/img/linkedin.png" style="width: 30px;
     margin-right: 10px;" /></a><td>
                                                 
                                                 </td>
