@@ -32,6 +32,11 @@ class OwnerPaymentService
     {
         
         return $this->ownerPaymentRepository->getDatatable($request);
+    }  
+    public function getPaymentDetails($request)
+    {
+        
+        return $this->ownerPaymentRepository->getPaymentDetails($request);
     } 
 
     public function ownerpaymentData($request)

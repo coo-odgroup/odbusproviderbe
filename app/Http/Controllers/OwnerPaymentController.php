@@ -37,6 +37,11 @@ class OwnerPaymentController extends Controller
         return $this->successResponse($ownerpayment,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function getPaymentDetails(Request $request) 
+    {      
+        $ownerpayment = $this->ownerPaymentService->getPaymentDetails($request);
+        return $this->successResponse($ownerpayment,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
     public function ownerpaymentData(Request $request) 
     {      
         $ownerpayment = $this->ownerPaymentService->ownerpaymentData($request);
@@ -47,7 +52,7 @@ class OwnerPaymentController extends Controller
     {
         // Log::info($request);
         
-        $data = $request->only(['bus_operator_id','date','transaction_id','amount','remark','created_by']);
+        $data = $request->only(['bus_operator_id','startDate','endDate','noSeat','noPnr','transaction_id','amount','remark','paymentNote','created_by']);
 
         $ownerPaymentValidator = $this->ownerPaymentValidator->validate($data);
         if ($ownerPaymentValidator->fails()) {

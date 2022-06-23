@@ -383,7 +383,8 @@ class SeatOpenRepository
 
     public function delete($request)
     {
-        // log::info($request);
+/*        log::info($request);
+        // exit;*/
         
         $seatOpen = $this->busSeats
                          ->where('bus_id',$request['bus_id'])

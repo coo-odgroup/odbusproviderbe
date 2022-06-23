@@ -2,16 +2,19 @@
 namespace App\Repositories;
 use App\Models\OwnerPayment;
 use App\Models\Bus;
+use App\Models\Booking;
 use Illuminate\Support\Facades\Log;
 
 class OwnerPaymentRepository
 {
   
     protected $ownerPayment;
+    protected $booking;
     
-    public function __construct(OwnerPayment $ownerPayment)
+    public function __construct(OwnerPayment $ownerPayment,Booking $booking)
     {
         $this->ownerPayment = $ownerPayment;
+        $this->booking = $booking;  
     }
 
     public function getAll()
@@ -80,10 +83,14 @@ class OwnerPaymentRepository
     public function getModel($data, OwnerPayment $ownerPayment)
     {
         $ownerPayment->bus_operator_id = $data['bus_operator_id'];
-        $ownerPayment->payment_date = $data['date'];
+        $ownerPayment->start_date = $data['startDate'];
+        $ownerPayment->end_date = $data['endDate'];
+        $ownerPayment->total_seat = $data['noSeat'];
+        $ownerPayment->total_pnr = $data['noPnr'];
         $ownerPayment->amount = $data['amount'];
         $ownerPayment->transaction_id = $data['transaction_id'];
         $ownerPayment->remark = $data['remark'];
+        $ownerPayment->payment_note = $data['paymentNote'];
         $ownerPayment->created_by = $data['created_by'];
         $ownerPayment->status = 0;
         return $ownerPayment;
@@ -96,15 +103,52 @@ class OwnerPaymentRepository
         $ownerPayment->save();       
         return $ownerPayment;
     }
+
+
+    public function getPaymentDetails($data)
+    {
+
+        // log::info($data);
+        $bus_operator_id = $data->operatorId;
+        $start_date  =  $data->startDate;
+        $end_date  =  $data->endDate;
+
+        $dt= $this->booking->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) 
+                      {$query->where('id', $bus_operator_id );})
+                             ->whereBetween('journey_dt', [$start_date, $end_date])
+                             ->where('status',1)->get();
+
+        $owner_fare = 0;
+        $totalSeats = 0;
+        if($dt){
+            foreach($dt as $key=>$v){
+              $totalSeats = $totalSeats +  count($v->BookingDetail);
+               $owner_fare = $owner_fare + $v->owner_fare;               
+            }
+        }
+         $response = array(
+             "count" => $dt->count(), 
+             "totalSeats" => $totalSeats,
+             "owner_fare"=>number_format($owner_fare, 2, ".", ""),
+           );  
+        
+        return $response;    
+        
+    }
     
 
     public function ownerpaymentData($request)
     {
+        // log::info($request);
+
          $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;
+         $bus_operator_id = $request['bus_operator_id'] ;
+         $fromDate = $request['fromDate'] ;
+         $toDate = $request['toDate'] ;
+         // $name = $request['name'] ;
 
         $data= $this->ownerPayment->with('busOperator')
-                    ->whereNotIn('status', [2]);
+                    ->whereNotIn('status', [2])->orderBy('id','DESC');
 
 
         if($paginate=='all') 
@@ -116,16 +160,20 @@ class OwnerPaymentRepository
             $paginate = 10 ;
         }
 
-        if($name!=null)
-        {
-            $data = $data->where('transaction_id', 'like', '%' .$name . '%')
-                         ->orWhere('payment_date', 'like', '%' .$name . '%')
-                         ->orWhere('amount', 'like', '%' .$name . '%')
-                         ->orWhere('remark', 'like', '%' .$name . '%')
-                         ->orWhereHas('busOperator', function ($query) use ($name){
-                            $query->where('operator_name', 'like', '%' .$name . '%');
-                            });                        
-        }     
+        if($bus_operator_id != null){
+            $data = $data->where('bus_operator_id',$bus_operator_id);
+        }
+
+
+         if($fromDate != null && $toDate != null){
+             if($fromDate == $toDate){
+                $data =$data->where('created_at', 'like','%'.$fromDate.'%')
+                        ->orderBy('created_at','DESC');
+            }else{
+                 $data =$data-> whereBetween('created_at', [$fromDate, $toDate])
+                        ->orderBy('created_at','DESC');
+            }
+        }   
 
         $data=$data->paginate($paginate);
 

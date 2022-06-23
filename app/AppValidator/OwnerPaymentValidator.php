@@ -12,10 +12,14 @@ class OwnerPaymentValidator
         
         $rules = [
             'bus_operator_id' => 'required',
-            'date' => 'required',
+            'startDate' => 'required',
+            'endDate' => 'required',
+            'noSeat' => 'required',
+            'noPnr' => 'required',
             'amount' => 'required',
             'transaction_id' => 'required',
             'remark' => 'required',
+            'paymentNote' => 'required',
             'created_by' => 'required'
             
         ];      

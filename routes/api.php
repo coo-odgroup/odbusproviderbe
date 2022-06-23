@@ -856,6 +856,7 @@ Route::post('/busSeatsFareData', [BusController::class, 'busSeatsFareData']);
 Route::post('/busupdatesequenceData', [BusController::class, 'busupdatesequenceData']);
 Route::post('/busCancelledData', [BusCancelledController::class, 'busCancelledData']);
 Route::post('/ownerpaymentData', [OwnerPaymentController::class, 'ownerpaymentData']);
+Route::post('/getPaymentDetails', [OwnerPaymentController::class, 'getPaymentDetails']);
 
 Route::post('/Register', [UserController::class, 'Register']);
 Route::post('/VerifyOtp', [UserController::class, 'verifyOtp']);

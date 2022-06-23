@@ -352,6 +352,7 @@ public function delete($id)
     }
 }
 public function login($request){
+
     $query =$this->user->where([
         ['email', $request['email']],
         ['email', '<>', null]
