@@ -232,21 +232,17 @@ class BusCancelledRepository
            );   
            return $response;  
     }
-    /**
-     * Get Bus Cancelled by id
-     *
-     * @param $id
-     * @return mixed
-     */
+
     public function getByBusId($id)
     {
-        return $this->busCancelled->with(['busCancelledDate'=> function($b){                                          
-            $b->orderBy('id','DESC')->limit(30)
-            ->where('entry_date','>=',date('Y-m-d'));                                         
-            }])
-        ->where('bus_id', $id)->get();
-        
-       // return $this->busCancelled->with('busCancelledDate')->where('bus_id', $id)->get();
+        $data =  $this->busCancelled
+                      ->with(['busCancelledDate'=> function($b){$b->orderBy('id','DESC')->limit(30);}])
+                      ->whereHas('busCancelledDate', function ($query) {$query->where('cancelled_date','>=',date('Y-m-d') );})
+                      ->where('bus_id', $id)->get();
+                // log::info($data);
+                      
+
+        return $data;
     }
 
     /**

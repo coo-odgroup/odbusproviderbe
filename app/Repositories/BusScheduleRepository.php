@@ -191,10 +191,8 @@ class BusScheduleRepository
 
     public function busScheduleById($id)
     {
-        // $cur_dt = [];
-        // $cur_dt[1] = date('Y-m-d');
         $data = $this->busSchedule->with(["busScheduleDate" => function($b){                                          
-                                          $b->orderBy('id','DESC')->limit(30)
+                                          $b->orderBy('id','DESC')
                                             ->where('entry_date','>=',date('Y-m-d'));                                         
                                            }])                                      
                                   ->where('bus_id',$id)
@@ -206,7 +204,7 @@ class BusScheduleRepository
 
     public function busSchedulerData($request)
     {
-      // log::info($request);
+      
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;  
          $source_id= $request['source_id'];   
@@ -214,7 +212,11 @@ class BusScheduleRepository
          $bus_operator_id= $request['bus_operator_id'];      
          $bus_id= $request['bus_id'];      
 
-        $data= $this->busSchedule->with('busScheduleDate','bus.busOperator','bus.ticketPrice')
+        $data= $this->busSchedule->with(["busScheduleDate" => function($b){                                          
+                                          $b->orderBy('id','DESC')
+                                            ->where('entry_date','>=',date('Y-m-d'));                                         
+                                           }]) 
+                                ->with('bus.busOperator','bus.ticketPrice')
                                  ->whereNotIn('status', [2])
                                  ->orderBy('id','DESC');
 
