@@ -381,6 +381,76 @@ class BusRepository
         
     } 
 
+    public function busseatfarereport( $request)
+    {
+        // log::info($request);
+        $paginate = $request['rows_number'] ;
+        $bus_operator_id = $request['bus_operator_id'] ;
+        $start_date = $request['rangeFromDate'] ;
+        $end_date = $request['rangeToDate'] ;
+
+        $data= $this->bus->with(['ticketPrice.getBusSeats'=> function($b){$b->where('new_fare','>',0 )->whereNotIn('status', [2])->with('seats');}])
+                        // ->with('')
+                         ->whereHas('ticketPrice.getBusSeats', function ($query)  
+                            {$query->where('new_fare','>',0 )->whereNotIn('status', [2])->orderBy('updated_at','DESC');
+                        })
+                         ->whereNotIn('status', [2])
+                         ->orderBy('updated_at','DESC');
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+
+        if(!empty($bus_operator_id))
+        {
+            $data= $data->where('bus_operator_id',$bus_operator_id);   
+        }  
+
+        if(!empty($start_date) && !empty($end_date))
+        {
+            $data= $data->whereHas('busSeats', function ($query)  
+                            {$query->whereBetween('updated_at', [$start_date, $end_date])
+                                   ->orderBy('updated_at','DESC');
+                        });   
+        } 
+
+        $data=$data->paginate($paginate);
+
+         if(count($data)>0){
+            foreach($data as $key=>$v)
+            {   
+                if(count($v->ticketPrice)>0)
+                {
+                    $start = $v->ticketPrice[0]['source_id'];
+                    $end = $v->ticketPrice[0]['destination_id'];
+                    if($start!="" && $end !="")
+                    {
+                         $v['from_location']=$this->location->where('id',$start)->get();
+                         $v['to_location']=$this->location->where('id',$end)->get();
+                    }
+                    foreach ($v->ticketPrice as $y => $ve) {
+                          $ve['source']=$this->location->where('id',$ve->source_id)->get();
+                          $ve['destination']=$this->location->where('id',$ve->destination_id)->get();
+                    }
+                }
+                
+            }
+        }
+        
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response; 
+        
+        
+    } 
+
 
     public function busupdatesequenceData( $request)
     {
