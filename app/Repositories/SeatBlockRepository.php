@@ -650,7 +650,7 @@ class SeatBlockRepository
         {
             $data = $data->whereHas('bus', function ($query) use ($name){
                 $query->where('name', 'like', '%' .$name . '%');               
-            }) ;          
+            })->orwhere('reason','like','%'.$name.'%') ;          
             
         }  
         if(!empty($source_id) && !empty($destination_id))
