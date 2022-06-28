@@ -390,7 +390,7 @@ class SeatOpenRepository
                          ->where('bus_id',$request['bus_id'])
                          ->where('operation_date',$request['operationDate'])
                          ->where('type',$request['type'])
-                         ->delete();
+                         ->update(['status'=> '2']);
         return $seatOpen;
     }
     

@@ -34,7 +34,7 @@ class UserContentRepository
       $operator_id = $request['bus_operator_id'] ;
 
 
-      $data = $this->usercontent->with('UserBusOperator')->where('status','!=',2)->where('role_id','4')->orderBy('id','DESC');
+      $data = $this->usercontent->with('busOperator')->where('status','!=',2)->where('role_id','4')->orderBy('id','DESC');
       if($paginate=='all') 
       {
           $paginate = Config::get('constants.ALL_RECORDS');
