@@ -10,6 +10,8 @@ use App\Models\Location;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendOwnerCancelBusEmailJob;
+
 
 class BusCancelledRepository
 {
@@ -290,8 +292,23 @@ class BusCancelledRepository
 
     public function busCancelledbyowner($data)
     { 
+        // log::info($data->buses[0]['busName']);
+   
         $buses = $data['buses'];
         $message=[];
+        $dates="";
+        foreach ($buses as $k) 
+        {
+            foreach ($k['dateLists'] as $i => $DateLists)   
+            {
+                if(isset($DateLists['datechecked']) && $DateLists['datechecked'] == true)
+                {
+                     $dates=$dates.date("Y-m-d", strtotime($DateLists['entryDates'])).',' ;
+                }
+            }
+        }
+      
+
         foreach ($buses as $k) 
         {
             foreach ($k['dateLists'] as $i => $DateLists)   
@@ -308,13 +325,25 @@ class BusCancelledRepository
                     $message['msg'] = 'Some seat already booked on';
                     $message['dt'] = $DateLists['entryDates'];
 
+                   $to_user = 'support@odbus.in';
+                   $subject = "Owner Trying To Cancel This Bus";
+                   $agentData= [
+                            'month'=>$data->month,
+                            'year'=>$data->year,
+                            'cancelled_by'=> $data->cancelled_by,
+                            'reason'=> $data->reason,
+                            'other_reson'=> $data->other_reson,
+                            'busName'=> $data->buses[0]['busName'],
+                            'dates'=> $dates,
+                           ] ;
+                    SendOwnerCancelBusEmailJob::dispatch($to_user, $subject, $agentData);
                     return $message;
                   }
                 }
             }
         }
      
-             foreach ($buses as $bus)         
+        foreach ($buses as $bus)         
         {          
             $this->busCancelled = new BusCancelled();
             $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   

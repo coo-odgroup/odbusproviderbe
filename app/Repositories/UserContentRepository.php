@@ -63,9 +63,9 @@ class UserContentRepository
    public function addusercontent($data)
    {      
 
-       $bus_opr_exist= $this->usercontent->where('bus_operator_id', $data['bus_operator_id'])->get();
-       $email_exist= $this->usercontent->where('email', $data['email'])->get();
-       $phone_exist= $this->usercontent->where('phone', $data['phone'])->get();
+       $bus_opr_exist= $this->usercontent->where('bus_operator_id', $data['bus_operator_id'])->where('status',1)->get();
+       $email_exist= $this->usercontent->where('email', $data['email'])->where('status',1)->get();
+       $phone_exist= $this->usercontent->where('phone', $data['phone'])->where('status',1)->get();
 
        if(count($bus_opr_exist)==0){
         if(count($email_exist)==0){
@@ -97,8 +97,8 @@ class UserContentRepository
 
    public function updateusercontent($data, $id)
    {
-       $email_exist= $this->usercontent->where('email', $data['email'])->where('id','!=',$id)->get();
-       $phone_exist= $this->usercontent->where('phone', $data['phone'])->where('id','!=',$id)->get();
+       $email_exist= $this->usercontent->where('email', $data['email'])->where('id','!=',$id)->where('status',1)->get();
+       $phone_exist= $this->usercontent->where('phone', $data['phone'])->where('id','!=',$id)->where('status',1)->get();
 
        if(count($email_exist)==0){
           if(count($phone_exist)==0){

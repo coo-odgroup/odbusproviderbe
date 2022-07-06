@@ -78,7 +78,7 @@ class BusCancelledController extends Controller
          else
         {
           $response = $this->busCancelledService->busCancelledbyowner($request);
-          Log::info($response['msg']);
+          // Log::info($response['msg']);
 
            if($response['msg']=='Some seat already booked on')
            {

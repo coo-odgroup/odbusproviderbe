@@ -356,14 +356,14 @@ class AgentWalletRepository
         $agentWallet->status = 1;
         $agentWallet->otp = "";
 
-        // log::info($data);
-        // exit;
 
         $agentWallet->save();
         $AgentWalletRequest->delete(); 
 
          $notification = new $this->notification; 
-         $notification->notification_heading = "Wallet Recharge of Rs.".$ext_data->amount." Approved";
+         // $notification->notification_heading = "Wallet Recharge of Rs.".$ext_data->amount." Approved";
+         $notification->notification_heading = "New Balance is Rs ".$balance." After recharge sucessfull of Rs ".$ext_data->amount." for Transaction ID ".$ext_data->transaction_id ;
+
          $notification->notification_details = " Dear ".$user->name.", Your Request of Rs.".$ext_data->amount.
          " through ".$ext_data->payment_via." with transaction.id-".$ext_data->transaction_id." has been approved.Your Current balance is ".$balance ;
          $notification->created_by = $data->user_name ;
@@ -386,7 +386,6 @@ class AgentWalletRepository
                    ] ;
            SendWalletApproveEmailJob::dispatch($to_user, $subject, $superAdminData);
 
-         
       return $agentWallet;
 
     }
