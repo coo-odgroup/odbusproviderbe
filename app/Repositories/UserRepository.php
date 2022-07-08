@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 use App\Jobs\SendForgetOtpEmailJob;
 use App\Jobs\SendResetPasswordEmailJob;
 use App\Models\Agent;
+use App\Jobs\SendAgentRequestToUserEmailJob;
+use App\Jobs\SendAgentRequestToAdminEmailJob;
 
 class UserRepository
 {
@@ -404,48 +406,61 @@ public function getRoles()
 
 public function agentRegister($request){  
 
-    $users = $this->user->where('id', $request['userId'])->update(array(
-        'name' => $request['name'],
-        'email' => $request['email'],
-        'password' => bcrypt($request['password']),
-        'user_type' => 'AGENT',
-        'role_id' => '3',
-        'location' => $request['location'],
-        'adhar_no' => $request['adhar_no'],
-        'pancard_no' => $request['pancard_no'],
-        'organization_name' => $request['organization_name'],
-        'address' => $request['address'],
-        'street' => $request['street'],
-        'landmark' => $request['landmark'],
-        'city' => $request['city'],
-        'pincode' => $request['pincode'],
-        'name_on_bank_account' => $request['name_on_bank_account'],
-        'bank_name' => $request['bank_name'],
-        'ifsc_code' => $request['ifsc_code'],
-        'bank_account_no' => $request['bank_account_no'],
-        'branch_name' => $request['branch_name'],
-        'upi_id' => $request['upi_id'],
-        'email' => $request['email'],
-        'status' => "0",
-    ));
+    // log::info($request);
 
     $email = $this->agent->where('email',$request['email'])->where('status','!=',2)->get();
-    $phone = $this->agent->where('phone',$request['phone'])->where('status','!=',2)->get();
+    // $phone = $this->agent->where('phone',$request['phone'])->where('status',1)->get();
     $aadhaar = $this->agent->where('adhar_no',$request['adhar_no'])->where('status','!=',2)->get();
     $pancard = $this->agent->where('pancard_no',$request['pancard_no'])->where('status','!=',2)->get();
+
+
     
     if(count($email)==0)
     {
-        if(count($phone)==0)
-        {
             if(count($aadhaar)==0)
             {
                 if(count($pancard)==0)
                 {
-                        $agent = new $this->agent;
-                        $agent=$this->getModel($data,$agent);
-                        $agent->save();
-                        return $agent;
+                        $users = $this->user->find($request['userId']);
+                        $users->name = $request['name'];
+                        $users->email = $request['email'];
+                        $users->password = bcrypt($request['password']);
+                        $users->user_type = 'AGENT';
+                        $users->role_id = 3;
+                        $users->location = $request['location'];
+                        $users->adhar_no = $request['adhar_no'];
+                        $users->pancard_no = $request['pancard_no'];
+                        $users->organization_name = $request['organization_name'];
+                        $users->address = $request['address'];
+                        $users->street = $request['street'];
+                        $users->landmark = $request['landmark'];
+                        $users->city = $request['city'];
+                        $users->pincode = $request['pincode'];
+                        $users->name_on_bank_account = $request['name_on_bank_account'];
+                        $users->bank_name = $request['bank_name'];
+                        $users->ifsc_code = $request['ifsc_code'];
+                        $users->bank_account_no = $request['bank_account_no'];
+                        $users->branch_name = $request['branch_name'];
+                        $users->upi_id = $request['upi_id'];
+                        $users->email = $request['email'];
+                        $users->status = 0;
+
+                        $users->update();                       
+
+                        $to_user = 'bishal.seofied@gmail.com';
+                        $subject = "Agent Creation Request Email";
+                        $agentData= [
+                            'userName'=>$request['name'],
+                            'userEmail'=> $request['email']                        
+                           ] ;
+                        SendAgentRequestToUserEmailJob::dispatch($to_user, $subject, $agentData);
+
+                        $to_admin ='agent@odbus.in';                                       
+                        SendAgentRequestToAdminEmailJob::dispatch($to_admin, $subject, $agentData);
+                        // return $agent;
+                        // $usersDetails = $this->user->where('id',  $request['userId'])->get();
+                        // return $usersDetails; 
+                        return $users; 
                 }
                 else
                 {
@@ -456,21 +471,11 @@ public function agentRegister($request){
             {
                 return 'Aadhaar Card Already Exist';
             }
-
-        }
-        else
-        {
-            return 'Phone Already Exist';
-        }
     }
     else
     {
         return 'Email Already Exist';
     }
-    
-    $usersDetails = $this->user->where('id',  $request['userId'])->get();
-    return $usersDetails; 
-
     
 }
 

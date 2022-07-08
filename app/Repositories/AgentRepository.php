@@ -87,6 +87,7 @@ class AgentRepository
 
         $data= $this->agent
                     ->where('status', 0)
+                    ->where('role_id',3)
                     ->orderBy('id','DESC');
 
         if($paginate=='all') 
@@ -306,7 +307,7 @@ class AgentRepository
                                        ] ;
                                 SendAgentCreationEmailJob::dispatch($to_user, $subject, $agentData);
                           
-                            // return $agent;
+                            return $agent;
                    
 
                     }

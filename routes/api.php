@@ -328,6 +328,8 @@ Route::post('/alreadyBlocks',[SeatBlockController::class,'alreadyBlocks']);
 
 
 
+
+
 Route::post('/BusType', [BusTypeController::class, 'createBusType']);
 Route::post('/BusTypeOperator', [BusTypeController::class, 'getBusTypeOperator']);
 Route::post('/BusTypebyUser', [BusTypeController::class, 'BusTypebyUser']);

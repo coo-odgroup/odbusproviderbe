@@ -73,6 +73,7 @@ class SeatBlockService
     {
         return $this->seatblockRepository->seatblockData($request);
     }
+   
     public function alreadyBlocks($request)
     {
         return $this->seatblockRepository->alreadyBlocks($request);
