@@ -88,6 +88,7 @@ class AgentRepository
         $data= $this->agent
                     ->where('status', 0)
                     ->where('role_id',3)
+                    ->where('email','!=',NULL)
                     ->orderBy('id','DESC');
 
         if($paginate=='all') 

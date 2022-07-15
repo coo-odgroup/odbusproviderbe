@@ -171,7 +171,7 @@
                                                    
 													<p>Please Check and Update the Status.</p>
 													<p><br></p>
-													<p><strong>Important Note:</strong><br>ODBUS never ask your password.Please do not share your ODBUS Agent account password to anyone.<br>For any question reach us @ +91-9583918888/write to us <a href="mailto:support@odbus.in">support@odbus.in</a></p>
+													<p><strong>Important Note:</strong><br>For any question reach us @ +91-9583918888/write to us <a href="mailto:support@odbus.in">support@odbus.in</a></p>
 													<p><br></p>
 													<p><br></p>
 													<p><br></p>

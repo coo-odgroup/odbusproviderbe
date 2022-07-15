@@ -324,6 +324,9 @@ Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeSt
 Route::post('/alreadyBlocks',[SeatBlockController::class,'alreadyBlocks']);
 
 
+Route::get('/removeSeatBlockCornJob',[SeatBlockController::class,'removeSeatBlockCornJob']);
+
+
 
 
 

@@ -55,9 +55,9 @@ class FailledTransactionReportRepository
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users','CustomerPayment')
+                                    'Bus','Users','CustomerPaymentData')
                              ->with('bus.busstoppage')
-                             ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '0' );})
+                             ->whereHas('CustomerPaymentData', function ($query) {$query->where('payment_done', '0' );})
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {
@@ -79,8 +79,8 @@ class FailledTransactionReportRepository
 
         if(!empty($payment_id))
         {
-           $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
-                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id );});
+           $data=$data->whereHas('CustomerPaymentData', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
+                      ->orwhereHas('CustomerPaymentData', function ($query) use ($payment_id) {$query->where('order_id', $payment_id );});
         }
 
          if(!empty($source_id) && !empty($destination_id))

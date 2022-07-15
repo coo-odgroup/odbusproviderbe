@@ -12,6 +12,7 @@ use App\Models\Location;
 use App\Models\TicketPrice;
 use App\Models\Booking;
 use App\Models\BookingDetail;
+use App\Models\busSeatsBk;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Pagination\Paginator;
@@ -27,10 +28,11 @@ class SeatBlockRepository
     protected $ticketPrice;
     protected $booking;
     protected $bookingDetail;
+    protected $busSeatsBk;
 
     
     public function __construct(SeatBlock $seatBlock , SeatBlockSeats $seatsBlockSeats,BusSeats 
-        $busSeats,Bus $bus,Location $location, TicketPrice $ticketPrice,Booking $booking, BookingDetail $bookingDetail)
+        $busSeats,Bus $bus,Location $location, TicketPrice $ticketPrice,Booking $booking, BookingDetail $bookingDetail,busSeatsBk $busSeatsBk)
     {
         $this->seatBlock = $seatBlock;
         $this->seatBlockSeats = $seatsBlockSeats;
@@ -40,11 +42,36 @@ class SeatBlockRepository
         $this->ticketPrice = $ticketPrice;  
         $this->booking = $booking;  
         $this->bookingDetail = $bookingDetail;  
-       
+        $this->busSeatsBk = $busSeatsBk;  
     }    
     public function getAll()
     {
         return $this->seatBlock->with('seatBlockSeats')->with('bus','bus.busOperator')->get();
+
+    } 
+
+    public function removeSeatBlockCornJob()
+    {
+       $today=date('Y-m-d');
+       $checkdate =date('Y-m-d', strtotime($today. ' - 45 days'));
+
+        $data = json_encode($this->busSeats
+                          ->where('type',2)
+                          ->whereNotIn('status', [2])
+                          ->where('operation_date','<',$checkdate)->limit(50)->get());
+
+        $seatblockData = new $this->busSeatsBk;
+        $seatblockData->data = $data;
+        $seatblockData->save();
+
+        // $this->busSeats->where('type',2)
+        //                 ->whereNotIn('status', [2])
+        //                 ->where('operation_date','<',$checkdate)->delete();
+
+        // Log::info($seatblockData ); 
+
+        return $seatblockData;
+            
 
     }
     //  public function addseatBlock($data)

@@ -447,7 +447,7 @@ public function agentRegister($request){
 
                         $users->update();                       
 
-                        $to_user = 'bishal.seofied@gmail.com';
+                        $to_user = $request['email'];
                         $subject = "Agent Creation Request Email";
                         $agentData= [
                             'userName'=>$request['name'],

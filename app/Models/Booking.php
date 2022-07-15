@@ -44,6 +44,11 @@ class Booking extends Model
       
       public function CustomerPayment()
       {
+            return $this->hasOne(CustomerPayment::class)->where('razorpay_id','!=',NULL);
+      } 
+
+      public function CustomerPaymentData()
+      {
             return $this->hasOne(CustomerPayment::class);
       }  
 

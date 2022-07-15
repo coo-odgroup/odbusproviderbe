@@ -49,6 +49,11 @@ class SeatBlockService
         return $this->seatblockRepository->getAll();
     }
 
+    public function removeSeatBlockCornJob()
+    {
+        return $this->seatblockRepository->removeSeatBlockCornJob();
+    }
+
     public function addseatblock($request)
     {
         return $this->seatblockRepository->addseatblock($request);

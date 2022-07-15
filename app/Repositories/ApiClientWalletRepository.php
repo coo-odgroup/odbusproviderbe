@@ -6,6 +6,7 @@ use App\Models\ApiClientWallet;
 use App\Models\Notification;
 use App\Models\UserNotification;
 use App\Models\User;
+use App\Models\Booking;
 
 use App\Jobs\SendSuperAdminEmailJob;
 use App\Jobs\SendSupportEmailJob;
@@ -21,13 +22,15 @@ class ApiClientWalletRepository
     protected $ApiClientWalletRequest; 
     protected $notification;
     protected $user;
+    protected $booking;
     
-    public function __construct(ApiClientWallet $ApiClientWallet,Notification $notification,User $user,ApiClientWalletRequest $ApiClientWalletRequest)
+    public function __construct(ApiClientWallet $ApiClientWallet,Notification $notification,User $user,ApiClientWalletRequest $ApiClientWalletRequest,Booking $booking)
     {
         $this->ApiClientWallet = $ApiClientWallet;
         $this->ApiClientWalletRequest = $ApiClientWalletRequest;
         $this->notification = $notification;
         $this->user = $user;
+        $this->booking = $booking;
     }
       
     public function getModel($data, ApiClientWalletRequest $ApiClientWalletRequest)
@@ -77,14 +80,13 @@ class ApiClientWalletRepository
                     'tran_id'=>$data['transaction_id'],
                     'otp' => $ApiClientWalletRequest->otp,
                    ] ;
-            // SendSuperAdminEmailJob::dispatch("support@odbus.in", $subject, $supportData);
-            // SendSuperAdminEmailJob::dispatch("agent@odbus.in", $subject, $supportData); 
 
-            SendSuperAdminEmailJob::dispatch("bishal.seofied@gmail.com", $subject, $supportData);
-            SendSuperAdminEmailJob::dispatch("bishal.seofied@gmail.com", $subject, $supportData);
+            SendSuperAdminEmailJob::dispatch("santosh@odbus.in", $subject, $supportData); 
+            SendSuperAdminEmailJob::dispatch("support@odbus.in", $subject, $supportData);
+            
 
-           // $to_superadmin = "coo@odgroup.in";
-           $to_superadmin ="bishal.seofied@gmail.com";
+           $to_superadmin = "coo@odgroup.in";
+           // $to_superadmin ="bishal.seofied@gmail.com";
            $subject = "API Client Wallet recharge request From Agent";
            $superAdminData= [
                     'userName'=>$user->name,
@@ -493,7 +495,15 @@ class ApiClientWalletRepository
            
         }
 
-         $data=  $data->paginate($paginate);
+        $data=  $data->paginate($paginate);
+
+        if($data){
+            foreach($data as $key=>$v){
+                if($v->booking_id!=null){
+                    $v['pnrDetails']=$this->booking->where('id', $v->booking_id)->get();
+                }
+            }
+        }
 
         $response = array(
             "count" => $data->count(), 
