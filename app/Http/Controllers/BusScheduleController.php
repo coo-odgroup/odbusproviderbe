@@ -32,6 +32,11 @@ class BusScheduleController extends Controller
     public function scheduleCronJob() {
         $busSchedule = $this->busScheduleService->scheduleCronJob();
         return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
+    public function removeOldBusScheduleCronjob() {
+        $busSchedule = $this->busScheduleService->removeOldBusScheduleCronjob();
+        return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function getAllBusScheduleDT(Request $request) {

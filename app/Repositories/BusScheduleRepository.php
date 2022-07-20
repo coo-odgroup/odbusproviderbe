@@ -117,6 +117,19 @@ class BusScheduleRepository
     public function getAll()
     {
         return $this->busSchedule->get();
+    }
+
+    public function removeOldBusScheduleCronjob()
+    {
+        $today=date('Y-m-d');
+        $checkdate =date('Y-m-d', strtotime($today. '-35 days'));
+       
+        $dltData= $this->busScheduleDate->where('entry_date','<',$checkdate)->delete();
+        
+        $msg = $dltData." Record deleted from ".$checkdate." of bus schedule" ;
+        log::info($msg);
+       
+        return $msg;
     } 
 
 

@@ -32,6 +32,13 @@ class BusCancelledController extends Controller
         $buscancelled = $this->busCancelledService->getAll();
         return $this->successResponse($buscancelled,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    
+    public function removeOldBusCancelledCronjob() {
+
+        $buscancelled = $this->busCancelledService->removeOldBusCancelledCronjob();
+        return $this->successResponse($buscancelled,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
     public function getBusCancelledDT(Request $request) {
         $buscancelled = $this->busCancelledService->getBusCancelledDT($request);
         return $this->successResponse($buscancelled,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);

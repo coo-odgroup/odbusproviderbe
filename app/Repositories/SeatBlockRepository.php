@@ -5,14 +5,12 @@ namespace App\Repositories;
 // use App\Models\Bus;
 use App\Models\SeatBlock;
 use App\Models\SeatBlockSeats;
-
 use App\Models\BusSeats;
 use App\Models\Bus;
 use App\Models\Location;
 use App\Models\TicketPrice;
 use App\Models\Booking;
 use App\Models\BookingDetail;
-use App\Models\busSeatsBk;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Pagination\Paginator;
@@ -28,11 +26,10 @@ class SeatBlockRepository
     protected $ticketPrice;
     protected $booking;
     protected $bookingDetail;
-    protected $busSeatsBk;
 
     
     public function __construct(SeatBlock $seatBlock , SeatBlockSeats $seatsBlockSeats,BusSeats 
-        $busSeats,Bus $bus,Location $location, TicketPrice $ticketPrice,Booking $booking, BookingDetail $bookingDetail,busSeatsBk $busSeatsBk)
+        $busSeats,Bus $bus,Location $location, TicketPrice $ticketPrice,Booking $booking, BookingDetail $bookingDetail)
     {
         $this->seatBlock = $seatBlock;
         $this->seatBlockSeats = $seatsBlockSeats;
@@ -42,7 +39,6 @@ class SeatBlockRepository
         $this->ticketPrice = $ticketPrice;  
         $this->booking = $booking;  
         $this->bookingDetail = $bookingDetail;  
-        $this->busSeatsBk = $busSeatsBk;  
     }    
     public function getAll()
     {
@@ -50,80 +46,24 @@ class SeatBlockRepository
 
     } 
 
-    public function removeSeatBlockCornJob()
-    {
-       $today=date('Y-m-d');
-       $checkdate =date('Y-m-d', strtotime($today. ' - 45 days'));
+    // public function removeSeatBlockCornJob()
+    // {
+    //    $today=date('Y-m-d');
+    //    $checkdate =date('Y-m-d', strtotime($today. ' -70 days'));
 
-        $data = json_encode($this->busSeats
-                          ->where('type',2)
-                          ->whereNotIn('status', [2])
-                          ->where('operation_date','<',$checkdate)->limit(50)->get());
+    //     $data = $this->busSeats
+    //                       ->where('type',2)
+    //                       ->whereNotIn('status', [2])
+    //                       ->where('operation_date','<',$checkdate)->get(); 
 
-        $seatblockData = new $this->busSeatsBk;
-        $seatblockData->data = $data;
-        $seatblockData->save();
+    //     // $seatblockData =$this->busSeats->where('type',2)
+    //     //                 ->whereNotIn('status', [2])
+    //     //                 ->where('operation_date','<',$checkdate)->delete();
+    //     Log::info('The Total Seat Block Data Deleted '.$data->count()); 
 
-        // $this->busSeats->where('type',2)
-        //                 ->whereNotIn('status', [2])
-        //                 ->where('operation_date','<',$checkdate)->delete();
-
-        // Log::info($seatblockData ); 
-
-        return $seatblockData;
-            
-
-    }
-    //  public function addseatBlock($data)
-    // {        
-    //     $seatBlock = new $this->seatBlock;
-    //     $seatBlock->bus_id = $data['bus_id'];
-    //     $seatBlock->operator_id = $data['bus_operator_id'];
-    //     $seatBlock->reason = $data['reason'];
-    //     $seatBlock->date_applied = $data['date'];
-    //     $seatBlock->created_by = $data['created_by'];
-    //     $seatBlock->save();
-    //     $seats = [];
-    //     foreach ($data['bus_seat_layout_data'] as $slayout)
-    //     {
-            
-    //         foreach ($slayout['lowerBerth'] as $lberth) 
-    //         {
-    //             $seat = new seatBlockSeats();
-    //             if(isset($lberth['seatChecked']))
-    //             {
-    //                 if($lberth["seatChecked"] == true)
-    //                 {
-    //                     $seat['seats_id'] = $lberth['seatId'];
-    //                     $seat['created_by'] = $data['created_by'];
-                       
-    //                     $seats[]=$seat;
-    //                 }
-    //             }
-               
-                
-    //         }
-
-    //         foreach ($slayout['upperBerth'] as $uberth) 
-    //         {
-    //             $seat = new seatBlockSeats();
-    //             //Log::info($uberth);
-    //             if(isset($uberth['seatChecked']))
-    //             {
-    //                 if($uberth["seatChecked"] == true)
-    //                 {
-    //                     $seat['seats_id'] = $uberth['seatId'];
-    //                     $seat['created_by'] = $data['created_by'];
-
-    //                     $seats[]=$seat;
-    //                 }
-    //             }
-    //         }
-
-    //     }          
-    //      $seatBlock->seatBlockSeats()->saveMany($seats);
-    //      return $seatBlock;        
+    //     return $data ;
     // }
+
     public function addseatBlock($data)
     {
         $date= $data->date;
@@ -549,9 +489,7 @@ class SeatBlockRepository
             }
         }
         return $data;
-    }
-
-    
+    }    
 
     public function updateseatBlock($data, $id)
     {
@@ -601,8 +539,6 @@ class SeatBlockRepository
         }
          $seatBlock->seatBlockSeats()->saveMany($seats);
          return $seatBlock;
-
-
     }
 
     public function delete($request)

@@ -46,6 +46,11 @@ class BusCancelledService
     {
         return $this->busCancelledRepository->getAll();
     }
+
+    public function removeOldBusCancelledCronjob()
+    {
+        return $this->busCancelledRepository->removeOldBusCancelledCronjob();
+    }
     /**
     * Get all Data in Datatable Format.
     *

@@ -43,12 +43,32 @@ class BusCancelledRepository
     {
         return $this->busCancelled->whereNotIn('status', [2])->get();
     }
+
+
+    public function removeOldBusCancelledCronjob()
+    {
+        $today=date('Y-m-d');
+        $checkdate =date('Y-m-d', strtotime($today. '-35 days'));
+        
+        $dltBusCancelDate=$this->busCancelledDate->where('created_at','<',$checkdate)->delete();;
+        if($dltBusCancelDate){
+        $dltData= $this->busCancelled->where('created_at','<',$checkdate)->delete();     
+        }
+        
+        
+        $msg = $dltBusCancelDate." Record deleted from ".$checkdate." of bus cancel" ;
+        
+        log::info($msg);
+        return $msg;
+
+    }
     /**
      * Get Bus Cancelled List in Datatable Format
      *
      * @param $id
      * @return mixed
      */
+
     public function getBusCancelledDT($request)
     {
         $draw = $request->get('draw');

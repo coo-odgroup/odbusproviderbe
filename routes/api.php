@@ -324,7 +324,7 @@ Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeSt
 Route::post('/alreadyBlocks',[SeatBlockController::class,'alreadyBlocks']);
 
 
-Route::get('/removeSeatBlockCornJob',[SeatBlockController::class,'removeSeatBlockCornJob']);
+// Route::get('/removeSeatBlockCornJob',[SeatBlockController::class,'removeSeatBlockCornJob']);
 
 
 
@@ -672,6 +672,9 @@ Route::get('/busCancelled/{id}', [BusCancelledController::class, 'getBusCancelle
 Route::post('/busCancelledDT', [BusCancelledController::class, 'getBusCancelledDT']);
 Route::put('/changeStatusBusCancelled/{id}', [BusCancelledController::class, 'changeStatus']);
 
+Route::get('/removeOldBusCancelledCronjob', [BusCancelledController::class, 'removeOldBusCancelledCronjob']);
+
+
 Route::post('/busScheduleDT', [BusScheduleController::class, 'getAllBusScheduleDT']);
 Route::post('/busSchedulerData', [BusScheduleController::class, 'busSchedulerData']);
 Route::get('/busScheduleById/{id}', [BusScheduleController::class, 'busScheduleById']);
@@ -684,6 +687,7 @@ Route::get('/unscheduledbuslist', [BusScheduleController::class, 'unscheduledbus
 Route::put('/changeStatusBusSchedule/{id}', [BusScheduleController::class, 'changeStatus']);
 
 Route::get('/busschedulecronjob', [BusScheduleController::class, 'scheduleCronJob']);
+Route::get('/removeOldBusScheduleCronjob', [BusScheduleController::class, 'removeOldBusScheduleCronjob']);
 
 
 Route::get('/busSlots', [BusSlotsController::class, 'getAllBusSlots']);

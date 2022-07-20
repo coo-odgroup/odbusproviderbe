@@ -33,11 +33,11 @@ class SeatBlockController extends Controller
         return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    public function removeSeatBlockCornJob()
-    {
-        $seatblock = $this->seatblockService->removeSeatBlockCornJob();
-        return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
+    // public function removeSeatBlockCornJob()
+    // {
+    //     $seatblock = $this->seatblockService->removeSeatBlockCornJob();
+    //     return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
 
      public function addseatblock(Request $request)
      {

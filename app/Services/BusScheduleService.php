@@ -48,6 +48,11 @@ class BusScheduleService
         return $this->busScheduleRepository->scheduleCronJob();
     }
 
+    public function removeOldBusScheduleCronjob()
+    {
+        return $this->busScheduleRepository->removeOldBusScheduleCronjob();
+    }
+
     public function busScheduleById($id)
     {
         return $this->busScheduleRepository->busScheduleById($id);

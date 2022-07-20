@@ -89,7 +89,7 @@ class AgentRepository
                     ->where('status', 0)
                     ->where('role_id',3)
                     ->where('email','!=',NULL)
-                    ->orderBy('id','DESC');
+                    ->orderBy('updated_at','DESC');
 
         if($paginate=='all') 
         {

@@ -29,7 +29,8 @@ class BusOperatorRepository
     }
     public function getAll()
     {
-        return $this->busOperators->whereNotIn('status', [2])->orderBy('organisation_name', 'ASC')->get();
+        // return $this->busOperators->whereNotIn('status', [2])->orderBy('organisation_name', 'ASC')->get();
+        return $this->busOperators->where('status', 1)->orderBy('organisation_name', 'ASC')->get();
     }
     public function BusbyOperatorData($request)
     {
