@@ -44,6 +44,7 @@ class ApiUserComissionController extends Controller
                     'starting_fare',
                     'upto_fare',
                     'commision',
+                    'addationalCharges',
                     'created_by'                    
                 ]);
 
@@ -72,6 +73,7 @@ class ApiUserComissionController extends Controller
                     'starting_fare',
                     'upto_fare',
                     'commision',
+                    'addationalCharges',
                     'created_by'  
         ]);
         
