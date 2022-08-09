@@ -107,5 +107,5 @@ class TicketInformationService
     public function sendCancelEmailToSupport($request)
     {
         return $this->ticketInformationRepository->sendCancelEmailToSupport($request);
-    }
+    
 }

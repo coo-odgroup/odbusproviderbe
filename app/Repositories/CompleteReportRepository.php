@@ -37,6 +37,7 @@ class CompleteReportRepository
         $start_date  =  $request->rangeFromDate;
         $end_date  =  $request->rangeToDate;
         $bus_id = $request->bus_id;
+        $hasGst = $request->hasGst;
        
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
@@ -57,6 +58,11 @@ class CompleteReportRepository
         if(!empty($pnr))
         {
            $data=$data->where('pnr', $pnr );
+        } 
+
+        if(!empty($hasGst) && $hasGst == true)
+        {
+           $data=$data->where('customer_gst_status', 1 )->where('customer_gst_number','!=', null );
         }
 
         if(!empty($bus_id))

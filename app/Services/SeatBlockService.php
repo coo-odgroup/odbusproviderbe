@@ -77,6 +77,16 @@ class SeatBlockService
     public function seatblockData($request)
     {
         return $this->seatblockRepository->seatblockData($request);
+    } 
+
+    public function editseatblock($request)
+    {
+        return $this->seatblockRepository->editseatblock($request);
+    }
+
+    public function updateSeatBlockData($request)
+    {
+        return $this->seatblockRepository->updateSeatBlockData($request);
     }
    
     public function alreadyBlocks($request)

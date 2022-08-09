@@ -313,6 +313,9 @@ Route::post('/seatopenData', [SeatOpenController::class, 'seatopenData']);
 Route::put('/changeseatopenStatus/{id}', [SeatOpenController::class, 'changeStatus']);
 Route::post('/alreadyOpen',[SeatOpenController::class,'alreadyOpen']);
 
+Route::post('/editseatOpen',[SeatOpenController::class,'editseatOpen']);
+Route::post('/updateSeatOpen',[SeatOpenController::class,'updateSeatOpenData']);
+
 ////////////SEAT BLOCK//////
 Route::get('/seatblock',[SeatBlockController::class,'getAllseatblock']);
 Route::post('/seatblock',[SeatBlockController::class,'addseatblock']);
@@ -322,6 +325,9 @@ Route::post('/getseatblockDT', [SeatBlockController::class, 'getseatblockDT']);
 Route::post('/seatblockData', [SeatBlockController::class, 'seatblockData']);
 Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeStatus']);
 Route::post('/alreadyBlocks',[SeatBlockController::class,'alreadyBlocks']);
+
+Route::post('/editseatblock',[SeatBlockController::class,'editseatblock']);
+Route::post('/updateSeatBlock',[SeatBlockController::class,'updateSeatBlockData']);
 
 
 // Route::get('/removeSeatBlockCornJob',[SeatBlockController::class,'removeSeatBlockCornJob']);

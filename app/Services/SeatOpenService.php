@@ -54,7 +54,18 @@ class SeatOpenService
     public function addseatopen($request)
     {
         return $this->seatopenRepository->addseatopen($request);
+    }  
+
+    public function editseatOpen($request)
+    {
+        return $this->seatopenRepository->editseatOpen($request);
     } 
+
+     public function updateSeatOpenData($request)
+    {
+        return $this->seatopenRepository->updateSeatOpenData($request);
+    } 
+
     public function updateseatopen($request, $id)
     {
         try {

@@ -123,5 +123,6 @@ class TicketInformationController extends Controller
         $result = $this->ticketInformationService->sendCancelEmailToSupport($request);
         return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-    
+
+  
 }

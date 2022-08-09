@@ -48,7 +48,10 @@ class TicketInformationRepository
         $this->AgentWallet = $AgentWallet;
         $this->manageSMS = $manageSMS;
         $this->customSMS = $customSMS;
+
+
     }
+  
     public function getPnrDetailsForSms($request)
     {
         $date = date('Y-m-d',strtotime("-1 days"));
@@ -95,6 +98,16 @@ class TicketInformationRepository
             foreach($pnr_Details as $key=>$v){
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+
+               if($v->app_type=='AGENT' && $v->user_id!=0){
+
+                 $balance = $this->AgentWallet->where('user_id',$v->user_id)->where('status',1)->orderBy('id','DESC')->limit(1)->first();
+                 $v['agent_wallet_balance']=$balance;
+
+               }
+
+
+
                }
            }
         return $pnr_Details;
@@ -495,6 +508,32 @@ class TicketInformationRepository
                 //Log::info($BookTicketBody);
 
                 $url = $api_url.'AgentBooking';
+
+
+
+                //////////// update agent wallet table if there is any rest amount 
+
+                if($request['bookingInfo']['rest_bal'] !=0 ){
+
+                    $AgentWallet =  new $this->AgentWallet();
+                    $AgentWallet->balance = $request['bookingInfo']['agent_wallet_balance']+ $request['bookingInfo']['rest_bal'] ;
+                    $AgentWallet->amount = $request['bookingInfo']['rest_bal']  ;
+                    $AgentWallet->user_id = $request['bookingInfo']['user_id'];
+                    $AgentWallet->type= "Ticket Adjust";
+                    $AgentWallet->status= 1;
+                    $AgentWallet->booking_id= $request['bookingInfo']['id'];
+                    $AgentWallet->transaction_type= ($request['bookingInfo']['rest_bal']>0) ? 'c' : 'd';
+                    $AgentWallet->created_by =$request['bookingInfo']['created_by'];
+                    $AgentWallet->transaction_id = time();
+                    $AgentWallet->save();
+
+                }
+
+
+                
+
+
+
             }
 
              
@@ -561,7 +600,7 @@ class TicketInformationRepository
                  $data= array(
                     'contactNo' => $request['customerInfo']['phone'],
                     'pnr' => $pnr,
-                    'journeydate' => $request['bookingInfo']['journey_dt'], 
+                    'journeydate' => $cancelticket->journey_dt, 
                     'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
                     'seat_no' => $request['bookingInfo']['seat_names'],
                     'cancellationDateTime' => $current_date_time,

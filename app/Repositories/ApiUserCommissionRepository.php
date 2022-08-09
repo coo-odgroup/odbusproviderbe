@@ -72,7 +72,8 @@ class ApiUserCommissionRepository
         $apiUserCommission->starting_fare = $data['starting_fare'];
         $apiUserCommission->upto_fare = $data['upto_fare'];    
         $apiUserCommission->commision = $data['commision'];    
-        $apiUserCommission->addationalcharges = $data['addationalCharges'];    
+        $apiUserCommission->addationalcharges = $data['addationalCharges'];     
+        $apiUserCommission->cancellation_commission = $data['cancelCommission'];     
         $apiUserCommission->created_by = $data['created_by'];    
         $apiUserCommission->status = 1;   
         return $apiUserCommission;
