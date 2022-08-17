@@ -57,6 +57,11 @@ class SeatBlockService
     public function addseatblock($request)
     {
         return $this->seatblockRepository->addseatblock($request);
+    }
+
+    public function addseatBlockByOperator($request)
+    {
+        return $this->seatblockRepository->addseatBlockByOperator($request);
     } 
     public function updateseatblock($request, $id)
     {

@@ -187,6 +187,7 @@ Route::post('/sendCancelEmailToSupport',[TicketInformationController::class,'sen
 Route::post('/extraSeatBlock',[ExtraSeatBlockController::class,'addExtraSeatBlock']);
 Route::post('/deleteExtraSeat', [ExtraSeatBlockController::class, 'deleteExtraSeatBlock']);
 Route::post('/extraSeatBlockData', [ExtraSeatBlockController::class, 'extraSeatBlockData']);
+Route::post('/addExtraSeatBlockByOperator', [ExtraSeatBlockController::class, 'addExtraSeatBlockByOperator']);
 
 Route::post('/ticketFareSlab', [TicketFareSlabController::class, 'createslab']);
 Route::post('/ticketFareSlabData', [TicketFareSlabController::class, 'ticketFareSlabData']);
@@ -315,6 +316,8 @@ Route::post('/alreadyOpen',[SeatOpenController::class,'alreadyOpen']);
 
 Route::post('/editseatOpen',[SeatOpenController::class,'editseatOpen']);
 Route::post('/updateSeatOpen',[SeatOpenController::class,'updateSeatOpenData']);
+Route::post('/addseatOpenByOperator',[SeatOpenController::class,'addseatOpenByOperator']);
+
 
 ////////////SEAT BLOCK//////
 Route::get('/seatblock',[SeatBlockController::class,'getAllseatblock']);
@@ -328,6 +331,8 @@ Route::post('/alreadyBlocks',[SeatBlockController::class,'alreadyBlocks']);
 
 Route::post('/editseatblock',[SeatBlockController::class,'editseatblock']);
 Route::post('/updateSeatBlock',[SeatBlockController::class,'updateSeatBlockData']);
+
+Route::post('/addseatBlockByOperator',[SeatBlockController::class,'addseatBlockByOperator']);
 
 
 // Route::get('/removeSeatBlockCornJob',[SeatBlockController::class,'removeSeatBlockCornJob']);

@@ -48,8 +48,9 @@ class DashboardRepository
         $operator_data = $this->busoperator->where('status','1');
         $booking_data=$this->booking->selectRaw('sum(odbus_charges) as odbus_amount')->where('status','1');
         $sales_data=$this->booking->selectRaw('sum(total_fare) as today_amount')->where('status','1');
-
- // Log::info($current_date);
+        
+        $calcel_payable_amount =$this->booking->selectRaw('sum(payable_amount) as today_payable_amount')->where('status','2');
+        $calcel_refund_amount =$this->booking->selectRaw('sum(refund_amount) as today_refund_amount')->where('status','2');
 
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
@@ -69,6 +70,8 @@ class DashboardRepository
             $sales_data = $sales_data->whereHas('bus', function ($query) use ($busOperatorId){
                $query->where('bus_operator_id', $busOperatorId);               
             });
+
+
         }
         switch ($request['rangeFor']) {
             case 'This Month':
@@ -83,6 +86,8 @@ class DashboardRepository
                 $operator_data = $operator_data->get();
                 $booking_data = $booking_data->where('created_at','Like',$current_month.'%');
                 $sales_data = $sales_data->where('created_at','Like',$current_month.'%');
+                $calcel_payable_amount = $calcel_payable_amount->where('created_at','Like',$current_month.'%');
+                $calcel_refund_amount = $calcel_refund_amount->where('created_at','Like',$current_month.'%');
                 break;
             
             case 'This Week':
@@ -98,31 +103,22 @@ class DashboardRepository
                 $operator_data = $operator_data->get();
                 $booking_data = $booking_data->whereBetween('created_at',[$dt_week,$current_date]);
                 $sales_data = $sales_data->whereBetween('created_at',[$dt_week,$current_date]);
+                $calcel_payable_amount = $calcel_payable_amount->whereBetween('created_at',[$dt_week,$current_date]);
+                $calcel_refund_amount = $calcel_refund_amount->whereBetween('created_at',[$dt_week,$current_date]);
                 break;
             
             case 'Today':
-
-             //\DB::connection()->enableQueryLog();
-
                 $today_web_booking= $web_booking->where('created_at','like',$current_date.'%')->where('app_type','WEB')->get();
-
                 $today_app_booking= $app_booking->where('created_at','like',$current_date.'%')->where('app_type','ANDROID')->get();
-
-                // $queries = \DB::getQueryLog();
-                // $last_query = end($queries);
-
-                // Log::info($last_query);
                 $today_mob_booking= $mob_booking->where('created_at','like',$current_date.'%')->where('app_type','MOB')->get();
-
-               
                 $today_data = $today_data->where('created_at','like',$current_date.'%')->get();                    
-                 
-
                 $upcoming_data = $upcoming_data->where('journey_dt','>',$current_date)->get();
                 $bus_data = $bus_data->get();
                 $operator_data = $operator_data->get();
                 $booking_data = $booking_data->where('created_at','like',$current_date.'%');
                 $sales_data = $sales_data->where('created_at','like',$current_date.'%');
+                $calcel_payable_amount = $calcel_payable_amount->where('created_at','like',$current_date.'%');
+                $calcel_refund_amount = $calcel_refund_amount->where('created_at','like',$current_date.'%');
                 break;
             
             case 'Custom Range':
@@ -138,6 +134,8 @@ class DashboardRepository
                 $operator_data = $operator_data->where('created_at',[$request['rangeFrom'],$request['rangeTo']])->get();
                 $booking_data = $booking_data->whereBetween('created_at',[$request['rangeFrom'],$request['rangeTo']]);
                 $sales_data = $sales_data->whereBetween('created_at',[$request['rangeFrom'],$request['rangeTo']]);
+                $calcel_payable_amount = $calcel_payable_amount->whereBetween('created_at',[$request['rangeFrom'],$request['rangeTo']]);
+                $calcel_refund_amount = $calcel_refund_amount->whereBetween('created_at',[$request['rangeFrom'],$request['rangeTo']]);
                 break;    
             
             default:
@@ -151,11 +149,14 @@ class DashboardRepository
                 $operator_data = $operator_data->get();
                 $booking_data = $booking_data;
                 $sales_data = $sales_data;
+                $calcel_payable_amount = $calcel_payable_amount->get();
+                $calcel_refund_amount = $calcel_refund_amount->get();
                 break;
         }
 
        
-
+// log::info($calcel_payable_amount);
+// log::info($calcel_refund_amount);
 
         $today_data =count($today_data);        
         $upcoming_data = count($upcoming_data);        
@@ -172,7 +173,7 @@ class DashboardRepository
 
         $booking_dt= $booking_data->get();
         $data_arr['booking_profit'] = $booking_dt;
-        $data_arr['cancellation_profit'] = 1641 ; //MADE STATIC
+        $data_arr['cancellation_profit'] =  $calcel_payable_amount[0]->today_payable_amount - $calcel_refund_amount[0]->today_refund_amount; //MADE STATIC
         $sales_dt=$sales_data->get();
         $data_arr['sales_data']= $sales_dt;
         return $data_arr;     

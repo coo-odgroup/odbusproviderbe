@@ -56,6 +56,11 @@ class SeatOpenService
         return $this->seatopenRepository->addseatopen($request);
     }  
 
+    public function addseatOpenByOperator($request)
+    {
+        return $this->seatopenRepository->addseatOpenByOperator($request);
+    }  
+
     public function editseatOpen($request)
     {
         return $this->seatopenRepository->editseatOpen($request);

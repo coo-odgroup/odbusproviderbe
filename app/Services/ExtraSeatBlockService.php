@@ -34,6 +34,11 @@ class ExtraSeatBlockService
     public function addExtraSeatBlock($request)
     {
         return $this->extraSeatBlockRepository->addExtraSeatBlock($request);
+    } 
+
+    public function addExtraSeatBlockByOperator($request)
+    {
+        return $this->extraSeatBlockRepository->addExtraSeatBlockByOperator($request);
     }
    
     public function extraSeatBlockData($request)

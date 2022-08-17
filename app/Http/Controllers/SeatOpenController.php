@@ -37,6 +37,13 @@ class SeatOpenController extends Controller
         $seatopen = $this->seatopenService->addseatopen($request);
             return $this->successResponse($seatopen,"Seat Open  Added",Response::HTTP_OK);
 
+     }  
+
+     public function addseatOpenByOperator(Request $request)
+     {
+        $seatopen = $this->seatopenService->addseatOpenByOperator($request);
+            return $this->successResponse($seatopen,"Seat Open  Added",Response::HTTP_OK);
+
      } 
 
      public function editseatOpen(Request $request)

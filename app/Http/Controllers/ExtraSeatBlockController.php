@@ -48,6 +48,22 @@ class ExtraSeatBlockController extends Controller
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }      
 
+     }  
+
+     public function addExtraSeatBlockByOperator(Request $request)
+     {
+      try{
+        $res = $this->extraseatblockService->addExtraSeatBlockByOperator($request);
+        if(isset($res['status']) && $res['status'] == 'error'){
+          return $this->errorResponse($res['message'],Response::HTTP_OK);
+        }else{
+          return $this->successResponse($res,"Extra Seat Block Added",Response::HTTP_OK);
+        }
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }      
+
      }     
 
       public function extraSeatBlockData(Request $request) {      

@@ -41,7 +41,6 @@ class SeatBlockController extends Controller
 
      public function addseatblock(Request $request)
      {
-
       try{
         $res = $this->seatblockService->addseatblock($request);
 
@@ -52,20 +51,32 @@ class SeatBlockController extends Controller
         }else{
           return $this->successResponse($res,"Seat Block Added",Response::HTTP_OK);
         }
-
-        
-
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-     
+     } 
 
+     public function addseatBlockByOperator(Request $request)
+     {
+      try{
+        $res = $this->seatblockService->addseatBlockByOperator($request);
+
+        if(isset($res['status']) && $res['status'] == 'error'){
+
+          return $this->errorResponse($res['message'],Response::HTTP_OK);
+
+        }else{
+          return $this->successResponse($res,"Seat Block Added",Response::HTTP_OK);
+        }
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }
      }
+
      public function updateseatblock(Request $request, $id)
      {
-
-      // Log::info($request); exit;
         $seatblock = $this->seatblockService->updateseatblock($request, $id);
             return $this->successResponse($seatblock,"Seat Block Updated",Response::HTTP_OK);
 
