@@ -1414,11 +1414,26 @@ class SeatBlockRepository
         $bus_operator_id = $request['bus_operator_id'] ;
         $source_id = $request['source_id'] ;
         $destination_id = $request['destination_id'] ;
-         $check_dt = date('Y-m-d', strtotime('today - 3 days'));
+        $check_dt = date('Y-m-d', strtotime('today - 3 days'));
 
-        $data= $this->busSeats->with('bus.busOperator','seats','ticketPrice')
-                              ->where('type',2)
-                              ->whereNotIn('status', [2]);
+        $data= $this->busSeats->select('id','bus_id','ticket_price_id','seats_id','type','operation_date','reason','other_reason','status','updated_at','created_by')
+        ->with(['bus' => function($query){
+                        $query->select('id','bus_operator_id','name','bus_number') 
+                        ->with(['busOperator' => function($quer) {
+                             $quer->select('id','operator_name','organisation_name');
+                            }]);
+                        $query ->with(['ticketPrice' => function($quer) {
+                             $quer->select('id','bus_id','source_id','destination_id');
+                            }])
+                        }])
+        ->with(['seats' => function($quer) {
+                             $quer->select('id','berthType','seatText','bus_seat_layout_id');
+                            }])
+        ->with(['ticketPrice' => function($quer) {
+                             $quer->select('id');
+                            }])
+        ->where('type',2)
+        ->whereNotIn('status', [2]);
 
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
@@ -1494,10 +1509,10 @@ class SeatBlockRepository
                        foreach ($seatOp as $SingleseatOp)
                         {
                           
-                            $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
-                            $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
-                            $SingleseatOp['bus_source']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
-                            $SingleseatOp['bus_destination']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
+                            $SingleseatOp['source']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->source_id)->get();
+                            $SingleseatOp['destination']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
+                            $SingleseatOp['bus_source']=$this->location->select('name')->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
+                            $SingleseatOp['bus_destination']=$this->location->select('name')->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
                         }
                     }
                 }

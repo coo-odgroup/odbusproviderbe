@@ -24,9 +24,7 @@ class CompleteReportRepository
     }    
     
     public function getData($request)
-    {
-        // log::info($request);
-      
+    {      
         $paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
         $payment_id = $request->payment_id;
@@ -40,13 +38,44 @@ class CompleteReportRepository
         $hasGst = $request->hasGst;
        
 
-        $data= $this->booking->with('BookingDetail.BusSeats.seats',
-                                    'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users','CustomerPayment','User.role')
-                             ->with('bus.busstoppage')
+        $data= $this->booking->select('id','pnr', 'transaction_id', 'users_id','bus_id','source_id','destination_id','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','origin','app_type','total_fare','owner_fare','odbus_gst_charges','odbus_gst_amount','odbus_charges','customer_gst_percent','customer_gst_number','customer_gst_business_name','customer_gst_business_email','customer_gst_business_address','customer_gst_amount','coupon_code','coupon_discount','payable_amount','transactionFee','additional_owner_fare','additional_special_fare','additional_festival_fare','agent_commission')->with('User.role')
+
+                            ->with(['BookingDetail' => function($query) {
+                                        $query->select('id','booking_id','bus_seats_id','passenger_name','passenger_gender','passenger_age') 
+                                            ->with(['BusSeats' => function($quer) {
+                                                   $quer->select('id','bus_id','ticket_price_id','ticket_price_id','seats_id')
+                                       
+                                            ->with(['ticketPrice' => function($que) {
+                                                   $que->select('id','bus_id','source_id','destination_id','base_seat_fare','base_sleeper_fare','dep_time','arr_time');
+                                            }]);
+
+                                            $quer->with(['seats' => function($qu) {
+                                                   $qu->select('id','seatText','rowNumber','berthType');
+                                            }]);
+                                       }]);
+                                    }])
+                            
+                            ->with(['bus' => function($query) {
+                                        $query->select('id','bus_operator_id','name','bus_number') 
+                                            ->with(['busstoppage' => function($quer) {
+                                        $quer->select('id','bus_id','source_id','destination_id','dep_time','arr_time');
+                                       }]);
+                                    }])
+                            ->with(['Users' => function($query) {
+                                        $query->select('id','name','email','phone') ;
+                                    }])
+                            ->with(['CustomerPayment' => function($query) {
+                                        $query->select('id','booking_id','name','amount','order_id','razorpay_id') ;
+                                    }])
                              ->where('status',1)
-                             // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
                              ->orderBy('id','DESC');
+
+            // $u->with(["bookingDetail" => function($b){
+            //     $b->with(["busSeats" => function($s){
+            //         $s->with("seats");
+            //       }]);
+            // }]); 
+
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
@@ -132,8 +161,8 @@ class CompleteReportRepository
                $totalPayableAmount = $totalPayableAmount + $v->payable_amount;
             
                $owner_fare = $owner_fare + $v->owner_fare;
-               $v['from_location']=$this->location->where('id', $v->source_id)->get();
-               $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+               $v['from_location']=$this->location->select('name')->where('id', $v->source_id)->get();
+               $v['to_location']=$this->location->select('name')->where('id', $v->destination_id)->get();
 
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get(); // where('status',1)
                 $stoppages['source']=[];
@@ -141,8 +170,8 @@ class CompleteReportRepository
 
                foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
                {
-                   $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                   $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                   $stoppages['source'][$k]=$this->location->select('name')->where('id', $a->source_id)->get();
+                   $stoppages['destination'][$k]=$this->location->select('name')->where('id', $a->destination_id)->get(); 
                }
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];
