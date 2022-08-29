@@ -127,6 +127,8 @@ use App\Http\Controllers\ApiClientIssueController;
 use App\Http\Controllers\ApiUserComissionController;
 use App\Http\Controllers\ApiUserCompleteReportController;
 use App\Http\Controllers\ApiUserCancelTicketReportController;
+use App\Http\Controllers\ApiUserManageOperatorController;
+
 
 Route::post('/emailtest', [TestEmailController::class,'emailtest']);
 
@@ -1015,3 +1017,11 @@ Route::get('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'getAp
 Route::post('ApiUsercompletereport',[ApiUserCompleteReportController::class,'getData']);
 //API User CancelTicketReport
 Route::post('ApiUsercancelticketreport',[ApiUserCancelTicketReportController::class,'getData']);
+
+
+
+Route::post('manageClientOperatorData',[ApiUserManageOperatorController::class,'manageClientOperatorData']);
+
+Route::post('manageClientOperator',[ApiUserManageOperatorController::class,'manageClientOperator']);
+
+Route::delete('deletemanageClientOperator/{id}',[ApiUserManageOperatorController::class,'deletemanageClientOperator']);

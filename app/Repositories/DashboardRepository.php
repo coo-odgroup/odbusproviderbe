@@ -269,16 +269,13 @@ class DashboardRepository
                           ->get();
 
     }
-       
-
         $data_arr = array();
         foreach($route_data as $key=>$v)
         {
             $data_arr[]=$v->toArray();
             $data_arr[$key]['from_location']=$this->location->where('id', $v->source_id)->get();
             $data_arr[$key]['to_location']=$this->location->where('id', $v->destination_id)->get();
-        } 
-       
+        }   
         return $data_arr;  
     }
     

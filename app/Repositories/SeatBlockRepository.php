@@ -1424,8 +1424,9 @@ class SeatBlockRepository
                             }]);
                         $query ->with(['ticketPrice' => function($quer) {
                              $quer->select('id','bus_id','source_id','destination_id');
-                            }])
+                            }]);
                         }])
+
         ->with(['seats' => function($quer) {
                              $quer->select('id','berthType','seatText','bus_seat_layout_id');
                             }])
