@@ -38,10 +38,10 @@ class CompleteReportRepository
         $hasGst = $request->hasGst;
        
 
-        $data= $this->booking->select('id','pnr', 'transaction_id', 'users_id','bus_id','source_id','destination_id','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','origin','app_type','total_fare','owner_fare','odbus_gst_charges','odbus_gst_amount','odbus_charges','customer_gst_percent','customer_gst_number','customer_gst_business_name','customer_gst_business_email','customer_gst_business_address','customer_gst_amount','coupon_code','coupon_discount','payable_amount','transactionFee','additional_owner_fare','additional_special_fare','additional_festival_fare','agent_commission','updated_at')->with('User.role')
+        $data= $this->booking->select('id','pnr', 'transaction_id', 'users_id','bus_id','source_id','destination_id','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','origin','app_type','total_fare','owner_fare','odbus_gst_charges','odbus_gst_amount','odbus_charges','customer_gst_percent','customer_gst_number','customer_gst_business_name','customer_gst_business_email','customer_gst_business_address','customer_gst_amount','coupon_code','coupon_discount','payable_amount','transactionFee','additional_owner_fare','additional_special_fare','additional_festival_fare','agent_commission','updated_at','api_pnr','bus_name','bus_number')->with('User.role')
 
                             ->with(['BookingDetail' => function($query) {
-                                        $query->select('id','booking_id','bus_seats_id','passenger_name','passenger_gender','passenger_age') 
+                                        $query->select('id','booking_id','bus_seats_id','passenger_name','passenger_gender','passenger_age','seat_name') 
                                             ->with(['BusSeats' => function($quer) {
                                                    $quer->select('id','bus_id','ticket_price_id','ticket_price_id','seats_id')
                                        
@@ -145,7 +145,8 @@ class CompleteReportRepository
             }
         }
         $data=$data->paginate($paginate);   
-        //log::info($data);  
+        // log::info($data); 
+        
         $totalfare = 0;
         $totalPayableAmount = 0;
         $owner_fare = 0;
@@ -166,13 +167,16 @@ class CompleteReportRepository
 
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get(); // where('status',1)
                 $stoppages['source']=[];
-                $stoppages['destination']=[];
+                $stoppages['destination']=[]; 
 
-               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-               {
-                   $stoppages['source'][$k]=$this->location->select('name')->where('id', $a->source_id)->get();
-                   $stoppages['destination'][$k]=$this->location->select('name')->where('id', $a->destination_id)->get(); 
-               }
+                if(count($stoppage)>0){
+                   foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                   {
+                       $stoppages['source'][$k]=$this->location->select('name')->where('id', $a->source_id)->get();
+                       $stoppages['destination'][$k]=$this->location->select('name')->where('id', $a->destination_id)->get(); 
+                   }
+                }
+              
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];
             }

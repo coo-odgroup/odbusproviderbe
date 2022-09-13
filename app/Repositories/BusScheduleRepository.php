@@ -137,12 +137,15 @@ class BusScheduleRepository
     {
       $msg=[];
       $count = 0;
-         //$today='2022-02-22';
-         $today=date('Y-m-d');
-       $checkdate =date('Y-m-d', strtotime($today. ' + 15 days'));
-        $data = $this->busSchedule->with(['busScheduleDate' => function ($a) use ($today){
+         $today='2022-09-09';
+        // $today=date('Y-m-d');
+        $checkdate =date('Y-m-d', strtotime($today. ' + 15 days'));
+        $data = $this->busSchedule->with(['busScheduleDate' => function ($a){
                                    $a->orderBy('id','DESC')
-                                   ;}])->get();
+                                   ;}])->where('id','993')->get();
+        
+            // log::info($data);
+
           foreach ($data as $v)
           {
             if(isset($v->busScheduleDate[0]))
@@ -153,7 +156,7 @@ class BusScheduleRepository
                 $request['running_cycle']=$v->running_cycle;
                 $request['created_by'] = 'server';
                 $request['entry_date']=$checkdate;
-                
+               
                 $this->serverSave($request);  
                 $count++;
                               
@@ -169,7 +172,6 @@ class BusScheduleRepository
    
    public function serverSave($request)
    {    
-      // log::info($request );
      $entdate =date('Y-m-d', strtotime($request['entry_date']. ' + '.$request['running_cycle'].' days'));
           $this->busSchedule = $this->busSchedule->find($request['bus_schedule_id']);
           // log::info($entdate);exit;
@@ -196,8 +198,15 @@ class BusScheduleRepository
                 $busScheduleDate->entry_date=$entryDate;
                 $busScheduleDate->created_by =$request['created_by'];
                 $busScheduleDate->status = 1;
-                $busScheduledateModels[] =  $busScheduleDate;
-            }        
+                
+                $dbl_check = $this->busScheduleDate->where('bus_schedule_id',$this->busSchedule->id)->where('entry_date',$entryDate)->get();
+
+                if(count($dbl_check)==0){
+                   $busScheduledateModels[] =  $busScheduleDate; 
+                }
+                
+            }    
+            
             $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
             return $busScheduledateModels;       
    }
