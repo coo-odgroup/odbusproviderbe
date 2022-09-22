@@ -105,11 +105,12 @@ class  AgentReportRepository
 
                $stoppages['source']=[];
                $stoppages['destination']=[];
-               
-               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-                {                          
-                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                if(count($stoppage)>0){
+                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                    {                          
+                        $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                    }
                 }
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];
@@ -204,12 +205,14 @@ class  AgentReportRepository
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-               // $v['source']=[];
-               // $v['destination']=[];
-               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-                {                          
-                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                $stoppages['source']=[];
+                $stoppages['destination']=[]; 
+               if(count($stoppage)>0){
+                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                    {                          
+                        $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                    }
                 }
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];
@@ -298,12 +301,14 @@ class  AgentReportRepository
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-               // $v['source']=[];
-               // $v['destination']=[];
-               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-                {                          
-                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                $stoppages['source']=[];
+                $stoppages['destination']=[]; 
+                if(count($stoppage)>0){
+                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                    {                          
+                        $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                    }
                 }
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];

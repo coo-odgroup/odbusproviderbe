@@ -139,7 +139,7 @@ class AgentWalletRepository
 
         $data = $this->agentWallet->select('user_id', (DB::raw('max(id) as max_id')))
                                   ->where('status', 1)
-                                  ->orderBy('created_at','DESC')
+                                  // ->orderBy('created_at','DESC')
                                   ->groupBy('user_id')                                  
                                   ->with('user');  
                                   

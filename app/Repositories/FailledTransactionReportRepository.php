@@ -123,11 +123,11 @@ class FailledTransactionReportRepository
         
          $data=$data->paginate($paginate); 
           
-          $key = $this->getRazorpayKey();
-          $secretKey = $this->getRazorpaySecret();
+        //   $key = $this->getRazorpayKey();
+        //   $secretKey = $this->getRazorpaySecret();
    
 
-        $api = new Api($key, $secretKey); 
+        // $api = new Api($key, $secretKey); 
         if($data){
             foreach($data as $key=>$v){
               //   $res = $api->order->fetch($v->CustomerPayment->order_id)->payments();
@@ -146,12 +146,17 @@ class FailledTransactionReportRepository
               // }
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+                  
+                $stoppages['source']=[];
+                $stoppages['destination']=[]; 
 
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-                {                          
-                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+               if(count($stoppage)>0){
+                 foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                  {                          
+                      $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                      $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                  }
                 }
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];

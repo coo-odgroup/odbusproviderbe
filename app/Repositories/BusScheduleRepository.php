@@ -137,12 +137,12 @@ class BusScheduleRepository
     {
       $msg=[];
       $count = 0;
-         $today='2022-09-09';
-        // $today=date('Y-m-d');
+        // $today='2022-09-21';
+         $today=date('Y-m-d');
         $checkdate =date('Y-m-d', strtotime($today. ' + 15 days'));
         $data = $this->busSchedule->with(['busScheduleDate' => function ($a){
                                    $a->orderBy('id','DESC')
-                                   ;}])->where('id','993')->get();
+                                   ;}])->get();
         
             // log::info($data);
 

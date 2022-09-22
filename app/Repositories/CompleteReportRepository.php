@@ -36,8 +36,9 @@ class CompleteReportRepository
         $end_date  =  $request->rangeToDate;
         $bus_id = $request->bus_id;
         $hasGst = $request->hasGst;
+        $apiUser = $request->apiUser;
        
-
+        // 'api_pnr','bus_name','bus_number'       ,'seat_name'
         $data= $this->booking->select('id','pnr', 'transaction_id', 'users_id','bus_id','source_id','destination_id','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','origin','app_type','total_fare','owner_fare','odbus_gst_charges','odbus_gst_amount','odbus_charges','customer_gst_percent','customer_gst_number','customer_gst_business_name','customer_gst_business_email','customer_gst_business_address','customer_gst_amount','coupon_code','coupon_discount','payable_amount','transactionFee','additional_owner_fare','additional_special_fare','additional_festival_fare','agent_commission','updated_at','api_pnr','bus_name','bus_number')->with('User.role')
 
                             ->with(['BookingDetail' => function($query) {
@@ -87,6 +88,12 @@ class CompleteReportRepository
         if(!empty($pnr))
         {
            $data=$data->where('pnr', $pnr );
+        }  
+
+
+        if(!empty($apiUser))
+        {
+           $data=$data->where('origin', $apiUser);
         } 
 
         if(!empty($hasGst) && $hasGst == true)
@@ -176,6 +183,7 @@ class CompleteReportRepository
                        $stoppages['destination'][$k]=$this->location->select('name')->where('id', $a->destination_id)->get(); 
                    }
                 }
+
               
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];

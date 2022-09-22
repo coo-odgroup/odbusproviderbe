@@ -37,9 +37,11 @@ class CancelTicketReportRepository
         $date_type = $request->date_type;
         $source_id = $request->source_id;
         $destination_id = $request->destination_id;
+        $apiUser = $request->apiUser;
 
         $start_date  =  $request->rangeFromDate;
         $end_date  =  $request->rangeToDate;
+
 
              
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
@@ -66,6 +68,11 @@ class CancelTicketReportRepository
         {
            $data=$data->where('pnr', $pnr );
         }
+        
+        if(!empty($apiUser))
+        {
+           $data=$data->where('origin', $apiUser);
+        } 
 
         if(!empty($bus_operator_id))
         {
@@ -122,13 +129,18 @@ class CancelTicketReportRepository
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 
+                $stoppages['source']=[];
+                $stoppages['destination']=[]; 
+
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-             
-               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-                {                          
-                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                if(count($stoppage)>0){
+                   foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                    {                          
+                        $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                    }
                 }
+
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];
             }
