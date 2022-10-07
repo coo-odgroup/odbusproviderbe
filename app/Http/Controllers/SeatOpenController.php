@@ -57,13 +57,31 @@ class SeatOpenController extends Controller
       }
      }
 
-
      public function addseatOpenByOperator(Request $request)
      {
-        $seatopen = $this->seatopenService->addseatOpenByOperator($request);
-            return $this->successResponse($seatopen,"Seat Open  Added",Response::HTTP_OK);
+      try{
+        $res = $this->seatopenService->addseatOpenByOperator($request);
 
-     } 
+        if(isset($res['status']) && $res['status'] == 'error'){
+
+          return $this->errorResponse($res['message'],Response::HTTP_OK);
+
+        }else{
+          return $this->successResponse($res,"Seat Open  Added",Response::HTTP_OK);
+        }
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }
+     }
+
+
+     // public function addseatOpenByOperator(Request $request)
+     // {
+     //    $seatopen = $this->seatopenService->addseatOpenByOperator($request);
+     //        return $this->successResponse($seatopen,"Seat Open  Added",Response::HTTP_OK);
+
+     // } 
 
      public function editseatOpen(Request $request)
      {
