@@ -162,6 +162,11 @@ class BusService
         return $this->busRepository->getBusScheduleEntry($data);
     }
 
+    public function getBusScheduleEntryforOperator($data)
+    {
+        return $this->busRepository->getBusScheduleEntryforOperator($data);
+    }
+
     public function GetBusList($data)
     {
         return $this->busRepository->GetBusList($data);

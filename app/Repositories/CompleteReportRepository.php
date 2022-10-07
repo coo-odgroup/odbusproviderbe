@@ -39,7 +39,7 @@ class CompleteReportRepository
         $apiUser = $request->apiUser;
        
         // 'api_pnr','bus_name','bus_number'       ,'seat_name'
-        $data= $this->booking->select('id','pnr', 'transaction_id', 'users_id','bus_id','source_id','destination_id','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','origin','app_type','total_fare','owner_fare','odbus_gst_charges','odbus_gst_amount','odbus_charges','customer_gst_percent','customer_gst_number','customer_gst_business_name','customer_gst_business_email','customer_gst_business_address','customer_gst_amount','coupon_code','coupon_discount','payable_amount','transactionFee','additional_owner_fare','additional_special_fare','additional_festival_fare','agent_commission','updated_at','api_pnr','bus_name','bus_number')->with('User.role')
+        $data= $this->booking->select('id','pnr', 'transaction_id', 'user_id' , 'users_id','bus_id','source_id','destination_id','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','origin','app_type','total_fare','owner_fare','odbus_gst_charges','odbus_gst_amount','odbus_charges','customer_gst_percent','customer_gst_number','customer_gst_business_name','customer_gst_business_email','customer_gst_business_address','customer_gst_amount','coupon_code','coupon_discount','payable_amount','transactionFee','additional_owner_fare','additional_special_fare','additional_festival_fare','agent_commission','updated_at','api_pnr','bus_name','bus_number')->with('User.role')
 
                             ->with(['BookingDetail' => function($query) {
                                         $query->select('id','booking_id','bus_seats_id','passenger_name','passenger_gender','passenger_age','seat_name') 
@@ -159,9 +159,29 @@ class CompleteReportRepository
         $owner_fare = 0;
         $totalAgentComission = 0;
         $totalSeats = 0;
+        $journey = '';
+        $current_dt = date("Y-m-d");
+        $current_tt = date("h:i:s");
    
+   // log::info($current_dt);
+   // log::info($current_tt);
+
+
         if($data){
             foreach($data as $key=>$v){
+                if($v->journey_dt == $current_dt){
+                    if($v->boarding_time <  $current_tt){
+                         $journey = 'Over';
+                    }else{
+                         $journey = 'Upcoming';
+                    }
+                }
+                elseif($v->journey_dt > $current_dt){
+                    $journey = 'Upcoming';
+                }
+                else{
+                    $journey = 'Over';
+                }
 
               $totalSeats = $totalSeats +  count($v->BookingDetail);               
                $totalfare = $totalfare + $v->total_fare;
@@ -171,6 +191,7 @@ class CompleteReportRepository
                $owner_fare = $owner_fare + $v->owner_fare;
                $v['from_location']=$this->location->select('name')->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->select('name')->where('id', $v->destination_id)->get();
+               $v['journey']=$journey;
 
                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get(); // where('status',1)
                 $stoppages['source']=[];
@@ -318,12 +339,14 @@ class CompleteReportRepository
                 $stoppages['source']=[];
                 $stoppages['destination']=[];
 
+            if(count($stoppage)>0){
                foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
                 {
 
                     $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
                     $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
                 }
+            }
 
                 $v['source']= $stoppages['source'];
                 $v['destination']= $stoppages['destination'];

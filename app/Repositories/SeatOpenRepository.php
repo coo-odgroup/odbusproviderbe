@@ -127,17 +127,18 @@ class SeatOpenRepository
             }
         }
 
-
+       
         $layoutArray=$data['bus_seat_layout_data'];
         $get_ticket_price_id= $data['busRoute'];
+
+        ////////// check Duplicate Data (return if exist or proceed to insert)
+
         foreach($layoutArray as $sLayoutData)
         {
             if(isset($sLayoutData['upperBerth']))
             {
-
                 if(count($sLayoutData['upperBerth'])>0)
                 {
-
                     foreach($sLayoutData['upperBerth'] as $upperBerthData)
                     {
                         if(isset($upperBerthData['seatChecked']))
@@ -145,24 +146,27 @@ class SeatOpenRepository
                             if($upperBerthData['seatChecked'] =="true")
                             {
                                 foreach($get_ticket_price_id as $ticketpriceID)
-                                {                              
+                                { 
                                     foreach ($all_date as $dt) 
-                                    {
-                                        $busseats = new $this->busSeats;                            
-                                        $busseats->bus_id = $data['bus_id'];
-                                        $busseats->category = '0';
-                                        $busseats->seats_id = $upperBerthData['seatId'];
-                                        $busseats->ticket_price_id = $ticketpriceID;
-                                        $busseats->operation_date = $dt;
-                                        $busseats->status = '1';
-                                        $busseats->type = $data['type'];
-                                        $busseats->created_by = $data['created_by'];
-                                        $busseats->reason = $data['reason'];   
-                                        $busseats->other_reason = $data['other_reson'];
-                                        // Log::info($busseats);
-                                        $busseats->save(); 
-                                       
-                                    }                                   
+                                    {    
+                                         /////////////// check if same seat is already booked
+                                         $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
+                                         ->where("seats_id",$upperBerthData['seatId'])
+                                         ->where("ticket_price_id",$ticketpriceID)
+                                         ->where("operation_date",$dt)
+                                         ->where("type",$data['type'])                                         
+                                         ->where("status",1)
+                                         ->get(); 
+
+                                            if(count($chk_duplicate)>0){
+
+                                            $error['status']='error';
+                                            $error['message']="Seat no ".$upperBerthData['seatText']." is already Opened for date - ".$dt;
+
+                                            return $error;
+
+                                        }            
+                                    }
                                 }
                             }
                         }                  
@@ -171,7 +175,6 @@ class SeatOpenRepository
             }
             if(isset($sLayoutData['lowerBerth']))
             {
-
                 if(count($sLayoutData['lowerBerth'])>0)
                 { 
                     foreach($sLayoutData['lowerBerth'] as $lowerBerthData)
@@ -182,25 +185,27 @@ class SeatOpenRepository
                             {                         
                                 foreach($get_ticket_price_id as $ticketpriceID)
                                 {
-                                     foreach ($all_date as $dt) 
-                                    {
-                                        $busseats = new $this->busSeats;                              
-                                        $busseats->bus_id = $data['bus_id'];
-                                        $busseats->category = '0';
-                                        $busseats->seats_id = $lowerBerthData['seatId'];
-                                        $busseats->ticket_price_id = $ticketpriceID;
-                                        $busseats->operation_date = $dt;
-                                        $busseats->status = '1';
-                                        $busseats->type = $data['type'];
-                                        $busseats->created_by = $data['created_by'];
-                                        $busseats->reason = $data['reason'];                  
-                                        $busseats->other_reason = $data['other_reson']; 
+                                    foreach ($all_date as $dt) 
+                                    { 
+                                         /////////////// check if same seat is already booked
 
-                                        // Log::info($busseats);                                
-                                        $busseats->save(); 
-                                       
-                                    }         
-                                    
+                                         $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
+                                         ->where("seats_id",$lowerBerthData['seatId'])
+                                         ->where("ticket_price_id",$ticketpriceID)
+                                         ->where("operation_date",$dt)
+                                         ->where("type",$data['type'])                                         
+                                         ->where("status",1)
+                                         ->get(); 
+
+                                            if(count($chk_duplicate)>0){
+
+                                            $error['status']='error';
+                                            $error['message']="Seat no ".$lowerBerthData['seatText']." is already Opened for date - ".$dt;
+
+                                            return $error;
+
+                                        }                                                      
+                                    }
                                 }
                             }
                         }                      
@@ -208,6 +213,87 @@ class SeatOpenRepository
                 }
             }
         }
+        
+
+            ///////////////////////////////////////
+            foreach($layoutArray as $sLayoutData)
+            {
+                if(isset($sLayoutData['upperBerth']))
+                {
+
+                    if(count($sLayoutData['upperBerth'])>0)
+                    {
+
+                        foreach($sLayoutData['upperBerth'] as $upperBerthData)
+                        {
+                            if(isset($upperBerthData['seatChecked']))
+                            {
+                                if($upperBerthData['seatChecked'] =="true")
+                                {
+                                    foreach($get_ticket_price_id as $ticketpriceID)
+                                    {                              
+                                        foreach ($all_date as $dt) 
+                                        {
+                                            $busseats = new $this->busSeats;                            
+                                            $busseats->bus_id = $data['bus_id'];
+                                            $busseats->category = '0';
+                                            $busseats->seats_id = $upperBerthData['seatId'];
+                                            $busseats->ticket_price_id = $ticketpriceID;
+                                            $busseats->operation_date = $dt;
+                                            $busseats->status = '1';
+                                            $busseats->type = $data['type'];
+                                            $busseats->created_by = $data['created_by'];
+                                            $busseats->reason = $data['reason'];   
+                                            $busseats->other_reason = $data['other_reson'];
+                                            // Log::info($busseats);
+                                            $busseats->save(); 
+                                           
+                                        }                                   
+                                    }
+                                }
+                            }                  
+                        }
+                    }
+                }
+                if(isset($sLayoutData['lowerBerth']))
+                {
+
+                    if(count($sLayoutData['lowerBerth'])>0)
+                    { 
+                        foreach($sLayoutData['lowerBerth'] as $lowerBerthData)
+                        {
+                            if(isset($lowerBerthData['seatChecked']))
+                            {
+                                if($lowerBerthData['seatChecked'] =="true")
+                                {                         
+                                    foreach($get_ticket_price_id as $ticketpriceID)
+                                    {
+                                         foreach ($all_date as $dt) 
+                                        {
+                                            $busseats = new $this->busSeats;                              
+                                            $busseats->bus_id = $data['bus_id'];
+                                            $busseats->category = '0';
+                                            $busseats->seats_id = $lowerBerthData['seatId'];
+                                            $busseats->ticket_price_id = $ticketpriceID;
+                                            $busseats->operation_date = $dt;
+                                            $busseats->status = '1';
+                                            $busseats->type = $data['type'];
+                                            $busseats->created_by = $data['created_by'];
+                                            $busseats->reason = $data['reason'];                  
+                                            $busseats->other_reason = $data['other_reson']; 
+
+                                            // Log::info($busseats);                                
+                                            $busseats->save(); 
+                                           
+                                        }         
+                                        
+                                    }
+                                }
+                            }                      
+                        }
+                    }
+                }
+            }
         return $data;
     }
 
@@ -215,6 +301,8 @@ class SeatOpenRepository
     {
         $date= $data->date;
         $all_date=[];
+
+
         
         if(!empty($date))
         {
@@ -223,9 +311,95 @@ class SeatOpenRepository
             }
         }
 
-
         $layoutArray=$data['bus_seat_layout_data'];
         $get_ticket_price_id= $data['busRoute'];
+
+         ////////// check Duplicate Data (return if exist or proceed to insert)
+
+        foreach($layoutArray as $sLayoutData)
+        {
+            if(isset($sLayoutData['upperBerth']))
+            {
+                if(count($sLayoutData['upperBerth'])>0)
+                {
+                    foreach($sLayoutData['upperBerth'] as $upperBerthData)
+                    {
+                        if(isset($upperBerthData['seatChecked']))
+                        {
+                            if($upperBerthData['seatChecked'] =="true")
+                            {
+                                foreach($get_ticket_price_id as $ticketpriceID)
+                                { 
+                                    foreach ($all_date as $dt) 
+                                    {    
+                                         /////////////// check if same seat is already Opened
+                                         $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
+                                         ->where("seats_id",$upperBerthData['seatId'])
+                                         ->where("ticket_price_id",$ticketpriceID)
+                                         ->where("operation_date",$dt)
+                                         ->where("type",$data['type'])                                         
+                                         ->where("status",1)
+                                         ->get(); 
+
+                                            if(count($chk_duplicate)>0){
+
+                                            $error['status']='error';
+                                            $error['message']="Seat no ".$upperBerthData['seatText']." is already Opened for date - ".$dt;
+
+                                            return $error;
+
+                                        }            
+                                    }
+                                }
+                            }
+                        }                  
+                    }
+                }
+            }
+            if(isset($sLayoutData['lowerBerth']))
+            {
+                if(count($sLayoutData['lowerBerth'])>0)
+                { 
+                    foreach($sLayoutData['lowerBerth'] as $lowerBerthData)
+                    {
+                        if(isset($lowerBerthData['seatChecked']))
+                        {
+                            if($lowerBerthData['seatChecked'] =="true")
+                            {                         
+                                foreach($get_ticket_price_id as $ticketpriceID)
+                                {
+                                    foreach ($all_date as $dt) 
+                                    { 
+                                         /////////////// check if same seat is already Opened
+
+                                         $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
+                                         ->where("seats_id",$lowerBerthData['seatId'])
+                                         ->where("ticket_price_id",$ticketpriceID)
+                                         ->where("operation_date",$dt)
+                                         ->where("type",$data['type'])                                         
+                                         ->where("status",1)
+                                         ->get(); 
+
+                                            if(count($chk_duplicate)>0){
+
+                                            $error['status']='error';
+                                            $error['message']="Seat no ".$lowerBerthData['seatText']." is already Opened for date - ".$dt;
+
+                                            return $error;
+
+                                        }                                                      
+                                    }
+                                }
+                            }
+                        }                      
+                    }
+                }
+            }
+        }
+        
+        ////////////////////////////////
+
+        
         foreach($layoutArray as $sLayoutData)
         {
             if(isset($sLayoutData['upperBerth']))
@@ -724,13 +898,14 @@ class SeatOpenRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
         $bus_id = $request['bus_id'] ;
-        $page_no = $request['page_no'] ;
+        $page_no = str_replace("/api/seatopenData?&page=","",$request['page_no']);  ;
         $fromDate = $request['fromDate'] ;
         $toDate = $request['toDate'] ;
         $bus_operator_id = $request['bus_operator_id'] ;
         $source_id = $request['source_id'] ;
         $destination_id = $request['destination_id'] ;
-        // log::info($request);
+       
+        // exit;
     
         $data= $this->busSeats->with('bus.busOperator','bus.ticketPrice','seats','ticketPrice')
                               ->where('type',1)
@@ -804,12 +979,12 @@ class SeatOpenRepository
                        foreach ($seatOp as $SingleseatOp)
                         {
                           
-                            $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
-                            $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
+                            // $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
+                            // $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
 
                             $SingleseatOp['bus_source']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
                             $SingleseatOp['bus_destination']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
-                        }
+                        }break;
                     }
                 }
             }

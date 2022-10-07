@@ -601,6 +601,8 @@ Route::get('/getBusScheduleEntryDates/{busId}', [BusController::class, 'getBusSc
 Route::post('/getBusScheduleEntryDatesFilter', [BusController::class, 'getBusScheduleEntryDatesFilter']);
 Route::post('/getBusScheduleEntry', [BusController::class, 'getBusScheduleEntry']);
 
+Route::post('/getBusScheduleEntryforOperator', [BusController::class, 'getBusScheduleEntryforOperator']);
+
 Route::get('/BusListingPageInformation', [BusController::class, 'getAllBusListingPageInformation']);
 Route::get('/BusListingReplica', [BusController::class, 'getAllBusListingReplica']);
 //Route::get('/BusDT', [BusController::class, 'getBusDT']);

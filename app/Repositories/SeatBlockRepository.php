@@ -1500,22 +1500,25 @@ class SeatBlockRepository
        
          $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
          
+
          if($data)
         {
              foreach($data as $date){
-
+                    // log::info($date);exit;
                 foreach ($date as $route) {
-                   foreach ($route as $seatOp)
-                    {
+              
+                   foreach ($route as $kk=>$seatOp)
+                    {   
+                         
                        foreach ($seatOp as $SingleseatOp)
                         {
-                          
-                            $SingleseatOp['source']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->source_id)->get();
-                            $SingleseatOp['destination']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
+                            // $SingleseatOp['source']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->source_id)->get();
+                            // $SingleseatOp['destination']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
                             $SingleseatOp['bus_source']=$this->location->select('name')->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
                             $SingleseatOp['bus_destination']=$this->location->select('name')->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
-                        }
+                        }break;
                     }
+                    
                 }
             }
         }
