@@ -83,6 +83,7 @@ use App\Http\Controllers\ContactReportController;
 // SettingController 
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\PageContentController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\UserContentController;
 use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\SeoSettingController;
@@ -488,6 +489,15 @@ Route::post('pagecontentData',[PageContentController::class,'getAllData']);
 Route::post('pagecontent',[PageContentController::class,'addpagecontent']);
 Route::put('pagecontent/{id}',[PageContentController::class,'updatepagecontent']);
 Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);
+
+//Faq
+Route::get('/faq',[FaqController::class,'getAllfaq']);
+Route::post('faqData',[FaqController::class,'getAllData']);
+Route::post('faq',[FaqController::class,'addfaq']);
+Route::put('faq/{id}',[FaqController::class,'updatefaq']);
+Route::delete('faq/{id}', [FaqController::class, 'deletefaq']);
+Route::put('/changefaqStatus/{id}', [FaqController::class, 'changeStatus']);
+
 
 
 //user Content
