@@ -243,32 +243,32 @@ class DashboardRepository
     {
         // log::info($request);
         $dt = date('Y-m-d', strtotime('today - 30 days'));
-    if($request->ROLE_ID==1)
-    {
-         $route_data = $this->booking
-                          ->select(['source_id', 'destination_id'])
-                          ->selectRaw('count(*) as pnr_count')
-                          ->selectRaw('sum(total_fare) as amount')
-                          ->groupBy(['source_id', 'destination_id'])
-                          ->orderBy('pnr_count','DESC')
-                          ->where('journey_dt','>',$dt)
-                          ->where('status','1')
-                          ->limit(10)
-                          ->get();
-    }
-    else{
-        $route_data = $this->booking
-                          ->select(['source_id', 'destination_id'])
-                          ->selectRaw('count(*) as pnr_count')
-                          ->selectRaw('sum(total_fare) as amount')
-                          ->groupBy(['source_id', 'destination_id'])
-                          ->orderBy('pnr_count','DESC')->where('user_id',$request->USERID)
-                          ->where('journey_dt','>',$dt)
-                          ->where('status','1')
-                          ->limit(10)
-                          ->get();
+        if($request->ROLE_ID==1)
+        {
+             $route_data = $this->booking
+                              ->select(['source_id', 'destination_id'])
+                              ->selectRaw('count(*) as pnr_count')
+                              ->selectRaw('sum(total_fare) as amount')
+                              ->groupBy(['source_id', 'destination_id'])
+                              ->orderBy('pnr_count','DESC')
+                              ->where('journey_dt','>',$dt)
+                              ->where('status','1')
+                              ->limit(10)
+                              ->get();
+        }
+        else{
+            $route_data = $this->booking
+                              ->select(['source_id', 'destination_id'])
+                              ->selectRaw('count(*) as pnr_count')
+                              ->selectRaw('sum(total_fare) as amount')
+                              ->groupBy(['source_id', 'destination_id'])
+                              ->orderBy('pnr_count','DESC')->where('user_id',$request->USERID)
+                              ->where('journey_dt','>',$dt)
+                              ->where('status','1')
+                              ->limit(10)
+                              ->get();
 
-    }
+        }
         $data_arr = array();
         foreach($route_data as $key=>$v)
         {
@@ -279,13 +279,11 @@ class DashboardRepository
         return $data_arr;  
     }
     
-    public function getOperatorName($operatorId)
+    public function getOperatorName($busId)
     { 
         $records = $this->bus
         ->with('busOperator')
-        ->where('id',$operatorId)->get();
-        // log::info($records);
-        // $operatorName = $records[0]->busOperator->operator_name;
+        ->where('id',$busId)->get();
         return $records;
     }
 
@@ -304,6 +302,7 @@ class DashboardRepository
         ->orderBy('count', 'DESC')
         ->limit(10)
         ->get();
+
             if($busIds->isEmpty()){
                 return "No booking exist to filter top operator";
             }
@@ -319,6 +318,7 @@ class DashboardRepository
                         );
                 } 
             }
+            // log::info($topOperators);
             return $topOperators;
     }
 

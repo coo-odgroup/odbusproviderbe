@@ -12,7 +12,7 @@ class Slider extends Model
     use HasFactory;
     protected $table = 'slider';
     protected $fillable = [
-       'bus_operator_id','occassion','category','url', 'slider_img','alt_tag','start_date','start_time','end_date','end_time','created_by'
+       'bus_operator_id','occassion','category','url', 'slider_img','android_image','alt_tag','start_date','start_time','end_date','end_time','created_by'
     ];
 
     public function coupon()

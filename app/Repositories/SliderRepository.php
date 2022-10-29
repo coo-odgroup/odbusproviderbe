@@ -91,12 +91,12 @@ class SliderRepository
     }
     public function save($data)
     {
-        
+        // Log::info($data);exit;
+
         $slide = new $this->slider;
         $slide = $this->getModel($data,$slide);
         $file = collect($data)->get('slider_img');
-        //Log::
-        info($file);
+        //Log::info($file);
         if(($file)!=null){
 
             $filename  = $file->getClientOriginalName();
@@ -104,6 +104,16 @@ class SliderRepository
             $picture   = $filename;
             $slide->slider_photo = $picture;
             $file->move(public_path('uploads/slider_photos/'), $picture);
+       }
+
+       $android_file = collect($data)->get('android_image');
+        if(($android_file)!=null){
+
+            $filename  = $android_file->getClientOriginalName();
+            $extension = $android_file->getClientOriginalExtension();
+            $picture   = $filename;
+            $slide->android_image = $picture;
+            $android_file->move(public_path('uploads/slider_photos/'), $picture);
        }
         $slide->save();
         return $slide->fresh();
@@ -115,6 +125,8 @@ class SliderRepository
         $slider_data = $this->slider->where('id', $sliderId)->get();
         $slide = $this->slider->find($sliderId); 
         $file = collect($data)->get('slider_img');
+
+        $android_file = collect($data)->get('android_image');
 
         if(($file)!='null'){
             $slide=$this->getModel($data,$slide);
@@ -132,7 +144,25 @@ class SliderRepository
                 }     
           }
             
-        }else{
+        }
+        elseif(($android_file)!='null'){
+            $slide=$this->getModel($data,$slide);
+            $filename  = $android_file->getClientOriginalName();
+            $extension = $android_file->getClientOriginalExtension();
+            $picture   = $filename;
+            $slide->android_image = $picture;
+            $android_file->move(public_path('uploads/slider_photos/'), $picture);
+           
+          if($slider_data[0]->android_image !=''){
+            
+             $old_image_path_consumer = public_path('uploads/slider_photos/').$slider_data[0]->android_image;
+             if(File::exists($old_image_path_consumer)){
+                    unlink($old_image_path_consumer);
+                }     
+          }
+            
+        }
+        else{
              $slide=$this->getModel($data,$slide);
         }
         $slide->update();
