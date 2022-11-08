@@ -12,6 +12,7 @@ class AgentValidator
         $rules = [
          'email' => 'required|email:rfc,dns',
          'phone' => 'required',
+         'agentType' => 'required',
         ];      
       
         $agentFeeValidation = Validator::make($data, $rules);

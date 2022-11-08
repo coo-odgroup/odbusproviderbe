@@ -126,15 +126,16 @@ class ApiUserCompleteReportRepository
                $v['from_location']=$this->location->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->where('id', $v->destination_id)->get();
 
-               $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get(); // where('status',1)
+                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get(); // where('status',1)
                 $stoppages['source']=[];
                 $stoppages['destination']=[];
+                if(count($stoppage)>0){
+                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
+                    {
 
-               foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-                {
-
-                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                        $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                    }
                 }
 
                 $v['source']= $stoppages['source'];

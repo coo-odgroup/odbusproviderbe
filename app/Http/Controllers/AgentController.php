@@ -82,6 +82,7 @@ class AgentController extends Controller
         'bank_name',
         'ifsc_code',
         'bank_account_no',
+        'agentType',
         'created_by'
       ]);
       $agentValidation = $this->agentValidator->validate($data);
@@ -144,6 +145,7 @@ class AgentController extends Controller
           'bank_name',
           'ifsc_code',
           'bank_account_no',
+          'agentType',
           'created_by'
         ]);
 

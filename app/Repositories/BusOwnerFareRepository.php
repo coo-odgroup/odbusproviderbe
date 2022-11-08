@@ -6,6 +6,8 @@ use App\Models\OwnerFare;
 use App\Models\BusOwnerFare;
 use App\Models\Location;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+
 
 class BusOwnerFareRepository
 {
@@ -41,8 +43,7 @@ class BusOwnerFareRepository
         $toDate = $request['toDate'] ;
         $bus_operator_id = $request['bus_operator_id'] ;
        
-        $data= $this->ownerFare->with('bus','bus.busOperator')
-                    ->whereNotIn('status', [2])->orderBy('id','DESC');
+        $data= $this->ownerFare->with('bus','bus.busOperator')->orderBy('id','DESC');
 
         if($paginate=='all') 
         {
@@ -272,7 +273,7 @@ class BusOwnerFareRepository
         $busownerFare = $this->ownerFare->find($id);
         $busownerFare->status = 2;
         $busownerFare->update();
-        $busownerFare->bus()->detach();
+        // $busownerFare->bus()->detach();
         return $busownerFare;
     }
     public function changeStatus($id)

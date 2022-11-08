@@ -6,6 +6,8 @@ use App\Models\FestivalFare;
 use App\Models\BusFestivalFare;
 use Illuminate\Support\Facades\Log;
 use App\Models\Location;
+use Illuminate\Support\Facades\Config;
+
 
 
 class FestivalFareRepository
@@ -43,8 +45,7 @@ class FestivalFareRepository
         $bus_operator_id = $request['bus_operator_id'] ;
        
 
-        $data= $this->festivalFare->with('bus','bus.busOperator')
-                    ->whereNotIn('status', [2]) ->orderBy('id','DESC');
+        $data= $this->festivalFare->with('bus','bus.busOperator')->orderBy('id','DESC');
 
 
         if($paginate=='all') 
@@ -269,7 +270,7 @@ class FestivalFareRepository
         $busfestivalFare = $this->festivalFare->find($id);
         $busfestivalFare->status = 2;
         $busfestivalFare->update();
-        $busfestivalFare->bus()->detach();
+        // $busfestivalFare->bus()->detach();
         return $busfestivalFare;
     }
     public function changeStatus($id)

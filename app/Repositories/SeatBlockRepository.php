@@ -66,21 +66,32 @@ class SeatBlockRepository
 
     public function addseatBlock($data)
     {
+        // $date= $data->date;
+        // $all_date=[];
+        // if(!empty($date))
+        // {
+        //     foreach ($date as  $d) {
+        //         if(strlen($d['month'])==1)
+        //         {
+        //             $d['month']="0".$d['month'];
+        //         }
+        //         if(strlen($d['day'])==1)
+        //         {
+        //             $d['day']="0".$d['day'];
+        //         }
+
+        //         $all_date[] = $d['year'].'-'.$d['month'].'-'.$d['day'] ;   
+        //     }
+        // }
         $date= $data->date;
         $all_date=[];
+
+
+        
         if(!empty($date))
         {
             foreach ($date as  $d) {
-                if(strlen($d['month'])==1)
-                {
-                    $d['month']="0".$d['month'];
-                }
-                if(strlen($d['day'])==1)
-                {
-                    $d['day']="0".$d['day'];
-                }
-
-                $all_date[] = $d['year'].'-'.$d['month'].'-'.$d['day'] ;   
+                $all_date[] = date('Y-m-d', strtotime($d)); 
             }
         }
         // Log::info($all_date);exit;

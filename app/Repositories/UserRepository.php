@@ -443,6 +443,7 @@ public function agentRegister($request){
                         $users->branch_name = $request['branch_name'];
                         $users->upi_id = $request['upi_id'];
                         $users->email = $request['email'];
+                        $agent->agent_type = 1;
                         $users->status = 0;
 
                         $users->update();                       

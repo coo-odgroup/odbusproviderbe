@@ -109,24 +109,34 @@ class SeatOpenRepository
     // }
     public function addseatopen($data)
     {
+        // $date= $data->date;
+        // $all_date=[];
+        // if(!empty($date))
+        // {
+        //     foreach ($date as  $d) {
+        //         if(strlen($d['month'])==1)
+        //         {
+        //             $d['month']="0".$d['month'];
+        //         }
+        //         if(strlen($d['day'])==1)
+        //         {
+        //             $d['day']="0".$d['day'];
+        //         }
+
+        //         $all_date[] = $d['year'].'-'.$d['month'].'-'.$d['day'] ;   
+        //     }
+        // }
         $date= $data->date;
         $all_date=[];
+
+
+        
         if(!empty($date))
         {
             foreach ($date as  $d) {
-                if(strlen($d['month'])==1)
-                {
-                    $d['month']="0".$d['month'];
-                }
-                if(strlen($d['day'])==1)
-                {
-                    $d['day']="0".$d['day'];
-                }
-
-                $all_date[] = $d['year'].'-'.$d['month'].'-'.$d['day'] ;   
+                $all_date[] = date('Y-m-d', strtotime($d)); 
             }
         }
-
        
         $layoutArray=$data['bus_seat_layout_data'];
         $get_ticket_price_id= $data['busRoute'];

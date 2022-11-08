@@ -6,6 +6,8 @@ use App\Models\SpecialFare;
 use App\Models\BusSpecialFare;
 use App\Models\Location;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+
 
 class BusSpecialFareRepository
 {
@@ -44,8 +46,7 @@ class BusSpecialFareRepository
          $bus_operator_id = $request['bus_operator_id'] ;
        
 
-        $data= $this->specialFare->with('bus','bus.busOperator')
-                    ->whereNotIn('status', [2])->orderBy('id','DESC');
+        $data= $this->specialFare->with('bus','bus.busOperator')->orderBy('id','DESC');
 
 
         if($paginate=='all') 
@@ -260,7 +261,7 @@ class BusSpecialFareRepository
         $busspecialFare = $this->specialFare->find($id);
         $busspecialFare->status = 2;
         $busspecialFare->update();
-        $busspecialFare->bus()->detach();
+        // $busspecialFare->bus()->detach();
         return $busspecialFare;
     }
     public function changeStatus($id)

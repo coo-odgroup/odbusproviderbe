@@ -32,6 +32,6 @@ class TicketPrice extends Model
     }
     public function getBusSeats()
     {
-        return $this->hasMany(BusSeats::class);
+        return $this->hasMany(BusSeats::class)->where('status','!=',2);
     }
 }

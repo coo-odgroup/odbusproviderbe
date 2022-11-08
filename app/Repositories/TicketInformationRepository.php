@@ -372,6 +372,8 @@ class TicketInformationRepository
        // exit;
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
+        $start_date  =  $request['rangeFromDate'];
+        $end_date  =  $request['rangeToDate'];
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice','Bus','Users',
@@ -389,30 +391,36 @@ class TicketInformationRepository
         {
             $paginate = 10 ;
         }
+        if($start_date != null && $end_date != null)
+        {         
+            if($start_date == $end_date){
+                $data =$data->where('updated_at','like','%'.$start_date.'%')
+                        ->orderBy('updated_at','DESC');
+                       
+            }else{
+                $data =$data->whereBetween('updated_at', [$start_date, $end_date])
+                        ->orderBy('updated_at','DESC');
+            }            
+        }
 
         if($name!=null)
         {
-           $data = $data->where('created_by', $name )
-                        ->orwhere('pnr', $name  );
+           $data = $data->where('pnr', $name  );
         }     
 
         $data=$data->paginate($paginate);
 
          if($data){
+            $new_pnr = '';
             foreach($data as $key=>$v){
-
-               $v['from_location']=$this->location->where('id', $v->source_id)->get();
-               $v['to_location']=$this->location->where('id', $v->destination_id)->get();
-
-               //   $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
- 
-               // foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-               //  {                          
-               //      $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-               //      $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
-               //  }
-               //  $v['source']= $stoppages['source'];
-               //  $v['destination']= $stoppages['destination'];
+                    
+                    $new_pnr   = $this->booking->with('BookingDetail.BusSeats.seats','Bus')
+                             ->where('status',2)
+                             ->where('pnr',$v->adjust_pnr)->get();
+                   
+                   $v['from_location']=$this->location->where('id', $v->source_id)->get();
+                   $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+                   $v['new_pnr'] = $new_pnr ;
                }
            }
 
@@ -523,6 +531,7 @@ class TicketInformationRepository
                     "transactionFee"=> $request['bookingInfo']['odbus_gst'],
                     "odbus_service_Charges"=>  $request['bookingInfo']['odbus_service_Charges'],
                     "adj_note"=>  $request['bookingInfo']['adj_note'],
+                    "adjust_pnr"=>  $request['bookingInfo']['pnr'],
                     "status"=>  '4',
                     "booking_type" =>'Adjust',
                     "created_by"=>  $request['bookingInfo']['created_by'],
@@ -573,6 +582,7 @@ class TicketInformationRepository
                     "transactionFee"=> $request['bookingInfo']['odbus_gst'],
                     "odbus_service_Charges"=>  $request['bookingInfo']['odbus_service_Charges'],
                     "adj_note"=>  $request['bookingInfo']['adj_note'],
+                    "adjust_pnr"=>  $request['bookingInfo']['pnr'],
                     "status"=>  '4',
                     "booking_type" =>'Adjust',
                     "created_by"=>  $request['bookingInfo']['created_by'],

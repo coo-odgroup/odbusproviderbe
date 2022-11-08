@@ -257,6 +257,7 @@ class AgentRepository
         $agent->ifsc_code = $data['ifsc_code'];
         $agent->bank_account_no = $data['bank_account_no'];
         $agent->created_by = $data['created_by'];
+        $agent->agent_type = $data['agentType'];
         $agent->status = 0;
         return $agent;
     }
@@ -342,6 +343,7 @@ class AgentRepository
      */
     public function update($data, $id)
     {
+        // log::info($data);exit;
         
         $email = $this->agent->where('email',$data['email'])->where('id','!=',$id )->where('status','!=',2)->get();
         $phone = $this->agent->where('phone',$data['phone'])->where('id','!=',$id )->where('status','!=',2)->get();
@@ -366,6 +368,7 @@ class AgentRepository
                             $agent->user_type = "Agent";
                             $agent->role_id = "3";
                             $agent->location = $data['location'];
+                            $agent->agent_type = $data['agentType'];
                             $agent->adhar_no = $data['adhar_no'];
                             $agent->pancard_no = $data['pancard_no'];
                             $agent->organization_name = $data['organization_name'];
