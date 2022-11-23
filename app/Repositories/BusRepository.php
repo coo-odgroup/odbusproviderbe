@@ -950,10 +950,19 @@ class BusRepository
                $s_id=$arr[0];
                $d_id=$arr[1];
 
-               $allBus=$this->busStoppage->with('bus')->with('busOperator')
+               $allBus=$this->busStoppage->with('bus')
+                            ->whereHas('bus', function ($query){
+                                $query->where('status', 1);               
+                            })
+                          ->with('busOperator')
                           ->where('source_id',$s_id)
                           ->where('destination_id',$d_id)
                           ->where('status',1)->get();
+
+
+           //                 ->whereHas('bus', function ($query) use ($searchValue){
+           //     $query->where('name', 'like', '%' .$searchValue . '%');               
+           // })->whereNotIn('status', [2])->count()
 
                 if($allBus){
                     foreach($allBus as $b){
@@ -988,16 +997,16 @@ class BusRepository
             $allBus=$this->busStoppage->select('bus_id')
                              ->with(['bus' => function($b){
                                 $b->with('busOperator');
-                             } ])                           
+                             } ])   
+                              ->whereHas('bus', function ($query){
+                                $query->where('status', 1);               
+                            })                     
                             ->whereIn('bus_operator_id',$data['bus_operator_id'])
                             ->groupBy('bus_id')
                             ->get();
  
             if($allBus){
                 foreach($allBus as $k => $b){
-
-                    
-
                     $allBusList[$k]['bus_name']=$b->bus->name." - ".$b->bus->bus_number." (".$b->bus->busOperator->organisation_name.' - '.$b->bus->busOperator->operator_name.") ";
                    // $allBusList[$k]['id']='opr_'.$b->bus->busOperator->id.'-'.$b->bus_id;
                     $allBusList[$k]['id']=$b->bus->busOperator->id.'-'.$b->bus_id;
@@ -1015,7 +1024,11 @@ class BusRepository
                 $s_id=$arr[0];
                 $d_id=$arr[1];
  
-                $allBus=$this->busStoppage->with('bus')->with('busOperator')
+                $allBus=$this->busStoppage->with(['bus' => function($b){
+                    $b->where('status',1);} ])  ->whereHas('bus', function ($query){
+                                $query->where('status', 1);               
+                            })   
+                           ->with('busOperator')
                            ->where('source_id',$s_id)
                            ->where('destination_id',$d_id)
                            ->where('status',1)
