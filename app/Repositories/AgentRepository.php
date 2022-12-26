@@ -295,7 +295,7 @@ class AgentRepository
                             'agentPassword' => $data->password
                         );
 
-                        $this->channelRepository->SendAgentCreationSms($smsData);
+                        // $this->channelRepository->SendAgentCreationSms($smsData);
 
 
                                $to_user = $data->email;

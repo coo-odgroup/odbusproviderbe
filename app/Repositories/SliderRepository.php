@@ -145,7 +145,7 @@ class SliderRepository
           }
             
         }
-        elseif(($android_file)!='null'){
+        elseif(($android_file)!='null' && ($android_file)!='undefined' ){
             $slide=$this->getModel($data,$slide);
             $filename  = $android_file->getClientOriginalName();
             $extension = $android_file->getClientOriginalExtension();
