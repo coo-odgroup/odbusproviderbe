@@ -1426,6 +1426,7 @@ class SeatBlockRepository
         $source_id = $request['source_id'] ;
         $destination_id = $request['destination_id'] ;
         $check_dt = date('Y-m-d', strtotime('today - 3 days'));
+        
 
         $data= $this->busSeats->select('id','bus_id','ticket_price_id','seats_id','type','operation_date','reason','other_reason','status','updated_at','created_by')
         ->with(['bus' => function($query){
@@ -1449,9 +1450,9 @@ class SeatBlockRepository
 
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
-           //  $data=$data->whereHas('bus', function ($query) use ($request){
-           //     $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
-           // });
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
         }                                 
 
         if($paginate=='all') 

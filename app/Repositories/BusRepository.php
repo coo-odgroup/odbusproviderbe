@@ -139,6 +139,36 @@ class BusRepository
         }
         return $seatData;  
         
+    }  
+     public function locationBusss($request)
+    {    
+             $source_id = $request->source_id;
+             $destination_id = $request->destination_id;
+             $operator = $request->USER_BUS_OPERATOR_ID;
+        $data = $this->bus->with('ticketPrice')->orderBy('name','ASC')
+                          ->whereHas('ticketPrice', function ($query) use ($source_id,$destination_id){
+                                        $query->where('source_id', 'like', '%' .$source_id . '%')
+                                              ->where('destination_id', 'like', '%' .$destination_id . '%');               
+                                    })
+                          ->where('bus_operator_id', $operator)
+                          ->where('status','1')
+                          ->get(); 
+
+            if($data){
+                foreach($data as $v){ 
+                 foreach($v->ticketPrice as $k => $a)
+                 {          
+                 
+                    $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                    $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+               }
+                   $v['from_location']=$stoppages['source'][0];
+                   $v['to_location']=$stoppages['destination'][0];
+           }
+
+       }
+             return $data;        
+        
     }
     public function getById($id)
     {
@@ -180,7 +210,7 @@ class BusRepository
            }
 
        }
-    return $data;
+        return $data;
     }
     public function updateBusName($data,$id)
     {
@@ -339,9 +369,9 @@ class BusRepository
 
         if($name!=null)
         {
-            $data = $data->where('name', 'like', '%' .$name . '%') 
-                         ->orWhere('bus_number', 'like', '%' .$name . '%')
-                         ->orWhere('via', 'like', '%' .$name . '%');
+            $data = $data->where('name', 'like', '%' .$name . '%') ;
+                         // ->orWhere('bus_number', 'like', '%' .$name . '%')
+                         // ->orWhere('via', 'like', '%' .$name . '%');
                                              
         }    
         if($user_role==5)
@@ -540,6 +570,10 @@ class BusRepository
         {
             $paginate = 10 ;
         }
+        if($user_role!=null && $user_role==4)
+        {
+            $data = $data->where('user_id',$user_id) ;   
+        }
         if($operator!=null)
         {
             $data = $data->where(
@@ -579,7 +613,7 @@ class BusRepository
                 
         }
 
-        if($name!=null)
+        if($name!=null && $request['USER_BUS_OPERATOR_ID']=="")
         {
             $data = $data->where(
                 function($query) use ($name) {
@@ -593,6 +627,12 @@ class BusRepository
                                {$query->where('operator_name', 'like', '%' .$name . '%');});
             });        
         } 
+        else if($name!=null && $request['USER_BUS_OPERATOR_ID']!=""){
+            $data = $data->where(
+                function($query) use ($name) {
+                    $data = $query->orWhere('bus_number', 'like', '%' .$name . '%');
+            }); 
+        }
 
         if($user_role==5)
         {

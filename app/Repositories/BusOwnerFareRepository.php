@@ -54,6 +54,14 @@ class BusOwnerFareRepository
             $paginate = 10 ;
         }
 
+         if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
+            
+        } 
+
         if($name!=null)
         {
             $data = $data->where('date', 'like', '%' .$name . '%')

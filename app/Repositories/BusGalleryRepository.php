@@ -95,12 +95,6 @@ class BusGalleryRepository
         return $data;
     }
 
-    /**
-     * Save busGallery
-     *
-     * @param $data
-     * @return BusGallery
-     */
     public function getModel($data, BusGallery $busGallery)
     {
         $busGallery->bus_id = $data['bus_id'];

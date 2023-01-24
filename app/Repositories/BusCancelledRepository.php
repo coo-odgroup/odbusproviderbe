@@ -226,10 +226,7 @@ class BusCancelledRepository
             
         } 
         
-        $data = $data->paginate($paginate);
-        // log::info($data);
-        // exit;
-        
+        $data = $data->paginate($paginate);        
         if($data){
             foreach($data as $v){ 
                foreach($v->bus->ticketPrice as $k => $a)
@@ -260,10 +257,7 @@ class BusCancelledRepository
         $data =  $this->busCancelled
                       ->with(['busCancelledDate'=> function($b){$b->orderBy('id','DESC')->limit(30);}])
                       ->whereHas('busCancelledDate', function ($query) {$query->where('cancelled_date','>=',date('Y-m-d') );})
-                      ->where('bus_id', $id)->get();
-                // log::info($data);
-                      
-
+                      ->where('bus_id', $id)->get();                    
         return $data;
     }
 

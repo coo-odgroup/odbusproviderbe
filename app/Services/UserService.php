@@ -86,6 +86,11 @@ class UserService
         return $this->userRepository->getById($id);
     }
 
+    public function specifieUser($request)
+    {
+        return $this->userRepository->specifieUser($request);
+    }
+
     /**
      * Update post data
      * Store to DB if there are no errors.

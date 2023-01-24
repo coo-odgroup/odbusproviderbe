@@ -79,7 +79,7 @@ public function busextraSeatsByBus($busId)
 }
 public function getById($id)
 {
-    return $this->busSeats ->where('id', $id)->get();
+    return $this->busSeats ->where('id', $id)->where('status','!=',2)->get();
 }
 public function getModel(BusSeats $busseats,$data,$berthData)
 {

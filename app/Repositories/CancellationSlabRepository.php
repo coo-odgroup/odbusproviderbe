@@ -67,7 +67,7 @@ class CancellationSlabRepository
             $data = $data->where('rule_name','like', '%' .$name . '%');
         } 
 
-        if($user_role==5)
+        if($user_role!=1)
         {
             $data= $data->where('user_id',$user_id);   
         }

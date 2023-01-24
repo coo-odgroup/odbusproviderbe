@@ -34,6 +34,11 @@ class BusService
     {
         return $this->busRepository->seatsBus($request);
     }  
+    
+    public function locationBusss($request)
+    {
+        return $this->busRepository->locationBusss($request);
+    }  
 
     public function busseatfarereport($request)
     {

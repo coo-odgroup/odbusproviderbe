@@ -131,16 +131,16 @@ class BusStoppageRepository
 
     public function AllRoute($data)
     {
+        // log::info($data)
         $allRoutes = array();
 
         $routenames = $this->busStoppage
         ->select('source_id','destination_id');
        
 
-        if(isset($data['bus_operator_id']) && $data['bus_operator_id']!=''){
+        if(isset($data->USER_BUS_OPERATOR_ID ) && $data->USER_BUS_OPERATOR_ID !=''){
 
-            $routenames = $routenames->whereIN("bus_operator_id",$data['bus_operator_id']);
-
+            $routenames = $routenames->where("bus_operator_id",$data->USER_BUS_OPERATOR_ID );
         }
 
         $routenames =  $routenames->groupBy('source_id', 'destination_id')

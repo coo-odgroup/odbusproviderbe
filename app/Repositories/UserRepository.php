@@ -61,6 +61,11 @@ class UserRepository
     public function getById($id)
     {
         return $this->user::with('userBankDetails')->where('id', $id)->get();
+    } 
+
+    public function specifieUser($request)
+    {
+        return $this->user->where('id', $request->user_id)->get();
     }
 
     public function AllUser(){
@@ -354,25 +359,19 @@ public function delete($id)
     }
 }
 public function login($request){
-
     $query =$this->user->where([
         ['email', $request['email']],
         ['email', '<>', null]
     ]);
     $existingUser = $query->latest()->exists(); 
-    
     if($existingUser == true){
-        $sts=$query->first()->status; 
+        $sts=$query->first()->status;
         if($sts == 1)
         {
             $password = $query->first()->password; 
-
             if(Hash::check($request['password'], $password )){
                 $role = $query->first()->role_id;
-
                 if($role == $request['user_type']){ 
-
-                // return $query->first(); 
                     if($request['user_type']==4)
                     {
                         return $query->with('busOperator')->first();

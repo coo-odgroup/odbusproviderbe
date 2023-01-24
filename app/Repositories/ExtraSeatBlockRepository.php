@@ -876,7 +876,7 @@ class ExtraSeatBlockRepository
 
     public function extraSeatBlockData($request)
     {
-        log::info($request);
+        // log::info($request);
         
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
@@ -894,9 +894,9 @@ class ExtraSeatBlockRepository
 
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
-           //  $data=$data->whereHas('bus', function ($query) use ($request){
-           //     $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
-           // });
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
         } 
         if($bus_operator_id!= null)
         {
@@ -917,8 +917,7 @@ class ExtraSeatBlockRepository
         if($name!=null)
         {
             $data = $data->whereHas('bus', function ($query) use ($name){
-                $query->where('name', 'like', '%' .$name . '%');               
-            })->orwhere('reason','like','%'.$name.'%') ;          
+                $query->where('name', 'like', '%' .$name . '%'); });          
         }  
         if(!empty($source_id) && !empty($destination_id))
         {

@@ -193,10 +193,10 @@ class ApiUserRepository
                 {
                         $user = $this->user->find($id);
 
-                        if($user->password != $data['password'])
-                        {
-                            $user->password = bcrypt($data['password']);
-                        }  
+                        // if($user->password != $data['password'])
+                        // {
+                        //     $user->password = bcrypt($data['password']);
+                        // }  
                         
                         $user->name = $data['name'];
                         $user->email = $data['email'];    

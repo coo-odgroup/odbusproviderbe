@@ -167,6 +167,7 @@ class CouponRepository
                 
                 
                 $coupons->max_redeem = $data['max_redeem'];
+                $coupons->user_id = $data['user_id'];
                 $coupons->from_date = $data['from_date'];
                 $coupons->to_date = $data['to_date'];
                 $coupons->short_desc = $data['short_description'];
@@ -284,7 +285,7 @@ class CouponRepository
 
     public function getData($request)
     {
-        // Log:: info($request);
+        // Log:: info($request);exit;
 
         $name=$request->name;
         $paginate = $request->rows_number;
@@ -295,6 +296,9 @@ class CouponRepository
         $destination_id = $request->destination_id;
         $coupon_type = $request->coupon_type;
         $status = $request->status;
+
+        $user_role = $request['user_role'] ;
+        $user_id = $request['user_id'] ; 
        
 
         $data= $this->coupon->with("BusOperator","couponType","Bus")->where('status','!=',2)->orderBy('id','DESC');
@@ -313,6 +317,10 @@ class CouponRepository
         {
             $data = $data->where('status',$status);
         }  
+        if($user_role!=null && $user_role!=1)
+        {
+            $data = $data->where('user_id',$user_id) ;   
+        }
 
         if($bus_operator_id!= null)
         {

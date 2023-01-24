@@ -262,25 +262,18 @@ class BusScheduleRepository
         {
             $data= $this->busSchedule->with('busScheduleDate','bus.busOperator','bus.ticketPrice')
                 ->whereHas('bus.busOperator', function ($query) use($name){
-                     $query->where('name', 'like', '%'.$name.'%')
-                       ->orwhere('bus_number', 'like', '%'.$name.'%') 
-                       ->orwhere('operator_name', 'like', '%'.$name.'%') ;
+                     $query->where('bus_number', $name);
                 })
                 ->where('status','!=' ,'2')
                 ->orWhere('created_by', 'like', '%' .$name . '%')
                 ->orderBy('id','DESC');
 
-                if($request['USER_BUS_OPERATOR_ID']!="")
-                {
-                    $data=$data->whereHas('bus', function ($query) use ($request){
-                       $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
-                   });
-                }    
-
-            // $data=$data->where('created_by', 'like', '%' .$name . '%')
-            //            ->orwhereHas('bus.busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%' );})                        
-            //            ->orWhereHas('bus', function ($query) use ($name) {$query->where('name','like', '%' .$name . '%');})
-            //            ->orWhereHas('bus', function ($query) use ($name) {$query->where('bus_number','like', '%' .$name . '%' );});
+                // if($request['USER_BUS_OPERATOR_ID']!="")
+                // {
+                //     $data=$data->whereHas('bus', function ($query) use ($request){
+                //        $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+                //    });
+                // }    
         } 
         if($bus_operator_id!=null){
             $data=$data->whereHas('bus', function ($query) use ($bus_operator_id){

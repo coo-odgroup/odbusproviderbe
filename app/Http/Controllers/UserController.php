@@ -168,6 +168,12 @@ class UserController extends Controller
         return $this->successResponse($list,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
+    public function specifieUser(Request $request)
+    {
+        $list = $this->userService->specifieUser($request);
+        return $this->successResponse($list,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    }
+
     public function AgentForgetPasswordOtp(Request $request){
 
       $data = $request->all();

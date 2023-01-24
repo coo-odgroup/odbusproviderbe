@@ -594,6 +594,7 @@ Route::get('/cqc/{id}', [CustomerQueryCategoryController::class, 'getCustomerQue
 
 Route::get('/bus', [BusController::class, 'getAll']);
 Route::get('/locationBus/{source_id}/{destination_id}', [BusController::class, 'getLocationBus']);
+Route::post('/locationBusss', [BusController::class, 'locationBusss']);
 
 Route::post('/bus', [BusController::class, 'save']);
 Route::put('/bus/{id}', [BusController::class, 'update']);
@@ -909,6 +910,7 @@ Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
 
 Route::post('/login', [UserController::class, 'login']);
 Route::get('/AllUser', [UserController::class, 'AllUser']);
+Route::post('/specifieUser', [UserController::class, 'specifieUser']);
 
 
 //});

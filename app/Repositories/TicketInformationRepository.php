@@ -476,8 +476,8 @@ class TicketInformationRepository
                     'sourceId' => $request['bookingInfo']['source_id'],
                     'destinationId' => $request['bookingInfo']['destination_id'],
                     'seatIds' => $request['bookingInfo']['seat_ids'],
-                    // "origin" =>  $request['bookingInfo']['origin'],
-                    // "ReferenceNumber" =>  $request['bookingInfo']['ReferenceNumber'],
+                    "origin" =>  $request['bookingInfo']['origin'],
+                    "ReferenceNumber" =>  $request['bookingInfo']['ReferenceNumber'],
                 ]
             ]);
 
@@ -787,15 +787,12 @@ class TicketInformationRepository
                  "razorpay_signature" => $request['bookingInfo']['razorpay_signature']
             ]; 
  
- 
             $url = $api_url.'UpdateAdjustStatus';
             $resp = $client->request('POST', $url,  [
                'verify' => false,
                'headers'=> ['Authorization' =>   "Bearer " . $access_token],
                'form_params' => $final_arr
            ]);
- 
-
             return 'Booking is successful';
 
            }else{

@@ -76,6 +76,13 @@ class BookingSeizedRepository
          $data= $this->bookingSeized->with('bus.busOperator')->with('ticketPrice')->where('status',1)->orderBy('id','DESC');
 
 
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
+        }
+
         if($paginate=='all') 
         {
             $paginate = Config::get('constants.ALL_RECORDS');
@@ -89,14 +96,9 @@ class BookingSeizedRepository
         {
             $data = $data->WhereHas('bus', function ($query) use ($name){
                             $query->where('name', 'like', '%' .$name . '%');
-                        })->orWhereHas('bus', function ($query) use ($name){
-                            $query->Where('bus_number', 'like', '%' .$name . '%');
-                        })
-         
-                         ->orWhereHas('bus.busOperator', function ($query) use ($name){
-                            $query->where('operator_name', 'like', '%' .$name . '%');
                         });                        
-        }     
+        } 
+
 
         $data=$data->paginate($paginate);
 
