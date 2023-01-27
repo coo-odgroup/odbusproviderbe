@@ -49,6 +49,7 @@ class CancelTicketReportRepository
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->where('status', 2);
+        
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
             $data=$data->whereHas('bus', function ($query) use ($request){
@@ -82,8 +83,9 @@ class CancelTicketReportRepository
         
         if(!empty($payment_id))
         {
-            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
-                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id );});
+            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id );});
+
+            // ->whereHas('CustomerPayment', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
         }
 
          if(!empty($source_id) && !empty($destination_id))

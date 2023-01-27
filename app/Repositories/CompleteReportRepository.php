@@ -86,6 +86,15 @@ class CompleteReportRepository
             $paginate = 10 ;
         }
 
+        if($request['USER_BUS_OPERATOR_ID']!="")
+        {
+            $data=$data->whereHas('bus', function ($query) use ($request){
+               $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);               
+           });
+            // $data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
+            
+        } 
+
         if(!empty($pnr))
         {
            $data=$data->where('pnr', $pnr );
@@ -119,8 +128,7 @@ class CompleteReportRepository
 
         if(!empty($payment_id))
         {
-            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id)  {$query->where('razorpay_id', $payment_id )->where('payment_done', '1' );})
-                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id )->where('payment_done', '1' );});
+            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id )->where('payment_done', '1' );});
         }
 
         if(!empty($source_id) && !empty($destination_id))
