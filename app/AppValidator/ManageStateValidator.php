@@ -4,20 +4,18 @@ namespace App\AppValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class LocationValidator 
+class ManageStateValidator 
 {   
 
     public function validate($data) { 
         
         $rules = [
-            'name' => 'required|max:50',
-            'state_id' => 'required',
-            'synonym' => '',
+            'state_name' => 'required|max:50',
             'created_by' => 'required',
         ];      
       
-        $LocationValidation = Validator::make($data, $rules);
-        return $LocationValidation;
+        $stateValidation = Validator::make($data, $rules);
+        return $stateValidation;
     }
 
 }

@@ -539,12 +539,12 @@ class BusRepository
    
     public function BusData( $request)
     {
-        // Log::info($request);
+        Log::info($request);
 
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;   
         $user_role = $request['user_role'] ;
-        $user_id = $request['user_id'] ; 
+        // $user_id = $request['user_id'] ; 
         $operator= $request['operator'];   
         $status= $request['status'];   
         $source_id= $request['source_id'];   
@@ -570,10 +570,10 @@ class BusRepository
         {
             $paginate = 10 ;
         }
-        if($user_role!=null && $user_role==4)
-        {
-            $data = $data->where('user_id',$user_id) ;   
-        }
+        // if($user_role!=null && $user_role==4)
+        // {
+        //     $data = $data->where('user_id',$user_id) ;   
+        // }
         if($operator!=null)
         {
             $data = $data->where(
@@ -1007,9 +1007,9 @@ class BusRepository
                 if($allBus){
                     foreach($allBus as $b){
 
-                        if(!in_array($b->bus_id,$busIds)){
+                        if(!in_array($s_id.'-'.$d_id.'-'.$b->bus_id,$busIds)){
 
-                            array_push($busIds,$b->bus_id);
+                            //array_push($busIds,$b->bus_id);
 
 
                             $src = $this->location->where('id',$b->source_id)->get();
@@ -1018,6 +1018,9 @@ class BusRepository
                             $BusList['bus_name']=$b->bus->name." - ".$b->bus->bus_number." - (".$src[0]->name."-".$dest[0]->name.") - (".$b->busOperator->organisation_name.' - '.$b->busOperator->operator_name.") ";
                             //$BusList['id']='src_'.$s_id.'-dest_'.$d_id.'-'.$b->bus_id;
                             $BusList['id']=$s_id.'-'.$d_id.'-'.$b->bus_id;
+
+                            array_push($busIds,$s_id.'-'.$d_id.'-'.$b->bus_id);
+                            
     
     
                             array_push($allBusList,$BusList);

@@ -32,6 +32,7 @@ use App\Http\Controllers\SeatOpenController;
 use App\Http\Controllers\SeatBlockController;
 use App\Http\Controllers\OwnerPaymentController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\ManageStateController;
 use App\Http\Controllers\AppVersionController;
 use App\Http\Controllers\SiteMasterController;
 use App\Http\Controllers\BoardingDropingController;
@@ -536,6 +537,14 @@ Route::post('/locationsDT', [locationController::class, 'getLocationDT']);
 Route::post('/addlocation', [locationController::class, 'addLocation']);
 Route::put('editlocation/{id}', [locationController::class, 'editLocation']);
 Route::put('/changeStatusLocations/{id}', [locationController::class, 'changeStatus']);
+
+Route::get('/statelist', [ManageStateController::class, 'statelist']);
+Route::post('/states', [ManageStateController::class, 'getAllstate']);
+Route::post('/addstates/', [ManageStateController::class, 'createState']);
+Route::put('updatestates/{id}', [ManageStateController::class, 'updateState']);
+// Route::delete('/states/{id}', [ManageStateController::class, 'deletesState']);
+Route::put('/changeStateStatus/{id}', [ManageStateController::class, 'changeStatus']);
+
 
 Route::get('/appversion', [AppVersionController::class, 'getAllAppVersion']);
 Route::post('/appversion', [AppVersionController::class, 'createAppVersion']);

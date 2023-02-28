@@ -28,8 +28,6 @@ class ApiUserController extends Controller
 
     public function createApiUser(Request $request) 
     {
-        // Log::info($request);
-        // exit;
         $data = $request->only([
                                 'name',
                                 'email',
@@ -41,7 +39,8 @@ class ApiUserController extends Controller
                                 'street',
                                 'location',            
                                 'pancard_no',
-                                'organization_name',
+                                'organization_name', 
+                                'has_gst',
                                 'address',
                                 'landmark',
                                 'pincode',            
@@ -49,7 +48,7 @@ class ApiUserController extends Controller
                               ]);
         
         $apiUserValidation = $this->apiUserValidator->validate($data);
-      
+       
         if ($apiUserValidation->fails()) {
             $errors = $apiUserValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
@@ -102,7 +101,8 @@ class ApiUserController extends Controller
                             'user_type',
                             'location',
                             'pancard_no',
-                            'organization_name',
+                            'organization_name', 
+                            'has_gst',
                             'city',
                             'street',
                             'location', 

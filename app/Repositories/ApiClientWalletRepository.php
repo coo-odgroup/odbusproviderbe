@@ -173,7 +173,6 @@ class ApiClientWalletRepository
 
     public function agentAllTransaction($request){
         
-        // log::info($request);
         $start_date="";
         $end_date="";
         $paginate = $request->rows_number;
@@ -185,8 +184,6 @@ class ApiClientWalletRepository
 
         $data= $this->ApiClientWallet->with('user')->where('status', 1)->orderBy('id','DESC');
 
-        
-       //exit;
 
         if($paginate=='all')    
         {

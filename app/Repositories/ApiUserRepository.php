@@ -29,6 +29,8 @@ class ApiUserRepository
 
     public function save($data)
     {   
+        // log::info($users);exit;
+                    //exit;
         $email = $this->user->where('email',$data['email'])->where('status','!=',2)->get();
         $phone = $this->user->where('phone',$data['phone'])->where('status','!=',2)->get();
         $pancard = $this->user->where('pancard_no',$data['pancard_no'])->where('status','!=',2)->get();
@@ -41,11 +43,9 @@ class ApiUserRepository
                 {
                     $users = new $this->user;
                     $users = $this->getModel($data,$users);                         
-                    //log::info($users); exit;
+                    // log::info($users); exit;
                     $users->save();    
 
-                    log::info($users);
-                    //exit;  
                     return $users;
                 }
                 else 
@@ -146,7 +146,12 @@ class ApiUserRepository
     
     public function getModel($data, User $user)
     {
+        $gst = 0;
         $client_id = random_int(1123456, 9999999);
+        if($data['has_gst'] == 'true')
+        {
+            $gst = 1;
+        }
 
         $user->name = $data['name'];
         $user->email = $data['email'];    
@@ -158,6 +163,7 @@ class ApiUserRepository
         $user->location = $data['location'];
         $user->pancard_no = $data['pancard_no'];
         $user->organization_name = $data['organization_name'];
+        $user->has_gst = $gst;
         $user->address = $data['address'];
         $user->street = $data['street'];
         $user->city = $data['city'];
@@ -181,6 +187,7 @@ class ApiUserRepository
      */
     public function update($data, $id)
     {        
+        // log::info($data); exit;
         $email = $this->user->where('email',$data['email'])->where('id','!=',$id )->where('status','!=',2)->get();
         $phone = $this->user->where('phone',$data['phone'])->where('id','!=',$id )->where('status','!=',2)->get();
         $pancard = $this->user->where('pancard_no',$data['pancard_no'])->where('id','!=',$id )->where('status','!=',2)->get();
@@ -206,6 +213,7 @@ class ApiUserRepository
                         $user->location = $data['location'];
                         $user->pancard_no = $data['pancard_no'];
                         $user->organization_name = $data['organization_name'];
+                        $user->has_gst = $data['has_gst'];
                         $user->address = $data['address'];
                         $user->landmark = $data['landmark'];
                         $user->pincode = $data['pincode'];    

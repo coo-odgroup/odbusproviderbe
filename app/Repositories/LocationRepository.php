@@ -40,14 +40,16 @@ class LocationRepository
     public function getModel($data, Location $location)
     { 
         $trim = trim( $data['name']);
-        $remove_space= str_replace(' ', '-', $trim);  
+        // $remove_space= str_replace(' ', '-', $trim);  
+        $remove_space= str_replace(' ', '', $trim);  
         $remove_special_char = preg_replace('/[^A-Za-z0-9\-]/', '',$remove_space);             
         $url = strtolower($remove_special_char);
 
-
+ 
       $location->name = $data['name'];
       $location->url = $url;
       $location->synonym = $data['synonym'];
+      $location->state_id = $data['state_id'];
       $location->created_by = $data['created_by'];
       return $location;
     }
