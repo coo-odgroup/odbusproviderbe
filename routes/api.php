@@ -168,7 +168,9 @@ Route::post('/apiclientissuedata',[ApiClientIssueController::class,'apiclientiss
 //Ticket Information 
 
 Route::post('/getPnrDetailsForSms',[TicketInformationController::class,'getPnrDetailsForSms']);
+Route::post('/getApiPnrDetails',[TicketInformationController::class,'getApiPnrDetails']);
 Route::post('/getpnrdetails',[TicketInformationController::class,'getpnrdetails']);
+Route::post('/apicancelticket',[TicketInformationController::class,'apicancelticket']);
 Route::post('/cancelticket',[TicketInformationController::class,'cancelticket']);
 Route::post('/cancelticketdata',[TicketInformationController::class,'cancelticketdata']);
 Route::post('/adjustticket',[TicketInformationController::class,'adjustticket']);
@@ -186,6 +188,11 @@ Route::post('/save_CancelcustomSMSToCMO',[TicketInformationController::class,'sa
 Route::post('/sendEmailToBooking',[TicketInformationController::class,'sendEmailToBooking']);
 Route::post('/sendEmailToCustomer',[TicketInformationController::class,'sendEmailToCustomer']);
 Route::post('/sendCancelEmailToSupport',[TicketInformationController::class,'sendCancelEmailToSupport']);
+
+
+
+Route::post('/failedticketadjust',[TicketInformationController::class,'failedticketadjust']);
+Route::post('/failedticketadjustdata',[TicketInformationController::class,'failedticketadjustdata']);
 
 //Extra Seat Block
 Route::post('/extraSeatBlock',[ExtraSeatBlockController::class,'addExtraSeatBlock']);

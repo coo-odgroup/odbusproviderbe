@@ -99,7 +99,7 @@ class ManageStateController extends Controller
            }
            else
            {
-               return $this->successResponse($response,"State Updated Successfully. Waiting for Approval", Response::HTTP_CREATED);
+               return $this->successResponse($response,"State Updated Successfully.", Response::HTTP_CREATED);
            }
         }
 

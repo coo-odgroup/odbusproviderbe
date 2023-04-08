@@ -37,7 +37,7 @@ class  AgentReportRepository
                                     'Bus','User','Users')
                              ->with('bus.busstoppage')
                              ->where('status',1)
-                             ->where('user_id','!=',0)
+                             ->where('user_id','!=',0)->where('app_type','AGENT') 
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {
@@ -144,7 +144,7 @@ class  AgentReportRepository
                                     'Bus','User','Users')
                              ->with('bus.busstoppage')
                              ->where('status',2)
-                             ->where('user_id','!=',0)
+                             ->where('user_id','!=',0)->where('app_type','AGENT') 
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {
@@ -244,7 +244,7 @@ class  AgentReportRepository
                                     'Bus','User')
                              ->with('bus.busstoppage')
                              ->where('status',2)
-                             ->where('user_id','!=',0)
+                             ->where('user_id','!=',0)->where('app_type','AGENT') 
                              ->orderBy('id','DESC');
         if($paginate=='all') 
         {

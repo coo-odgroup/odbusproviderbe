@@ -22,9 +22,27 @@ class TicketInformationController extends Controller
         $this->ticketInformationService = $ticketInformationService;        
     }
 
+    public function failedticketadjust(Request $request)
+    {
+        $pnr_details = $this->ticketInformationService->failedticketadjust($request);
+        return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    
+    public function failedticketadjustdata(Request $request)
+    {
+        $pnr_details = $this->ticketInformationService->failedticketadjustdata($request);
+        return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
+
     public function getpnrdetails(Request $request)
     {        
         $pnr_details = $this->ticketInformationService->getpnrdetails($request);
+        return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function getApiPnrDetails(Request $request)
+    {        
+        $pnr_details = $this->ticketInformationService->getApiPnrDetails($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
@@ -33,6 +51,12 @@ class TicketInformationController extends Controller
         $pnr_details = $this->ticketInformationService->getPnrDetailsForSms($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
+
+    public function apicancelticket(Request $request)
+    {
+        $pnr_details = $this->ticketInformationService->apicancelticket($request);
+        return $this->successResponse($pnr_details,"Ticket cancelled and Amount Refunded",Response::HTTP_OK);
+    }
 
     public function cancelticket(Request $request)
     {
@@ -44,7 +68,7 @@ class TicketInformationController extends Controller
     {
         $pnr_details = $this->ticketInformationService->cancelticketdata($request);
         return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    } 
+    }
 
     public function adjustticketdata(Request $request)
     {

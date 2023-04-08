@@ -24,10 +24,27 @@ class TicketInformationService
     {
         $this->ticketInformationRepository = $ticketInformationRepository;
     }
+
+    public function failedticketadjust($request)
+    {
+        return $this->ticketInformationRepository->failedticketadjust($request);
+    }
+
+    public function failedticketadjustdata($request)
+    {
+        return $this->ticketInformationRepository->failedticketadjustdata($request);
+    } 
+
+
     
     public function getpnrdetails($request)
     {
         return $this->ticketInformationRepository->getpnrdetails($request);
+    } 
+
+    public function getApiPnrDetails($request)
+    {
+        return $this->ticketInformationRepository->getApiPnrDetails($request);
     } 
 
     public function getPnrDetailsForSms($request)
@@ -35,6 +52,11 @@ class TicketInformationService
         return $this->ticketInformationRepository->getPnrDetailsForSms($request);
     } 
 
+    public function apicancelticket($request)
+    {
+        return $this->ticketInformationRepository->apicancelticket($request);
+    } 
+    
     public function cancelticket($request)
     {
         return $this->ticketInformationRepository->cancelticket($request);
