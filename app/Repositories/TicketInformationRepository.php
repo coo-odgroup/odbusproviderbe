@@ -11,6 +11,8 @@ use App\Models\AgentWallet;
 use App\Models\ManageSMS;
 use App\Models\CustomSMS;
 use App\Models\ApiClientWallet;
+use App\Models\User;
+
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
@@ -21,6 +23,8 @@ use App\Repositories\ChannelRepository;
 use App\Jobs\SendingEmailToSupportJob;
 use App\Jobs\SendCancelEmailToSupportJob;
 use App\Jobs\SendEmailToCustomerJob;
+
+use App\Jobs\SendEmailToApiClientJob;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
@@ -40,10 +44,12 @@ class TicketInformationRepository
     protected $customSMS;
     protected $bookingDetail;
     protected $apiClientWallet;
+    protected $user;
 
-    public function __construct(AgentWallet $AgentWallet,Location $location, Bus $bus,Users $users,Booking $booking , CustomerPayment $customerPayment,ChannelRepository $channelRepository,ManageSMS $manageSMS,CustomSMS $customSMS,BookingDetail $bookingDetail,ApiClientWallet $apiClientWallet)
+    public function __construct(AgentWallet $AgentWallet,Location $location, Bus $bus,Users $users,Booking $booking , CustomerPayment $customerPayment,ChannelRepository $channelRepository,ManageSMS $manageSMS,CustomSMS $customSMS,BookingDetail $bookingDetail,ApiClientWallet $apiClientWallet,User $user)
     {
         $this->users = $users;
+        $this->user = $user;
         $this->location = $location;
         $this->bus = $bus;
         $this->booking = $booking;
@@ -271,6 +277,22 @@ class TicketInformationRepository
       $ApiClientWallet->created_by = $request->cancelled_by;
       $ApiClientWallet->transaction_id = $transactionId;
       $ApiClientWallet->save();
+
+      $client = $this->user->find($cancelticket->user_id);
+      // $to_user = 'bishal.seofied@gmail.com';
+      $to_user = $client->email;
+      
+      $data= array(
+          'user' => $client->name,
+          'pnr'  => $cancelticket->pnr,
+          'refundAmount' => $request->refund_amount,
+          'reason' =>$request['reason'],
+      );
+
+      $subject = "TICKET CANCELLATION BY ODBUS PNR ".$cancelticket->pnr; 
+
+      SendEmailToApiClientJob::dispatch($to_user, $subject, $data);
+
       return;
 
     }

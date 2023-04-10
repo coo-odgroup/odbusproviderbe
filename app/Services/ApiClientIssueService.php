@@ -32,7 +32,15 @@ class ApiClientIssueService
     {
         return $this->ApiClientIssueRepository->apiclientissuedata($request);
     }
-    public function addapiclientissue($request)
+    public function allapiclientissuedata($request)
+    {
+        return $this->ApiClientIssueRepository->allapiclientissuedata($request);
+    }
+    public function apiclientissuestatue($request)
+    {
+        return $this->ApiClientIssueRepository->apiclientissuestatue($request);
+    }
+     public function addapiclientissue($request)
     {
         return $this->ApiClientIssueRepository->addapiclientissue($request);
     }

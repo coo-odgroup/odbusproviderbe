@@ -44,6 +44,19 @@ class ApiClientIssueController extends Controller
       return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     } 
 
+
+    public function allapiclientissuedata(Request $request) {
+
+      $data = $this->ApiClientIssueService->allapiclientissuedata($request);
+      return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    } 
+    
+    public function apiclientissuestatue(Request $request) {
+
+      $data = $this->ApiClientIssueService->apiclientissuestatue($request);
+      return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    } 
+
     public function addapiclientissue(Request $request) {
         
         $data = $request->only([

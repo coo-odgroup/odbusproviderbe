@@ -163,6 +163,8 @@ Route::post('/apiclientissuetype',[ApiClientIssueController::class,'apiclientiss
 Route::post('/apiclientissuesubtype',[ApiClientIssueController::class,'apiclientissuesubtype']);
 Route::post('/addapiclientissue',[ApiClientIssueController::class,'addapiclientissue']);
 Route::post('/apiclientissuedata',[ApiClientIssueController::class,'apiclientissuedata']);
+Route::post('/allapiclientissuedata',[ApiClientIssueController::class,'allapiclientissuedata']);
+Route::post('/apiclientissuestatue',[ApiClientIssueController::class,'apiclientissuestatue']);
 
 
 //Ticket Information 

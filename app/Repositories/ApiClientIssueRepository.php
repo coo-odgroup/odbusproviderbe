@@ -122,6 +122,63 @@ class ApiClientIssueRepository
         }
         $post->update();
         return $post;
+    } 
+
+    public function apiclientissuestatue($request)
+    {
+        $post = ApiClientIssue::find($request->id);
+        $post->status = $request->status;
+        $post->created_by = $request->created_by;
+        $post->update();
+        return $post;
+
+        // $agent_id =random_int(100000, 999999);
+        // $post = $this->agent->find($request->id);
+
+        // if($post->status==0){
+        //     $post->status = 1;
+        //     $post->created_by = $request->created_by;
+        //     $post->unique_id = $agent_id;
+        // }elseif($post->status==1){
+        //     $post->status = 0;
+        //     $post->created_by = $request->created_by;
+        //     $post->unique_id = $agent_id;
+        // }
+        // $post->update();
+        // return $post;
+    }
+
+
+    public function allapiclientissuedata($request)
+    {
+       
+        $paginate = $request['rows_number'] ;
+        $user_id = $request['user_id'] ;
+
+        $data= ApiClientIssue::with('apiclientissuetype','apiclientissuesubtype','bus')->orderBy('id','DESC');
+
+        if($paginate=='all') 
+        {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+        elseif ($paginate == null) 
+        {
+            $paginate = 10 ;
+        }
+        if($user_id !=null){
+             $data=$data->where('user_id', $request['user_id'] );
+        }
+
+        $data=$data->paginate($paginate);
+
+        $response = array(
+             "count" => $data->count(), 
+             "total" => $data->total(),
+            "data" => $data
+           );   
+           return $response;
+
+       
     }
     
 }
