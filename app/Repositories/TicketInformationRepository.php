@@ -311,7 +311,7 @@ class TicketInformationRepository
               "refund_amount" => $request->refund_amount
           ]
       ]);
-        log::info('mantish call-back URL has been Executed')
+        log::info('mantish call-back URL has been Executed');
 
       return;
 
