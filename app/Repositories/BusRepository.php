@@ -1037,9 +1037,9 @@ class BusRepository
         }
         else if(isset($data['bus_operator_id']) && $data['bus_operator_id'] && !isset($data['route'])){
 
-            $allBus=$this->busStoppage->select('bus_id')
+              $allBus=$this->busStoppage->select('bus_id')
                              ->with(['bus' => function($b){
-                                $b->with('busOperator');
+                                $b->with('busOperator','ticketPrice');
                              } ])   
                               ->whereHas('bus', function ($query){
                                 $query->where('status', 1);               
@@ -1050,11 +1050,15 @@ class BusRepository
  
             if($allBus){
                 foreach($allBus as $k => $b){
-                    $allBusList[$k]['bus_name']=$b->bus->name." - ".$b->bus->bus_number." (".$b->bus->busOperator->organisation_name.' - '.$b->bus->busOperator->operator_name.") ";
+                    $stoppages['source'][$k]=$this->location->where('id', $b->bus->ticketPrice[0]->source_id)->get();
+                    $stoppages['destination'][$k]=$this->location->where('id', $b->bus->ticketPrice[0]->destination_id)->get();
+                    
+                    $allBusList[$k]['bus_name']=$b->bus->name." - ".$b->bus->bus_number." (".$b->bus->busOperator->organisation_name.' - '.$b->bus->busOperator->operator_name.")"." [ ".$stoppages['source'][$k][0]->name.">>".$stoppages['destination'][$k][0]->name." ] ";
                    // $allBusList[$k]['id']='opr_'.$b->bus->busOperator->id.'-'.$b->bus_id;
                     $allBusList[$k]['id']=$b->bus->busOperator->id.'-'.$b->bus_id;
 
                 }
+                // return $stoppages;
             }    
         }
 

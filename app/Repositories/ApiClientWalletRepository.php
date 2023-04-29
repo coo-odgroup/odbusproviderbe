@@ -182,7 +182,7 @@ class ApiClientWalletRepository
         $end_date  =  $request->rangeToDate;
         $tranType  =  $request->tranType;
 
-        $data= $this->ApiClientWallet->with('user')->where('status', 1)->orderBy('id','DESC');
+        $data= $this->ApiClientWallet->with('user','booking')->where('status', 1)->orderBy('id','DESC');
 
 
         if($paginate=='all')    

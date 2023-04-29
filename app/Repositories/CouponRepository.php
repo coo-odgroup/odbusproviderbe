@@ -167,7 +167,7 @@ class CouponRepository
                 
                 
                 $coupons->max_redeem = $data['max_redeem'];
-                $coupons->user_id = $data['user_id'];
+                // $coupons->user_id = $data['user_id'];
                 $coupons->from_date = $data['from_date'];
                 $coupons->to_date = $data['to_date'];
                 $coupons->short_desc = $data['short_description'];

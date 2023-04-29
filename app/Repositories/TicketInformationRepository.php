@@ -25,6 +25,7 @@ use App\Jobs\SendCancelEmailToSupportJob;
 use App\Jobs\SendEmailToCustomerJob;
 
 use App\Jobs\SendEmailToApiClientJob;
+use App\Jobs\SendEmailToSupportJob;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
@@ -281,6 +282,7 @@ class TicketInformationRepository
       $client = $this->user->find($cancelticket->user_id);
       // $to_user = 'bishal.seofied@gmail.com';
       $to_user = $client->email;
+      $to_support = 'support@odbus.in';
       
       $data= array(
           'user' => $client->name,
@@ -292,6 +294,24 @@ class TicketInformationRepository
       $subject = "TICKET CANCELLATION BY ODBUS PNR ".$cancelticket->pnr; 
 
       SendEmailToApiClientJob::dispatch($to_user, $subject, $data);
+
+      SendEmailToSupportJob::dispatch($to_support, $subject, $data);
+
+       $client = new \GuzzleHttp\Client();       
+       $api_url = 'https://event.iamgds.com/provevents/odbus';
+
+       // $access_token_url = $api_url.'ClientLogin';  
+
+        $mantish_API= $client->request('POST', $api_url,  [
+          'verify' => false,
+          'form_params' => [
+              "pnr" => $cancelticket->pnr,
+              "status" => "cancelled",
+              "cancel_reason" => $request['reason'],
+              "refund_amount" => $request->refund_amount
+          ]
+      ]);
+        log::info('mantish call-back URL has been Executed')
 
       return;
 
