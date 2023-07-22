@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\BusStoppageTiming;
 use App\Models\BusOperator;
 use App\Models\BusSeats;
+use App\Models\Location;
+
 
 
 class TicketPrice extends Model
@@ -33,5 +35,15 @@ class TicketPrice extends Model
     public function getBusSeats()
     {
         return $this->hasMany(BusSeats::class)->where('status','!=',2);
+    }
+
+    public function source()
+    {        
+        return $this->belongsTo(Location::class,'source_id');     
+    }
+
+    public function destination()
+    {        
+        return $this->belongsTo(Location::class,'destination_id');     
     }
 }

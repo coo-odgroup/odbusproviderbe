@@ -917,7 +917,11 @@ class SeatOpenRepository
        
         // exit;
     
-        $data= $this->busSeats->with('bus.busOperator','bus.ticketPrice','seats','ticketPrice')
+        $data= $this->busSeats->with('bus.busOperator','bus.ticketPrice','seats')
+                                ->with(["ticketPrice" => function($t){
+                                    $t->with("source");
+                                    $t->with("destination");
+                                }])
                               ->where('type',1)
                               ->whereNotIn('status', [2]);
 
@@ -965,7 +969,7 @@ class SeatOpenRepository
 
         if(!empty($source_id) && !empty($destination_id))
         {
-            $data=$data->whereHas('ticketPrice', function ($query)use ($request){
+            $data=$data->whereHas('ticketPrice', function ($query)use ($request){              
                $query->where('source_id',$request['source_id'] )->where('destination_id',$request['destination_id']);               
            });
         }  
@@ -977,28 +981,33 @@ class SeatOpenRepository
  
        
         $data=$data->get()->groupBy(['bus_id','operation_date','ticket_price_id']);
+       // $data=$data->groupBy(['bus_id','operation_date','ticket_price_id'])->paginate($paginate);
+
+        Log::info($data);
+
+       // return $data;
      
 
-        if($data)
-        {
-             foreach($data as $date){
+        // if($data)
+        // {
+        //      foreach($data as $date){
 
-                foreach ($date as $route) {
-                   foreach ($route as $seatOp)
-                    {
-                       foreach ($seatOp as $SingleseatOp)
-                        {
+        //         foreach ($date as $route) {
+        //            foreach ($route as $seatOp)
+        //             {
+        //                foreach ($seatOp as $SingleseatOp)
+        //                 {
                           
-                            // $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
-                            // $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
+        //                     // $SingleseatOp['source']=$this->location->where('id', $SingleseatOp->ticketPrice->source_id)->get();
+        //                     // $SingleseatOp['destination']=$this->location->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
 
-                            $SingleseatOp['bus_source']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
-                            $SingleseatOp['bus_destination']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
-                        }break;
-                    }
-                }
-            }
-        }
+        //                     $SingleseatOp['bus_source']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
+        //                     $SingleseatOp['bus_destination']=$this->location->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
+        //                 }break;
+        //             }
+        //         }
+        //     }
+        // }
 
         
 
