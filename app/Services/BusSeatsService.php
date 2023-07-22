@@ -32,6 +32,9 @@ class BusSeatsService
     {
         return $this->busSeatsRepository->getAll();
     }
+
+    
+
     public function getAllFare($busId)
     {
         return $this->busSeatsRepository->getAllFare($busId);
@@ -89,6 +92,11 @@ class BusSeatsService
     {
         $result = $this->busSeatsRepository->save($data);
         return $result;
+    }
+
+    public function cronjob_cleanbusseat()
+    {
+        return $this->busSeatsRepository->cronjob_cleanbusseat();
     }
 
 }

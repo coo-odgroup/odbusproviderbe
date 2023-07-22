@@ -213,6 +213,11 @@ class ApiClientWalletService
        return $this->ApiClientWalletRepository->declineWalletReq($data,$id);
    }
 
+    public function clientTransByAdmin($data)
+    {
+      return $this->ApiClientWalletRepository->clientTransByAdmin($data);
+    }
+
 }
 
  

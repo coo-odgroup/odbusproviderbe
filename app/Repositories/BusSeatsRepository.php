@@ -7,6 +7,8 @@ use App\Models\BusSeats;
 use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use DB;
+
 /*Priyadarshi to Review*/
 class BusSeatsRepository
 {
@@ -375,6 +377,22 @@ public function delete($id)
     $busseats->delete();
 
     return $busseats;
+}
+
+public function cronjob_cleanbusseat(){
+   $date = date('Y-m-d', strtotime('-10 day'));
+
+    $seat_block =  DB::delete("DELETE FROM `bus_seats` WHERE  type=2 AND id NOT IN (SELECT id FROM `bus_seats` WHERE type=2 AND id IN (select bus_seats_id from booking_detail) ORDER BY `id` DESC) AND operation_date < '$date' ");
+
+    $seat_open =  DB::delete("DELETE FROM `bus_seats` WHERE  type=1 AND id NOT IN (SELECT id FROM `bus_seats` WHERE type=1 AND id IN (select bus_seats_id from booking_detail) ORDER BY `id` DESC) AND operation_date < '$date'   ORDER BY `id` ASC");
+
+    $deleted_seat=  DB::delete("DELETE FROM `bus_seats` WHERE `status` = 2 AND id NOT IN (SELECT id FROM `bus_seats` WHERE status=2 AND id IN (select bus_seats_id from booking_detail) ORDER BY `id` DESC);");
+
+   
+
+    log::info('seatBlock - '.$seat_block);
+    log::info('seatOpen - '.$seat_open);
+    log::info('deletedSeats - '.$deleted_seat);
 }
 
 }

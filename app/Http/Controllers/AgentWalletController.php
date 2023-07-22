@@ -72,6 +72,27 @@ class AgentWalletController extends Controller
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
          
+    } 
+
+    public function agentTransByAdmin(Request $request) 
+    { 
+        $data= $this->agentWalletService->agentTransByAdmin($request);
+           return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
+        // $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
+
+        // $agentWalletValidator = $this->agentWalletValidator->validate($data);
+        // if ($agentWalletValidator->fails()) {
+        //     $errors = $agentWalletValidator->errors();
+            
+        //     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        //   }
+        // try {
+        //    $this->agentWalletService->agentTransByAdmin($request);
+        //    return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
+        // } catch (Exception $e) {
+        //    return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        // }
+         
     }  
 
 

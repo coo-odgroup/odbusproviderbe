@@ -145,7 +145,13 @@ class BusSeatsController extends Controller
       $output ['message']='Single Data Fetched Successfully';
       $output ['result']=$busSeats;
       return response($output, 200);
-    }      
+    }   
+    
+    
+
+    public function cronjob_cleanbusseat(){
+        $busSeats = $this->busSeatsService->cronjob_cleanbusseat();
+    }
 	     
 }
 

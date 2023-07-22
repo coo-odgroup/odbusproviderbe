@@ -182,7 +182,8 @@ class ApiClientWalletRepository
         $end_date  =  $request->rangeToDate;
         $tranType  =  $request->tranType;
 
-        $data= $this->ApiClientWallet->with('user','booking')->where('status', 1)->orderBy('id','DESC');
+        $data= $this->ApiClientWallet->with('user')->where('status', 1)->orderBy('id','DESC');
+        // $data= $this->ApiClientWallet->with('user','booking')->where('status', 1)->orderBy('id','DESC');
 
 
         if($paginate=='all')    
@@ -510,6 +511,53 @@ class ApiClientWalletRepository
 
         return $response;  
 
+    }
+
+    public function clientTransByAdmin($data)
+    {   
+    $booking_id='';
+        $user = $this->user->find($data['user_id']);
+        $balance = 0 ;
+
+        $pnr = $this->booking->where('pnr', $data['pnr'])->get();
+
+        if(!empty($pnr)){
+            $booking_id= $pnr[0]->id;
+        }
+     
+         $agentWallet = $this->ApiClientWallet->where('user_id',$data['user_id'])
+                                          ->where('status',1)->orderBy('id','DESC')->limit(1)
+                                          ->get();
+        if(count($agentWallet)>0)
+        {
+            if($data['transaction_type'] == 'c'){
+              $balance = $agentWallet[0]->balance + $data['amount'];
+            }
+            elseif($data['transaction_type'] == 'd'){
+              $balance = $agentWallet[0]->balance - $data['amount'];
+            }
+            
+        }else
+        {
+            $balance = $data['amount'];
+        }
+
+        $agentWallet = new $this->ApiClientWallet;
+        $agentWallet->transaction_id =  $data['transaction_id'];
+        $agentWallet->reference_id =  $data['reference_id'];
+        $agentWallet->amount = $data['amount'];
+        $agentWallet->balance = $balance;
+        $agentWallet->booking_id = $booking_id;
+        $agentWallet->remarks = $data['remarks'];
+        $agentWallet->user_id = $data['user_id'];
+        $agentWallet->transaction_type = $data['transaction_type'];       
+        $agentWallet->created_by = $data['created_by'];
+        $agentWallet->payment_via = '';
+        $agentWallet->status = 1;
+
+        $agentWallet->save(); 
+
+        return $agentWallet;
     }
     
 }

@@ -118,6 +118,52 @@ class AgentWalletRepository
 
 
 
+     public function agentTransByAdmin($data)
+    {   
+    // Log::info($data); 
+        $user = $this->user->find($data['user_id']);
+        $balance = 0 ;
+     
+         $agentWallet = $this->agentWallet->where('user_id',$data['user_id'])
+                                          ->where('status',1)->orderBy('id','DESC')->limit(1)
+                                          ->get();
+           // Log::info($agentWallet);
+
+        if(count($agentWallet)>0)
+        {
+            if($data['transaction_type'] == 'c'){
+              $balance = $agentWallet[0]->balance + $data['amount'];
+            }
+            elseif($data['transaction_type'] == 'd'){
+              $balance = $agentWallet[0]->balance - $data['amount'];
+            }
+            
+        }else
+        {
+            $balance = $data['amount'];
+        }
+
+        $agentWallet = new $this->agentWallet;
+        $agentWallet->transaction_id =  $data['transaction_id'];
+        $agentWallet->reference_id =  $data['reference_id'];
+        $agentWallet->amount = $data['amount'];
+        $agentWallet->balance = $balance;
+        $agentWallet->remarks = $data['remarks'];
+        $agentWallet->user_id = $data['user_id'];
+        $agentWallet->transaction_type = $data['transaction_type'];       
+        $agentWallet->created_by = $data['created_by'];
+        $agentWallet->payment_via = '';
+        $agentWallet->status = 1;
+        // $agentWallet->otp = "";
+           // Log::info($agentWallet);exit;
+
+        $agentWallet->save(); 
+
+        return $agentWallet;
+    }
+
+
+
     public function balance($id)
     {
         $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get(); 

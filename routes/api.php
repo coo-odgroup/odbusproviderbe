@@ -153,6 +153,7 @@ Route::post('/apiClientAllTransaction',[ApiClientWalletController::class,'agentA
 Route::put('/changeapiClientWalletStatus/{id}',[ApiClientWalletController::class,'changeStatus']);
 Route::put('/declineWlletReqStatus/{id}',[ApiClientWalletController::class,'declineWlletReqStatus']);
 Route::post('/allTransactionData',[ApiClientWalletController::class,'allTransactionData']);
+Route::post('/clientTransByAdmin',[ApiClientWalletController::class,'clientTransByAdmin']);
 
 // api client report
 Route::post('/apiclientbookingreport',[ApiClientReportController::class,'getAllData']);
@@ -228,6 +229,7 @@ Route::get('/AgentFee/{id}', [AgentFeeController::class, 'getAgentFee']);
 
 Route::get('/agentWalletBalance/{id}',[AgentWalletController::class,'agentWalletBalance']);
 Route::post('/agentWallet',[AgentWalletController::class,'addAgentWallet']);
+Route::post('/agentTransByAdmin',[AgentWalletController::class,'agentTransByAdmin']);
 Route::post('/agentWalletData',[AgentWalletController::class,'getData']);
 Route::post('/agentWalletAllData',[AgentWalletController::class,'getAllData']);
 Route::post('/agentWalletBalance',[AgentWalletController::class,'agentWalletBalancedetails']);
@@ -692,6 +694,16 @@ Route::put('/updateBusSeatsExtras/{id}', [BusSeatsController::class, 'updateBusS
 
 Route::get('/busSeatsFare/{id}', [BusSeatsController::class, 'getAllBusSeatsFare']);
 Route::put('/updateNewFare',[BusSeatsController::class,'updateNewFare']);
+
+//cronjob API
+Route::get('/cronjob_cleanbusseat',[BusSeatsController::class,'cronjob_cleanbusseat']);
+
+
+
+
+
+
+
 
 Route::get('/busSeatsExtra', [BusSeatsExtraController::class, 'getAllBusSeatsExtra']);
 Route::post('/busSeatsExtra', [BusSeatsExtraController::class, 'createBusSeatsExtra']);

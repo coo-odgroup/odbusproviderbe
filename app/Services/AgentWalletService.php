@@ -167,6 +167,10 @@ class AgentWalletService
         }
         return $post;
     }
+    public function agentTransByAdmin($data)
+    {
+      return $this->agentWalletRepository->agentTransByAdmin($data);
+    }
    
    public function changeStatus($data,$id)
    {
