@@ -301,7 +301,15 @@ class CouponRepository
         $user_id = $request['user_id'] ; 
        
 
-        $data= $this->coupon->with("BusOperator","couponType","Bus")->where('status','!=',2)->orderBy('id','DESC');
+        //$data= $this->coupon->with("BusOperator","couponType","Bus")->where('status','!=',2)->orderBy('id','DESC');
+
+        /////// added by Lima 12th Sep,2023 ////////////
+
+        $todayDate=date("Y-m-d");
+
+        $data= $this->coupon->with("BusOperator","couponType","Bus")->whereNotIn('status',[2,3])->orderBy('id','DESC')->where('to_date','>=',$todayDate);
+
+        
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
             $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
