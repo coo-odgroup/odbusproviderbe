@@ -187,7 +187,7 @@ class CouponRepository
                                     ->where(function($query) use ($from_date, $to_date){
                                         $query->whereBetween('from_date', [$from_date,$to_date])
                                             ->orWhereBetween('to_date',[$from_date,$to_date]);
-                                    })->get();
+                                    })->where('status','!=',2)->get();
 
                 // $queries  = \DB::getQueryLog(); 
                 // $last_query = end($queries);                              
@@ -307,8 +307,13 @@ class CouponRepository
 
         $todayDate=date("Y-m-d");
 
-        $data= $this->coupon->with("BusOperator","couponType","Bus")->whereNotIn('status',[2,3])->orderBy('id','DESC')->where('to_date','>=',$todayDate);
+        $data= $this->coupon->with("BusOperator","couponType","Bus")->orderBy('id','DESC')->where('to_date','>=',$todayDate);
 
+        if($status==null){
+            $data= $data->whereNotIn('status',[2,3]);
+        }
+       
+        ///////////////////////////////////////////////
         
         if($request['USER_BUS_OPERATOR_ID']!="")
         {
