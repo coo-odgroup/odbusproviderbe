@@ -43,7 +43,9 @@ class BusSeatsRepository
  }
  public function getByBusId($busId)
  {
-    $data =  $this->busSeats
+    $data =  $this->busSeats->whereHas('ticketPrice', function($q){
+        $q->where('status', 1);
+    })
     ->where('status','1')
     ->where('bus_id', $busId)
     //->where('type',null)
@@ -238,7 +240,7 @@ public function update($data, $id)
        
         //NEED TO CREATE A NEW SET OF RECORD STATUS
 
-     $get_ticket_price_id=$this->ticketPrice->where('bus_id',$bus_id)->where("status","1")->get();
+     $get_ticket_price_id=$this->ticketPrice->where('bus_id',$bus_id)->get(); // ->where("status","1") (11:30AM, 4 Nov,2023)
     
     foreach($layoutArray as $sLayoutData)
     {
