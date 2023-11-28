@@ -11,6 +11,7 @@ use App\Jobs\SendSupportEmailJob;
 use App\Jobs\SendWalletEmailJob;
 use App\Jobs\SendWalletApproveEmailJob;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 use DB;
 
 class AgentWalletRepository

@@ -13,6 +13,7 @@ use App\Jobs\SendSupportEmailJob;
 use App\Jobs\SendWalletEmailJob;
 use App\Jobs\SendWalletApproveEmailJob;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 use DB;
 
 class ApiClientWalletRepository
@@ -182,8 +183,8 @@ class ApiClientWalletRepository
         $end_date  =  $request->rangeToDate;
         $tranType  =  $request->tranType;
 
-        $data= $this->ApiClientWallet->with('user')->where('status', 1)->orderBy('id','DESC');
-        // $data= $this->ApiClientWallet->with('user','booking')->where('status', 1)->orderBy('id','DESC');
+        // $data= $this->ApiClientWallet->with('user')->where('status', 1)->orderBy('id','DESC');
+        $data= $this->ApiClientWallet->with('user','booking')->where('status', 1)->orderBy('id','DESC');
 
 
         if($paginate=='all')    

@@ -192,10 +192,11 @@ class BusRepository
        
         $data = $this->bus->with('cancellationslabs','ticketPrice')
         ->orderBy('name','ASC')->whereHas('ticketPrice', function ($query) use ($source_id,$destination_id){
-            $query->where('source_id', 'like', '%' .$source_id . '%')->where('destination_id', 'like', '%' .$destination_id . '%');               
+            $query->where('source_id', $source_id)->where('destination_id', $destination_id);               
         })
         ->where('status','1')
         ->get(); 
+        
 
             if($data){
                 foreach($data as $v){ 

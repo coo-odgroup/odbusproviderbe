@@ -81,6 +81,9 @@ class OdbusChargesRepository
         $odbusCharges->request_email = $data['request_email'];
         $odbusCharges->other_email = ($data['other_email']!='' && $data['other_email'] !='null') ? $data['other_email'] : null;
 
+        $odbusCharges->has_issues = $data['has_issues'];
+        $odbusCharges->maintenance = $data['maintenance'];
+        
         $odbusCharges->mobile_no_1 = $data['mobile_no_1'];
         $odbusCharges->mobile_no_2 = $data['mobile_no_2'];
         $odbusCharges->mobile_no_3 = $data['mobile_no_3'];

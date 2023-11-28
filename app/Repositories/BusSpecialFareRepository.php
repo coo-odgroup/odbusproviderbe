@@ -89,20 +89,21 @@ class BusSpecialFareRepository
         $data=$data->paginate($paginate);
 
        
-
-        if($data){
+if($data){
             foreach($data as $key=>$v){
-                
+                 
                 foreach ($v->bus as $ky => $val) {
                     $stoppage = $this->bus->with('ticketPrice')->where('id', $val->id)->where('status', 1)->get();
-                    
+                    if(count($stoppage)>0){
                     foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
                     {
+                         
                         $stoppages['source'][$k]=$this->Location->where('id', $a->source_id)->get();
                         $stoppages['destination'][$k]=$this->Location->where('id', $a->destination_id)->get(); 
                     }
-                $val['source']= $stoppages['source'];
-                $val['destination']= $stoppages['destination'];
+                    $val['source']= $stoppages['source'];
+                    $val['destination']= $stoppages['destination'];
+                  }
                 }               
             }
         }
