@@ -244,7 +244,7 @@ class AgentWalletRepository
         $end_date  =  $request->rangeToDate;
         $tranType  =  $request->tranType;
 
-        $data= $this->agentWallet->with('user')->where('status', 1)->orderBy('id','DESC');
+        $data= $this->agentWallet->with('user')->with('Booking')->where('status', 1)->orderBy('id','DESC');
 
         
        //exit;
