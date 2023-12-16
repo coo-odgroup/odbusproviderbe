@@ -83,6 +83,14 @@ class OdbusChargesRepository
 
         $odbusCharges->has_issues = $data['has_issues'];
         $odbusCharges->maintenance = $data['maintenance'];
+        $odbusCharges->popup_status = $data['popup_status'];
+        $odbusCharges->popup_heading = $data['popup_heading'];
+        $odbusCharges->popup_url = $data['popup_url'];
+        $odbusCharges->popup_description = $data['popup_description'];
+        $odbusCharges->popup_start_date = $data['popup_start_date'];
+        $odbusCharges->popup_start_time = $data['popup_start_time'];
+        $odbusCharges->popup_end_date = $data['popup_end_date'];
+        $odbusCharges->popup_end_time = $data['popup_end_time'];
         
         $odbusCharges->mobile_no_1 = $data['mobile_no_1'];
         $odbusCharges->mobile_no_2 = $data['mobile_no_2'];
@@ -293,6 +301,28 @@ class OdbusChargesRepository
                     if(File::exists($old_og_path))
                    {
                           unlink($old_og_path);
+                   }  
+                }       
+            }
+
+            $popup_image_file = collect($data)->get('popup_image'); 
+            if ($popup_image_file!="" ) 
+            {
+                $popup_image_name  = $popup_image_file->getClientOriginalName();
+                $extension = $popup_image_file->getClientOriginalExtension();
+                $popup_picture   =  rand().'-'.$popup_image_name;
+
+                $odbusCharges->popup_image = $popup_picture;
+
+                $popup_image_file->move(public_path('uploads/og_image/'), $popup_picture);
+
+                if($charges_detail[0]->popup_image!='')
+                {              
+                   $old_popup_path = public_path('uploads/og_image/').$charges_detail[0]->popup_image;
+                  
+                    if(File::exists($old_popup_path))
+                   {
+                          unlink($old_popup_path);
                    }  
                 }       
             }
