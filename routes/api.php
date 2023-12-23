@@ -1069,3 +1069,8 @@ Route::post('manageClientOperatorData',[ApiUserManageOperatorController::class,'
 Route::post('manageClientOperator',[ApiUserManageOperatorController::class,'manageClientOperator']);
 
 Route::delete('deletemanageClientOperator/{id}',[ApiUserManageOperatorController::class,'deletemanageClientOperator']);
+
+
+// added by Lima on 23 Dec,2023
+
+Route::get('/getLessBookingUrls', [CompleteReportController::class, 'getLessBookingUrls']);

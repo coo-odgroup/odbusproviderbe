@@ -42,4 +42,9 @@ class CompleteReportController extends Controller
         return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function getLessBookingUrls(){
+        $result = $this->completereportService->getLessBookingUrls();
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
 }

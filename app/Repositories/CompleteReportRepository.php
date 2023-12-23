@@ -384,5 +384,9 @@ class CompleteReportRepository
            return $response;      
 
     }
+
+    public function getLessBookingUrls(){
+        
+    }
     
 }

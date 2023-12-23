@@ -32,4 +32,10 @@ class CompleteReportService
         return $this->completereportRepository->getPendingPNR($request);
     }
 
+    public function getLessBookingUrls()
+    {
+        return $this->completereportRepository->getLessBookingUrls();
+    }
+    
+
 }
