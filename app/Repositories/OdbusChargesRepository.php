@@ -362,5 +362,22 @@ class OdbusChargesRepository
         return $charges;
     }
 
+    public function removePopup($id)
+    {
+        $charges = $this->odbusCharges->find($id);
+         if($charges->popup_image!='')
+            {              
+               $old_popup_path = public_path('uploads/og_image/').$charges->popup_image;
+              
+                if(File::exists($old_popup_path))
+               {
+                      unlink($old_popup_path);
+               }  
+            }
+        $charges->popup_image = '';
+        $charges->update();
+        return $charges;
+    }
+
 
 }

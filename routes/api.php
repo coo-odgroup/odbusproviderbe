@@ -905,6 +905,7 @@ Route::get('/odbusCharges/{id}',[OdbusChargesController::class,'getById']);
 Route::delete('/odbusCharges/{id}', [OdbusChargesController::class, 'delete']);
 Route::post('odbusChargesData',[OdbusChargesController::class,'getData']);
 Route::put('/changeStatus/{id}', [OdbusChargesController::class, 'changeStatus']);
+Route::delete('/removePopup/{id}', [OdbusChargesController::class, 'removePopup']);
 Route::post('/addOdbusCharges', [OdbusChargesController::class, 'save']);
 Route::post('/updateOdbusCharges',[OdbusChargesController::class,'update']);
 

@@ -118,6 +118,17 @@ class OdbusChargesController extends Controller
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
      
+    }
+    
+    public function removePopup($id) {
+      try{
+        $response = $this->odbusChargesService->removePopup($id);
+        return $this->successResponse($response, "PopUp Image Deleted", Response::HTTP_ACCEPTED);
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }
+     
     }  
    
 }

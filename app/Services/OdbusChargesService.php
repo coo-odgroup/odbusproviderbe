@@ -104,6 +104,17 @@ class OdbusChargesService
             throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
         }
         return $charges;
+    } 
+
+    public function removePopup($id)
+    {
+        try {
+            $charges = $this->odbusChargesRepository->removePopup($id);
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+        }
+        return $charges;
     }
 
 
