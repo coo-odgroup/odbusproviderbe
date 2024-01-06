@@ -405,22 +405,28 @@ public function getRoles()
 
 public function agentRegister($request){  
 
-    // log::info($request);
+     //log::info($request);
 
     $email = $this->agent->where('email',$request['email'])->where('status','!=',2)->first();
     // $phone = $this->agent->where('phone',$request['phone'])->where('status',1)->get();
     $aadhaar = $this->agent->where('adhar_no',$request['adhar_no'])->where('status','!=',2)->first();
     $pancard = $this->agent->where('pancard_no',$request['pancard_no'])->where('status','!=',2)->first();
 
-
+    // log::info($email);
+    // log::info($aadhaar);
+    // log::info($pancard);
     
-    if($email)
+    if(!$email)
     {
-            if($aadhaar)
+            if(!$aadhaar)
             {
-                if($pancard)
+                if(!$pancard)
                 {
                         $users = $this->user->find($request['userId']);
+
+                        
+
+                        //$users = $this->user->where('id', $request['userId'])->first();
                         $users->name = $request['name'];
                         $users->email = $request['email'];
                         $users->password = bcrypt($request['password']);
@@ -442,10 +448,13 @@ public function agentRegister($request){
                         $users->branch_name = $request['branch_name'];
                         $users->upi_id = $request['upi_id'];
                         $users->email = $request['email'];
-                        $agent->agent_type = 1;
                         $users->status = 0;
 
-                        $users->update();                       
+                        
+                        
+                        $users->update();    
+                        
+                       
 
                         $to_user = $request['email'];
                         $subject = "Agent Creation Request Email";
