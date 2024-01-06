@@ -407,18 +407,18 @@ public function agentRegister($request){
 
     // log::info($request);
 
-    $email = $this->agent->where('email',$request['email'])->where('status','!=',2)->get();
+    $email = $this->agent->where('email',$request['email'])->where('status','!=',2)->first();
     // $phone = $this->agent->where('phone',$request['phone'])->where('status',1)->get();
-    $aadhaar = $this->agent->where('adhar_no',$request['adhar_no'])->where('status','!=',2)->get();
-    $pancard = $this->agent->where('pancard_no',$request['pancard_no'])->where('status','!=',2)->get();
+    $aadhaar = $this->agent->where('adhar_no',$request['adhar_no'])->where('status','!=',2)->first();
+    $pancard = $this->agent->where('pancard_no',$request['pancard_no'])->where('status','!=',2)->first();
 
 
     
-    if(count($email)==0)
+    if($email)
     {
-            if(count($aadhaar)==0)
+            if($aadhaar)
             {
-                if(count($pancard)==0)
+                if($pancard)
                 {
                         $users = $this->user->find($request['userId']);
                         $users->name = $request['name'];
