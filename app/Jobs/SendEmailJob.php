@@ -3,16 +3,15 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
-class TestingEmailJob implements ShouldQueue
+class SendEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -22,16 +21,20 @@ class TestingEmailJob implements ShouldQueue
      * @return void
      */
     protected $to;
-    protected $name;
     protected $subject;
-    public function __construct($to, $name)
-    {
-        $this->to = $to;
-        $this->name = $name;
-        $this->subject = 'testing';
-        
-    }
+    protected $email_body;
+    protected $name;
+    protected $Age;
 
+    public function __construct($to, $subject, $req)
+    {
+        // Log::info($req);
+        $this->to = $to;
+        $this->subject = $subject;
+        $this->message= "Good Morning";
+        $this->name=$req['name'];
+        $this->Age=$req['Age'];
+    }
     /**
      * Execute the job.
      *
@@ -39,23 +42,16 @@ class TestingEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data = [
+        $data=[
+            'content'=>$this->to,
             'name' => $this->name,
+            'Age' => $this->Age
         ];
-        
-        Mail::send('test', $data, function ($messageNew) {
-            $messageNew->from(config('mail.contact.address'))
+        Mail::send('email', $data, function ($messageNew) {
+            $messageNew
+            //->from('support@odbus.in', 'ODBUS')
             ->to($this->to)
             ->subject($this->subject);
         });
-        
-        // // check for failures
-        // if (Mail::failures()) {
-        //     return new Error(Mail::failures()); 
-        //     //return "Email failed";
-        // }else{
-        //     return 'success';
-        // }
-
     }
 }
