@@ -45,6 +45,13 @@ class ApiClientWalletController extends Controller
         $wallet = $this->ApiClientWalletService->agentAllTransaction($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function apiClientTotalTransactions(Request $request) 
+    {      
+     
+        $wallet = $this->ApiClientWalletService->apiClientTotalTransactions($request);
+        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
   
 
     public function getData(Request $request) 

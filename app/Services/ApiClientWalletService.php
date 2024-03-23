@@ -157,6 +157,12 @@ class ApiClientWalletService
       return $this->ApiClientWalletRepository->agentAllTransaction($id);
     }
 
+    public function apiClientTotalTransactions($request)
+    {
+      
+      return $this->ApiClientWalletRepository->apiClientTotalTransactions($request);
+    }
+
     public function agentWalletBalancedetails($request)
     {
       

@@ -420,6 +420,29 @@ class TicketInformationRepository
                     $source_name = $this->location->where('id', $PNR_Details[0]->source_id)->get();
                     $destination_name = $this->location->where('id', $PNR_Details[0]->destination_id)->get();
 
+                    $data= array(
+                        'contactNo' => $PNR_Details[0]->users->phone,
+                        'pnr' => $pnr,
+                        'journeydate' => date('d-m-Y',strtotime($PNR_Details[0]->journey_dt)), 
+                        'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                        'seat_no' => explode(',',$all_seats),
+                        'cancellationDateTime' => $current_date_time,
+                        'deductionPercentage' => $request->percentage_deduct,
+                        'refundAmount' => $request->refund_amount,
+                        'totalfare' => $PNR_Details[0]->total_fare,
+                    );
+
+                    $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr; 
+
+                    //Send Email To Customer
+                    if($request['email'] != '')
+                    {
+                        $to_user = $request['email']; 
+                        SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
+                    } 
+                    /////// send email to odbus support 
+                    SendCancelAdjTicketEmailJob::dispatch('support@odbus.in', $subject, $data);
+
                     ///// send sms to customer
                     $getBus_id = $this->booking->with('Bus')->where("pnr",$pnr)->get();
 
@@ -460,32 +483,6 @@ class TicketInformationRepository
                             $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                         }
                     }
-
-
-                    $data= array(
-                        'contactNo' => $PNR_Details[0]->users->phone,
-                        'pnr' => $pnr,
-                        'journeydate' => date('d-m-Y',strtotime($PNR_Details[0]->journey_dt)), 
-                        'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
-                        'seat_no' => explode(',',$all_seats),
-                        'cancellationDateTime' => $current_date_time,
-                        'deductionPercentage' => $request->percentage_deduct,
-                        'refundAmount' => $request->refund_amount,
-                        'totalfare' => $PNR_Details[0]->total_fare,
-                    );
-
-                    $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr; 
-
-                    //Send Email To Customer
-                    if($request['email'] != '')
-                    {
-                        $to_user = $request['email']; 
-                        SendCancelAdjTicketEmailJob::dispatch($to_user, $subject, $data);
-                    } 
-                    /////// send email to odbus support 
-                    SendCancelAdjTicketEmailJob::dispatch('support@odbus.in', $subject, $data);
-
-                    
                   
                     //    $to_user = 'chakra.seoinfotechsolution@gmail.com';
                     //    //$to_user = $request['email'];
@@ -900,50 +897,6 @@ class TicketInformationRepository
 
 
                $pnr= $request['bookingInfo']['pnr'];
-                ///// send sms to customer
-
-                if($cancelticket->origin == 'ODBUS')
-                {
-                    $getBus_id=$this->booking->with('Bus')->where("pnr",$pnr)->get();
-
-                    // $bus_id= $getBus_id[0]->bus_id;
-                    $busName= $getBus_id[0]->Bus->name;
-                    $busNumber= $getBus_id[0]->Bus->bus_number;
-                }
-                else if($cancelticket->origin == 'DOLPHIN'){
-
-                    $getBus_id=$this->booking->where("pnr",$pnr)->get();
-                    
-                    $busName= $getBus_id[0]->bus_name;
-                    $busNumber= $getBus_id[0]->bus_number;
-                }
-
-                $bus_id= $getBus_id[0]->bus_id;
-                $smsData = array(
-                    'phone' => $request['customerInfo']['phone'],
-                    'PNR' => $pnr,
-                    'busdetails' => $busName.'-'.$busNumber,
-                    'doj' => $request['bookingInfo']['journey_dt'], 
-                    'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
-                    'seat' => $request['bookingInfo']['seat_names'],
-                    'refundAmount' =>0
-                );
-
-                $this->channelRepository->sendSmsTicketCancel($smsData,$request['customerInfo']['phone']);
-
-                //////////// send sms to CMO
-
-                if( $request['bookingInfo']['origin'] == 'ODBUS'){
-
-                $busContactDetails = BusContacts::where('bus_id',$bus_id)
-                ->where('status','1')
-                ->where('cancel_sms_send','1')
-                ->get('phone');
-                if($busContactDetails->isNotEmpty()){
-                    $contact_number = collect($busContactDetails)->implode('phone',',');
-                    $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
-                }
-            }
 
                  ///// send email
 
@@ -975,7 +928,50 @@ class TicketInformationRepository
                         SendCancelAdjTicketEmailJob::dispatch('support@odbus.in', $subject, $data);
 
 
-                       
+                        ///// send sms to customer
+
+                        if($cancelticket->origin == 'ODBUS')
+                        {
+                            $getBus_id=$this->booking->with('Bus')->where("pnr",$pnr)->get();
+
+                            // $bus_id= $getBus_id[0]->bus_id;
+                            $busName= $getBus_id[0]->Bus->name;
+                            $busNumber= $getBus_id[0]->Bus->bus_number;
+                        }
+                        else if($cancelticket->origin == 'DOLPHIN'){
+
+                            $getBus_id=$this->booking->where("pnr",$pnr)->get();
+                            
+                            $busName= $getBus_id[0]->bus_name;
+                            $busNumber= $getBus_id[0]->bus_number;
+                        }
+
+                        $bus_id= $getBus_id[0]->bus_id;
+                        $smsData = array(
+                            'phone' => $request['customerInfo']['phone'],
+                            'PNR' => $pnr,
+                            'busdetails' => $busName.'-'.$busNumber,
+                            'doj' => $request['bookingInfo']['journey_dt'], 
+                            'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
+                            'seat' => $request['bookingInfo']['seat_names'],
+                            'refundAmount' =>0
+                        );
+
+                        $this->channelRepository->sendSmsTicketCancel($smsData,$request['customerInfo']['phone']);
+
+                        //////////// send sms to CMO
+
+                        if( $request['bookingInfo']['origin'] == 'ODBUS'){
+
+                        $busContactDetails = BusContacts::where('bus_id',$bus_id)
+                        ->where('status','1')
+                        ->where('cancel_sms_send','1')
+                        ->get('phone');
+                        if($busContactDetails->isNotEmpty()){
+                            $contact_number = collect($busContactDetails)->implode('phone',',');
+                            $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                        }
+                    }
               
 
                  ///////////////////// final ticket booking and email/sms sending //////////////////////

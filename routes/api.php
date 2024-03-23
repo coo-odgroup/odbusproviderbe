@@ -155,6 +155,8 @@ Route::put('/declineWlletReqStatus/{id}',[ApiClientWalletController::class,'decl
 Route::post('/allTransactionData',[ApiClientWalletController::class,'allTransactionData']);
 Route::post('/clientTransByAdmin',[ApiClientWalletController::class,'clientTransByAdmin']);
 
+Route::post('/apiClientTotalTransactions',[ApiClientWalletController::class,'apiClientTotalTransactions']);
+
 // api client report
 Route::post('/apiclientbookingreport',[ApiClientReportController::class,'getAllData']);
 Route::post('/apiclientcancelreport',[ApiClientReportController::class,'getAllCancelData']);

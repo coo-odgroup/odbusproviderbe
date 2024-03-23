@@ -7,7 +7,6 @@ use App\Models\Notification;
 use App\Models\UserNotification;
 use App\Models\User;
 use App\Models\Booking;
-use App\Models\Location;
 
 use App\Jobs\SendSuperAdminEmailJob;
 use App\Jobs\SendSupportEmailJob;
@@ -26,14 +25,13 @@ class ApiClientWalletRepository
     protected $user;
     protected $booking;
     
-    public function __construct(ApiClientWallet $ApiClientWallet,Notification $notification,User $user,ApiClientWalletRequest $ApiClientWalletRequest,Booking $booking,Location $location)
+    public function __construct(ApiClientWallet $ApiClientWallet,Notification $notification,User $user,ApiClientWalletRequest $ApiClientWalletRequest,Booking $booking)
     {
         $this->ApiClientWallet = $ApiClientWallet;
         $this->ApiClientWalletRequest = $ApiClientWalletRequest;
         $this->notification = $notification;
         $this->user = $user;
         $this->booking = $booking;
-        $this->location = $location;
     }
       
     public function getModel($data, ApiClientWalletRequest $ApiClientWalletRequest)
@@ -174,80 +172,6 @@ class ApiClientWalletRepository
 
     } 
 
-    public function apiClientTotalTransactions($request){
-
-        $transaction_list = $this->ApiClientWallet->where('user_id',372)->where('status', 1)->orderBy('id','ASC')->get();
-        $main=[];
-        // $main['credit']=0;
-        foreach($transaction_list as $e => $w){            
-            if($w->booking_id!= null){
-                $totalSeats = 0;
-
-                // categorized all the rows for the same booking id (booking,commision,refund)
-                $booking_array=$this->ApiClientWallet->where('booking_id',$w->booking_id)->where('status', 1)->get();
-                // get booking details from booking table by using $w->booking_id
-                $booking_detail = $this->booking->with('BookingDetail')->find($w->booking_id);
-                foreach($booking_detail->BookingDetail as $a){
-                    $totalSeats = ++$totalSeats ;
-                }
-
-                $source = $this->location->select('name')->find($booking_detail->source_id);
-                $destination = $this->location->select('name')->find($booking_detail->destination_id);
-
-                $main[$e]['booking_id']=$w->booking_id;
-                $main[$e]['pnr']=$booking_detail->pnr;
-                $main[$e]['source']=$source->name;
-                $main[$e]['destination']=$destination->name;
-                $main[$e]['journey_date']=$booking_detail->journey_dt;
-                $main[$e]['journey_time']=$booking_detail->boarding_point;
-                $main[$e]['seat']=$totalSeats;
-                $main[$e]['client_gst']=$booking_detail->client_gst;
-                $main[$e]['cancel_percent']=$booking_detail->deduction_percent;
-                $main[$e]['cancel_charges']=0;
-                $main[$e]['created_at']= $w->created_at;
-
-                    foreach($booking_array as $b){
-                    if($b->type=='Commission'){
-                     $main[$e]['Commission']=$b->amount;
-                     $main[$e]['closing_balance']=$b->balance;
-                    }
-
-                    if($b->type=='Refund'){
-                     $main[$e]['Refund']=$b->amount;
-                     $main[$e]['closing_balance']=$b->balance;
-                     $main[$e]['cancel_charges']=$booking_detail->payable_amount - $booking_detail->refund_amount;
-                    }
-
-                    if($b->type== null){     
-                     $main[$e]['booking_amount']=$b->amount;
-                     $main[$e]['opening_balance']=$b->balance+$b->amount;                     
-                    }
-
-                }
-                 $main[$e]['debit']=$main[$e]['booking_amount'] - $main[$e]['Commission'];
-            }
-            else
-            {
-                $main[$e]['opening_balance']= $w->balance - $w->amount;
-                $main[$e]['credit']=$w->amount;
-                $main[$e]['closing_balance']=$w->balance;
-                $main[$e]['created_at']= $w->created_at;
-
-            }            
-        }
-
-        $new_arr = [];
-     // return $main;
-            $arr = array_map('unserialize', array_unique(array_map('serialize', $main)));
-            // $arrr =  (array) $arr;
-            foreach ($arr as $key => $value){
-                $new_arr[] = $value;
-            }
-        return $new_arr;
-
-        // return 'success';
-    }
-
     public function agentAllTransaction($request){
         
         $start_date="";
@@ -337,7 +261,7 @@ class ApiClientWalletRepository
     }
 
     public function Pagination($data,$paginate){
-       return $data->paginate()($paginate);
+       return $data->paginate($paginate);
     }
 
     // public function Filter($data,$name){
