@@ -337,7 +337,7 @@ class ApiClientWalletRepository
     }
 
     public function Pagination($data,$paginate){
-       return $data->paginate()($paginate);
+       return $data->paginate($paginate);
     }
 
     // public function Filter($data,$name){
