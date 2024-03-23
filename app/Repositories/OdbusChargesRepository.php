@@ -115,6 +115,8 @@ class OdbusChargesRepository
         $odbusCharges->no_script = ($data['no_script']!='' && $data['no_script'] !='null') ? $data['no_script'] : null;
 
         $odbusCharges->operator_slogan = ($data['operator_slogan']!='' && $data['operator_slogan'] !='null') ? $data['operator_slogan'] : null;
+        $odbusCharges->office_address_map = ($data['office_address_map']!='' && $data['office_address_map'] !='null') ? $data['office_address_map'] : null;
+        $odbusCharges->office_address = ($data['office_address']!='' && $data['office_address'] !='null') ? $data['office_address'] : null;
 
         $odbusCharges->operator_home_content =($data['operator_home_content']!='' && $data['operator_home_content'] !='null') ? $data['operator_home_content'] : null;
 
@@ -204,7 +206,6 @@ class OdbusChargesRepository
      */
     public function update($data)
     {
-      
         $id = $data['id'] ;
         $duplicate_data = $this->odbusCharges
                                ->where('user_id',$data['user_id'])
