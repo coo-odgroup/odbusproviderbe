@@ -237,12 +237,18 @@ class ApiClientWalletRepository
         }
 
         $new_arr = [];
-     // return $main;
-            $arr = array_map('unserialize', array_unique(array_map('serialize', $main)));
-            // $arrr =  (array) $arr;
-            foreach ($arr as $key => $value){
-                $new_arr[] = $value;
-            }
+        $arr = array_map('unserialize', array_unique(array_map('serialize', $main)));
+
+        $pnr_arr=[];
+           foreach ($arr as $key => $value){
+               if(@$value['pnr'] && !in_array($value['pnr'],$pnr_arr)){
+                   $new_arr[] = $value;
+                   array_push($pnr_arr,$value['pnr']);
+               }elseif(!@$value['pnr']){
+                   $new_arr[] = $value;
+               }
+              
+           }
         return $new_arr;
 
         // return 'success';
