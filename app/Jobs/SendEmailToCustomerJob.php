@@ -65,6 +65,8 @@ class SendEmailToCustomerJob implements ShouldQueue
     protected $customer_gst_amount;
     protected $coupon_discount;
     protected $p_names;
+    protected $routedetails;
+    
 
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
     {
@@ -84,6 +86,7 @@ class SendEmailToCustomerJob implements ShouldQueue
         $this->bustype = $request['bustype'];
         $this->busTypeName = $request['busTypeName'];
         $this->sittingType = $request['sittingType'];
+        $this->routedetails = $request['routedetails'];
 
         $this->totalfare = $totalfare;
         $this->discount = $discount;
@@ -194,7 +197,8 @@ class SendEmailToCustomerJob implements ShouldQueue
             'customer_comission'=> $this->customer_comission,
             'qrcode_image_path' => $this->qrcode_image_path ,
             'cancelation_policy' => $this->cancelation_policy,
-            'p_names' => $this->p_names,            
+            'p_names' => $this->p_names,   
+            'routedetails'=>$this->routedetails         
         ];
         // Log::info($this->to);
         // Log::info($data); exit;

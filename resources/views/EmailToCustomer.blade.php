@@ -655,7 +655,7 @@ border: 0;
                     <tbody>
                       <tr>
                         <td><b>Journey Date:</b> {{$journeydate}}</td>
-                        <td><b>Bus Route:</b> {{$source}}-{{$destination}}</td>
+                        <td><b>Bus Route:</b> {{$routedetails}}</td>
                       </tr>
                      
                       <tr>

@@ -15,7 +15,7 @@ use App\Models\User;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-
+use DB;
 use App\Jobs\SendCancelTicketEmailJob;
 use App\Jobs\SendCancelAdjTicketEmailJob;
 use App\Repositories\ChannelRepository;
@@ -1533,6 +1533,10 @@ class TicketInformationRepository
 
         if($b && isset($b[0]))
         {
+
+            $main_source='';
+            $main_destination='';
+
             $b=$b[0];
             $seat_arr=[];
             $seat_no='';
@@ -1547,9 +1551,29 @@ class TicketInformationRepository
                 $passengerDetails[$i]['passenger_age'] = $bd->passenger_age;
                 $i++;
             }  
+
+            if($b->booking[0]->origin=='ODBUS') {
+
+
+                $ticketPrice= DB::table('ticket_price')->where('bus_id', $b->booking[0]->bus_id)->first();
+            
+                $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
+                
+                $main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
+
+                
+
+
+            }
             
             $source_nm = $this->GetLocationName($b->booking[0]->source_id);
             $destination_nm = $this->GetLocationName($b->booking[0]->destination_id);          
+
+            if($main_source!='' && $main_destination!=''){
+                $routedetails=$main_source.'-'.$main_destination;
+            }else{
+                $routedetails= $source_nm[0]->name.'-'.$destination_nm[0]->name;
+            }
 
             $body = [
                 'name' => $b->name,
@@ -1564,8 +1588,8 @@ class TicketInformationRepository
                 'arrivalTime'=> $b->booking[0]->dropping_time,
                 'seat_no' => $seat_arr,
                 'busname'=> $b->booking[0]->bus->name,
-                'source'=> $source_nm[0]->name,
-                'destination'=> $destination_nm[0]->name,
+                 "source" => $source_nm[0]->name ,
+                "destination" =>$destination_nm[0]->name,
                 'busNumber'=> $b->booking[0]->bus->bus_number,
                 'bustype' => $b->booking[0]->bus->busType->name,
                 'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
@@ -1578,7 +1602,7 @@ class TicketInformationRepository
                 'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                 'odbus_charges'=> $b->booking[0]->odbus_charges,
                 'owner_fare'=> $b->booking[0]->owner_fare,
-                'routedetails' => $source_nm[0]->name."-".$destination_nm[0]->name   
+                'routedetails' => $routedetails  
             ];
 
             //log::info($body);exit;
