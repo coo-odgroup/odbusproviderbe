@@ -129,5 +129,12 @@ class ApiClientWalletController extends Controller
         $data= $this->ApiClientWalletService->clientTransByAdmin($request);
            return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);         
     } 
+    // clientTransUpdateByAdmin
+
+    public function clientTransUpdateByAdmin(Request $request) 
+    { 
+        $data= $this->ApiClientWalletService->clientTransUpdateByAdmin($request);
+        return $this->successResponse($data,"Wallet request Updated",Response::HTTP_CREATED);         
+    } 
          
 }

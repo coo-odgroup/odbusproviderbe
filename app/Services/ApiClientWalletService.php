@@ -223,6 +223,10 @@ class ApiClientWalletService
     {
       return $this->ApiClientWalletRepository->clientTransByAdmin($data);
     }
+    public function clientTransUpdateByAdmin($data)
+    {
+      return $this->ApiClientWalletRepository->clientTransUpdateByAdmin($data);
+    }
 
 }
 

@@ -176,7 +176,30 @@ class ApiClientWalletRepository
 
     public function apiClientTotalTransactions($request){
 
-        $transaction_list = $this->ApiClientWallet->where('user_id',372)->where('status', 1)->orderBy('id','ASC')->get();
+        // Log::info($request);
+        $user_id = $request->user_id;
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate; 
+        $dt = date('Y-m-d', strtotime('-7 days'));
+        $today = date('Y-m-d');
+
+        if($start_date != NULL && $end_date != NULL)
+        {
+            if($start_date == $end_date)
+            {
+                $transaction_list = $this->ApiClientWallet->where('user_id',372)->where('status', 1)->orderBy('id','ASC')->where('created_at','like','%'.$start_date.'%')->get();              
+            }
+            else{
+                $transaction_list = $this->ApiClientWallet->where('user_id',372)->where('status', 1)->orderBy('id','ASC')->whereBetween('created_at', [$start_date, $end_date])->get();                                        
+            }                       
+        }else{
+            $transaction_list = $this->ApiClientWallet->where('user_id',372)->where('status', 1)->orderBy('id','ASC')->whereBetween('created_at', [$dt, $today])->get();
+        }    
+
+        
+      
+
+        // Log::info($transaction_list);
         $main=[];
         // $main['credit']=0;
         foreach($transaction_list as $e => $w){            
@@ -640,6 +663,18 @@ class ApiClientWalletRepository
 
         $agentWallet->save(); 
 
+        return $agentWallet;
+    }
+
+    public function clientTransUpdateByAdmin($data)
+    {   
+        // log::info($data);
+        // exit();
+
+        $agentWallet = $this->ApiClientWallet->find($data->id);
+        $agentWallet->amount = $data->amount;
+        $agentWallet->balance = $data->balance;
+        $agentWallet->update();
         return $agentWallet;
     }
     

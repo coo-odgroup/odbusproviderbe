@@ -560,5 +560,17 @@ class ApiClientWalletRepository
 
         return $agentWallet;
     }
+
+
+    public function clientTransUpdateByAdmin($data)
+    {   log::info($data);
+        exit();
+
+        $agentWallet = $this->ApiClientWallet->find($data->id);
+        $agentWallet->amount = $data->amount;
+        $agentWallet->balance = $data->balance;
+        $agentWallet->update();
+        return $agentWallet;
+    }
     
 }
