@@ -852,6 +852,7 @@ border: 0;
         </div> 
 </div>  
 
+<p style="color: red;font-weight:bold">You are requested to call conductor no before 1 hour and reach on the boarding points before 15 min of bus departure.</p>
         <div class="row mt30">
             <div class="col-md-12 odtext24"><h3>TERMS & CONDITIONS</h3></div>
           </div>
