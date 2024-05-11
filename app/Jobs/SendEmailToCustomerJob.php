@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
-
+use DB;
 
 class SendEmailToCustomerJob implements ShouldQueue
 {
@@ -66,10 +66,24 @@ class SendEmailToCustomerJob implements ShouldQueue
     protected $coupon_discount;
     protected $p_names;
     protected $routedetails;
+    protected $add_festival_fare;
+    protected $add_special_fare;
+    protected $ticketpdf;
+    protected $gstpdf;
+    protected $gst_name;
     
 
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
     {
+
+          ///////// get additional festival fare & special fare (oct , 7,2023 changes made by Lima)
+
+          $bk_dtl=DB::table('booking')->where('pnr', $email_pnr)->first();
+          $this->add_festival_fare = $bk_dtl->additional_festival_fare;
+          $this->add_special_fare = $bk_dtl->additional_special_fare;
+  
+          ////////////////////////////////////////////////////////////////////////////////////////////
+
         $this->name = $request['name'];
         $this->to = $request['email'];
         $this->bookingdate = date('d-m-Y',strtotime($request['bookingdate']));
@@ -131,6 +145,9 @@ class SendEmailToCustomerJob implements ShouldQueue
 
         $this->subject ='';
         $this->qrcode_image_path = 'https://consumer.odbus.co.in/public/qrcode/'.$this->email_pnr.'.png';
+
+        $this->gstpdf='https://consumer.odbus.co.in/public/gst/'.$bk_dtl->gst_invoice_no;
+
 
         $p_name=[];
         foreach($request['passengerDetails'] as $p){
@@ -198,19 +215,36 @@ class SendEmailToCustomerJob implements ShouldQueue
             'qrcode_image_path' => $this->qrcode_image_path ,
             'cancelation_policy' => $this->cancelation_policy,
             'p_names' => $this->p_names,   
-            'routedetails'=>$this->routedetails         
+            'routedetails'=>$this->routedetails , 
+            'add_festival_fare' => $this->add_festival_fare, 
+            'add_special_fare' => $this->add_special_fare,
+            'gst_name' => str_replace('.pdf','',$this->gst_name)       
         ];
-        // Log::info($this->to);
-        // Log::info($data); exit;
-             
+                    
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
-        Mail::send('EmailToCustomer', $data, function ($messageNew) {
-            $messageNew->from(config('mail.contact.address'))
-             ->to($this->to)
-            ->subject($this->subject);
-            return 'Email Sent';
-        });
+
+        if($this->customer_gst_status==0){
+
+            Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                $messageNew->from(config('mail.contact.address'))
+                ->to($this->to)
+                ->subject($this->subject);
+                return 'Email Sent';
+            });
+       }
+
+         /////////////// pdf attach ///////////////////////
+
+         else if($this->customer_gst_status==1){
+            Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                $messageNew->from(config('mail.contact.address'));
+                $messageNew->attach($this->gstpdf)->to($this->to)
+                ->subject($this->subject);
+            });
+
+        }
+
       
         // check for failures
         // if (Mail::failures()) {
