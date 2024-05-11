@@ -698,7 +698,7 @@ border: 0;
                     <thead>
                       <tr>
                         <th scope="col">PNR No: {{$pnr}}</th>
-                        <th scope="col">Bus Name/Number: {{$busname}}-{{$busNumber}}</th> 
+                        <th scope="col">Bus Name/Number: {{$busname}}-{{$busNumber}} ({{$bus_sitting}},{{$bus_type}})</th> 
                       </tr>
                     </thead>
                     <tbody>
