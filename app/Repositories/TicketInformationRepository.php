@@ -376,18 +376,23 @@ class TicketInformationRepository
                     $balance = $this->AgentWallet->where('user_id',$user_id)->where('status',1)->orderBy('id','DESC')->limit(1)->get();
                  
                     $newBalance= $request['refund_amount'] +  $balance[0]->balance;
-                    
-                    $AgentWallet =  new $this->AgentWallet();
-                    $AgentWallet->balance = number_format((float)$newBalance, 2, '.', '');
-                    $AgentWallet->amount = $request['refund_amount'] ;
-                    $AgentWallet->user_id = $user_id;
-                    $AgentWallet->type= "Refund";
-                    $AgentWallet->status= 1;
-                    $AgentWallet->booking_id= $id;
-                    $AgentWallet->transaction_type= 'c';
-                    $AgentWallet->created_by = $request->cancelled_by;
-                    $AgentWallet->transaction_id = $transactionId;
-                    $AgentWallet->save();
+
+                     $chk_duplicate = $this->AgentWallet->where('user_id',$user_id)->where('amount',$request['refund_amount'])->where('type',"Refund")->where('booking_id',$id)->first();
+                    if($chk_duplicate){
+                    }
+                    else{                    
+                      $AgentWallet =  new $this->AgentWallet();
+                      $AgentWallet->balance = number_format((float)$newBalance, 2, '.', '');
+                      $AgentWallet->amount = $request['refund_amount'] ;
+                      $AgentWallet->user_id = $user_id;
+                      $AgentWallet->type= "Refund";
+                      $AgentWallet->status= 1;
+                      $AgentWallet->booking_id= $id;
+                      $AgentWallet->transaction_type= 'c';
+                      $AgentWallet->created_by = $request->cancelled_by;
+                      $AgentWallet->transaction_id = $transactionId;
+                      $AgentWallet->save();
+                    }
                 }
          
                 $cancelticket->deduction_percent = $request['percentage_deduct'];
