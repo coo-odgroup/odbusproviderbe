@@ -180,19 +180,73 @@ p{
                             </td>
                           </tr>
                         </tbody></table>
+                        <table style="width:100%;margin-top:36px" border="0" cellspacing="0" cellpadding="0" align="center">
+                          <tbody><tr>
+                            <td style="font-size:20px;line-height:28px;font-weight:600;color:#1a1a1a">Need help?</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div style="font-size:14px;line-height:24px;font-weight:500;color:#1a1a1a;margin-top:12px">
+                                For any queries or assistance contact us at
+                                <a style="color:#3366cc;margin-top:12px;font-size:14px;line-height:24px;font-weight:500" href="tel:+91%209583918888" rel="noreferrer" target="_blank">+91 9583918888</a>, <a style="color:#3366cc;margin-top:12px;font-size:14px;line-height:24px;font-weight:500" href="mailto:support@odbus.in">support@odbus.in</a>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody></table>
+                       
+                        <table style="width:100%;margin-top:32px" border="0" cellspacing="0" cellpadding="0" align="center">
+                          <tbody><tr>
+                            <td style="font-size:14px;line-height:24px;font-weight:500;color:#1a1a1a">
+                              <div style="line-height:20px">
+                                <table style="line-height:1.5;table-layout:fixed;border-collapse:collapse">
+                                  <tbody>
+                                    <tr>
+                                      <td style="padding-right:0.5em;padding-left:0.2em;vertical-align:text-top;font-size:16px"><span style="color:#ff0000;">*</span></td>
+                                      <td>Your ticket details are attached with this e-mail.</td>
+                                    </tr>
+                                    <tr>
+                                      <td style="padding-right:0.5em;padding-left:0.2em;vertical-align:text-top;font-size:16px"><span style="color:#ff0000;">*</span></td>
+                                      <td>
+                                        Service Fees, Discounts (if any) are non-refundable.
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td style="padding-right:0.5em;padding-left:0.2em;vertical-align:text-top;font-size:16px"><span style="color:#ff0000;">*</span></td>
+                                      <td>
+                                        Cancellation charges to be calculated on base fare (for details please go through cancellation policy)
+                                      </td>
+                                    </tr>
+                                   
+                                  </tbody>
+                                </table>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody></table>
+                        <div>
+                          <div style="border-width:1px;border-bottom-style:solid;border-bottom-width:1px;border-style:dotted;border-color:#e6e6e6;margin-top:16px;margin-bottom:16px;display:block" text=""></div>
+                        </div>
+                        <table style="width:100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                          <tbody><tr>
+                            <td>
+                              <div style="line-height:20px">
+                                This email was sent from a notification-only address
+                                that cannot accept incoming email. Please do not
+                                reply to this message.
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody></table>
                       </div>
                     </div>
                   </div>
-                </div>
+                </td>
+              </tr>
+            </tbody></table>
+            <div style="line-height:10px;padding:0 0 20px 0;margin-top:20px;text-align:center;font-size:12px;color:#999; margin-bottom: 20px;">
+              <div style="color:#666666;font-weight:500">
+                Copyright @ ODBUS Tours & Travels PVT. LTD. All Rights Reserved
               </div>
-         
-            </td>
-          </tr>
-        </tbody></table>
-        <div style="line-height:10px;padding:0 0 20px 0;margin-top:20px;text-align:center;font-size:12px;color:#999; margin-bottom: 20px;">
-          <div style="color:#666666;font-weight:500">
-            Copyright @ ODBUS Tours & Travels PVT. LTD. All Rights Reserved
+            </div>
           </div>
-        </div>
-      </div>
-    </center>
+        </center>
