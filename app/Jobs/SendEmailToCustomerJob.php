@@ -74,6 +74,7 @@ class SendEmailToCustomerJob implements ShouldQueue
     protected $add_special_fare;
     protected $ticketpdf;
     protected $gstpdf;
+    protected $email_pdf;
     protected $gst_name;
     protected $bus_sitting;
     protected $bus_type;
@@ -160,7 +161,7 @@ class SendEmailToCustomerJob implements ShouldQueue
         $this->qrcode_image_path = 'https://consumer.odbus.co.in/public/qrcode/'.$this->email_pnr.'.png';
 
         $this->gstpdf='https://consumer.odbus.co.in/public/gst/'.$bk_dtl->gst_invoice_no;
-
+        $this->email_pdf= 'https://consumer.odbus.co.in/public/ticketpdf/'.$this->email_pnr.'.pdf';  
 
         $p_name=[];
         foreach($request['passengerDetails'] as $p){
@@ -186,6 +187,10 @@ class SendEmailToCustomerJob implements ShouldQueue
 
     public function handle()
     {
+
+        $rr=explode('-to-',$this->routedetails);
+
+
         $data = [
             'name' => $this->name,
             'pnr' => $this->email_pnr,
@@ -229,12 +234,16 @@ class SendEmailToCustomerJob implements ShouldQueue
             'cancelation_policy' => $this->cancelation_policy,
             'p_names' => $this->p_names,   
             'routedetails'=>$this->routedetails , 
+            'start'=>$rr[0],
+            'end'=>$rr[1],
             'add_festival_fare' => $this->add_festival_fare, 
             'add_special_fare' => $this->add_special_fare,
             'gst_name' => str_replace('.pdf','',$this->gst_name) ,      
             'bus_sitting' => $this->bus_sitting,  
             'bus_type' => $this->bus_type   
         ];
+
+       
                     
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
@@ -243,6 +252,7 @@ class SendEmailToCustomerJob implements ShouldQueue
 
             Mail::send('EmailToCustomer', $data, function ($messageNew) {
                 $messageNew->from(config('mail.contact.address'))
+                ->attach($this->email_pdf)
                 ->to($this->to)
                 ->subject($this->subject);
                 return 'Email Sent';
@@ -254,7 +264,7 @@ class SendEmailToCustomerJob implements ShouldQueue
          else if($this->customer_gst_status==1){
             Mail::send('EmailToCustomer', $data, function ($messageNew) {
                 $messageNew->from(config('mail.contact.address'));
-                $messageNew->attach($this->gstpdf)->to($this->to)
+                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
                 ->subject($this->subject);
             });
 

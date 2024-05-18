@@ -1570,9 +1570,9 @@ class TicketInformationRepository
             $destination_nm = $this->GetLocationName($b->booking[0]->destination_id);          
 
             if($main_source!='' && $main_destination!=''){
-                $routedetails=$main_source.'-'.$main_destination;
+                $routedetails=$main_source.'-to-'.$main_destination;
             }else{
-                $routedetails= $source_nm[0]->name.'-'.$destination_nm[0]->name;
+                $routedetails= $source_nm[0]->name.'-to-'.$destination_nm[0]->name;
             }
 
             $body = [
