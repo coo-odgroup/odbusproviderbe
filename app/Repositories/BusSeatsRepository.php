@@ -91,6 +91,7 @@ public function getModel(BusSeats $busseats,$data,$berthData)
     $busseats->bus_id = $data['bus_id'];
     $busseats->category = $data['category'];
     $busseats->seats_id = $berthData['seatId'];
+    $busseats->new_fare = $data['new_fare'];
     $busseats->ticket_price_id = $data['ticket_price_id'];
     $busseats->duration = $data['duration'];
     $busseats->status = '1';
@@ -284,6 +285,20 @@ public function update($data, $id)
                                // Log::info("UPPER BERTH: Found Duplicate and Return ".$upperBerthData['seatId']);
                                 continue;
                             }
+
+                            $find_existing_new_fare = $this->busSeats
+                            ->where('bus_id',$bus_id)
+                            ->where('seats_id',$upperBerthData['seatId'])
+                            ->where('ticket_price_id',$ticketpriceID->id)
+                            ->where('status',2)
+                            ->where('operation_date','=',null)
+                            ->orderBy('id','desc')
+                            ->limit(1)
+                            ->first();
+
+                            
+
+
                             //Log::info("UPPER BERTH: Add A new seat ".$upperBerthData['seatId']);
                             $busseats = new $this->busSeats;
                             $upd_data['bus_id']=$data['bus_id'];
@@ -291,6 +306,7 @@ public function update($data, $id)
                             $upd_data['category']='0';
                             $upd_data['duration']=(isset($upperBerthData['extraSeat'])) ? $upperBerthData['extraSeat'] : 0;
                             $upd_data['status']=1;
+                            $upd_data['new_fare']=($find_existing_new_fare) ? $find_existing_new_fare->new_fare : 0;
                             $upd_data['created_by']=(isset($data['created_by'])) ? $data['created_by'] : 'Admin';
                             
                             $busseats=$this->getModel($busseats,$upd_data,$upperBerthData);
@@ -339,6 +355,17 @@ public function update($data, $id)
                                // Log::info("LOWER BERTH: Found Duplicate and Return ".$lowerBerthData['seatId']);
                                 continue;
                             }
+
+                            $find_existing_new_fare = $this->busSeats
+                            ->where('bus_id',$bus_id)
+                            ->where('seats_id',$lowerBerthData['seatId'])
+                            ->where('ticket_price_id',$ticketpriceID->id)
+                            ->where('status',2)
+                            ->where('operation_date','=',null)
+                            ->orderBy('id','desc')
+                            ->limit(1)
+                            ->first();
+
                             //Log::info("LOWER BERTH: Add A new seat ".$lowerBerthData['seatId']);
                             $busseats = new $this->busSeats;
                             $upd_data['bus_id']=$data['bus_id'];
@@ -346,7 +373,10 @@ public function update($data, $id)
                             $upd_data['category']='0';
                             $upd_data['duration']=(isset($lowerBerthData['extraSeat'])) ? $lowerBerthData['extraSeat'] : 0;
                             $upd_data['status']=1;
+                            $upd_data['new_fare']=($find_existing_new_fare) ? $find_existing_new_fare->new_fare : 0;
                             $upd_data['created_by']=(isset($data['created_by'])) ? $data['created_by'] : 'Admin';
+
+                            log::info($upd_data);
                             $busseats=$this->getModel($busseats,$upd_data,$lowerBerthData);
                             $busseats->save();
                         }
