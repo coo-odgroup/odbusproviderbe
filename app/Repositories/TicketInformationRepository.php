@@ -928,7 +928,7 @@ class TicketInformationRepository
                     'phone' => $request['customerInfo']['phone'],
                     'PNR' => $pnr,
                     'busdetails' => $busName.'-'.$busNumber,
-                    'doj' => $request['bookingInfo']['journey_dt'], 
+                    'doj' => $cancelticket->journey_dt, 
                     'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
                     'seat' => $request['bookingInfo']['seat_names'],
                     'refundAmount' =>0
