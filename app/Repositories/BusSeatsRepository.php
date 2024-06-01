@@ -91,7 +91,7 @@ public function getModel(BusSeats $busseats,$data,$berthData)
     $busseats->bus_id = $data['bus_id'];
     $busseats->category = $data['category'];
     $busseats->seats_id = $berthData['seatId'];
-    $busseats->new_fare = $data['new_fare'];
+    $busseats->new_fare = ($data['new_fare']) ? $data['new_fare'] : '0.00';
     $busseats->ticket_price_id = $data['ticket_price_id'];
     $busseats->duration = $data['duration'];
     $busseats->status = '1';
