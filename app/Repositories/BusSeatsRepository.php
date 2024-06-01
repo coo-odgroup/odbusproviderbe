@@ -91,7 +91,7 @@ public function getModel(BusSeats $busseats,$data,$berthData)
     $busseats->bus_id = $data['bus_id'];
     $busseats->category = $data['category'];
     $busseats->seats_id = $berthData['seatId'];
-    $busseats->new_fare = ($data['new_fare']) ? $data['new_fare'] : '0.00';
+    $busseats->new_fare = (isset($data['new_fare'])) ? $data['new_fare'] : '0.00';
     $busseats->ticket_price_id = $data['ticket_price_id'];
     $busseats->duration = $data['duration'];
     $busseats->status = '1';
@@ -373,7 +373,7 @@ public function update($data, $id)
                             $upd_data['category']='0';
                             $upd_data['duration']=(isset($lowerBerthData['extraSeat'])) ? $lowerBerthData['extraSeat'] : 0;
                             $upd_data['status']=1;
-                            $upd_data['new_fare']=($find_existing_new_fare) ? $find_existing_new_fare->new_fare : 0;
+                            $upd_data['new_fare']=($find_existing_new_fare) ? $find_existing_new_fare->new_fare : '0.00';
                             $upd_data['created_by']=(isset($data['created_by'])) ? $data['created_by'] : 'Admin';
 
                             log::info($upd_data);
