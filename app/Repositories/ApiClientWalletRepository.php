@@ -289,7 +289,7 @@ class ApiClientWalletRepository
         $tranType  =  $request->tranType;
 
         // $data= $this->ApiClientWallet->with('user')->where('status', 1)->orderBy('id','DESC');
-        $data= $this->ApiClientWallet->with('user','booking')->where('status', 1)->orderBy('id','DESC');
+        $data= $this->ApiClientWallet->with('user','booking')->where('status', 1)->orderBy('id','ASC');
 
 
         if($paginate=='all')    
@@ -621,15 +621,24 @@ class ApiClientWalletRepository
 
     public function clientTransByAdmin($data)
     {   
-    $booking_id='';
+        $booking_id=0;
+        $p_via="";
+
         $user = $this->user->find($data['user_id']);
         $balance = 0 ;
 
-        $pnr = $this->booking->where('pnr', $data['pnr'])->get();
+        if(isset($data['pnr']) && $data['pnr'] !='')
+        {
+            $pnr = $this->booking->where('pnr', $data['pnr'])->get();
 
-        if(!empty($pnr)){
-            $booking_id= $pnr[0]->id;
+            if(!empty($pnr)){
+                $booking_id= $pnr[0]->id;
+            }
+        }else{
+            $p_via="phone pay";
+
         }
+        
      
          $agentWallet = $this->ApiClientWallet->where('user_id',$data['user_id'])
                                           ->where('status',1)->orderBy('id','DESC')->limit(1)
@@ -658,7 +667,7 @@ class ApiClientWalletRepository
         $agentWallet->user_id = $data['user_id'];
         $agentWallet->transaction_type = $data['transaction_type'];       
         $agentWallet->created_by = $data['created_by'];
-        $agentWallet->payment_via = '';
+        $agentWallet->payment_via = $p_via;
         $agentWallet->status = 1;
 
         $agentWallet->save(); 
