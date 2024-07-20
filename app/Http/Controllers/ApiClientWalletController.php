@@ -160,6 +160,8 @@ class ApiClientWalletController extends Controller
                 $ApiClientWallet->user_id = $w->user_id;
                 $ApiClientWallet->transaction_type = $w->transaction_type;       
                 $ApiClientWallet->created_by = $w->created_by;
+                $ApiClientWallet->created_at = $w->created_at;
+                $ApiClientWallet->updated_at = $w->updated_at;
                 $ApiClientWallet->status = 1;
                 $ApiClientWallet->otp = "";       
                 $ApiClientWallet->save();
@@ -185,6 +187,8 @@ class ApiClientWalletController extends Controller
                  $ApiClientWallet2->type =  $w->type;        
                  $ApiClientWallet2->booking_id = $w->booking_id;       
                  $ApiClientWallet2->created_by = $w->created_by;
+                 $ApiClientWallet2->created_at = $w->created_at;
+                $ApiClientWallet2->updated_at = $w->updated_at;
                  $ApiClientWallet2->status = 1;
                  $ApiClientWallet2->otp = "";       
                  $ApiClientWallet2->save();
@@ -201,7 +205,8 @@ class ApiClientWalletController extends Controller
                  $ApiClientWallet3->user_id = $w->user_id;
                  $ApiClientWallet3->transaction_type = 'c';
                  $ApiClientWallet3->type =  "Commission";  
-                     
+                 $ApiClientWallet3->created_at = $w->created_at;
+                $ApiClientWallet3->updated_at = $w->updated_at;    
                  $ApiClientWallet3->booking_id = $w->booking_id;       
                  $ApiClientWallet3->created_by = $w->created_by;
                  $ApiClientWallet3->status = 1;
@@ -267,7 +272,8 @@ class ApiClientWalletController extends Controller
              $clientWallet4->user_id = $w->user_id;
              $clientWallet4->created_by = $w->created_by;
              $clientWallet4->status = 1;
-
+             $clientWallet4->created_at = $w->created_at;
+             $clientWallet4->updated_at = $w->updated_at;
              $getLastBalance = DB::table('client_wallet_new')->where('user_id',372)->where('status',1)->orderBy('id','DESC')->limit(1)->first();
 
              $clientWallet4->amount = $refundAmt;
@@ -289,6 +295,8 @@ class ApiClientWalletController extends Controller
                 $clientWallet5->balance = $balance + $clientCancelProfit;
                 $clientWallet5->user_id = $w->user_id;
                 $clientWallet5->created_by = "Amit Kumar Singh";
+                $clientWallet5->created_at = $w->created_at;
+                $clientWallet5->updated_at = $w->updated_at;
                 $clientWallet5->status = 1;
                 $clientWallet5->save(); 
             }
