@@ -3,6 +3,7 @@ namespace App\Repositories;
 
 use App\Models\ApiClientWalletRequest;
 use App\Models\ApiClientWallet;
+use App\Models\ApiClientWalletNew;
 use App\Models\Notification;
 use App\Models\UserNotification;
 use App\Models\User;
@@ -21,14 +22,16 @@ class ApiClientWalletRepository
 {
   
     protected $ApiClientWallet; 
+    protected $ApiClientWalletNew; 
     protected $ApiClientWalletRequest; 
     protected $notification;
     protected $user;
     protected $booking;
     
-    public function __construct(ApiClientWallet $ApiClientWallet,Notification $notification,User $user,ApiClientWalletRequest $ApiClientWalletRequest,Booking $booking,Location $location)
+    public function __construct(ApiClientWalletNew $ApiClientWalletNew,ApiClientWallet $ApiClientWallet,Notification $notification,User $user,ApiClientWalletRequest $ApiClientWalletRequest,Booking $booking,Location $location)
     {
         $this->ApiClientWallet = $ApiClientWallet;
+        $this->ApiClientWalletNew = $ApiClientWalletNew;
         $this->ApiClientWalletRequest = $ApiClientWalletRequest;
         $this->notification = $notification;
         $this->user = $user;
@@ -183,17 +186,30 @@ class ApiClientWalletRepository
         $dt = date('Y-m-d', strtotime('-7 days'));
         $today = date('Y-m-d');
 
-        if($start_date != NULL && $end_date != NULL)
+        if($start_date != NULL && $end_date != NULL && !empty($user_id))
         {
             if($start_date == $end_date)
             {
-                $transaction_list = $this->ApiClientWallet->where('user_id',372)->where('status', 1)->orderBy('id','ASC')->where('created_at','like','%'.$start_date.'%')->get();              
+                $transaction_list = $this->ApiClientWalletNew->where('user_id',$user_id)->where('status', 1)->orderBy('id','ASC')->where('created_at','like','%'.$start_date.'%')->get();              
             }
             else{
-                $transaction_list = $this->ApiClientWallet->where('user_id',372)->where('status', 1)->orderBy('id','ASC')->whereBetween('created_at', [$start_date, $end_date])->get();                                        
+                $transaction_list = $this->ApiClientWalletNew->where('user_id',$user_id)->where('status', 1)->orderBy('id','ASC')->whereBetween('created_at', [$start_date, $end_date])->get();                                        
             }                       
-        }else{
-            $transaction_list = $this->ApiClientWallet->where('user_id',372)->where('status', 1)->orderBy('id','ASC')->whereBetween('created_at', [$dt, $today])->get();
+        }
+        elseif($start_date != NULL && $end_date != NULL && empty($user_id)){
+            if($start_date == $end_date)
+            {
+                $transaction_list = $this->ApiClientWalletNew->where('status', 1)->orderBy('id','ASC')->where('created_at','like','%'.$start_date.'%')->get();              
+            }
+            else{
+                $transaction_list = $this->ApiClientWalletNew->where('status', 1)->orderBy('id','ASC')->whereBetween('created_at', [$start_date, $end_date])->get();                                        
+            } 
+        }
+        elseif($start_date == NULL && $end_date == NULL && !empty($user_id)){
+             $transaction_list = $this->ApiClientWalletNew->where('user_id',$user_id)->where('status', 1)->orderBy('id','ASC')->whereBetween('created_at', [$dt, $today])->get();  
+        }
+        else{
+            $transaction_list = $this->ApiClientWalletNew->where('status', 1)->orderBy('id','ASC')->get();
         }    
 
         
@@ -207,7 +223,7 @@ class ApiClientWalletRepository
                 $totalSeats = 0;
 
                 // categorized all the rows for the same booking id (booking,commision,refund)
-                $booking_array=$this->ApiClientWallet->where('booking_id',$w->booking_id)->where('status', 1)->get();
+                $booking_array=$this->ApiClientWalletNew->where('booking_id',$w->booking_id)->where('status', 1)->get();
                 // get booking details from booking table by using $w->booking_id
                 $booking_detail = $this->booking->with('BookingDetail')->find($w->booking_id);
                 foreach($booking_detail->BookingDetail as $a){
@@ -247,7 +263,7 @@ class ApiClientWalletRepository
                     }
 
                 }
-                 $main[$e]['debit']=$main[$e]['booking_amount'] - $main[$e]['Commission'];
+                 $main[$e]['debit']=$main[$e]['booking_amount'] - @$main[$e]['Commission'];
             }
             else
             {
