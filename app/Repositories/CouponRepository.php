@@ -283,6 +283,7 @@ class CouponRepository
         return $coupons;
     }
 
+
     public function getData($request)
     {
         // Log:: info($request);exit;
@@ -400,10 +401,12 @@ class CouponRepository
     public function delete($id)
     {       
         $coupons = $this->coupon->find($id);
-        $coupons->status = 2;
+       // $coupons->status = 2;
         
 
-        $coupons->update();
+        //$coupons->delete();
+         DB::table('coupon')->where('coupon_code',$coupons->coupon_code)->delete();
+
 
         return $coupons;
 
@@ -412,14 +415,23 @@ class CouponRepository
     public function changeStatus($id)
     {
       $post = $this->coupon->find($id);
-        if($post->status==0){
-            $post->status = 1;
+
+        if($post->status==0 || $post->status==3){
+            //$post->status = 1;
+            $post = DB::table('coupon')->where('coupon_code',$post->coupon_code)->update(["status"=>1]);
+
         }elseif($post->status==1){
-            $post->status = 3;
-        }elseif($post->status==3){
-            $post->status = 1;
+           // $post->status = 3;
+            $post = DB::table('coupon')->where('coupon_code',$post->coupon_code)->update(["status"=>3]);
+
         }
-        $post->update();
+        // elseif($post->status==3){
+            
+        //      $post = DB::table('coupon')->where('coupon_code',$post->coupon_code)->update(["status"=>1]);
+
+        //     $post->status = 1;
+        // }
+       // $post->update();
         return $post;
     }
 
