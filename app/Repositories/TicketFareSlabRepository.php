@@ -26,7 +26,9 @@ class TicketFareSlabRepository
 
         $data= $this->busOperator->with('ticketFareSlab')
                                     // ->whereNotIn('status', [2])
-                                    ->whereHas('TicketFareSlab', function ($query) {$query->where('status','!=', 2 );})
+                                    ->whereHas('TicketFareSlab', function ($query) {
+                                        $query->where('status', 1 );
+                                    })
                                     ->orderBy('id','DESC');
                      
 
@@ -124,7 +126,7 @@ class TicketFareSlabRepository
   
     public function deleteticketFareSlab($id)
     {
-        return $this->ticketFareSlab::where('bus_operator_id', $id)->update(['status'=> 2]);
+        return $this->ticketFareSlab::where('bus_operator_id', $id)->delete(); //->update(['status'=> 2]);
     }
 
     public function changeStatusticketFareSlab($id)
