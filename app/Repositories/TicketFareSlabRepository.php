@@ -62,12 +62,12 @@ class TicketFareSlabRepository
     {
         $opr_id =$data['bus_operator_id'] ;    
 
-        $duplicate_data = $this->ticketFareSlab
-                               ->where('bus_operator_id',$opr_id)
-                               ->where('status','!=',2)
-                               ->get();
-        if(count($duplicate_data)==0)
-        {
+        // $duplicate_data = $this->ticketFareSlab
+        //                        ->where('bus_operator_id',$opr_id)
+        //                        ->where('status','!=',2)
+        //                        ->get();
+        // if(count($duplicate_data)==0)
+        // {
             $cSlabDetails=[];
             $slabs=$data['slabs'];
             foreach($slabs as $slab_data)
@@ -77,17 +77,19 @@ class TicketFareSlabRepository
                 $cSlabInfo->starting_fare=$slab_data['startingFare'];
                 $cSlabInfo->upto_fare = $slab_data['uptoFare'];
                 $cSlabInfo->odbus_commision=$slab_data['odbusCommision'];
+                $cSlabInfo->from_date=$slab_data['from_date'];
+                $cSlabInfo->to_date=$slab_data['to_date'];
                 $cSlabInfo->created_by=$data['created_by'];
                 $cSlabInfo->status=1;
                 $cSlabInfo->save();            
             }
 
             return $cSlabInfo;
-        }
-         else
-        {
-             return 'Operator Already Exist';
-        }
+        // }
+        //  else
+        // {
+        //      return 'Operator Already Exist';
+        // }
        
     }
 
@@ -126,7 +128,7 @@ class TicketFareSlabRepository
   
     public function deleteticketFareSlab($id)
     {
-        return $this->ticketFareSlab::where('bus_operator_id', $id)->delete(); //->update(['status'=> 2]);
+        return $this->ticketFareSlab::where('id', $id)->delete(); //->update(['status'=> 2]);
     }
 
     public function changeStatusticketFareSlab($id)
