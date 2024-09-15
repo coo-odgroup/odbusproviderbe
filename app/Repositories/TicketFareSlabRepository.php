@@ -68,12 +68,14 @@ class TicketFareSlabRepository
         //                        ->get();
         // if(count($duplicate_data)==0)
         // {
+        foreach($opr_id as $op_id){
+
             $cSlabDetails=[];
             $slabs=$data['slabs'];
             foreach($slabs as $slab_data)
             {
                 $cSlabInfo=new $this->ticketFareSlab;
-                $cSlabInfo->bus_operator_id=$opr_id;
+                $cSlabInfo->bus_operator_id=$op_id;
                 $cSlabInfo->starting_fare=$slab_data['startingFare'];
                 $cSlabInfo->upto_fare = $slab_data['uptoFare'];
                 $cSlabInfo->odbus_commision=$slab_data['odbusCommision'];
@@ -84,6 +86,9 @@ class TicketFareSlabRepository
                 $cSlabInfo->save();            
             }
 
+
+        }
+            
             return $cSlabInfo;
         // }
         //  else
