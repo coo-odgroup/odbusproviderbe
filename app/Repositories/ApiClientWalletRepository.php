@@ -177,9 +177,15 @@ class ApiClientWalletRepository
 
     } 
 
-    public function apiClientTotalTransactions(){
-       $data= DB::select('select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=372 order by c.id asc');
-       $main=[];
+    public function apiClientTotalTransactions($request){
+
+        $user_id = $request->user_id;
+        
+        $main=[];
+
+       if($user_id){
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where $user_id order by c.id asc");
+
        $data=(array) $data;
        foreach($data as $e => $w){
         $w=(array) $w;
@@ -199,36 +205,36 @@ class ApiClientWalletRepository
 
                
 
-                   if($w['type']=='Refund'){
-                    
+                   if($w['type']=='Refund'){               
                     if($data[$e+1]->type =='CancelCommission' && $w['booking_id'] == $data[$e+1]->booking_id){
                         $main[$e]['Refund']=$w['amount'] + $data[$e+1]->amount;
                         $main[$e]['closing_balance']=$data[$e+1]->balance;
-                        unset($data[$e+1]);
+                        //unset($data[$e+1]);
                        }  else{
                         $main[$e]['Refund']=$w['amount'] ;
                         $main[$e]['closing_balance']=$w['balance'];
                        }
+                    $main[$e]['opening_balance']= $data[$e-1]->balance;  
                     $main[$e]['cancel_charges']=$w['payable_amount'] - $w['refund_amount'];
                    }
 
                    if($w['type']== null){
                     
-                $main[$e]['client_gst']=$w['client_gst'];
+                     $main[$e]['client_gst']=$w['client_gst'];
                     $opening_balance=$w['balance'] +$w['amount'];
                     if($data[$e+1]->type =='Commission' && $w['booking_id'] == $data[$e+1]->booking_id){
                         $main[$e]['Commission']=$data[$e+1]->amount;
                         $main[$e]['closing_balance']=$data[$e+1]->balance;
-                        unset($data[$e+1]);
+                        //unset($data[$e+1]);
                        } else{
                         $main[$e]['closing_balance']=$w['balance'];
                        }
                     $main[$e]['booking_amount']=$w['amount'];
-                    $main[$e]['opening_balance']= $opening_balance;    
+                    $main[$e]['opening_balance']= $opening_balance;   
                     $main[$e]['debit']=$main[$e]['booking_amount'] - @$main[$e]['Commission'];                 
                    }
 
-                   if($w['type']== 'Commission'){             
+                   if($w['type']== 'Commission' || $w['type']== 'CancelCommission'){             
                         unset($main[$e]);
                       $main = array_values($main);
                    }
@@ -245,7 +251,8 @@ class ApiClientWalletRepository
 
        }
 
-       
+
+       }
        return $main;
 
     }
