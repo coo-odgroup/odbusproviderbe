@@ -281,7 +281,7 @@ class TicketInformationRepository
 
       $client = $this->user->find($cancelticket->user_id);
       // $to_user = 'bishal.seofied@gmail.com';
-      $to_user = $client->email;
+      $to_user = $client->alternate_email;
       $to_support = 'support@odbus.in';
       
       $data= array(

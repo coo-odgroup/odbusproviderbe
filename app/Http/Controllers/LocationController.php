@@ -111,7 +111,7 @@ class LocationController extends Controller
   public function editLocation(Request $request, $id) {
       $data = $request->only([
         'name',
-        'synonym','state_id',
+        'synonym','state_id','url',
         'created_by'
       ]);    
   
