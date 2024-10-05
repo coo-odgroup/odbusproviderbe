@@ -259,7 +259,9 @@ class TicketInformationRepository
       $cancelticket->cancel_reason = $request['reason'];             
       $cancelticket->created_by = $request['cancelled_by'];
       $cancelticket->status = 2;
-      $cancelticket->update();    
+      $cancelticket->update();
+
+      $bus_details = DB::table('bus')->where('id',$cancelticket->bus_id)->first();    
 
       $transactionId = date('YmdHis') . gettimeofday()['usec'];
       $balance = $this->apiClientWallet->where('user_id',$cancelticket->user_id)->where('status',1)->orderBy('id','DESC')->limit(1)->get();
@@ -297,6 +299,8 @@ class TicketInformationRepository
 
       SendEmailToSupportJob::dispatch($to_support, $subject, $data);
 
+      if($cancelticket->user_id == env('MANTIS_ID'))
+      {
        $client = new \GuzzleHttp\Client();       
        $api_url = 'https://event.iamgds.com/provevents/odbus';
 
@@ -312,6 +316,48 @@ class TicketInformationRepository
           ]
       ]);
         log::info('mantish call-back URL has been Executed');
+
+      }
+      elseif($cancelticket->user_id == env('PAYTM_ID'))
+      {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => env('PAYTM_PNR_CANCEL_URL'),
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS =>'{
+            "pnr_list": [
+                {
+                    "pnr": "'.$cancelticket->pnr.'",
+                          "doj": "'.$cancelticket->journey_dt.'",
+                          "operator_id": "'.$bus_details->bus_operator_id.'",
+                          "operator_pnr": null,
+                          "primary_passenger": null
+                }
+            ]
+        }',
+          CURLOPT_HTTPHEADER => array(
+            'VerifyKey: 6632596ff74049b8ad8c4a923e4a76c9',
+            'UserId: 68',
+            'Content-Type: application/json'
+          ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        log::info($response);
+        log::info('PTM call-back URL has been Executed');
+
+      }
+       
 
       return;
 
