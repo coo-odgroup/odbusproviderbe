@@ -760,7 +760,7 @@ class ApiClientWalletRepository
         $agentWallet->reference_id =  $data['reference_id'];
         $agentWallet->amount = $data['amount'];
         $agentWallet->balance = $balance;
-        $agentWallet->booking_id = $booking_id;
+       // $agentWallet->booking_id = $booking_id; // by Lima 10-Oct-2024 (To fix wallet issue , It should consider as recharge)
         $agentWallet->remarks = $data['remarks'];
         $agentWallet->user_id = $data['user_id'];
         $agentWallet->transaction_type = $data['transaction_type'];       
