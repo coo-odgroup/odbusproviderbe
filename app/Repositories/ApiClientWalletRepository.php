@@ -209,7 +209,7 @@ class ApiClientWalletRepository
                
 
                    if($w['type']=='Refund'){               
-                    if($data[$e+1]->type =='CancelCommission' && $w['booking_id'] == $data[$e+1]->booking_id){
+                    if(isset($data[$e+1]) && $data[$e+1]->type =='CancelCommission' && $w['booking_id'] == $data[$e+1]->booking_id){
                         $main['Refund']=$w['amount'] + $data[$e+1]->amount;
                         $main['closing_balance']=$data[$e+1]->balance;
                         //unset($data[$e+1]);
@@ -225,7 +225,7 @@ class ApiClientWalletRepository
                     
                      $main['client_gst']=$w['client_gst'];
                     $opening_balance=$w['balance'] +$w['amount'];
-                    if($data[$e+1]->type =='Commission' && $w['booking_id'] == $data[$e+1]->booking_id){
+                    if(isset($data[$e+1]) && $data[$e+1]->type =='Commission' && $w['booking_id'] == $data[$e+1]->booking_id){
                         $main['Commission']=$data[$e+1]->amount;
                         $main['closing_balance']=$data[$e+1]->balance;
                         //unset($data[$e+1]);
