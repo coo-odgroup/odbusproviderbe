@@ -163,6 +163,14 @@ class ApiClientWalletService
       return $this->ApiClientWalletRepository->apiClientTotalTransactions($request);
     }
 
+    public function apiClientTotalTransactions2($request)
+    {
+      
+      return $this->ApiClientWalletRepository->apiClientTotalTransactions2($request);
+    }
+
+    
+
     public function agentWalletBalancedetails($request)
     {
       

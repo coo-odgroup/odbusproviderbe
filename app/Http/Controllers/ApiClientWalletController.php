@@ -57,6 +57,13 @@ class ApiClientWalletController extends Controller
         $wallet = $this->ApiClientWalletService->apiClientTotalTransactions($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function apiClientTotalTransactions2(Request $request) 
+    {      
+     
+        $wallet = $this->ApiClientWalletService->apiClientTotalTransactions2($request);
+        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
   
 
     public function getData(Request $request) 
@@ -142,7 +149,7 @@ class ApiClientWalletController extends Controller
         return $this->successResponse($data,"Wallet request Updated",Response::HTTP_CREATED);         
     } 
 
-    public function UpdateApiClientWallet(){
+    public function UpdateApiClientWallet_bkup(){
        $wallet= DB::table('client_wallet')->where('user_id',372)->orderBy('id','asc')->get();
        foreach($wallet as $k => $w){
           if($w->payment_via!='' && $w->transaction_type=='c' && $w->booking_id ==null){ // recharge
@@ -236,19 +243,38 @@ class ApiClientWalletController extends Controller
 
           }
 
+          $gstOnRefund=0;
+          $total_cancel_profit=0;
+
           if($w->booking_id !='' && $w->transaction_type=='c'  && $w->type=='Refund'){ /// refund
             $getBooking=DB::table('booking')->where('id',$w->booking_id)->first();
             /////// calculate refund credit
             if($getBooking->deduction_percent>0){ // as per last dicussion with Ali if cancel is from ODBUS  backend team 
                 $paid_amount_without_gst= $getBooking->total_fare -  $getBooking->client_gst;
+                $deductAmt = round($paid_amount_without_gst*($getBooking->deduction_percent/100),2);
+
+                $refundAmt = $paid_amount_without_gst - $deductAmt ; // - $GstOnCancelCharge
+                
+                if($getBooking->client_gst>0){
+                    $gstOnRefund=$refundAmt* 0.05;  // 5% GST on Refund amount
+                }
+
+                $refundAmt2 = $refundAmt + $gstOnRefund;
+                $total_cancel_profit= $getBooking->total_fare - $refundAmt2;
+
             }else{
                 $paid_amount_without_gst= $getBooking->total_fare;
+                $deductAmt = 0; 
+                $refundAmt = $paid_amount_without_gst - $getBooking->client_comission ;  // full refund without commission
+                $refundAmt2 = $refundAmt + $gstOnRefund;
             }
 
-           
-            $deductAmt = round($paid_amount_without_gst*($getBooking->deduction_percent/100),2);
-            //$GstOnCancelCharge= $deductAmt * (5/100);   no need as per discussion with Ali o 20th july-2024
-            $refundAmt = $paid_amount_without_gst - $deductAmt ; // - $GstOnCancelCharge
+            /////  update deduction_amount , gst_on_refund, total_cancel_profit column in booking table
+            $upd['deduction_amount']=$deductAmt;
+            $upd['gst_on_refund']=$gstOnRefund;
+            $upd['total_cancel_profit']=$total_cancel_profit;
+
+            DB::table('booking')->where('id',$getBooking->id)->update($upd);
             
             /////// calculate  cancel commission credit
 
@@ -260,11 +286,11 @@ class ApiClientWalletController extends Controller
             }
             
             if($clientCancelComPer == 0){
-                $OdbusCancelProfit = $deductAmt;
+                $OdbusCancelProfit = $total_cancel_profit;
                 $clientCancelProfit = 0; 
             }else{
-              $OdbusCancelProfit = round($deductAmt * ((100 - $clientCancelComPer))/100,2); 
-              $clientCancelProfit = round($deductAmt - $OdbusCancelProfit,2);
+              $OdbusCancelProfit = round($total_cancel_profit * ((100 - $clientCancelComPer))/100,2); 
+              $clientCancelProfit = round($total_cancel_profit - $OdbusCancelProfit,2);
             }
             $clientCancelProfit = $clientCancelProfit - $getBooking->client_comission;
 
@@ -282,34 +308,170 @@ class ApiClientWalletController extends Controller
              $clientWallet4->updated_at = $w->updated_at;
              $getLastBalance = DB::table('client_wallet')->where('user_id',372)->where('status',1)->orderBy('id','DESC')->limit(1)->first();
 
-             $clientWallet4->amount = $refundAmt + $clientCancelProfit;
-             $clientWallet4->balance = $getLastBalance->balance + $refundAmt + $clientCancelProfit;
+             $clientWallet4->amount = $refundAmt2; // refund + gst on refund
+             $clientWallet4->balance = $getLastBalance->balance + $refundAmt2;
              $clientWallet4->save();
 
              /////// insert cancel commission credit
 
-            //  if($clientCancelProfit != 0){
+             if($clientCancelProfit > 0){
             
-            //     $transactionId = date('YmdHis') . gettimeofday()['usec'];
-            //     $clientWallet5 = new ApiClientWalletNew();
-            //     $clientWallet5->transaction_id = $transactionId;
-            //     //$clientWallet5->amount = $deductAmt/2;
-            //     $clientWallet5->amount = $clientCancelProfit;
-            //     $clientWallet5->type = 'CancelCommission';
-            //     $clientWallet5->booking_id = $w->booking_id;
-            //     $clientWallet5->transaction_type = 'c';
-            //     $clientWallet5->balance = $balance + $clientCancelProfit;
-            //     $clientWallet5->user_id = $w->user_id;
-            //     $clientWallet5->created_by = "Amit Kumar Singh";
-            //     $clientWallet5->created_at = $w->created_at;
-            //     $clientWallet5->updated_at = $w->updated_at;
-            //     $clientWallet5->status = 1;
-            //     $clientWallet5->save(); 
-            // }
+                $transactionId = date('YmdHis') . gettimeofday()['usec'];
+                $clientWallet5 = new ApiClientWalletNew();
+                $clientWallet5->transaction_id = $transactionId;
+                //$clientWallet5->amount = $deductAmt/2;
+                $clientWallet5->amount = $clientCancelProfit;
+                $clientWallet5->type = 'CancelCommission';
+                $clientWallet5->booking_id = $w->booking_id;
+                $clientWallet5->transaction_type = 'c';
+                $clientWallet5->balance = $balance + $clientCancelProfit;
+                $clientWallet5->user_id = $w->user_id;
+                $clientWallet5->created_by = "Amit Kumar Singh";
+                $clientWallet5->created_at = $w->created_at;
+                $clientWallet5->updated_at = $w->updated_at;
+                $clientWallet5->status = 1;
+                $clientWallet5->save(); 
+            }
 
 
           }
        }
     }
+
+
+    public function UpdateApiClientWallet(){
+        $wallet= DB::table('client_wallet as c')->select('c.*','b.refund_amount','b.deduction_amount','b.gst_on_refund','b.total_cancel_profit','b.deduction_percent','b.client_comission','b.status as booking_status','b.total_fare')->leftjoin('booking as b','b.id','=','c.booking_id')->where('c.user_id',372)->orderBy('c.id','asc')->get();
+        foreach($wallet as $k => $w){  
+
+            //print_r($w);exit;
+
+
+            // if(isset($wallet[$k-1]->id)){                
+
+            //     $new_data=DB::table('client_wallet_new')->where('id',$wallet[$k-1]->id)->first();
+               
+            // }
+            if($k>0){
+                $new_data = DB::table('client_wallet_new')->where('user_id',372)->where('status',1)->orderBy('id','DESC')->limit(1)->first(); // get last balance if it is not the first record
+            }   
+ 
+                 $ApiClientWallet = new ApiClientWalletNew();
+                 $ApiClientWallet->transaction_id = $w->transaction_id;
+                 $ApiClientWallet->booking_id = $w->booking_id;
+                 $ApiClientWallet->reference_id = $w->reference_id;
+                 $ApiClientWallet->payment_via = $w->payment_via;
+                 $ApiClientWallet->amount = $w->amount;
+                 $ApiClientWallet->balance =$w->balance;
+                 if($w->transaction_type=='c' && isset($new_data)){
+                    $ApiClientWallet->balance =$new_data->balance + $w->amount ; 
+                 }
+
+                 if($w->transaction_type=='d' && isset($new_data)){
+                    $ApiClientWallet->amount = $w->total_fare;
+                    $ApiClientWallet->balance =$new_data->balance - $w->total_fare ; 
+                 }
+                 
+                 if($w->type=='CancelCommission' && $w->deduction_percent>0){
+                    $cancelCommission =($w->total_cancel_profit/2) - $w->client_comission ;
+                    $ApiClientWallet->amount =$cancelCommission;
+                    if(isset($new_data)){
+                        $ApiClientWallet->balance = $new_data->balance + $cancelCommission;
+                    }else{
+                        $ApiClientWallet->balance = $wallet[$k-1]->balance + $cancelCommission;
+                    }
+                    
+                 } 
+
+                 if($w->type=='Refund' && $w->booking_status==2){
+                    $refund = $w->refund_amount + $w->gst_on_refund; 
+                    $ApiClientWallet->amount =$refund;
+                    if(isset($new_data)){
+                        $ApiClientWallet->balance = $new_data->balance + $refund;
+                    }else{
+                        $ApiClientWallet->balance = $wallet[$k-1]->balance + $refund;
+                    }                  
+
+                 } 
+
+
+                 if($w->type=='Refund' && $w->booking_status==1){
+
+                    $refund = $w->refund_amount;
+                    $ApiClientWallet->amount =$refund;
+                    $ApiClientWallet->type =null;
+                    if(isset($new_data)){
+                        $ApiClientWallet->balance = $new_data->balance + $refund;
+                    }else{
+                        $ApiClientWallet->balance = $wallet[$k-1]->balance + $refund;
+                    }
+
+                   
+
+                 } 
+
+                 $ApiClientWallet->transaction_type = $w->transaction_type; 
+                 $ApiClientWallet->type = $w->type; 
+
+                 
+
+                 $ApiClientWallet->remarks = $w->remarks;
+                 $ApiClientWallet->user_id = $w->user_id;      
+                 $ApiClientWallet->created_by = $w->created_by;
+                 $ApiClientWallet->created_at = $w->created_at;
+                 $ApiClientWallet->updated_at = $w->updated_at;
+                 $ApiClientWallet->status =$w->status;
+                 $ApiClientWallet->otp =$w->otp;
+                 $ApiClientWallet->reject_reason =$w->reject_reason;  
+                      
+                 $ApiClientWallet->save();
+
+
+                 if($w->transaction_type=='d' && isset($wallet[$k+1]) && $wallet[$k+1]->type!='Commission'){
+
+                    $transactionId = date('YmdHis') . gettimeofday()['usec'];
+                    $clientWallet5 = new ApiClientWalletNew();
+                    $clientWallet5->transaction_id = $transactionId;
+                    $clientWallet5->amount = $w->client_comission;
+                    $clientWallet5->type = 'Commission';
+                    $clientWallet5->booking_id = $w->booking_id;
+                    $clientWallet5->transaction_type = 'c';
+                    $clientWallet5->balance = $ApiClientWallet->balance + $w->client_comission;
+                    $clientWallet5->user_id = $w->user_id;
+                    $clientWallet5->created_by = "Amit Kumar Singh";
+                    $clientWallet5->created_at = $w->created_at;
+                    $clientWallet5->updated_at = $w->updated_at;
+                    $clientWallet5->status = 1;
+                    $clientWallet5->save();
+
+                }
+
+
+
+                 if($w->type=='Refund' && isset($wallet[$k+1]) && $wallet[$k+1]->type!='CancelCommission' && $w->deduction_percent>0){
+
+                    $transactionId = date('YmdHis') . gettimeofday()['usec'];
+
+                    $cancelCommission =($w->total_cancel_profit/2) - $w->client_comission ;
+
+                    $clientWallet5 = new ApiClientWalletNew();
+                    $clientWallet5->transaction_id = $transactionId;
+                    $clientWallet5->amount = $cancelCommission;
+                    $clientWallet5->type = 'CancelCommission';
+                    $clientWallet5->booking_id = $w->booking_id;
+                    $clientWallet5->transaction_type = 'c';
+                    $clientWallet5->balance = $ApiClientWallet->balance + $cancelCommission;
+                    $clientWallet5->user_id = $w->user_id;
+                    $clientWallet5->created_by = "Amit Kumar Singh";
+                    $clientWallet5->created_at = $w->created_at;
+                    $clientWallet5->updated_at = $w->updated_at;
+                    $clientWallet5->status = 1;
+                    $clientWallet5->save();
+
+                }
+ 
+ 
+ 
+           }
+     }
          
 }
