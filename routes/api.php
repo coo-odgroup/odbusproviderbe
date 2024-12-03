@@ -159,8 +159,6 @@ Route::post('/clientTransUpdateByAdmin',[ApiClientWalletController::class,'clien
 
 Route::post('/apiClientTotalTransactions',[ApiClientWalletController::class,'apiClientTotalTransactions']);
 
-Route::post('/apiClientTotalTransactions2',[ApiClientWalletController::class,'apiClientTotalTransactions2']);
-
 
 // api client report
 Route::post('/apiclientbookingreport',[ApiClientReportController::class,'getAllData']);

@@ -58,13 +58,7 @@ class ApiClientWalletController extends Controller
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    public function apiClientTotalTransactions2(Request $request) 
-    {      
-     
-        $wallet = $this->ApiClientWalletService->apiClientTotalTransactions2($request);
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
-  
+    
 
     public function getData(Request $request) 
     {      
@@ -340,19 +334,12 @@ class ApiClientWalletController extends Controller
 
 
     public function UpdateApiClientWallet(){
-        $wallet= DB::table('client_wallet as c')->select('c.*','b.refund_amount','b.deduction_amount','b.gst_on_refund','b.total_cancel_profit','b.deduction_percent','b.client_comission','b.status as booking_status','b.total_fare')->leftjoin('booking as b','b.id','=','c.booking_id')->where('c.user_id',372)->orderBy('c.id','asc')->get();
-        foreach($wallet as $k => $w){  
-
-            //print_r($w);exit;
+        $wallet= DB::table('client_wallet as c')->select('c.*','b.refund_amount','b.deduction_amount','b.gst_on_refund','b.total_cancel_profit','b.deduction_percent','b.client_comission','b.status as booking_status','b.total_fare')->leftjoin('booking as b','b.id','=','c.booking_id')->where('c.user_id',486)->orderBy('c.id','asc')->get();
 
 
-            // if(isset($wallet[$k-1]->id)){                
-
-            //     $new_data=DB::table('client_wallet_new')->where('id',$wallet[$k-1]->id)->first();
-               
-            // }
+        foreach($wallet as $k => $w){ 
             if($k>0){
-                $new_data = DB::table('client_wallet_new')->where('user_id',372)->where('status',1)->orderBy('id','DESC')->limit(1)->first(); // get last balance if it is not the first record
+                $new_data = DB::table('client_wallet')->where('user_id',486)->where('status',1)->orderBy('id','DESC')->limit(1)->first(); // get last balance if it is not the first record
             }   
  
                  $ApiClientWallet = new ApiClientWalletNew();
@@ -372,7 +359,7 @@ class ApiClientWalletController extends Controller
                  }
                  
                  if($w->type=='CancelCommission' && $w->deduction_percent>0){
-                    $cancelCommission =($w->total_cancel_profit/2) - $w->client_comission ;
+                    $cancelCommission =($w->odbus_cancel_profit/2) - $w->client_comission ;
                     $ApiClientWallet->amount =$cancelCommission;
                     if(isset($new_data)){
                         $ApiClientWallet->balance = $new_data->balance + $cancelCommission;
