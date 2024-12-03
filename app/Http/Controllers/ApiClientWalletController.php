@@ -334,12 +334,12 @@ class ApiClientWalletController extends Controller
 
 
     public function UpdateApiClientWallet(){
-        $wallet= DB::table('client_wallet as c')->select('c.*','b.refund_amount','b.deduction_amount','b.gst_on_refund','b.total_cancel_profit','b.deduction_percent','b.client_comission','b.status as booking_status','b.total_fare')->leftjoin('booking as b','b.id','=','c.booking_id')->where('c.user_id',486)->orderBy('c.id','asc')->get();
+        $wallet= DB::table('client_wallet as c')->select('c.*','b.refund_amount','b.deduction_amount','b.gst_on_refund','b.odbus_cancel_profit','b.deduction_percent','b.client_comission','b.status as booking_status','b.total_fare')->leftjoin('booking as b','b.id','=','c.booking_id')->where('c.user_id',486)->orderBy('c.id','asc')->get();
 
 
         foreach($wallet as $k => $w){ 
             if($k>0){
-                $new_data = DB::table('client_wallet')->where('user_id',486)->where('status',1)->orderBy('id','DESC')->limit(1)->first(); // get last balance if it is not the first record
+                $new_data = DB::table('client_wallet_new')->where('user_id',486)->where('status',1)->orderBy('id','DESC')->limit(1)->first(); // get last balance if it is not the first record
             }   
  
                  $ApiClientWallet = new ApiClientWalletNew();
@@ -370,7 +370,10 @@ class ApiClientWalletController extends Controller
                  } 
 
                  if($w->type=='Refund' && $w->booking_status==2){
-                    $refund = $w->refund_amount + $w->gst_on_refund; 
+
+                    $gstOnRefund=$w->refund_amount* 0.05;  // 5% GST on Refund amount
+                   
+                    $refund = $w->refund_amount + $gstOnRefund;
                     $ApiClientWallet->amount =$refund;
                     if(isset($new_data)){
                         $ApiClientWallet->balance = $new_data->balance + $refund;
@@ -438,7 +441,9 @@ class ApiClientWalletController extends Controller
 
                     $transactionId = date('YmdHis') . gettimeofday()['usec'];
 
-                    $cancelCommission =($w->total_cancel_profit/2) - $w->client_comission ;
+                    $cancelCommission =($w->odbus_cancel_profit/2) - $w->client_comission ;
+
+                    if($cancelCommission>0){
 
                     $clientWallet5 = new ApiClientWalletNew();
                     $clientWallet5->transaction_id = $transactionId;
@@ -453,6 +458,7 @@ class ApiClientWalletController extends Controller
                     $clientWallet5->updated_at = $w->updated_at;
                     $clientWallet5->status = 1;
                     $clientWallet5->save();
+                    }
 
                 }
  
