@@ -171,6 +171,7 @@ class CompleteReportRepository
         $totalfare = 0;
         $totalPayableAmount = 0;
         $owner_fare = 0;
+        $additional_owner_fare = 0;
         $totalAgentComission = 0;
         $totalSeats = 0;
         $journey = '';
@@ -203,6 +204,7 @@ class CompleteReportRepository
                $totalPayableAmount = $totalPayableAmount + $v->payable_amount;
             
                $owner_fare = $owner_fare + $v->owner_fare;
+               $additional_owner_fare = $additional_owner_fare + $v->additional_owner_fare;
                $v['from_location']=$this->location->select('name')->where('id', $v->source_id)->get();
                $v['to_location']=$this->location->select('name')->where('id', $v->destination_id)->get();
                $v['journey']=$journey;
@@ -227,6 +229,7 @@ class CompleteReportRepository
 
 
         $totalReceivedAmount = $totalPayableAmount - $totalAgentComission;
+        $owner_fare = $owner_fare + $additional_owner_fare;
 
         $response = array(
              "count" => $data->count(), 
@@ -235,6 +238,7 @@ class CompleteReportRepository
              "totalfare"=> number_format($totalfare, 2, ".", ""),
              "totalPayableAmount"=>number_format($totalReceivedAmount, 2, ".", ""),
              "owner_fare"=>number_format($owner_fare, 2, ".", ""),
+             "additional_owner_fare"=>number_format($additional_owner_fare, 2, ".", ""),
             "data" => $data
            );  
 

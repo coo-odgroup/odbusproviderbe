@@ -180,14 +180,45 @@ class ApiClientWalletRepository
     public function apiClientTotalTransactions($request){
 
         $user_id = $request->user_id;
+        $tranType = $request->tranType;
+        if($request->rangeFromDate!=null){
+             $rangeFromDate =  date('Y-m-d 00:00:00', strtotime($request->rangeFromDate));
+         }else{
+             $rangeFromDate = null;
+         }
 
-       // dd($user_id);
+        if($request->rangeToDate!=null){
+             $rangeToDate =  date('Y-m-d 00:00:00', strtotime($request->rangeToDate));
+         }else{
+             $rangeToDate = null;
+         }        
+        $week_date = date('Y-m-d 00:00:00', strtotime('-15 days'));
+        $today_date = date('Y-m-d 00:00:00');
+
         
         $final=[];
 
-       if($user_id){
-        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id order by c.id asc");
+       if($user_id)
+       {
 
+        if($user_id!=null && $tranType=='all_transaction' && $rangeFromDate==null && $rangeToDate==null){
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND c.created_at BETWEEN '".$week_date."' AND '".$today_date."' order by c.id desc");
+       }
+       if($user_id!=null && $tranType=='all_transaction' && $rangeFromDate!=null && $rangeToDate!=null){
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND c.created_at BETWEEN '".$rangeFromDate."' AND '".$rangeToDate."' order by c.id desc");
+       }
+
+       if($user_id!=null && $tranType=='export_transaction' && $rangeFromDate==null && $rangeToDate==null){
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND c.created_at BETWEEN '".$week_date."' AND '".$today_date."' order by c.id asc");
+       }
+
+       if($user_id!=null && $tranType=='export_transaction' && $rangeFromDate!=null && $rangeToDate!=null){
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND c.created_at BETWEEN '".$rangeFromDate."' AND '".$rangeToDate."' order by c.id asc");
+       }
+
+       // return $data;
+
+       if(count($data)>0){
        $data=(array) $data;
        foreach($data as $e => $w){
         $main=[];
@@ -217,7 +248,7 @@ class ApiClientWalletRepository
                         $main['Refund']=$w['amount'] ;
                         $main['closing_balance']=$w['balance'];
                        }
-                    $main['opening_balance']= $data[$e-1]->balance;  
+                    $main['opening_balance']= @$data[$e-1]->balance;  
                     $main['cancel_charges']=$w['deduction_amount'];//$w['payable_amount'] - $w['refund_amount'];
                    }
 
@@ -253,7 +284,7 @@ class ApiClientWalletRepository
         }
 
 
-       }
+       }}
 
 
        }
