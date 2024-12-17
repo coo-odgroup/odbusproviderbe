@@ -334,7 +334,7 @@ class ApiClientWalletController extends Controller
 
 
     public function UpdateApiClientWallet(){
-        $wallet= DB::table('client_wallet as c')->select('c.*','b.refund_amount','b.deduction_amount','b.gst_on_refund','b.odbus_cancel_profit','b.deduction_percent','b.client_comission','b.status as booking_status','b.total_fare')->leftjoin('booking as b','b.id','=','c.booking_id')->where('c.user_id',486)->orderBy('c.id','asc')->get();
+        $wallet= DB::table('client_wallet as c')->select('c.*','b.refund_amount','b.deduction_amount','b.odbus_cancel_profit','b.deduction_percent','b.client_comission','b.status as booking_status','b.total_fare')->leftjoin('booking as b','b.id','=','c.booking_id')->where('c.user_id',486)->orderBy('c.id','asc')->get();
 
 
         foreach($wallet as $k => $w){ 
@@ -359,7 +359,7 @@ class ApiClientWalletController extends Controller
                  }
                  
                  if($w->type=='CancelCommission' && $w->deduction_percent>0){
-                    $cancelCommission =($w->odbus_cancel_profit/2) - $w->client_comission ;
+                    $cancelCommission =$w->odbus_cancel_profit - $w->client_comission ;
                     $ApiClientWallet->amount =$cancelCommission;
                     if(isset($new_data)){
                         $ApiClientWallet->balance = $new_data->balance + $cancelCommission;
@@ -369,16 +369,12 @@ class ApiClientWalletController extends Controller
                     
                  } 
 
-                 if($w->type=='Refund' && $w->booking_status==2){
-
-                    $gstOnRefund=$w->refund_amount* 0.05;  // 5% GST on Refund amount
-                   
-                    $refund = $w->refund_amount + $gstOnRefund;
-                    $ApiClientWallet->amount =$refund;
+                 if($w->type=='Refund' && $w->booking_status==2){ 
+                    $ApiClientWallet->amount =$w->refund_amount;
                     if(isset($new_data)){
-                        $ApiClientWallet->balance = $new_data->balance + $refund;
+                        $ApiClientWallet->balance = $new_data->balance + $w->refund_amount;
                     }else{
-                        $ApiClientWallet->balance = $wallet[$k-1]->balance + $refund;
+                        $ApiClientWallet->balance = $wallet[$k-1]->balance + $w->refund_amount;
                     }                  
 
                  } 
@@ -441,7 +437,7 @@ class ApiClientWalletController extends Controller
 
                     $transactionId = date('YmdHis') . gettimeofday()['usec'];
 
-                    $cancelCommission =($w->odbus_cancel_profit/2) - $w->client_comission ;
+                    $cancelCommission =$w->odbus_cancel_profit - $w->client_comission ;
 
                     if($cancelCommission>0){
 
