@@ -104,10 +104,15 @@ class SeatBlockController extends Controller
         
       }
 
-      public function updateSeatBlockData(Request $request) {      
-        
+      public function updateSeatBlockData(Request $request) { 
         $seatblock = $this->seatblockService->updateSeatBlockData($request);
-        return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        if(isset($seatblock['status']) && $seatblock['status'] == 'error'){
+          return $this->errorResponse($seatblock['message'],Response::HTTP_OK);
+
+        }else{
+          return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        }
+        ;
         
       } 
 
