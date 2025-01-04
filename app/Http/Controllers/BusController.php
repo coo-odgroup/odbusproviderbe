@@ -116,7 +116,7 @@ class BusController extends Controller
     public function update(Request $request, $id) {
         // log::info($request);exit;
         $data = $request->only([
-            'bus_operator_id','bus_number','user_id','amenities','safety','type','ticket_cancelation_id', 'name', 'via','bus_number','bus_description','bus_type_id','bus_sitting_id','cancelation_points','cancellationslabs_id','created_by','bus_seat_layout_id','max_seat_book'
+            'bus_operator_id','bus_number','user_id','amenities','safety','type','lower_sleeper_extra_fare','ticket_cancelation_id', 'name', 'via','bus_number','bus_description','bus_type_id','bus_sitting_id','cancelation_points','cancellationslabs_id','created_by','bus_seat_layout_id','max_seat_book'
         ]);
        
         $busValidation = $this->busValidator->basicValidate($data);
@@ -312,6 +312,7 @@ class BusController extends Controller
         $NewBus['bus_number']=$data['bus_number'];
         $NewBus['amenities']=$data['amenities'];
         $NewBus['type']=$data['type'];
+        $NewBus['lower_sleeper_extra_fare']=$data['lower_sleeper_extra_fare'];
         $NewBus['max_seat_book']=$data['max_seat_book'];
 
         $busValidation = $this->busValidator->validate($data->all());

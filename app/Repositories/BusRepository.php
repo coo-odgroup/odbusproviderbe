@@ -242,6 +242,7 @@ class BusRepository
         $bus->running_cycle = "0";        
         $bus->has_return_bus ="0"; 
         $bus->type = $data['type'];       
+        $bus->lower_sleeper_extra_fare = $data['lower_sleeper_extra_fare'];       
         $bus->cancelation_points = $data['cancelation_points'];      
         $bus->cancellationslabs_id = $data['cancellationslabs_id'];    
         $bus->created_by = $data['created_by'];   
