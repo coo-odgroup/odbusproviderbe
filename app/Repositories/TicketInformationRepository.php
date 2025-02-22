@@ -337,8 +337,8 @@ class TicketInformationRepository
                 {
                     "pnr": "'.$cancelticket->pnr.'",
                           "doj": "'.$cancelticket->journey_dt.'",
-                          "operator_id": "'.$bus_details->bus_operator_id.'",
-                          "operator_pnr": null,
+                          "operator_id": "'.$cancelticket->bus_id.'",
+                          "operator_pnr": "'.$cancelticket->pnr.'",
                           "primary_passenger": null
                 }
             ]
@@ -354,7 +354,7 @@ class TicketInformationRepository
 
         curl_close($curl);
         log::info($response);
-        log::info('PTM call-back URL has been Executed');
+        log::info('PTM call-back URL has been Executed -- '.$cancelticket->pnr);
 
       }
        
