@@ -1080,3 +1080,5 @@ Route::delete('deletemanageClientOperator/{id}',[ApiUserManageOperatorController
 // added by Lima on 23 Dec,2023
 
 Route::get('/getLessBookingUrls', [CompleteReportController::class, 'getLessBookingUrls']);
+Route::get('/PaytmBookingCancel/{pnr}', [TicketInformationController::class, 'PaytmBookingCancel']);
+

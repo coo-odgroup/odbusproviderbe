@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Config;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use DB;
 
 class TicketInformationController extends Controller
 {
@@ -147,6 +148,57 @@ class TicketInformationController extends Controller
         $result = $this->ticketInformationService->sendCancelEmailToSupport($request);
         return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function PaytmBookingCancel($pnr)
+    {
+        $curl = curl_init();
+
+        $bdt=DB::table('booking as b')->select('b.journey_dt','bs.bus_operator_id')->leftjoin('bus as bs','b.bus_id','=','bs.id')->where('pnr',$pnr)->first();
+
+        $rr=[
+            "pnr"=> "'$pnr'",
+            "doj"=> "'$bdt->journey_dt'",
+            "operator_id"=> "'$bdt->bus_operator_id'",
+            "operator_pnr"=> "'$pnr'",
+            "primary_passenger"=> null
+       ];
+       
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => env('PAYTM_PNR_CANCEL_URL'),
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS =>'{
+            "pnr_list": [
+                {
+                          "pnr": "'.$pnr.'",
+                          "doj": "'.$bdt->journey_dt.'",
+                          "operator_id": "'.$bdt->bus_operator_id.'",
+                          "operator_pnr": "'.$pnr.'",
+                          "primary_passenger": null
+                }
+            ]
+        }',
+          CURLOPT_HTTPHEADER => array(
+            'VerifyKey: 6632596ff74049b8ad8c4a923e4a76c9',
+            'UserId: 68',
+            'Content-Type: application/json'
+          ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+       
+        dd($response,$rr);
+    }
+
+    
 
   
 }
