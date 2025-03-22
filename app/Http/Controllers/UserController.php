@@ -189,7 +189,7 @@ class UserController extends Controller
           return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
 
         }else{
-          return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
+          return $this->successResponse(1,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
         }
         
       }
@@ -219,7 +219,7 @@ class UserController extends Controller
           return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_OK);         
 
         }else{
-          return $this->successResponse($response,Config::get('constants.OTP_VERIFIED'),Response::HTTP_OK);
+          return $this->successResponse(1,Config::get('constants.OTP_VERIFIED'),Response::HTTP_OK);
         }
       }
       catch (Exception $e) {
@@ -245,7 +245,7 @@ class UserController extends Controller
           return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
 
         }else{
-          return $this->successResponse($response,Config::get('constants.RESET_PASSWORD_SUCCESS'),Response::HTTP_OK);
+          return $this->successResponse(1,Config::get('constants.RESET_PASSWORD_SUCCESS'),Response::HTTP_OK);
         }
       }
       catch (Exception $e) {
