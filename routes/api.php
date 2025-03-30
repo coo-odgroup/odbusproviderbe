@@ -932,6 +932,7 @@ Route::post('/getPaymentDetails', [OwnerPaymentController::class, 'getPaymentDet
 
 Route::post('/Register', [UserController::class, 'Register']);
 Route::post('/VerifyOtp', [UserController::class, 'verifyOtp']);
+
 Route::post('/Login', [UserController::class, 'login']);
 Route::post('/AgentForgetPasswordOtp', [UserController::class, 'AgentForgetPasswordOtp']);
 Route::post('/AgentVerifyOtp', [UserController::class, 'AgentVerifyOtp']);

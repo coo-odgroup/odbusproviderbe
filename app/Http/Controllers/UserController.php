@@ -91,12 +91,16 @@ class UserController extends Controller
      return $this->successResponse($verify,Config::get('constants.VERIFIED'),Response::HTTP_OK);
      }
     }
-   public function login(Request $request) {  
-    
-    $data = $request->only([
-                              'email','password','user_type'
-                            ]); 
-    $loginValidation = $this->loginValidator->validate($data);
+   public function login(Request $request) { 
+
+    $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+    $request=[];
+
+    $request['email']= isset($arrParam->email) ? $arrParam->email :null;
+    $request['password']= isset($arrParam->password) ? $arrParam->password:null;
+    $request['user_type']= isset($arrParam->user_type) ? $arrParam->user_type:null;
+ 
+    $loginValidation = $this->loginValidator->validate($request);
   
     if ($loginValidation->fails()) {
       $errors = $loginValidation->errors();
@@ -119,7 +123,7 @@ class UserController extends Controller
               return $this->errorResponse(Config::get('constants.INACTIVE_USER'),Response::HTTP_OK);
           break;
       }
-      return $this->successResponse($response,Config::get('constants.LOGIN_SUCCESSFUL'),Response::HTTP_OK);     
+      return $this->successResponse(encryptResponse($response),Config::get('constants.LOGIN_SUCCESSFUL'),Response::HTTP_OK);     
       }
       catch (Exception $e) {
        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -176,7 +180,9 @@ class UserController extends Controller
 
     public function AgentForgetPasswordOtp(Request $request){
 
-      $data = $request->all();
+      $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+      $request['email']=$data['email']=$arrParam->email;
+   
       $agentForgetOtpValidator = $this->agentForgetOtpValidator->validate($data);
      
       if ($agentForgetOtpValidator->fails()) {
@@ -189,7 +195,7 @@ class UserController extends Controller
           return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
 
         }else{
-          return $this->successResponse(1,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
+          return $this->successResponse(encryptResponse($response),Config::get('constants.OTP_GEN'),Response::HTTP_OK);
         }
         
       }
@@ -203,8 +209,11 @@ class UserController extends Controller
 
     public function AgentVerifyOtp(Request $request){
 
-      $data = $request->all();
-      $agentForgetOtpValidator = $this->agentVerifyOtpValidator->validate($data);
+      $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+      $request=[];
+      $request['email']=$arrParam->email;
+      $request['otp']=$arrParam->otp;
+      $agentForgetOtpValidator = $this->agentVerifyOtpValidator->validate($request);
      
       if ($agentForgetOtpValidator->fails()) {
         $errors = $agentForgetOtpValidator->errors();
@@ -219,7 +228,7 @@ class UserController extends Controller
           return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_OK);         
 
         }else{
-          return $this->successResponse(1,Config::get('constants.OTP_VERIFIED'),Response::HTTP_OK);
+          return $this->successResponse(encryptResponse($response),Config::get('constants.OTP_VERIFIED'),Response::HTTP_OK);
         }
       }
       catch (Exception $e) {
@@ -232,8 +241,11 @@ class UserController extends Controller
 
     public function AgentResetPassword(Request $request){
 
-      $data = $request->all();
-      $agentResetPasswordValidator = $this->agentResetPasswordValidator->validate($data);
+      $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+      $request=[];
+      $request['email']=$arrParam->email;
+      $request['password']=$arrParam->password;      
+      $agentResetPasswordValidator = $this->agentResetPasswordValidator->validate($request);
      
       if ($agentResetPasswordValidator->fails()) {
         $errors = $agentResetPasswordValidator->errors();
@@ -245,7 +257,7 @@ class UserController extends Controller
           return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
 
         }else{
-          return $this->successResponse(1,Config::get('constants.RESET_PASSWORD_SUCCESS'),Response::HTTP_OK);
+          return $this->successResponse(encryptResponse($response),Config::get('constants.RESET_PASSWORD_SUCCESS'),Response::HTTP_OK);
         }
       }
       catch (Exception $e) {
