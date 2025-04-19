@@ -48,6 +48,7 @@ class CancelTicketReportRepository
                                     'BookingDetail.BusSeats.ticketPrice',
                                     'Bus','Users','CustomerPayment')
                              ->with('bus.busstoppage')
+                             ->with('ClientWallet')
                              ->where('status', 2);
         
         if($request['USER_BUS_OPERATOR_ID']!="")

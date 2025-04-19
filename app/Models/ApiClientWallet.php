@@ -11,7 +11,7 @@ class ApiClientWallet extends Model
 {
     use HasFactory; 
     protected $table = 'client_wallet';
-    protected $fillable = ['transaction_id','reference_id','payment_via','amount','remarks','user_id','reject_reason'];
+    protected $fillable = ['transaction_id','reference_id','payment_via','type','transaction_type','amount','remarks','user_id','reject_reason'];
 
 
     public function user()
@@ -22,5 +22,6 @@ class ApiClientWallet extends Model
     {
         return $this->belongsTo(Booking::class);       
     }
+    
     
 }

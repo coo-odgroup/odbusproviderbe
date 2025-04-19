@@ -10,6 +10,8 @@ use App\Models\Bus;
 use App\Models\BookingDetail;
 use App\Models\CustomerPayment;
 use App\Models\UserBooking;
+use App\Models\ApiClientWallet;
+
 
 
 class Booking extends Model
@@ -40,6 +42,11 @@ class Booking extends Model
       public function BookingDetail()
       {
             return $this->hasMany(BookingDetail::class);
+      }
+
+      public function ClientWallet()
+      {
+            return $this->hasMany(ApiClientWallet::class)->where('transaction_type','=','c');
       }
       
       public function CustomerPayment()
