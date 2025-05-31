@@ -61,7 +61,7 @@ class ApiUserCompleteReportRepository
 
         if(!empty($user_id))
         {
-           $data=$data->where('origin', $user_id );
+           $data=$data->where('user_id', $user_id);
            //$data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
         }
 
@@ -113,7 +113,7 @@ class ApiUserCompleteReportRepository
         $totalPayableAmount = 0;
         $owner_fare = 0;
         $totalAgentComission = 0;
-   
+
         if($data){
             foreach($data as $key=>$v){
                 // log::info($v->agent_commission);
@@ -152,9 +152,10 @@ class ApiUserCompleteReportRepository
              "totalfare"=> number_format($totalfare, 2, ".", ""),
              "totalPayableAmount"=>number_format($totalReceivedAmount, 2, ".", ""),
              "owner_fare"=>number_format($owner_fare, 2, ".", ""),
-            "data" => $data
-           );            
-
+             "data" => $data
+           ); 
+       
+   
            return $response;     
 
     }  

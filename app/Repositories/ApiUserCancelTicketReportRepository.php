@@ -27,7 +27,7 @@ class ApiUserCancelTicketReportRepository
     public function getData($request)
     {
         $paginate = $request->rows_number;
-        $user_id = $request->user_id;
+        $user_id = $request->apiUser;
         $pnr = $request->pnr;
         $date_range = $request->date_range;
         $payment_id = $request->payment_id;
@@ -66,7 +66,7 @@ class ApiUserCancelTicketReportRepository
 
         if(!empty($user_id))
         {
-            $data=$data->where('origin', $user_id);
+            $data=$data->where('user_id', $user_id);
             //$data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
         }
         
