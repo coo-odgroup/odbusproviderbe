@@ -254,7 +254,7 @@ class TicketInformationRepository
     public function apicancelticket($request){
       $id=$request->id ;
 
-      $cancelticket = $this->booking->find($id);
+      $cancelticket = $this->booking->find($id);     
       $cancelticket->refund_amount = $request['refund_amount'];
       $cancelticket->cancel_reason = $request['reason'];             
       $cancelticket->created_by = $request['cancelled_by'];
@@ -265,7 +265,14 @@ class TicketInformationRepository
 
       $transactionId = date('YmdHis') . gettimeofday()['usec'];
       $balance = $this->apiClientWallet->where('user_id',$cancelticket->user_id)->where('status',1)->orderBy('id','DESC')->limit(1)->get();
-         
+      
+      // Adde By Lima :: 7-Jun-2025
+      $checkIfRefund=DB::table("client_wallet")->where("type","Refund")->where("user_id",$cancelticket->user_id)->where("booking_id",$id)->where("amount",$request['refund_amount'])->first();
+       
+      if($checkIfRefund){
+        return "Refund is successful";
+      }
+      /////////////////////////////
       $newBalance= $request['refund_amount'] +  $balance[0]->balance;   
 
       $ApiClientWallet = new $this->apiClientWallet;
@@ -315,7 +322,25 @@ class TicketInformationRepository
               "refund_amount" => $request->refund_amount
           ]
       ]);
-        log::info('mantish call-back URL has been Executed');
+     
+        log::info('TravelYari call-back URL has been Executed');
+
+         // added b Lima :: 7-Jun-2025
+         $ins['api_url']=$api_url;
+         $ins['request']=json_encode([
+             "pnr" => $cancelticket->pnr,
+             "status" => "cancelled",
+             "cancel_reason" => $request['reason'],
+             "refund_amount" => $request->refund_amount
+         ]);
+         $ins['response']=json_encode($mantish_API);
+         $ins['pnr']=$cancelticket->pnr;
+         $ins['user_id']=$cancelticket->user_id;
+         $ins['created_by']=$request->cancelled_by;
+ 
+         DB::table("callback_api")->insert($ins);
+         ///////////////////////////////////////////////////
+         
 
       }
       elseif($cancelticket->user_id == env('PAYTM_ID'))
@@ -354,7 +379,25 @@ class TicketInformationRepository
 
         curl_close($curl);
         log::info($response);
-        log::info('PTM call-back URL has been Executed -- '.$cancelticket->pnr);
+        log::info('PAYTM call-back URL has been Executed -- '.$cancelticket->pnr);
+
+        // added b Lima :: 7-Jun-2025
+        $ins['api_url']= env('PAYTM_PNR_CANCEL_URL');
+        $ins['request']=json_encode([
+            "pnr"=> $cancelticket->pnr,
+            "doj"=> $cancelticket->journey_dt,
+            "operator_id"=> $bus_details->bus_operator_id,
+            "operator_pnr"=> $cancelticket->pnr,
+            "primary_passenger"=> null
+        ]);
+        $ins['response']=json_encode($mantish_API);
+        $ins['pnr']=$cancelticket->pnr;
+        $ins['user_id']=$cancelticket->user_id;
+        $ins['created_by']=$request->cancelled_by;
+
+        DB::table("callback_api")->insert($ins);
+        ///////////////////////////////////////////////////
+
 
       }
        

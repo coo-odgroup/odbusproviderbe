@@ -203,18 +203,18 @@ class ApiClientWalletRepository
        {
 
         if($user_id!=null && $tranType=='all_transaction' && $rangeFromDate==null && $rangeToDate==null){
-        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND DATE(c.created_at) BETWEEN '".$week_date."' AND '".$today_date."' order by c.id asc");
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_time,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND DATE(c.created_at) BETWEEN '".$week_date."' AND '".$today_date."' order by c.id asc");
        }
        if($user_id!=null && $tranType=='all_transaction' && $rangeFromDate!=null && $rangeToDate!=null){
-        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND DATE(c.created_at) BETWEEN '".$rangeFromDate."' AND '".$rangeToDate."' order by c.id asc");
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_time,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND DATE(c.created_at) BETWEEN '".$rangeFromDate."' AND '".$rangeToDate."' order by c.id asc");
        }
 
        if($user_id!=null && $tranType=='export_transaction' && $rangeFromDate==null && $rangeToDate==null){
-        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND DATE(c.created_at) BETWEEN '".$week_date."' AND '".$today_date."' order by c.id asc");
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_time,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND DATE(c.created_at) BETWEEN '".$week_date."' AND '".$today_date."' order by c.id asc");
        }
 
        if($user_id!=null && $tranType=='export_transaction' && $rangeFromDate!=null && $rangeToDate!=null){
-        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND DATE(c.created_at) BETWEEN '".$rangeFromDate."' AND '".$rangeToDate."' order by c.id asc");
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_time,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,b.deduction_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id AND DATE(c.created_at) BETWEEN '".$rangeFromDate."' AND '".$rangeToDate."' order by c.id asc");
        }
 
        
@@ -275,12 +275,24 @@ class ApiClientWalletRepository
                                     
 
         }else{
-            
-            $main['opening_balance']= $w['balance'] - $w['amount'];
+
+            if($w['transaction_type']=='d'){
+                $main['opening_balance']= @$data[$e-1]->balance;   
+                $main['debit']=$w['amount']; 
+                $main['closing_balance']=$w['balance']; 
+                $main['remarks']=$w['remarks']; 
+                $main['created_at']= $w['created_at'];
+                array_push($final,$main);             
+
+            }else{
+                $main['opening_balance']= $w['balance'] - $w['amount'];
                 $main['credit']=$w['amount'];
                 $main['closing_balance']=$w['balance'];
                 $main['created_at']= $w['created_at'];
                 array_push($final,$main);
+            }
+            
+            
 
         }
 
@@ -303,7 +315,7 @@ class ApiClientWalletRepository
         $final=[];
 
        if($user_id){
-        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id order by c.id asc");
+        $data= DB::select("select c.*,b.pnr,b.journey_dt,b.boarding_time,b.boarding_point,b.client_gst,b.deduction_percent,b.payable_amount,b.refund_amount,(select count(1) from booking_detail where booking_id=c.booking_id) as totalSeats,l1.name as source,l2.name as destination from client_wallet c left join booking b on c.booking_id = b.id left join location l1 on b.source_id=l1.id left join location l2 on b.destination_id=l2.id where c.user_id=$user_id order by c.id asc");
 
        $data=(array) $data;
        foreach($data as $e => $w){
@@ -316,7 +328,7 @@ class ApiClientWalletRepository
                 $main['source']=$w['source'];
                 $main['destination']=$w['destination'];
                 $main['journey_date']=$w['journey_dt'];
-                $main['journey_time']=$w['boarding_point'];
+                $main['journey_time']=$w['boarding_time'];
                 $main['seat']=$w['totalSeats'];
                 $main['cancel_percent']=$w['deduction_percent'];
                 $main['cancel_charges']=0;
