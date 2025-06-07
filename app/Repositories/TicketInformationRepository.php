@@ -300,7 +300,7 @@ class TicketInformationRepository
           'reason' =>$request['reason'],
       );
 
-      $subject = "TICKET CANCELLATION BY ODBUS PNR ".$cancelticket->pnr; 
+      $subject = "TICKET CANCELLATION BY ODBUS - PNR : ".$cancelticket->pnr; 
 
       SendEmailToApiClientJob::dispatch($to_user, $subject, $data);
 
@@ -448,6 +448,7 @@ class TicketInformationRepository
                  ]);
 
                       $response = json_decode($res->getBody());
+                      //log::info($response);
                       $res_sts = $response->data;
                 }
                 else
