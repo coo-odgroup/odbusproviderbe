@@ -46,7 +46,7 @@ class CancelTicketReportRepository
              
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users','CustomerPayment')
+                                    'Bus','Users','User','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->with('ClientWallet')
                              ->where('status', 2);

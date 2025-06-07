@@ -40,7 +40,7 @@ class ApiUserCancelTicketReportRepository
 
         $data= $this->booking->with('BookingDetail.BusSeats.seats',
                                     'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus','Users','CustomerPayment')
+                                    'Bus','Users','User','CustomerPayment')
                              ->with('bus.busstoppage')
                              ->where('app_type','CLNTWEB')    
                              ->where('status', 2);
