@@ -29,7 +29,7 @@ class User extends Model
      */
     protected $table = 'user';    
 
-    protected $fillable = ['name','phone','user_type'];
+    protected $fillable = ['name','phone','user_type','alternate_email'];
     
     public function role()
     {

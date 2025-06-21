@@ -288,6 +288,7 @@ class ApiClientWalletRepository
                 $main['opening_balance']= $w['balance'] - $w['amount'];
                 $main['credit']=$w['amount'];
                 $main['closing_balance']=$w['balance'];
+                $main['remarks']=$w['remarks'];
                 $main['created_at']= $w['created_at'];
                 array_push($final,$main);
             }

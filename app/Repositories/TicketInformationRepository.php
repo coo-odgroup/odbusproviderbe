@@ -300,11 +300,53 @@ class TicketInformationRepository
           'reason' =>$request['reason'],
       );
 
+    
       $subject = "TICKET CANCELLATION BY ODBUS - PNR : ".$cancelticket->pnr; 
 
-      SendEmailToApiClientJob::dispatch($to_user, $subject, $data);
+      if($to_user!=null){
+        SendEmailToApiClientJob::dispatch($to_user, $subject, $data);
+      }
+      
 
       SendEmailToSupportJob::dispatch($to_support, $subject, $data);
+
+      /// send sms to conductor/owner
+        $PNR_Details = $this->CancelPNRDetails($cancelticket->pnr); 
+        $PNR_Details =$PNR_Details[0];
+        $source_name = $this->location->where('id', $PNR_Details->source_id)->first();
+        $destination_name = $this->location->where('id', $PNR_Details->destination_id)->first();
+
+        $all_seats = '';
+        if($PNR_Details->BookingDetail){
+            foreach($PNR_Details->BookingDetail as $k=>$v)
+            {
+              $all_seats.= $v->BusSeats->seats->seatText.',';
+            }
+        }                   
+
+        $all_seats = rtrim($all_seats, ','); 
+
+        $smsData = array(
+                        'phone' =>  $PNR_Details->users->phone,
+                        'PNR' => $cancelticket->pnr,
+                        'busdetails' => $bus_details->name.'-'.$bus_details->bus_number,
+                        'doj' => date('d-m-Y',strtotime($PNR_Details->journey_dt)), 
+                        'route' => $source_name->name.'-'.$destination_name->name,
+                        'seat' => explode(',',$all_seats),
+                        'refundAmount' =>$request->refund_amount
+                    );
+
+           Log::Info($smsData); 
+           
+           $busContactDetails = BusContacts::where('bus_id',$cancelticket->bus_id)
+                                            ->where('status','1')
+                                            ->where('cancel_sms_send','1')
+                                            ->get('phone');
+
+            if($busContactDetails->isNotEmpty()){
+                $contact_number = collect($busContactDetails)->implode('phone',',');
+                $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+            } 
 
       if($cancelticket->user_id == env('MANTIS_ID'))
       {
@@ -321,7 +363,7 @@ class TicketInformationRepository
               "cancel_reason" => $request['reason'],
               "refund_amount" => $request->refund_amount
           ]
-      ]);
+        ]);
      
         log::info('TravelYari call-back URL has been Executed');
 
@@ -390,7 +432,7 @@ class TicketInformationRepository
             "operator_pnr"=> $cancelticket->pnr,
             "primary_passenger"=> null
         ]);
-        $ins['response']=json_encode($mantish_API);
+        $ins['response']=json_encode($response);
         $ins['pnr']=$cancelticket->pnr;
         $ins['user_id']=$cancelticket->user_id;
         $ins['created_by']=$request->cancelled_by;
