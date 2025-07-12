@@ -31,6 +31,7 @@ class ApiUserController extends Controller
         $data = $request->only([
                                 'name',
                                 'email',
+                                'alternate_email',
                                 'phone',
                                 'client_id',
                                 'password',
@@ -96,6 +97,7 @@ class ApiUserController extends Controller
           $data = $request->only([
                             'name',
                             'email',
+                            'alternate_email',
                             'phone',
                             'password',
                             'user_type',

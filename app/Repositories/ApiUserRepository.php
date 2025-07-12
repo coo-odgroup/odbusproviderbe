@@ -155,6 +155,7 @@ class ApiUserRepository
 
         $user->name = $data['name'];
         $user->email = $data['email'];    
+        $user->alternate_email = $data['alternate_email'];    
         $user->phone = $data['phone'];    
         $user->client_id = $client_id;    
         $user->password = bcrypt($data['password']);
@@ -207,6 +208,7 @@ class ApiUserRepository
                         
                         $user->name = $data['name'];
                         $user->email = $data['email'];    
+                        $user->alternate_email = $data['alternate_email'];    
                         $user->phone = $data['phone'];   
                         $user->user_type = "API USER";
                         $user->role_id = "6";
