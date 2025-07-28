@@ -73,21 +73,32 @@ class BusRepository
     {
        
         $data = $this->bus->with('cancellationslabs','ticketPrice')
-        ->orderBy('name','ASC') ->where('bus_operator_id',$id)
+        ->whereHas('ticketPrice', function ($query) 
+                         {$query->where('status','!=', 2 );})
+        ->where('bus_operator_id',$id)
         ->where('status','1')
+        ->orderBy('name','ASC')
         ->get(); 
 
         if($data){
             foreach($data as $v){ 
-             foreach($v->ticketPrice as $k => $a)
-             {             
-             
-                $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
-           }
-               $v['from_location']=$stoppages['source'][0];
-               $v['to_location']=$stoppages['destination'][0];
-       }
+                // $v['from_location']=[];
+                // $v['from_location']=[];
+               // if(count($v->ticketPrice) > 0){
+                    foreach($v->ticketPrice as $k => $a)
+                    {             
+                    
+                        $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+                    }
+
+
+                    $v['from_location']=$stoppages['source'][0];
+                    $v['to_location']=$stoppages['destination'][0];
+               
+
+                //}
+            }
 
    }
     return $data;
