@@ -240,6 +240,7 @@ class BusController extends Controller
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
             }
         }
+
         if(isset($data['manager_no']))
         {
             $mng['bus_id']=$data['id'];
@@ -256,6 +257,8 @@ class BusController extends Controller
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
             }
         }
+
+
         if(isset($data['owner_no']))
         {
             $own['bus_id']=$data['id'];
@@ -272,9 +275,8 @@ class BusController extends Controller
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
             }
         }
-        
-        
-        return $this->successResponse($data, "Bus Contact Details Updated", Response::HTTP_ACCEPTED);
+       
+        return $this->successResponse($data, "Bus Contact Details Updated", Response::HTTP_OK);
     }
 
     public function allCouponBusList($id){
