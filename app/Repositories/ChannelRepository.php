@@ -22,6 +22,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 Use hash_hmac;
 use Razorpay\Api\Errors\SignatureVerificationError;
+use App\Services\ValueFirstService;
 
 class ChannelRepository
 {
@@ -41,8 +42,17 @@ class ChannelRepository
         $this->credentials = $credentials;
         $this->bookingDetail = $bookingDetail;
     } 
-     
-    public function sendSms($data, $otp) 
+     //Craeted by subhasis mohanty on 30Aug 2025
+     public function sendSms($data, $otp) 
+     {       
+
+            $message = "Your OTP to register as agent is $otp . Do not share this with anyone - ODBUS";
+            $valueFirst = new ValueFirstService();
+            $response = $valueFirst->sendSms($data['phone'], $message);
+            return $response;  
+     }
+
+    public function sendSms_backup($data, $otp) 
     {
         $SmsGW = config('services.sms.otpservice');
 
@@ -184,7 +194,13 @@ class ChannelRepository
             session(['msgId'=> $msgId]);
       }
 
-      public function sendSmsTicket($smsdata) 
+//creatyed by subhasis mohanty on 30Aug 2025
+      public function sendSmsTicket($smsdata){
+            $valueFirst = new ValueFirstService();
+            $response = $valueFirst->sendSms($smsdata['mobile_no'], $smsdata['message']);
+            return $response;
+      }
+      public function sendSmsTicket_backup($smsdata) 
       {  
             $SmsGW = config('services.sms.otpservice');  
 
