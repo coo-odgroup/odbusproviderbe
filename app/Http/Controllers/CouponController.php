@@ -75,6 +75,7 @@ class CouponController extends Controller
     public function createCoupon(Request $request) {
         // Log::info($request);exit;
         $data = $request->only(['coupon_type',
+                                'via',
                                 'coupon_title',
                                 'coupon_code',
                                 'short_description',
@@ -91,7 +92,7 @@ class CouponController extends Controller
                                 'from_date',
                                 'to_date',
                                 'bus_operator_id',
-                                'max_redeem','auto_apply','created_by','user_id']);
+                                'max_redeem','auto_apply','apply_once','created_by','user_id']);
         
           $couponRules = [           
             'coupon_title' => 'required',

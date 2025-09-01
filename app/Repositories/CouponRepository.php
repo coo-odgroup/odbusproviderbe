@@ -110,6 +110,7 @@ class CouponRepository
 
 
                 $coupons->coupon_type_id = $data['coupon_type'];
+                $coupons->via = $data['via'];
                 $coupons->coupon_title = $data['coupon_title'];
                 $coupons->coupon_code = strtoupper($data['coupon_code']);      
                 $coupons->type = $data['coupon_discount_type'];
@@ -174,6 +175,8 @@ class CouponRepository
                 $coupons->full_desc = $data['full_description'];
                 $coupons->created_by = $data['created_by'];
                 $coupons->auto_apply = ($data['auto_apply']==true) ? 1 : 0;
+                $coupons->apply_once = ($data['apply_once']==true) ? 1 : 0;
+               
                 $coupons->status = 0;
 
                 ////////// check duplicacy bus for same date range before insert
@@ -273,8 +276,12 @@ class CouponRepository
         // $coupons->from_date = $data['from_date'];
         // $coupons->to_date = $data['to_date'];
         $coupons->short_desc = $data['short_description'];
+        $coupons->via = $data['via'];
+
         $coupons->full_desc = $data['full_description'];
         $coupons->auto_apply =($data['auto_apply']==true) ? 1 : 0;
+        $coupons->apply_once =($data['apply_once']==true) ? 1 : 0;
+        
         $coupons->created_by = $data['created_by'];
         //$coupons->status = 1;        
 
