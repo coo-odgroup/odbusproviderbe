@@ -94,6 +94,8 @@ class OdbusChargesRepository
         $odbusCharges->countdown_endtime = $data['countdown_endtime'];
         $odbusCharges->countdown_enddate = $data['countdown_enddate'];
         $odbusCharges->countdown_title = $data['countdown_title'];
+        $odbusCharges->countdown_status = $data['countdown_status'];
+        
         
         
         $odbusCharges->mobile_no_1 = $data['mobile_no_1'];
