@@ -160,11 +160,12 @@ class ChannelRepository
      $numbers = array_filter(explode(',', $contact_number));
 
     foreach ($numbers as $number) {
-        $number = trim($number); 
-
-    $response = $valueFirst->sendSms($contact_number, $message);
-
+    $number = trim($number); 
+    if ($number !== '') {
+        $response = $valueFirst->sendSms($number, $message);
+        \Log::info("CMO SMS sent", ['phone' => $number, 'response' => $response]);
     }
+}
     \Log::info("Cancel Ticket SMS sent via ValueFirst", [
         'phone'    => $contact_number,
         'message'  => $message,
@@ -377,9 +378,11 @@ public function sendSmsCMO_valueFirst($smsdata,$contact_number){
 
     foreach ($numbers as $number) {
         $number = trim($number); 
+        if($number !==''){
             $response = $valueFirst->sendSms($number['mobile_no'], $smsdata['message']);
             return $response; 
 }
+    }
 }
       public function sendSmsCMO_textlocal($smsdata,$contact_number)
       {           
@@ -551,8 +554,32 @@ public function sendCancelSmsToCustomer_valueFirst($smsdata){
     }
 }
 public function sendCancelSmsToCMO_valueFirst($smsdata){
-            $valueFirst = new ValueFirstService();
-            $response = $valueFirst->sendSms($smsdata['mobile_no'], $smsdata['message']);
+           $seatList = implode(",", $data['seat']);
+    $doj = $data['doj'];
+
+    
+    $message = "PNR: {$data['PNR']}, Bus Details: {$data['busdetails']}, "
+             . "Route: {$data['route']}, DOJ: {$doj}, "
+             . "Seat: {$seatList} is cancelled - ODBUS.";
+
+    
+    $valueFirst = new ValueFirstService();
+
+     $numbers = array_filter(explode(',', $contact_number));
+
+    foreach ($numbers as $number) {
+        $number = trim($number); 
+        if($number !==''){
+            $response = $valueFirst->sendSms($contact_number, $message);
+            \Log::info("CMO SMS sent", ['phone' => $number, 'response' => $response]);
+        }
+
+
+    }
+    \Log::info("Cancel Ticket SMS sent via ValueFirst", [
+        'phone'    => $contact_number,
+        'message'  => $message,
+        'response' => $response]);
             return $response; 
 }
       public function sendCancelSmsToCMO_textlocal($smsdata) 
