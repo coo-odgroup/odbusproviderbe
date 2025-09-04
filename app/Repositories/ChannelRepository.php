@@ -144,11 +144,38 @@ class ChannelRepository
         
     }
 }
- public function sendSmsTicketCancelCMO_valueFirst($data,$contact_number){
-            $valueFirst = new ValueFirstService();
-            $response = $valueFirst->sendSms($contact_number['mobile_no'], $data['message']);
-            return $response;
-      }
+ public function sendSmsTicketCancelCMO_valueFirst($data, $contact_number) 
+{
+    $seatList = implode(",", $data['seat']);
+    $doj = $data['doj'];
+
+    
+    $message = "PNR: {$data['PNR']}, Bus Details: {$data['busdetails']}, "
+             . "Route: {$data['route']}, DOJ: {$doj}, "
+             . "Seat: {$seatList} is cancelled - ODBUS.";
+
+    
+    $valueFirst = new ValueFirstService();
+
+     $numbers = array_filter(explode(',', $contact_number));
+
+    foreach ($numbers as $number) {
+        $number = trim($number); 
+
+    $response = $valueFirst->sendSms($contact_number, $message);
+
+    }
+    \Log::info("Cancel Ticket SMS sent via ValueFirst", [
+        'phone'    => $contact_number,
+        'message'  => $message,
+        'response' => $response
+    ]);
+
+    
+
+    return $response;
+}
+
        public function sendSmsTicketCancelCMO_textlocal($data,$contact_number) 
        {     
             $seatList = implode(",",$data['seat']);
@@ -197,11 +224,34 @@ class ChannelRepository
         
     }
 }
-public function sendSmsTicketCancel_valueFirst($data){
-            $valueFirst = new ValueFirstService();
-            $response = $valueFirst->sendSms($data['mobile_no'], $data['message']);
-            return $response;
-      }
+// created by Subhasis Mohanty on 03 September 2025 for ValueFirst integration
+public function sendSmsTicketCancel_valueFirst($data) 
+{
+    
+    $seatList = implode(",", $data['seat']);
+    $doj = date('d-m-Y', strtotime($data['doj']));
+
+   
+    $message = "PNR: {$data['PNR']}, Bus Details: {$data['busdetails']}, "
+             . "Route: {$data['route']}, DOJ: {$doj}, "
+             . "Seat: {$seatList}, Refund: {$data['refundAmount']} is cancelled - ODBUS.";
+
+    $phone = $data['phone'];
+
+    
+    $valueFirst = new ValueFirstService();
+    $response = $valueFirst->sendSms($phone, $message);
+
+    
+    Log::info("Cancel Ticket SMS sent via ValueFirst", [
+        'phone'   => $phone,
+        'message' => $message,
+        'response'=> $response
+    ]);
+
+    return $response;
+}
+
       public function sendSmsTicketCancel_textlocal($data) 
       {      
             $seatList = implode(",",$data['seat']);
@@ -323,8 +373,13 @@ public function sendSmsTicketCancel_valueFirst($data){
 }
 public function sendSmsCMO_valueFirst($smsdata,$contact_number){
             $valueFirst = new ValueFirstService();
-            $response = $valueFirst->sendSms($contact_number['mobile_no'], $smsdata['message']);
+            $numbers = array_filter(explode(',', $contact_number));
+
+    foreach ($numbers as $number) {
+        $number = trim($number); 
+            $response = $valueFirst->sendSms($number['mobile_no'], $smsdata['message']);
             return $response; 
+}
 }
       public function sendSmsCMO_textlocal($smsdata,$contact_number)
       {           
