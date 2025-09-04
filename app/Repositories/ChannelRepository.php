@@ -42,8 +42,22 @@ class ChannelRepository
         $this->credentials = $credentials;
         $this->bookingDetail = $bookingDetail;
     } 
+
+//created by subhasis mohanty on 03 September 2025 for value first and textlocal integration
+  public function sendSms($data, $otp)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+   
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSms_valueFirst($data, $otp);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSms_textlocal($data, $otp);
+        
+    }
+}
+    
      //Craeted by subhasis mohanty on 30Aug 2025
-     public function sendSms($data, $otp) 
+     public function sendSms_valueFirst($data, $otp) 
      {       
 
             $message = "Your OTP to register as agent is $otp . Do not share this with anyone - ODBUS";
@@ -52,7 +66,7 @@ class ChannelRepository
             return $response;  
      }
 
-    public function sendSms_backup($data, $otp) 
+    public function sendSms_textlocal($data, $otp) 
     {
         $SmsGW = config('services.sms.otpservice');
 
@@ -118,9 +132,24 @@ class ChannelRepository
                 //return $response;
         }
     }
-     
-
-       public function sendSmsTicketCancelCMO($data,$contact_number) 
+    //created by subhasis mohanty on 03 September 2025 for value first and textlocal integration
+          public function sendSmsTicketCancelCMO($data,$contact_number)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+   
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsTicketCancelCMO_valueFirst($data,$contact_number);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsTicketCancelCMO_textlocal($data,$contact_number);
+        
+    }
+}
+ public function sendSmsTicketCancelCMO_valueFirst($data,$contact_number){
+            $valueFirst = new ValueFirstService();
+            $response = $valueFirst->sendSms($contact_number['mobile_no'], $data['message']);
+            return $response;
+      }
+       public function sendSmsTicketCancelCMO_textlocal($data,$contact_number) 
        {     
             $seatList = implode(",",$data['seat']);
             $doj = $data['doj'];
@@ -156,8 +185,24 @@ class ChannelRepository
             session(['msgId'=> $msgId]);
        }
 
-
-      public function sendSmsTicketCancel($data) 
+//created by subhasis mohanty on 03 September 2025 for value first and textlocal integration
+              public function sendSmsTicketCancel($data)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+   
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsTicketCancel_valueFirst($data);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsTicketCancel_textlocal($data);
+        
+    }
+}
+public function sendSmsTicketCancel_valueFirst($data){
+            $valueFirst = new ValueFirstService();
+            $response = $valueFirst->sendSms($data['mobile_no'], $data['message']);
+            return $response;
+      }
+      public function sendSmsTicketCancel_textlocal($data) 
       {      
             $seatList = implode(",",$data['seat']);
             $doj = $data['doj'];
@@ -194,13 +239,26 @@ class ChannelRepository
             session(['msgId'=> $msgId]);
       }
 
+//created by subhasis mohanty on 03 September 2025 for value first and textlocal integration
+        public function sendSmsTicket($smsdata)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+   log::info("SMS Gateway in use: ".$SmsGW);
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsTicket_valueFirst($smsdata);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsTicket_textlocal($smsdata);
+        
+    }
+}
+
 //creatyed by subhasis mohanty on 30Aug 2025
-      public function sendSmsTicket($smsdata){
+      public function sendSmsTicket_valueFirst($smsdata){
             $valueFirst = new ValueFirstService();
             $response = $valueFirst->sendSms($smsdata['mobile_no'], $smsdata['message']);
             return $response;
       }
-      public function sendSmsTicket_backup($smsdata) 
+      public function sendSmsTicket_textlocal($smsdata) 
       {  
             $SmsGW = config('services.sms.otpservice');  
 
@@ -251,8 +309,24 @@ class ChannelRepository
                     //return $response;
             }
       } 
-
-      public function sendSmsCMO($smsdata,$contact_number)
+//created by subhasis mohanty on 03 September 2025 for value first and textlocal integration
+          public function sendSmsCMO($smsdata,$contact_number)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+   
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsCMO_valueFirst($$smsdata,$contact_number);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsCMO_textlocal($$smsdata,$contact_number);
+        
+    }
+}
+public function sendSmsCMO_valueFirst($smsdata,$contact_number){
+            $valueFirst = new ValueFirstService();
+            $response = $valueFirst->sendSms($contact_number['mobile_no'], $smsdata['message']);
+            return $response; 
+}
+      public function sendSmsCMO_textlocal($smsdata,$contact_number)
       {           
             $SmsGW = config('services.sms.otpservice');
 
@@ -339,8 +413,24 @@ class ChannelRepository
                     );                           
             return [$data];        
       }
-
-      public function sendCancelSmsToCustomer($smsdata) 
+//created by subhasis mohanty on 03 September 2025 for value first and textlocal integration
+           public function sendCancelSmsToCustomer($smsdata)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+   
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendCancelSmsToCustomer_valueFirst($smsdata);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->endCancelSmsToCustomer_textlocal($smsdata);
+        
+    }
+}
+public function sendCancelSmsToCustomer_valueFirst($smsdata){
+            $valueFirst = new ValueFirstService();
+            $response = $valueFirst->sendSms($smsdata['mobile_no'], $smsdata['message']);
+            return $response; 
+}
+      public function sendCancelSmsToCustomer_textlocal($smsdata) 
       {  
             $SmsGW = config('services.sms.otpservice');  
 
@@ -393,8 +483,24 @@ class ChannelRepository
                     //return $response;
             }
       }
-
-      public function sendCancelSmsToCMO($smsdata) 
+//created by subhasis mohanty on 03 September 2025 for value first and textlocal integration
+              public function sendCancelSmsToCMO($smsdata)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+   
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendCancelSmsToCMO_valueFirst($smsdata);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendCancelSmsToCMO_textlocal($smsdata);
+        
+    }
+}
+public function sendCancelSmsToCMO_valueFirst($smsdata){
+            $valueFirst = new ValueFirstService();
+            $response = $valueFirst->sendSms($smsdata['mobile_no'], $smsdata['message']);
+            return $response; 
+}
+      public function sendCancelSmsToCMO_textlocal($smsdata) 
       {  
             $SmsGW = config('services.sms.otpservice');  
 
