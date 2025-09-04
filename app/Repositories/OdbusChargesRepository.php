@@ -91,6 +91,10 @@ class OdbusChargesRepository
         $odbusCharges->popup_start_time = $data['popup_start_time'];
         $odbusCharges->popup_end_date = $data['popup_end_date'];
         $odbusCharges->popup_end_time = $data['popup_end_time'];
+        $odbusCharges->countdown_endtime = $data['countdown_endtime'];
+        $odbusCharges->countdown_enddate = $data['countdown_enddate'];
+        $odbusCharges->countdown_title = $data['countdown_title'];
+        
         
         $odbusCharges->mobile_no_1 = $data['mobile_no_1'];
         $odbusCharges->mobile_no_2 = $data['mobile_no_2'];
