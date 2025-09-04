@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class ValueFirstService
 {
@@ -65,6 +66,12 @@ class ValueFirstService
         $response = curl_exec($curl);
 
         curl_close($curl);
+
+        $sms_log['phone']=$to;
+        $sms_log['sms_body']=$message;
+        $sms_log['response']=$response;
+        $sms_log['via']="Admin";
+        DB::table("sms_log")->insert($sms_log);
 
         return $response;
     }
