@@ -570,7 +570,7 @@ public function sendCancelSmsToCMO_valueFirst($smsdata){
     foreach ($numbers as $number) {
         $number = trim($number); 
         if($number !==''){
-            $response = $valueFirst->sendSms($contact_number, $message);
+            $response = $valueFirst->sendSms($number, $message);
             \Log::info("CMO SMS sent", ['phone' => $number, 'response' => $response]);
         }
 
