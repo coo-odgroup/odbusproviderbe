@@ -1284,7 +1284,6 @@ class TicketInformationRepository
                 
                 $sms_Details =  $this->channelRepository->createBookingTktFormatToCustomer($smsData); 
 
-                //log::info($SMS); exit;     
             }                                         
         }
         else if($action == 'smsToConductor')
