@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ValueFirstService
 {
@@ -18,8 +19,20 @@ class ValueFirstService
 
     public function sendSms($to, $message)
     {
-        $curl = curl_init();
+        $numbers = array_filter(explode(',', $to));
 
+        $addrs=[];
+
+        foreach( $numbers as $k => $n){
+            $addrs[]=[
+                    "from" => "ODBUUS",
+                    "to" => $n,
+                    "seq" => $k++,
+                    "tag" => ""
+                ];
+        }
+
+        $curl = curl_init();
         $payload = [
         "apiver" => "1.0",
         "sms" => [
@@ -33,14 +46,7 @@ class ValueFirstService
                 "text" => $message,
                 "property" => 0,
                 "id" => "1",
-                "addresses" => [
-                    [
-                        "from" => "ODBUUS",
-                        "to" => $to,
-                        "seq" => "1",
-                        "tag" => ""
-                    ]
-                ]
+                "addresses" => $addrs
             ]
         ]
     ]
@@ -69,6 +75,7 @@ class ValueFirstService
 
         $sms_log['phone']=$to;
         $sms_log['sms_body']=$message;
+        $sms_log['req_body']=json_encode($payload);
         $sms_log['response']=$response;
         $sms_log['via']="Admin";
         DB::table("sms_log")->insert($sms_log);
