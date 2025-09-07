@@ -56,6 +56,11 @@ class TicketInformationService
     {
         return $this->ticketInformationRepository->apicancelticket($request);
     } 
+
+     public function sms_log($request)
+    {
+        return $this->ticketInformationRepository->sms_log($request);
+    } 
     
     public function cancelticket($request)
     {

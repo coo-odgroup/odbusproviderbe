@@ -149,6 +149,12 @@ class TicketInformationController extends Controller
         return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    public function sms_log(Request $request)
+    {
+        $result = $this->ticketInformationService->sms_log($request);
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
     public function PaytmBookingCancel($pnr)
     {
         $curl = curl_init();

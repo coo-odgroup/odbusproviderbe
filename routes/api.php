@@ -189,6 +189,7 @@ Route::post('/getDetailsSms',[TicketInformationController::class,'getDetailsSms'
 Route::post('/getBookingID',[TicketInformationController::class,'getBookingID']);
 Route::post('/getEmailID',[TicketInformationController::class,'getEmailID']);
 Route::post('/save_customSMS',[TicketInformationController::class,'save_customSMS']);
+Route::post('/sms_log',[TicketInformationController::class,'sms_log']);// added on 7-sep-2025
 Route::post('/GetCancelSmsToCustomer',[TicketInformationController::class,'GetCancelSmsToCustomer']);
 Route::post('/GetCancelSmsToCMO',[TicketInformationController::class,'GetCancelSmsToCMO']);
 Route::post('/save_CancelcustomSMSToCustomer',[TicketInformationController::class,'save_CancelcustomSMSToCustomer']);

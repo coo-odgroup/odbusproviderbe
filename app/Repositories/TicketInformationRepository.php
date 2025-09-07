@@ -1835,4 +1835,9 @@ class TicketInformationRepository
      }
     
 
+     public function sms_log(){
+
+        return DB::table("sms_log")->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(response, '$.status')) = 'Error'")->orderBy('id','DESC')->get();
+     }
+
 }
