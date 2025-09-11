@@ -27,7 +27,7 @@ class ValueFirstService
             $addrs[]=[
                     "from" => "ODBUUS",
                     "to" => $n,
-                    "seq" => $k++,
+                    "seq" => $k+1,
                     "tag" => ""
                 ];
         }
