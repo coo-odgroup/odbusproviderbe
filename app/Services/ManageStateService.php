@@ -32,23 +32,23 @@ class ManageStateService
      * @param $id
      * @return String
      */
-    public function statelist(){
-    	 return $this->manageStateRepository->statelist();
-    } 
+    // public function statelist(){
+    // 	 return $this->manageStateRepository->statelist();
+    // } 
 
-    public function getAllstate($request){
-    	 return $this->manageStateRepository->getAllstate($request);
-    }
+    // public function getAllstate($request){
+    // 	 return $this->manageStateRepository->getAllstate($request);
+    // }
 
-    public function createState($request){
-    	 return $this->manageStateRepository->createState($request);
-    }
+    // public function createState($request){
+    // 	 return $this->manageStateRepository->createState($request);
+    // }
 
-    public function changeStatus($id){
-    	 return $this->manageStateRepository->changeStatus($id);
-    }
+    // public function changeStatus($id){
+    // 	 return $this->manageStateRepository->changeStatus($id);
+    // }
 
-    public function updateState($data, $id){
-            return $location = $this->manageStateRepository->updateState($data, $id);
-    }
+    // public function updateState($data, $id){
+    //         return $location = $this->manageStateRepository->updateState($data, $id);
+    // }
 }

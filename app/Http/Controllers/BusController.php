@@ -30,6 +30,8 @@ use App\Jobs\TestingEmailJob;
 use App\Models\BusSeats;
 use App\Services\BusSeatsService;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\BusRepository; 
+use Illuminate\Support\Facades\DB;//Subhasis Mohanty
 /*Priyadarshi Need to Review*/
 class BusController extends Controller
 {
@@ -46,8 +48,20 @@ class BusController extends Controller
     protected $busSeatsService;
     protected $busSafetyService;
     protected $bookingSeizedService;
+    protected $busRepository;
 
-    public function __construct(BusContactsService $busContactsService,BusAmenitiesService $busAmenitiesService,BusService $busService,BusValidator $busValidator, BusSequenceValidator $BusSequenceValidator, BusStoppageService $BusStoppageService, BusStoppageTimingService $BusStoppageTimingService, BusSeatsService $busSeatsService, BusSafetyService $busSafetyService, BookingSeizedService $bookingSeizedService,BusLocationSequenceService $busLocationSequenceService)
+    public function __construct(BusContactsService $busContactsService,
+                                BusAmenitiesService $busAmenitiesService,
+                                BusService $busService,
+                                BusValidator $busValidator,
+                                 BusSequenceValidator $BusSequenceValidator,
+                                  BusStoppageService $BusStoppageService,
+                                   BusStoppageTimingService $BusStoppageTimingService, 
+                                   BusSeatsService $busSeatsService,
+                                    BusSafetyService $busSafetyService,
+                                     BookingSeizedService $bookingSeizedService,
+                                     BusLocationSequenceService $busLocationSequenceService,
+                                     BusRepository $busRepository)
     {
         $this->busService = $busService;
         $this->busValidator = $busValidator;
@@ -60,58 +74,150 @@ class BusController extends Controller
         $this->busSafetyService=$busSafetyService;
         $this->bookingSeizedService=$bookingSeizedService;
         $this->busLocationSequenceService=$busLocationSequenceService;
+        $this->busRepository = $busRepository;
 
         
-    }
+
+         }
+
+    // public function seatsBus(Request $request) {       
+    //     $buses = $this->busService->seatsBus($request);
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+    // }
+    //}
+
     public function seatsBus(Request $request) {       
-        $buses = $this->busService->seatsBus($request);
+        $buses = $this->busRepository->seatsBus($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
     }
+
+    // public function getAll() {
+    //     $buses = $this->busService->getAll();
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+    // }
 
     public function getAll() {
-        $buses = $this->busService->getAll();
+        $buses = $this->busRepository->getAll();
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
     }
-    public function getByOperaor($id) {
-        $buses = $this->busService->getByOperaor($id);
+    // public function getByOperaor($id) {
+    //     $buses = $this->busService->getByOperaor($id);
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+    // }
+
+     public function getByOperaor($id) {
+        $buses = $this->busRepository->getByOperaor($id);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
     }
 
-    public function getLocationBus($source_id,$destination_id)
+    // public function getLocationBus($source_id,$destination_id)
+    // {
+    //     $buses = $this->busService->getLocationBus($source_id,$destination_id);
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+    // }
+
+     public function getLocationBus($source_id,$destination_id)
     {
-        $buses = $this->busService->getLocationBus($source_id,$destination_id);
+        $buses = $this->busRepository->getLocationBus($source_id,$destination_id);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
     }
     
-    public function locationBusss(Request $request) {       
-        $buses = $this->busService->locationBusss($request);
+    // public function locationBusss(Request $request) {       
+    //     $buses = $this->busService->locationBusss($request);
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+    // }
+
+     public function locationBusss(Request $request) {   
+           
+        $buses = $this->busRepository->locationBusss($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
     }
       //USED WITH auth:api..
-    public function createBuses(Request $request) {
+    // public function createBuses(Request $request) {
 
-        // Log::info($request);exit;
+    //     // Log::info($request);exit;
+    //     $data = $request->only([
+    //         'bus_operator_id','user_id', 'bus_description','cancelation_points', 'name', 'via','bus_number','bus_type_id',
+    //         'bus_sitting_id','amenities_id','cancellationslabs_id','bus_seat_layout_id','running_cycle','has_return_bus','created_by'
+    //       ]);
+        
+    //       $busValidation = $this->busValidator->validate($data);
+
+    //     if ($busValidation->fails()) {
+    //         $errors = $busValidation->errors();
+    //         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    //       }
+
+    //   try {
+    //        $this->busService->savePostData($data);
+           
+    //   } 
+    //   catch (Exception $e) {
+    //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //   }
+    //   return $this->successResponse($data,"Bus Added",Response::HTTP_CREATED); 
+    // } 
+
+     public function createBuses(Request $request)
+    {
         $data = $request->only([
             'bus_operator_id','user_id', 'bus_description','cancelation_points', 'name', 'via','bus_number','bus_type_id',
             'bus_sitting_id','amenities_id','cancellationslabs_id','bus_seat_layout_id','running_cycle','has_return_bus','created_by'
-          ]);
-        
-          $busValidation = $this->busValidator->validate($data);
+        ]);
+
+        $busValidation = $this->busValidator->validate($data);
 
         if ($busValidation->fails()) {
             $errors = $busValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-          }
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
 
-      try {
-           $this->busService->savePostData($data);
-           
-      } 
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse($data,"Bus Added",Response::HTTP_CREATED); 
-    } 
+        try {
+            
+            $this->busRepository->save($data);
+
+            
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+
+        return $this->successResponse($data, "Bus Added", Response::HTTP_CREATED);
+    }
+
+    // public function update(Request $request, $id) {
+    //     // log::info($request);exit;
+    //     $data = $request->only([
+    //         'bus_operator_id','bus_number','user_id','amenities','safety','type','lower_sleeper_extra_fare','ticket_cancelation_id', 'name', 'via','bus_number','bus_description','bus_type_id','bus_sitting_id','cancelation_points','cancellationslabs_id','created_by','bus_seat_layout_id','max_seat_book'
+    //     ]);
+       
+    //     $busValidation = $this->busValidator->basicValidate($data);
+
+    //     if ($busValidation->fails()) {
+    //         $errors = $busValidation->errors();
+    //         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    //     }
+    //     try {
+    //         $this->busService->updatePost($data, $id);
+    //     }
+    //      catch (Exception $e) {
+    //         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //     }
+
+    //     if(isset($data['safety']))
+    //     {
+    //         $safetydata['bus_id']=$id;
+    //         $safetydata['safety']=$data['safety'];
+    //         try {
+    //            $this->busSafetyService->updatePost($safetydata,$id);
+    //         } 
+    //         catch (Exception $e) {
+    //             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //         }
+    //     }
+
+    //     return $this->successResponse($data,"Bus Updated",Response::HTTP_OK);
+    // }
 
     public function update(Request $request, $id) {
         // log::info($request);exit;
@@ -126,7 +232,7 @@ class BusController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->busService->updatePost($data, $id);
+            $this->busRepository->update($data, $id);
         }
          catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -146,40 +252,83 @@ class BusController extends Controller
 
         return $this->successResponse($data,"Bus Updated",Response::HTTP_OK);
     }
-    public function updateBusSequence(Request $request, $id) {
-        $data = $request->only([
-            'sequence'
-        ]);
+    // public function updateBusSequence(Request $request, $id) {
+    //     $data = $request->only([
+    //         'sequence'
+    //     ]);
+       
+    //     $bussequenceValidation = $this->BusSequenceValidator->validate($data);
+
+    //     if ($bussequenceValidation->fails()) {
+    //         $errors = $bussequenceValidation->errors();
+    //         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    //     }
+
+    //     try {
+    //         $this->busService->updateSequncePost($data, $id);
+    //     }
+    //      catch (Exception $e) {
+    //         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //     }
+    //     return $this->successResponse($data,"Bus Sequence Updated",Response::HTTP_OK);
+    // }
+     public function updateBusSequence(Request $request, $id)
+    {
+        $data = $request->only(['sequence']);
+
        
         $bussequenceValidation = $this->BusSequenceValidator->validate($data);
-
         if ($bussequenceValidation->fails()) {
             $errors = $bussequenceValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
 
         try {
-            $this->busService->updateSequncePost($data, $id);
+            
+            $post = $this->busRepository->updatesequence($data, $id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-         catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        return $this->successResponse($data,"Bus Sequence Updated",Response::HTTP_OK);
-    }
 
-    public function deleteById ($id) {
-      try {
-          $bus=$this->busService->deleteById($id);
-      } 
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse($bus,"Bus Deleted",Response::HTTP_ACCEPTED); 
+        return $this->successResponse($post, "Bus Sequence Updated ", Response::HTTP_OK);
     }
-
-    public function getById($id) {
+    // public function deleteById ($id) {
+    //   try {
+    //       $bus=$this->busService->deleteById($id);
+    //   } 
+    //   catch (Exception $e) {
+    //     return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+    //   }
+    //   return $this->successResponse($bus,"Bus Deleted",Response::HTTP_ACCEPTED); 
+    // }
+    
+    public function deleteById($id)
+    {
         try {
-            $busID= $this->busService->getById($id);
+            
+            $bus = $this->busRepository->delete($id);
+        } catch (Exception $e) {
+            
+            return $this->errorResponse(Config::get('constants.RECORD_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->successResponse($bus, "Bus Deleted", Response::HTTP_ACCEPTED);
+    }
+
+   
+
+    // public function getById($id) {
+    //     try {
+    //         $busID= $this->busService->getById($id);
+    //     }
+    //     catch (Exception $e) {
+    //         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+    //     }
+    //     return $this->successResponse($busID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }   
+     public function getById($id) {
+        try {
+            $busID= $this->busRepository->getById($id);
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -187,34 +336,61 @@ class BusController extends Controller
         return $this->successResponse($busID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }   
     
+    // public function getBusDT(Request $request) {      
+        
+    //     $buses = $this->busService->getAllBusDT($request);
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // } 
     public function getBusDT(Request $request) {      
         
-        $buses = $this->busService->getAllBusDT($request);
+        $buses = $this->busRepository->getAllBusDT($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    
+    // public function busSeatsFareData(Request $request) {      
+        
+    //     $buses = $this->busService->busSeatsFareData($request);
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // } 
     public function busSeatsFareData(Request $request) {      
         
-        $buses = $this->busService->busSeatsFareData($request);
+        $buses = $this->busRepository->busSeatsFareData($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
+
+    // public function busseatfarereport(Request $request) {      
+        
+    //     $busesData = $this->busService->busseatfarereport($request);
+    //     return $this->successResponse($busesData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // } 
 
     public function busseatfarereport(Request $request) {      
         
-        $busesData = $this->busService->busseatfarereport($request);
+        $busesData = $this->busRepository->busseatfarereport($request);
         return $this->successResponse($busesData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
+    // public function busupdatesequenceData(Request $request) {      
+        
+    //     $buses = $this->busService->busupdatesequenceData($request);
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // } 
+
     public function busupdatesequenceData(Request $request) {      
         
-        $buses = $this->busService->busupdatesequenceData($request);
+        $buses = $this->busRepository->busupdatesequenceData($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    // public function BusData(Request $request) {      
+        
+    //     $buses = $this->busService->BusData($request);
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
+
     public function BusData(Request $request) {      
         
-        $buses = $this->busService->BusData($request);
+        $buses = $this->busRepository->BusData($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function busContactInfo(Request $request)
@@ -279,16 +455,38 @@ class BusController extends Controller
         return $this->successResponse($data, "Bus Contact Details Updated", Response::HTTP_OK);
     }
 
-    public function allCouponBusList($id){
+    // public function allCouponBusList($id){
 
-        $buses = $this->busService->allCouponBusList($id);
-        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    //     $buses = $this->busService->allCouponBusList($id);
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
+    // }
+
+        public function allCouponBusList($id)
+    {
+        try {
+            $buses = $this->busRepository->allCouponBusList($id);
+        } catch (Exception $e) {
+            
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+        }
+
+        return $this->successResponse($buses, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
+
+
+    
+
+    // public function busDisplayInfo(){
+
+    //     $buses = $this->busService->busDisplayInfo();
+    //     return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+    // }
 
     public function busDisplayInfo(){
 
-        $buses = $this->busService->busDisplayInfo();
+        $buses = $this->busRepository->busDisplayInfo();
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
     }
@@ -542,16 +740,41 @@ class BusController extends Controller
         
        
     } 
-    public function changeStatus ($id) {
+    // public function changeStatus ($id) {
     
-        try{
-          $status=$this->busService->changeStatus($id);
+    //     try{
+    //       $status=$this->busService->changeStatus($id);
+    //     }
+    //     catch (Exception $e){
+    //         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //     }
+    //     return $this->successResponse($status,"Bus Status Updated", Response::HTTP_ACCEPTED);
+    //   }
+
+     public function changeStatus($id)
+    {
+        try {
+            $status = $this->busRepository->changeStatus($id); 
+        } catch (Exception $e) {
+            
+            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
         }
-        catch (Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        return $this->successResponse($status,"Bus Status Updated", Response::HTTP_ACCEPTED);
-      }
+
+        return $this->successResponse($status, "Bus Status Updated", Response::HTTP_ACCEPTED);
+    }
+
+    
+
+
+    //    public function getBusbyBuschedule($id) {
+    //     try {
+    //       $buses= $this->busService->getBusbyBuschedule($id);
+    //     }
+    //     catch (Exception $e) {
+    //       return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //     }
+    //     return $this->successResponse($buses, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    //   }
 
       public function getBusbyBuschedule($id) {
         try {
@@ -563,33 +786,70 @@ class BusController extends Controller
         return $this->successResponse($buses, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
       }
 
-      public function getBusScheduleEntryDates($busId) {
+    //   public function getBusScheduleEntryDates($busId) {
+    //     try {
+    //       $buses= $this->busService->getBusScheduleEntryDates($busId);
+    //     }
+    //     catch (Exception $e) {
+    //       return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //     }
+    //     return $this->successResponse($buses, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    //   }
+      
+
+       public function getBusScheduleEntryDates($busId) {
         try {
-          $buses= $this->busService->getBusScheduleEntryDates($busId);
+          $buses= $this->busRepository->getBusScheduleEntryDates($busId);
         }
         catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse($buses, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
       }
+ 
 
-      public function getBusScheduleEntryDatesFilter(Request $request) {
+    //   public function getBusScheduleEntryDatesFilter(Request $request) {
 
-      $bus = $this->busService->getBusScheduleEntryDatesFilter($request);
-      return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    //   $bus = $this->busService->getBusScheduleEntryDatesFilter($request);
+    //   return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     
-      }
+    //   }
+
+      public function getBusScheduleEntryDatesFilter(Request $request)
+    {
+        $data = $request->all();
+
+        $bus = $this->busRepository->getBusScheduleEntryDatesFilter($data); 
+
+        return $this->successResponse($bus, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    //   public function getBusScheduleEntry(Request $request) {
+
+    //   $bus = $this->busService->getBusScheduleEntry($request);
+    //   return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    
+    //   }
 
       public function getBusScheduleEntry(Request $request) {
+        $data = $request->all();
 
-      $bus = $this->busService->getBusScheduleEntry($request);
+      $bus = $this->busRepository->getBusScheduleEntry($data);
       return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     
       }
 
-      public function getBusScheduleEntryforOperator(Request $request) {
+    //   public function getBusScheduleEntryforOperator(Request $request) {
 
-      $bus = $this->busService->getBusScheduleEntryforOperator($request);
+    //   $bus = $this->busService->getBusScheduleEntryforOperator($request);
+    //   return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    
+    //   }
+
+       public function getBusScheduleEntryforOperator(Request $request) {
+        $data = $request->all();
+
+      $bus = $this->busRepository->getBusScheduleEntryforOperator($data);
       return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     
       }
@@ -606,9 +866,17 @@ class BusController extends Controller
 
       }
 
-     public function GetBusList(Request $request){
+    //  public function GetBusList(Request $request){
 
-        $bus = $this->busService->GetBusList($request);
+    //     $bus = $this->busService->GetBusList($request);
+    //     return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+    //  } 
+      public function GetBusList(Request $request){
+
+        $data = $request->all();
+
+        $bus = $this->busRepository->GetBusList($data);
         return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
      } 

@@ -19,17 +19,17 @@ class AssocAssignReportService
         $this->AssocAssignReportRepository = $AssocAssignReportRepository;
     }
     
-    public function getAssignBusData($request)
-    {
-        return $this->AssocAssignReportRepository->getAssignBusData($request);
-    }
-    public function getAssignAgentData($request)
-    {
-        return $this->AssocAssignReportRepository->getAssignAgentData($request);
-    }
-    public function getAssignOperatorData($request)
-    {
-        return $this->AssocAssignReportRepository->getAssignOperatorData($request);
-    }
+    // public function getAssignBusData($request)
+    // {
+    //     return $this->AssocAssignReportRepository->getAssignBusData($request);
+    // }
+    // public function getAssignAgentData($request)
+    // {
+    //     return $this->AssocAssignReportRepository->getAssignAgentData($request);
+    // }
+    // public function getAssignOperatorData($request)
+    // {
+    //     return $this->AssocAssignReportRepository->getAssignOperatorData($request);
+    // }
 
 }

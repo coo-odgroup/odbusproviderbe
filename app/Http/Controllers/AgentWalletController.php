@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Services\AgentWalletService;
 use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\DB;
+use App\Repositories\AgentWalletRepository;
+use App\Models\BusOwnerFare;
+
 use Exception;
 use InvalidArgumentException;
 use App\AppValidator\AgentWalletValidator;
@@ -18,12 +22,16 @@ class AgentWalletController extends Controller
     use ApiResponser;
     protected $agentWalletService;
     protected $agentWalletValidator;
+    protected $agentWalletRepository;
     
-    public function __construct(AgentWalletService $agentWalletService, AgentWalletValidator $agentWalletValidator)
+    public function __construct(AgentWalletService $agentWalletService,
+                                 AgentWalletValidator $agentWalletValidator,
+                                 AgentWalletRepository $agentWalletRepository)
     {
        
         $this->agentWalletService = $agentWalletService;
         $this->agentWalletValidator = $agentWalletValidator;
+        $this->agentWalletRepository = $agentWalletRepository;
     }
 
    public function getAllData(Request $request) 
@@ -32,17 +40,30 @@ class AgentWalletController extends Controller
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
-     public function agentWalletBalancedetails(Request $request) 
+    //  public function agentWalletBalancedetails(Request $request) 
+    // {      
+     
+    //     $wallet = $this->agentWalletService->agentWalletBalancedetails($request);
+    //     return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // } 
+
+      public function agentWalletBalancedetails(Request $request) 
     {      
      
-        $wallet = $this->agentWalletService->agentWalletBalancedetails($request);
+        $wallet = $this->agentWalletRepository->agentWalletBalancedetails($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
-    public function agentAllTransaction(Request $request) 
+    // public function agentAllTransaction(Request $request) 
+    // {      
+     
+    //     $wallet = $this->agentWalletService->agentAllTransaction($request);
+    //     return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
+     public function agentAllTransaction(Request $request) 
     {      
      
-        $wallet = $this->agentWalletService->agentAllTransaction($request);
+        $wallet = $this->agentWalletRepository->agentAllTransaction($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
   
@@ -74,26 +95,32 @@ class AgentWalletController extends Controller
          
     } 
 
-    public function agentTransByAdmin(Request $request) 
-    { 
-        $data= $this->agentWalletService->agentTransByAdmin($request);
-           return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
-        // $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
+    // public function agentTransByAdmin(Request $request) 
+    // { 
+    //     $data= $this->agentWalletService->agentTransByAdmin($request);
+    //        return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
+//         // $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
 
-        // $agentWalletValidator = $this->agentWalletValidator->validate($data);
-        // if ($agentWalletValidator->fails()) {
-        //     $errors = $agentWalletValidator->errors();
+//         // $agentWalletValidator = $this->agentWalletValidator->validate($data);
+//         // if ($agentWalletValidator->fails()) {
+//         //     $errors = $agentWalletValidator->errors();
             
-        //     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        //   }
-        // try {
-        //    $this->agentWalletService->agentTransByAdmin($request);
-        //    return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
-        // } catch (Exception $e) {
-        //    return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        // }
+//         //     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+//         //   }
+//         // try {
+//         //    $this->agentWalletService->agentTransByAdmin($request);
+//         //    return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
+//         // } catch (Exception $e) {
+//         //    return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+//         // }
          
-    }  
+//    }  
+
+ public function agentTransByAdmin(Request $request) //Subhasis mohanty
+    { 
+        $data= $this->agentWalletRepository->agentTransByAdmin($request);
+           return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
+    }
 
 
     public function changeStatus(Request $request, $id) 
@@ -120,10 +147,18 @@ class AgentWalletController extends Controller
     } 
     
 	   
-    public function agentWalletBalance($id) 
+    // public function agentWalletBalance($id) 
+    // {       
+         
+    //     $wallet = $this->agentWalletService->agentWalletBalance($id);
+    //     return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        
+    // }  
+         
+        public function agentWalletBalance($id) 
     {       
          
-        $wallet = $this->agentWalletService->agentWalletBalance($id);
+        $wallet = $this->agentWalletRepository->balance($id);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
         
     }  

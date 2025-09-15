@@ -21,9 +21,9 @@ class AgentCompleteReportService
         $this->agentcompletereportRepository = $agentcompletereportRepository;
     }
     
-    public function getalldata($request)
-    {
-        return $this->agentcompletereportRepository->getData($request);
-    }
+    // public function getalldata($request)
+    // {
+    //     return $this->agentcompletereportRepository->getData($request);
+    // }
 
 }

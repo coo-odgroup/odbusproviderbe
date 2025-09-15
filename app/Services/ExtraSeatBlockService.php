@@ -19,31 +19,31 @@ class ExtraSeatBlockService
     }
 
    
-    public function deleteExtraSeatBlock($request)
-    {
-        try {
-            $seatblock = $this->extraSeatBlockRepository->deleteExtraSeatBlock($request);
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $seatblock;
-    }    
+    // public function deleteExtraSeatBlock($request)
+    // {
+    //     try {
+    //         $seatblock = $this->extraSeatBlockRepository->deleteExtraSeatBlock($request);
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $seatblock;
+    // }    
    
 
-    public function addExtraSeatBlock($request)
-    {
-        return $this->extraSeatBlockRepository->addExtraSeatBlock($request);
-    } 
+    // public function addExtraSeatBlock($request)
+    // {
+    //     return $this->extraSeatBlockRepository->addExtraSeatBlock($request);
+    // } 
 
-    public function addExtraSeatBlockByOperator($request)
-    {
-        return $this->extraSeatBlockRepository->addExtraSeatBlockByOperator($request);
-    }
+    // public function addExtraSeatBlockByOperator($request)
+    // {
+    //     return $this->extraSeatBlockRepository->addExtraSeatBlockByOperator($request);
+    // }
    
-    public function extraSeatBlockData($request)
-    {
-        return $this->extraSeatBlockRepository->extraSeatBlockData($request);
-    }
+    // public function extraSeatBlockData($request)
+    // {
+    //     return $this->extraSeatBlockRepository->extraSeatBlockData($request);
+    // }
 
 }

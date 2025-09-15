@@ -22,20 +22,20 @@ class ApiClientReportService
     } 
 
    
-    public function getAllData($request)
-    {
-      return $this->ApiClientReportRepository->getAllData($request);
-    }
+    // public function getAllData($request)
+    // {
+    //   return $this->ApiClientReportRepository->getAllData($request);
+    // }
 
-    public function getAllCancelData($request)
-    {
-      return $this->ApiClientReportRepository->getAllCancelData($request);
-    }
+    // public function getAllCancelData($request)
+    // {
+    //   return $this->ApiClientReportRepository->getAllCancelData($request);
+    // }
 	
-	public function datewiseroute($request)
-    {
-      return $this->ApiClientReportRepository->datewiseroute($request);
-    }
+	// public function datewiseroute($request)
+  //   {
+  //     return $this->ApiClientReportRepository->datewiseroute($request);
+  //   }
 
 }
 

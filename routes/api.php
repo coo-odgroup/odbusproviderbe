@@ -143,7 +143,7 @@ Route::post('/assocAssignAgentreport', [AssocAssignReportController::class, 'get
 Route::post('/assocAssignBusreport', [AssocAssignReportController::class, 'getAssignBusData']);
 Route::post('/assocAssignOperatorreport', [AssocAssignReportController::class, 'getAssignOperatorData']);
 
-///////////////// Api Client ////////////////////
+            ///////////////// Api Client ////////////////////
 Route::get('/apiClientWalletBalance/{id}',[ApiClientWalletController::class,'agentWalletBalance']);
 Route::post('/apiClientWallet',[ApiClientWalletController::class,'addAgentWallet']);
 Route::post('/apiClientWalletData',[ApiClientWalletController::class,'getData']);
@@ -279,6 +279,7 @@ Route::post('seosettingData',[SeoSettingController::class,'seosettingData']);
 
 Route::post('/BusData', [BusController::class, 'BusData']);
 Route::get('/busDisplayInfo', [BusController::class, 'busDisplayInfo']);
+
 
 Route::post('/dashboarddata',[DashboardController::class,'getAll']);
 Route::post('/agentdashboarddata',[DashboardController::class,'getAllAgentData']);
@@ -571,7 +572,7 @@ Route::get('/appversion/{id}', [AppVersionController::class, 'getAppVersion']);
 
 Route::get('/sitemaster', [SiteMasterController::class, 'getAllSiteMaster']);
 Route::post('/sitemaster', [SiteMasterController::class, 'createSiteMaster']);
-Route::put('/sitemaster/{id}', [SiteMasterController::class, 'updateSiteMaster']);
+Route::put('/sitemaster/{id}', [SiteMasterController::class, 'updateSiteMaster']); 
 Route::delete('/sitemaster/{id}', [SiteMasterController::class, 'deleteSiteMaster']);
 Route::get('/sitemaster/{id}', [SiteMasterController::class, 'getSiteMaster']);
 

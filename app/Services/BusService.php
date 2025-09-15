@@ -17,52 +17,52 @@ class BusService
     {
         $this->busRepository = $busRepository; 
     }
-    public function deleteById($id)
-    {
-        try {
-            $post = $this->busRepository->delete($id);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
-    }
-    public function getAll()
-    {
-        return $this->busRepository->getAll();
-    }
-    public function seatsBus($request)
-    {
-        return $this->busRepository->seatsBus($request);
-    }  
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $post = $this->busRepository->delete($id);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
+    // }
+    // public function getAll()
+    // {
+    //     return $this->busRepository->getAll();
+    // }
+    // public function seatsBus($request)
+    // {
+    //     return $this->busRepository->seatsBus($request);
+    // }  
     
-    public function locationBusss($request)
-    {
-        return $this->busRepository->locationBusss($request);
-    }  
+    // public function locationBusss($request)
+    // {
+    //     return $this->busRepository->locationBusss($request);
+    // }  
 
-    public function busseatfarereport($request)
-    {
-        return $this->busRepository->busseatfarereport($request);
-    }
-    public function getByOperaor($id)
-    {
-        return $this->busRepository->getByOperaor($id);
-    }
+    // {
+        // public function busseatfarereport($request)
+    //     return $this->busRepository->busseatfarereport($request);
+    // }
+    // public function getByOperaor($id)
+    // {
+    //     return $this->busRepository->getByOperaor($id);
+    // }
 
-    public function getLocationBus($source_id,$destination_id)
-    {
-        return $this->busRepository->getLocationBus($source_id,$destination_id);
-    }
+    // public function getLocationBus($source_id,$destination_id)
+    // {
+    //     return $this->busRepository->getLocationBus($source_id,$destination_id);
+    // }
 
-    public function getById($id)
-    {
-        return $this->busRepository->getById($id);
-    } 
+    // public function getById($id)
+    // {
+    //     return $this->busRepository->getById($id);
+    // } 
 
-    public function busDisplayInfo()
-    {
-        return $this->busRepository->busDisplayInfo();
-    }
+    // public function busDisplayInfo()
+    // {
+    //     return $this->busRepository->busDisplayInfo();
+    // }
 
     public function updateBusName($data, $id)
     {
@@ -83,98 +83,98 @@ class BusService
         }
         return $post;
     }
-    public function updatePost($data, $id)
-    {
-        try {
-            $post = $this->busRepository->update($data, $id);
+    // public function updatePost($data, $id)
+    // {
+    //     try {
+    //         $post = $this->busRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
+    // }
 
-    public function allCouponBusList($id)
-    {
-        try {
-            $post = $this->busRepository->allCouponBusList($id);
+    // public function allCouponBusList($id)
+    // {
+    //     try {
+    //         $post = $this->busRepository->allCouponBusList($id);
 
-        } catch (Exception $e) {
-           //Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //        //Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
+    // }
 
     
-    public function savePostData($data)
-    {
-        // log::info($data);
-        $result = $this->busRepository->save($data);
-        return $result;
-    }
-    public function saveRoute($data)
-    {
-        $result = $this->busRepository->saveRoute($data);
-        return result;
-    }
-    public function getAllBusDT( $request)
-    {
-        return $this->busRepository->getAllBusDT($request);
-    }
+    // public function savePostData($data)
+    // {
+    //     // log::info($data);
+    //     $result = $this->busRepository->save($data);
+    //     return $result;
+    // }
+    // public function saveRoute($data)
+    // {
+    //     $result = $this->busRepository->saveRoute($data);
+    //     return result;
+    // }
+    // public function getAllBusDT( $request)
+    // {
+    //     return $this->busRepository->getAllBusDT($request);
+    // }
 
-    public function busSeatsFareData($request)
-    {
-        return $this->busRepository->busSeatsFareData($request);
-    } 
+    // public function busSeatsFareData($request)
+    // {
+    //     return $this->busRepository->busSeatsFareData($request);
+    // } 
 
-    public function busupdatesequenceData($request)
-    {
-        return $this->busRepository->busupdatesequenceData($request);
-    }
+    // public function busupdatesequenceData($request)
+    // {
+    //     return $this->busRepository->busupdatesequenceData($request);
+    // }
 
-    public function BusData($request)
-    {
-        return $this->busRepository->BusData($request);
+    // public function BusData($request)
+    // {
+    //     return $this->busRepository->BusData($request);
         
-    }
+    // }
     
-    public function changeStatus($id)
-    {
-        try {
-            $post = $this->busRepository->changeStatus($id);
+    // public function changeStatus($id)
+    // {
+    //     try {
+    //         $post = $this->busRepository->changeStatus($id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
-        }
-        return $post;
-    }
-    public function getBusbyBuschedule($id)
-    {
-        return $this->busRepository->getBusbyBuschedule($id);
-    }
-    public function getBusScheduleEntryDates($busId)
-    {
-        return $this->busRepository->getBusScheduleEntryDates($busId);
-    }
-    public function getBusScheduleEntryDatesFilter($data)
-    {
-        return $this->busRepository->getBusScheduleEntryDatesFilter($data);
-    } 
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+    //     }
+    //     return $post;
+    // }
+    // public function getBusbyBuschedule($id)
+    // {
+    //     return $this->busRepository->getBusbyBuschedule($id);
+    // }
+    // public function getBusScheduleEntryDates($busId)
+    // {
+    //     return $this->busRepository->getBusScheduleEntryDates($busId);
+    // }
+    // public function getBusScheduleEntryDatesFilter($data)
+    // {
+    //     return $this->busRepository->getBusScheduleEntryDatesFilter($data);
+    // } 
 
-    public function getBusScheduleEntry($data)
-    {
-        return $this->busRepository->getBusScheduleEntry($data);
-    }
+    // public function getBusScheduleEntry($data)
+    // {
+    //     return $this->busRepository->getBusScheduleEntry($data);
+    // }
 
-    public function getBusScheduleEntryforOperator($data)
-    {
-        return $this->busRepository->getBusScheduleEntryforOperator($data);
-    }
+    // public function getBusScheduleEntryforOperator($data)
+    // {
+    //     return $this->busRepository->getBusScheduleEntryforOperator($data);
+    // }
 
-    public function GetBusList($data)
-    {
-        return $this->busRepository->GetBusList($data);
+    // public function GetBusList($data)
+    // {
+    //     return $this->busRepository->GetBusList($data);
 
-    }
+    // }
 }

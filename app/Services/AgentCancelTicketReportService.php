@@ -21,9 +21,9 @@ class AgentCancelTicketReportService
         $this->agentCancelTicketReportRepository = $agentCancelTicketReportRepository;
     }
     
-    public function getalldata($request)
-    {
-        return $this->agentCancelTicketReportRepository->getData($request);
-    }
+    // public function getalldata($request)
+    // {
+    //     return $this->agentCancelTicketReportRepository->getData($request);
+    // }
 
 }

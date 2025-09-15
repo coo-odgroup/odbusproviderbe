@@ -23,118 +23,127 @@ class TicketInformationService
     public function __construct(TicketInformationRepository $ticketInformationRepository)
     {
         $this->ticketInformationRepository = $ticketInformationRepository;
-    }
 
-    public function failedticketadjust($request)
-    {
-        return $this->ticketInformationRepository->failedticketadjust($request);
     }
-
-    public function failedticketadjustdata($request)
-    {
-        return $this->ticketInformationRepository->failedticketadjustdata($request);
-    } 
 
 
     
-    public function getpnrdetails($request)
-    {
-        return $this->ticketInformationRepository->getpnrdetails($request);
-    } 
+       /////////////// SUBHASIS MOHANTY - GARBAGE CODE CHANGE /////////////////
 
-    public function getApiPnrDetails($request)
-    {
-        return $this->ticketInformationRepository->getApiPnrDetails($request);
-    } 
 
-    public function getPnrDetailsForSms($request)
-    {
-        return $this->ticketInformationRepository->getPnrDetailsForSms($request);
-    } 
 
-    public function apicancelticket($request)
-    {
-        return $this->ticketInformationRepository->apicancelticket($request);
-    } 
 
-     public function sms_log($request)
-    {
-        return $this->ticketInformationRepository->sms_log($request);
-    } 
+
+    // public function failedticketadjust($request)
+    // {
+    //     return $this->ticketInformationRepository->failedticketadjust($request);
+    // }
+
+    // public function failedticketadjustdata($request)
+    // {
+    //     return $this->ticketInformationRepository->failedticketadjustdata($request);
+    // } 
+
+
     
-    public function cancelticket($request)
-    {
-        return $this->ticketInformationRepository->cancelticket($request);
-    } 
+    // public function getpnrdetails($request)
+    // {
+    //     return $this->ticketInformationRepository->getpnrdetails($request);
+    // } 
 
-    public function cancelticketdata($request)
-    {
-        return $this->ticketInformationRepository->cancelticketdata($request);
-    }
-    public function adjustticketdata ($request)
-    {
-        return $this->ticketInformationRepository->adjustticketdata ($request);
-    }
+    // public function getApiPnrDetails($request)
+    // {
+    //     return $this->ticketInformationRepository->getApiPnrDetails($request);
+    // } 
 
-    public function adjustticket($request)
-    {
-        return $this->ticketInformationRepository->adjustticket($request);
-    }
+    // public function getPnrDetailsForSms($request)
+    // {
+    //     return $this->ticketInformationRepository->getPnrDetailsForSms($request);
+    // } 
 
-    public function getDetailsSms($request)
-    {
-        return $this->ticketInformationRepository->getDetailsSms($request);
-    } 
+    // public function apicancelticket($request)
+    // {
+    //     return $this->ticketInformationRepository->apicancelticket($request);
+    // } 
 
-    public function getBookingID($request)
-    {
-        return $this->ticketInformationRepository->getBookingID($request);
-    }  
+    //  public function sms_log($request)
+    // {
+    //     return $this->ticketInformationRepository->sms_log($request);
+    // } 
+    
+    // public function cancelticket($request)
+    // {
+    //     return $this->ticketInformationRepository->cancelticket($request);
+    // } 
 
-    public function save_customSMS($request)
+    // public function cancelticketdata($request)
+    // {
+    //     return $this->ticketInformationRepository->cancelticketdata($request);
+    // }
+    // public function adjustticketdata ($request)
+    // {
+    //     return $this->ticketInformationRepository->adjustticketdata ($request);
+    // }
+
+    // public function adjustticket($request)
+    // {
+    //     return $this->ticketInformationRepository->adjustticket($request);
+    // }
+
+    // public function getDetailsSms($request)
+    // {
+    //     return $this->ticketInformationRepository->getDetailsSms($request);
+    // } 
+
+    // public function getBookingID($request)
+    // {
+    //     return $this->ticketInformationRepository->getBookingID($request);
+    // }  
+
+    public function git($request)
     {
         return $this->ticketInformationRepository->save_customSMS($request);
     } 
 
-    public function GetCancelSmsToCustomer($request)
-    {
-        return $this->ticketInformationRepository->GetCancelSmsToCustomer($request);
-    }
+    // public function GetCancelSmsToCustomer($request)
+    // {
+    //     return $this->ticketInformationRepository->GetCancelSmsToCustomer($request);
+    // }
 
-    public function GetCancelSmsToCMO($request)
-    {
-        return $this->ticketInformationRepository->GetCancelSmsToCMO($request);
-    }
+    // public function GetCancelSmsToCMO($request)
+    // {
+    //     return $this->ticketInformationRepository->GetCancelSmsToCMO($request);
+    // }
 
-    public function save_CancelcustomSMSToCustomer($request)
-    {
-        return $this->ticketInformationRepository->save_CancelcustomSMSToCustomer($request);
-    } 
+    // public function save_CancelcustomSMSToCustomer($request)
+    // {
+    //     return $this->ticketInformationRepository->save_CancelcustomSMSToCustomer($request);
+    // } 
 
-    public function save_CancelcustomSMSToCMO($request)
-    {
-        return $this->ticketInformationRepository->save_CancelcustomSMSToCMO($request);
-    } 
+    // public function save_CancelcustomSMSToCMO($request)
+    // {
+    //     return $this->ticketInformationRepository->save_CancelcustomSMSToCMO($request);
+    // } 
 
-    public function getEmailID($request)
-    {
-        return $this->ticketInformationRepository->getEmailID($request);
-    }
+    // public function getEmailID($request)
+    // {
+    //     return $this->ticketInformationRepository->getEmailID($request);
+    // }
 
-    public function sendEmailToBooking($request)
-    {
-        return $this->ticketInformationRepository->sendEmailToBooking($request);
-    }
+    // public function sendEmailToBooking($request)
+    // {
+    //     return $this->ticketInformationRepository->sendEmailToBooking($request);
+    // }
 
-    public function sendEmailToCustomer($request)
-    {
-        return $this->ticketInformationRepository->sendEmailToCustomer($request);
-    }
+    // public function sendEmailToCustomer($request)
+    // {
+    //     return $this->ticketInformationRepository->sendEmailToCustomer($request);
+    // }
 
-    public function sendCancelEmailToSupport($request)
-    {
-        return $this->ticketInformationRepository->sendCancelEmailToSupport($request);
-    }
+    // public function sendCancelEmailToSupport($request)
+    // {
+    //     return $this->ticketInformationRepository->sendCancelEmailToSupport($request);
+    // }
     
     
 }

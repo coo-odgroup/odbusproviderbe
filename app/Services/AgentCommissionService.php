@@ -23,17 +23,17 @@ class AgentCommissionService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
-    {
-        try {
-            $busType = $this->agentCommissionRepository->delete($id);
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $busType = $this->agentCommissionRepository->delete($id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $busType;
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $busType;
 
-    }
+    // }
     /**
      * Get all Data
      *
@@ -51,10 +51,10 @@ class AgentCommissionService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->agentCommissionRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->agentCommissionRepository->getById($id);
+    // }
     /**
      * Update  data
      * Store to DB if there are no errors.
@@ -62,16 +62,16 @@ class AgentCommissionService
      * @param array $data
      * @return String
      */
-    public function update($data, $id)
-    {
-        try {
-            $busType = $this->agentCommissionRepository->update($data, $id);
+    // public function update($data, $id)
+    // {
+    //     try {
+    //         $busType = $this->agentCommissionRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $busType;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $busType;
+    // }
 
     /**
      * Validate  data.
@@ -80,24 +80,24 @@ class AgentCommissionService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        try {
-            $busType = $this->agentCommissionRepository->save($data);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $busType;
-    }
+    // public function savePostData($data)
+    // {
+    //     try {
+    //         $busType = $this->agentCommissionRepository->save($data);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $busType;
+    // }
     /**
      * Get all Data in Datatable Format.
      *
      * @return String
      */
-    public function getAllAgentCommissionData($request)
-    {
-        return $this->agentCommissionRepository->getAllAgentCommissionData($request);
-    }
+    // public function getAllAgentCommissionData($request)
+    // {
+    //     return $this->agentCommissionRepository->getAllAgentCommissionData($request);
+    // }
     public function changeStatus($id)
     {
         try {

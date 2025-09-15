@@ -119,17 +119,17 @@ class AgentNotificationService
         return $post;
     }
 	 
-	public function allPushNotification($request)
-    {
-        try {
-            $post = $this->agentNotificationRepository->allPushNotification($request);
+	// public function allPushNotification($request)
+    // {
+    //     try {
+    //         $post = $this->agentNotificationRepository->allPushNotification($request);
 
-        } catch (Exception $e) {
-            // Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //         // Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $post;
+    // }
 	
 	
 

@@ -139,37 +139,37 @@ class ApiClientWalletService
 
         //return $this->ApiClientWalletRepository->getData($request);
     }
-    public function agentWalletBalance($id)
-    {
+    // public function agentWalletBalance($id)
+    // {
       
-      return $this->ApiClientWalletRepository->balance($id);
-    }
+    //   return $this->ApiClientWalletRepository->balance($id);
+    // }
 
-    public function allTransactionData($request)
-    {
+    // public function allTransactionData($request)
+    // {
       
-      return $this->ApiClientWalletRepository->allTransactionData($request);
-    }
+    //   return $this->ApiClientWalletRepository->allTransactionData($request);
+    // }
 
-    public function agentAllTransaction($id)
-    {
+    // public function agentAllTransaction($id)
+    // {
       
-      return $this->ApiClientWalletRepository->agentAllTransaction($id);
-    }
+    //   return $this->ApiClientWalletRepository->agentAllTransaction($id);
+    // }
 
-    public function apiClientTotalTransactions($request)
-    {
+    // public function apiClientTotalTransactions($request)
+    // {
       
-      return $this->ApiClientWalletRepository->apiClientTotalTransactions($request);
-    }
+    //   return $this->ApiClientWalletRepository->apiClientTotalTransactions($request);
+    // }
 
      
 
-    public function agentWalletBalancedetails($request)
-    {
+    // public function agentWalletBalancedetails($request)
+    // {
       
-      return $this->ApiClientWalletRepository->ApiClientWalletBalancedetails($request);
-    }
+    //   return $this->ApiClientWalletRepository->ApiClientWalletBalancedetails($request);
+    // }
         
     public function savePostData($data)
     {
@@ -182,53 +182,53 @@ class ApiClientWalletService
         return $post;
     }
    
-   public function changeStatus($data,$id)
-   {
-           $otp_status= $this->ApiClientWalletRepository->Otp($id,$data);
-           // log::info($otp_status);
-           // exit;
+  //  public function changeStatus($data,$id)
+  //  {
+  //          $otp_status= $this->ApiClientWalletRepository->Otp($id,$data);
+  //          // log::info($otp_status);
+  //          // exit;
 
-       if(sizeof($otp_status)>0)
-       {
+  //      if(sizeof($otp_status)>0)
+  //      {
        
-            return $post = $this->ApiClientWalletRepository->update_Status($id,$otp_status[0],$data);
+  //           return $post = $this->ApiClientWalletRepository->update_Status($id,$otp_status[0],$data);
            
-            // $user_id = $post->user_id;
+  //           // $user_id = $post->user_id;
             
-            // $prvious_balance = $this->ApiClientWalletRepository->balance($user_id);
+  //           // $prvious_balance = $this->ApiClientWalletRepository->balance($user_id);
             
-               // if($post->transaction_type == "c")
-               //  {           
-               //      $balance=$prvious_balance[0]->balance + (int)$post->amount;
+  //              // if($post->transaction_type == "c")
+  //              //  {           
+  //              //      $balance=$prvious_balance[0]->balance + (int)$post->amount;
 
-               //  }
-               //  else if($post->transaction_type == "d")
-               //  {        
-               //      $balance=$prvious_balance[0]->balance - (int)$post->amount;
-               //  } 
+  //              //  }
+  //              //  else if($post->transaction_type == "d")
+  //              //  {        
+  //              //      $balance=$prvious_balance[0]->balance - (int)$post->amount;
+  //              //  } 
                
-               //   return $updated_balance =$this->ApiClientWalletRepository->update_balance($id,$balance,$otp_status,$data);   
-       }
-       else
-       {
-         return 'Invalid OTP';
-       }
-   }
+  //              //   return $updated_balance =$this->ApiClientWalletRepository->update_balance($id,$balance,$otp_status,$data);   
+  //      }
+  //      else
+  //      {
+  //        return 'Invalid OTP';
+  //      }
+  //  }
 
 
-   public function declineWlletReqStatus($data,$id)
-   {
-       return $this->ApiClientWalletRepository->declineWalletReq($data,$id);
-   }
+  //  public function declineWlletReqStatus($data,$id)
+  //  {
+  //      return $this->ApiClientWalletRepository->declineWalletReq($data,$id);
+  //  }
 
-    public function clientTransByAdmin($data)
-    {
-      return $this->ApiClientWalletRepository->clientTransByAdmin($data);
-    }
-    public function clientTransUpdateByAdmin($data)
-    {
-      return $this->ApiClientWalletRepository->clientTransUpdateByAdmin($data);
-    }
+    // public function clientTransByAdmin($data)
+    // {
+    //   return $this->ApiClientWalletRepository->clientTransByAdmin($data);
+    // }
+    // public function clientTransUpdateByAdmin($data)
+    // {
+    //   return $this->ApiClientWalletRepository->clientTransUpdateByAdmin($data);
+    // }
 
 }
 

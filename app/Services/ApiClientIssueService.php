@@ -19,31 +19,31 @@ class ApiClientIssueService
     }
     
 
-    public function apiclientissuetype()
-    {
-        return $this->ApiClientIssueRepository->apiclientissuetype();
-    }
-    public function apiclientissuesubtype($request)
-    {
-        return $this->ApiClientIssueRepository->apiclientissuesubtype($request);
-    }
+    // public function apiclientissuetype()
+    // {
+    //     return $this->ApiClientIssueRepository->apiclientissuetype();
+    // }
+    // public function apiclientissuesubtype($request)
+    // {
+    //     return $this->ApiClientIssueRepository->apiclientissuesubtype($request);
+    // }
 
-    public function apiclientissuedata($request)
-    {
-        return $this->ApiClientIssueRepository->apiclientissuedata($request);
-    }
-    public function allapiclientissuedata($request)
-    {
-        return $this->ApiClientIssueRepository->allapiclientissuedata($request);
-    }
-    public function apiclientissuestatue($request)
-    {
-        return $this->ApiClientIssueRepository->apiclientissuestatue($request);
-    }
-     public function addapiclientissue($request)
-    {
-        return $this->ApiClientIssueRepository->addapiclientissue($request);
-    }
+    // public function apiclientissuedata($request)
+    // {
+    //     return $this->ApiClientIssueRepository->apiclientissuedata($request);
+    // }
+    // public function allapiclientissuedata($request)
+    // {
+    //     return $this->ApiClientIssueRepository->allapiclientissuedata($request);
+    // }
+    // public function apiclientissuestatue($request)
+    // {
+    //     return $this->ApiClientIssueRepository->apiclientissuestatue($request);
+    // }
+    //  public function addapiclientissue($request)
+    // {
+    //     return $this->ApiClientIssueRepository->addapiclientissue($request);
+    // }
 
     
     // public function changeStatus($id)

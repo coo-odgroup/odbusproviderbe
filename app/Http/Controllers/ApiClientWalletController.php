@@ -6,6 +6,7 @@ use App\Models\Bus;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Services\ApiClientWalletService;
+use App\Repositories\ApiClientWalletRepository;
 use App\Traits\ApiResponser;
 use Exception;
 use InvalidArgumentException;
@@ -23,12 +24,16 @@ class ApiClientWalletController extends Controller
     use ApiResponser;
     protected $ApiClientWalletService;
     protected $ApiClientWalletValidator;
+    protected $ApiClientWalletRepository;
     
-    public function __construct(ApiClientWalletService $ApiClientWalletService, ApiClientWalletValidator $ApiClientWalletValidator)
+    public function __construct(ApiClientWalletService $ApiClientWalletService, 
+                                ApiClientWalletValidator $ApiClientWalletValidator,
+                                ApiClientWalletRepository $ApiClientWalletRepository)
     {
        
         $this->ApiClientWalletService = $ApiClientWalletService;
         $this->ApiClientWalletValidator = $ApiClientWalletValidator;
+        $this->ApiClientWalletRepository = $ApiClientWalletRepository;
     }
 
    public function getAllData(Request $request) 
@@ -37,26 +42,48 @@ class ApiClientWalletController extends Controller
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
-     public function agentWalletBalancedetails(Request $request) 
+    //  public function agentWalletBalancedetails(Request $request) 
+    // {      
+     
+    //     $wallet = $this->ApiClientWalletService->agentWalletBalancedetails($request);
+    //     return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // } 
+
+    public function agentWalletBalancedetails(Request $request) 
     {      
      
-        $wallet = $this->ApiClientWalletService->agentWalletBalancedetails($request);
+        $wallet = $this->ApiClientWalletRepository->agentWalletBalancedetails($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
-    public function agentAllTransaction(Request $request) 
+    // public function agentAllTransaction(Request $request) 
+    // {      
+     
+    //     $wallet = $this->ApiClientWalletService->agentAllTransaction($request);
+    //     return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // } 
+
+     public function agentAllTransaction(Request $request) 
     {      
      
-        $wallet = $this->ApiClientWalletService->agentAllTransaction($request);
+        $wallet = $this->ApiClientWalletRepository->agentAllTransaction($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    // public function apiClientTotalTransactions(Request $request) 
+    // {      
+     
+    //     $wallet = $this->ApiClientWalletService->apiClientTotalTransactions($request);
+    //     return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
 
     public function apiClientTotalTransactions(Request $request) 
     {      
      
-        $wallet = $this->ApiClientWalletService->apiClientTotalTransactions($request);
+        $wallet = $this->ApiClientWalletRepository->apiClientTotalTransactions($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
 
     
 
@@ -67,14 +94,41 @@ class ApiClientWalletController extends Controller
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
+    // public function allTransactionData(Request $request) 
+    // {      
+
+    //     $wallet = $this->ApiClientWalletService->allTransactionData($request);
+    //     return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
+
+
     public function allTransactionData(Request $request) 
     {      
 
-        $wallet = $this->ApiClientWalletService->allTransactionData($request);
+        $wallet = $this->ApiClientWalletRepository->allTransactionData($request);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    public function addAgentWallet(Request $request) 
+    // public function addAgentWallet(Request $request) 
+    // { 
+        
+    //     $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
+
+    //     $ApiClientWalletValidator = $this->ApiClientWalletValidator->validate($data);
+    //     if ($ApiClientWalletValidator->fails()) {
+    //         $errors = $ApiClientWalletValidator->errors();
+            
+    //         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    //       }
+    //     try {
+    //        $this->ApiClientWalletService->savePostData($request);
+    //        return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
+    //     } catch (Exception $e) {
+    //        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //     }
+         
+    // }  
+public function addAgentWallet(Request $request) 
     { 
         
         $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
@@ -86,7 +140,7 @@ class ApiClientWalletController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
           }
         try {
-           $this->ApiClientWalletService->savePostData($request);
+           $this->ApiClientWalletRepository->save($request);
            return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
         } catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -94,21 +148,56 @@ class ApiClientWalletController extends Controller
          
     }  
 
-
-    public function changeStatus(Request $request, $id) 
-    {       
-    	 $data=$this->ApiClientWalletService->changeStatus($request,$id);
-         if($data=='Invalid OTP'){
-             return $this->errorResponse($data,Response::HTTP_PARTIAL_CONTENT);
-         }else{
-             return $this->successResponse($data,"Wallet request Updated",Response::HTTP_CREATED);
-         }
+    // public function changeStatus(Request $request, $id) 
+    // {       
+    // 	 $data=$this->ApiClientWalletService->changeStatus($request,$id);
+    //      if($data=='Invalid OTP'){
+    //          return $this->errorResponse($data,Response::HTTP_PARTIAL_CONTENT);
+    //      }else{
+    //          return $this->successResponse($data,"Wallet request Updated",Response::HTTP_CREATED);
+    //      }
         
-    }  
+    // }  
+    
 
-    public function declineWlletReqStatus(Request $request, $id) 
+
+    public function changeStatus(Request $request, $id)
+    {
+        $otp_status = $this->apiClientWalletRepository->Otp($id, $request);
+
+        if (sizeof($otp_status) > 0) {
+            $post = $this->apiClientWalletRepository->update_Status($id, $otp_status[0], $request);
+            return $this->successResponse($post, "Wallet request Updated", Response::HTTP_CREATED);
+        } else {
+            return $this->errorResponse('Invalid OTP', Response::HTTP_PARTIAL_CONTENT);
+        }
+    }
+
+
+     
+
+    // public function declineWlletReqStatus(Request $request, $id) 
+    // {       
+    //     $data = $request->all();
+
+    //      $ApiClientWalletValidator = $this->ApiClientWalletValidator->validate($data);
+    // 	$dd = $this->ApiClientWalletService->declineWalletReqStatus($data,$id);       
+
+    //     if($dd !=' '){
+    //     return $this->successResponse($dd,"Wallet Request Declined!",Response::HTTP_CREATED);
+    //     }else{
+    //         return $this->errorResponse($dd,Response::HTTP_PARTIAL_CONTENT);
+    //     }
+        
+    // } 
+
+
+     public function declineWlletReqStatus(Request $request, $id) 
     {       
-    	$dd = $this->ApiClientWalletService->declineWlletReqStatus($request,$id);       
+        $data = $request->all();
+
+         $ApiClientWalletValidator = $this->ApiClientWalletValidator->validate($data);
+    	$dd = $this->ApiClientWalletRepository->declineWalletReq($data,$id);       
 
         if($dd !=' '){
         return $this->successResponse($dd,"Wallet Request Declined!",Response::HTTP_CREATED);
@@ -117,12 +206,22 @@ class ApiClientWalletController extends Controller
         }
         
     } 
+
+    
     
 	   
-    public function agentWalletBalance($id) 
+    // public function agentWalletBalance($id) 
+    // {       
+         
+    //     $wallet = $this->ApiClientWalletService->agentWalletBalance($id);
+    //     return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        
+    // }   
+
+     public function agentWalletBalance($id) 
     {       
          
-        $wallet = $this->ApiClientWalletService->agentWalletBalance($id);
+        $wallet = $this->ApiClientWalletRepository->agentWalletBalance($id);
         return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
         
     }  
@@ -130,16 +229,33 @@ class ApiClientWalletController extends Controller
 
     // clientTransByAdmin
 
+    // public function clientTransByAdmin(Request $request) 
+    // { 
+    //     $data= $this->ApiClientWalletService->clientTransByAdmin($request);
+    //        return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);         
+    // } 
+
+
+     // clientTransByAdmin
     public function clientTransByAdmin(Request $request) 
     { 
-        $data= $this->ApiClientWalletService->clientTransByAdmin($request);
+        $data= $this->ApiClientWalletRepository->clientTransByAdmin($request);
            return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);         
     } 
     // clientTransUpdateByAdmin
 
+    // public function clientTransUpdateByAdmin(Request $request) 
+    // { 
+    //     $data= $this->ApiClientWalletService->clientTransUpdateByAdmin($request);
+    //     return $this->successResponse($data,"Wallet request Updated",Response::HTTP_CREATED);         
+    // } 
+
+
+
+    // clientTransUpdateByAdmin
     public function clientTransUpdateByAdmin(Request $request) 
     { 
-        $data= $this->ApiClientWalletService->clientTransUpdateByAdmin($request);
+        $data= $this->ApiClientWalletRepository->clientTransUpdateByAdmin($request);
         return $this->successResponse($data,"Wallet request Updated",Response::HTTP_CREATED);         
     } 
 

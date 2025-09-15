@@ -145,17 +145,17 @@ class AgentWalletService
       return $this->agentWalletRepository->balance($id);
     }
 
-    public function agentAllTransaction($id)
-    {
+    // public function agentAllTransaction($id)
+    // {
       
-      return $this->agentWalletRepository->agentAllTransaction($id);
-    }
+    //   return $this->agentWalletRepository->agentAllTransaction($id);
+    // }
 
-    public function agentWalletBalancedetails($request)
-    {
+    // public function agentWalletBalancedetails($request)
+    // {
       
-      return $this->agentWalletRepository->agentWalletBalancedetails($request);
-    }
+    //   return $this->agentWalletRepository->agentWalletBalancedetails($request);
+    // }
         
     public function savePostData($data)
     {

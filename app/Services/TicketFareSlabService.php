@@ -28,35 +28,35 @@ class TicketFareSlabService
     }
 
    
-    public function createslab($data)
-    {
-        $result = $this->ticketFareSlabRepository->createslab($data);
+    // public function createslab($data)
+    // {
+    //     $result = $this->ticketFareSlabRepository->createslab($data);
 
-        return $result;
+    //     return $result;
        
-    }
-     public function ticketFareSlabData($data)
-    {
-        $result = $this->ticketFareSlabRepository->ticketFareSlabData($data);
+    // }
+    //  public function ticketFareSlabData($data)
+    // {
+    //     $result = $this->ticketFareSlabRepository->ticketFareSlabData($data);
 
-        return $result;
+    //     return $result;
        
-    }
+   // }
 
-     public function changeStatusticketFareSlab($id)
-    {
-        $result = $this->ticketFareSlabRepository->changeStatusticketFareSlab($id);
+    //  public function changeStatusticketFareSlab($id)
+    // {
+    //     $result = $this->ticketFareSlabRepository->changeStatusticketFareSlab($id);
 
-        return $result;
+    //     return $result;
        
-    }
-     public function deleteticketFareSlab($id)
-    {
-        $result = $this->ticketFareSlabRepository->deleteticketFareSlab($id);
+   // }
+    //  public function deleteticketFareSlab($id)
+    // {
+    //     $result = $this->ticketFareSlabRepository->deleteticketFareSlab($id);
 
-        return $result;
+    //     return $result;
        
-    }
+    // }
 
   
 }
