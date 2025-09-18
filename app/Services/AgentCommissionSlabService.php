@@ -21,14 +21,14 @@ class AgentCommissionSlabService
         $this->agentCommissionSlabRepository = $agentCommissionSlabRepository;
     } 
 
-    public function agentcommissionslab()
-    {
-          return $this->agentCommissionSlabRepository->agentcommissionslab();      
-    }
-    public function customercommissionslab()
-    {
-          return $this->agentCommissionSlabRepository->customercommissionslab();   
-    }
+    // public function agentcommissionslab()
+    // {
+    //       return $this->agentCommissionSlabRepository->agentcommissionslab();      
+    // }
+    // public function customercommissionslab()
+    // {
+    //       return $this->agentCommissionSlabRepository->customercommissionslab();   
+    // }
         
    
 

@@ -21,12 +21,13 @@ class SeatBlockReportService
         $this->seatblockreportRepository = $seatblockreportRepository;
     }
 
-    public function getAll()
-    {
-        return $this->seatblockreportRepository->getAll();
-    } public function getData($request)
-    {
-        return $this->seatblockreportRepository->getData($request);
-    }
+    // public function getAll()
+    // {
+    //     return $this->seatblockreportRepository->getAll();
+    // }
+    // public function getData($request)
+    // {
+    //     return $this->seatblockreportRepository->getData($request);
+    // }
 
 }

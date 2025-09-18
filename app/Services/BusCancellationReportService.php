@@ -22,9 +22,9 @@ class BusCancellationReportService
         $this->buscancellationreportRepository = $buscancellationreportRepository;
     }  
     
-    public function getData($request)
-    {
-        return $this->buscancellationreportRepository->getData($request);
-    }
+    // public function getData($request)
+    // {
+    //     return $this->buscancellationreportRepository->getData($request);
+    // }
 
 }

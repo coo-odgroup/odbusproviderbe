@@ -20,13 +20,13 @@ class ContactReportService
         $this->contactreportRepository = $contactreportRepository;
     }  
     
-    public function getData($request)
-    {
-        return $this->contactreportRepository->getData($request);
-    }
-    public function deleteData($id)
-    {
-        return $this->contactreportRepository->deleteData($id);
-    }
+    // public function getData($request)
+    // {
+    //     return $this->contactreportRepository->getData($request);
+    // }
+    // public function deleteData($id)
+    // {
+    //     return $this->contactreportRepository->deleteData($id);
+    // }
 
 }

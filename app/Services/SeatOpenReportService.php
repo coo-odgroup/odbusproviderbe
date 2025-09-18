@@ -17,12 +17,12 @@ class SeatOpenReportService
     protected $seatopenreportRepository;   
     
     public function __construct(SeatOpenReportRepository $seatopenreportRepository)
-    {
+ {
         $this->seatopenreportRepository = $seatopenreportRepository;
-    }
-    public function getData($request)
-    {
-        return $this->seatopenreportRepository->getData($request);
-    }
+ }
+    // public function getData($request)
+    // {
+    //     return $this->seatopenreportRepository->getData($request);
+    // }
 
 }

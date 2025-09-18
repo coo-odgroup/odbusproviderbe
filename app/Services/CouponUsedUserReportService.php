@@ -24,9 +24,9 @@ class CouponUsedUserReportService
     }  
     
     
-    public function getData($request)
-    {
-        return $this->couponuseduserreportRepository->getData($request);
-    }
+    // public function getData($request)
+    // {
+    //     return $this->couponuseduserreportRepository->getData($request);
+    // }
 
 }

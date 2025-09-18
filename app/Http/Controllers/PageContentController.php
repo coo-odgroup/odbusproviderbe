@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\PageContentService;
+//use App\Services\PageContentService;
+use App\Repositories\PageContentRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -18,29 +19,46 @@ class PageContentController extends Controller
 {
     use ApiResponser;
    
-    protected $pagecontentService;
+    //protected $pagecontentService;
     protected $pagecontentValidator;   
+    protected $pagecontentRepository;
     
     
-    public function __construct(PageContentService $pagecontentService, PageContentValidator $pagecontentValidator)
+    public function __construct(//PageContentService $pagecontentService, 
+                             PageContentValidator $pagecontentValidator,
+                             PageContentRepository $pagecontentRepository)
     {
-        $this->pagecontentService = $pagecontentService;
-        $this->pagecontentValidator = $pagecontentValidator;                
+       // $this->pagecontentService = $pagecontentService;
+        $this->pagecontentValidator = $pagecontentValidator; 
+        $this->pagecontentRepository = $pagecontentRepository;               
     }
 
-    public function getAllpagecontent()
+    // public function getAllpagecontent()
+    // {
+
+    //     $pagecontent = $this->pagecontentService->getAll();
+    //     return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
+     public function getAllpagecontent()
     {
 
-        $pagecontent = $this->pagecontentService->getAll();
+        $pagecontent = $this->pagecontentRepository->getAll();
         return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    public function getAllData(Request $request)
-    {
+    // public function getAllData(Request $request)
+    // {
 
-        $pagecontent = $this->pagecontentService->getAllData($request);
-        return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
+    //     $pagecontent = $this->pagecontentService->getAllData($request);
+    //     return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
+
+      public function getAllData(Request $request)
+      {
+  
+          $pagecontent = $this->pagecontentRepository->getAllData($request);
+          return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }
 
      public function addpagecontent(Request $request)
      {
@@ -96,7 +114,7 @@ class PageContentController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }      
       try {
-        $this->pagecontentService->updatepagecontent($request, $id);
+        $this->pagecontentRepository->updatepagecontent($request,$id);
         return $this->successResponse(null,"Page Content Updated", Response::HTTP_CREATED);
       }
       catch(Exception $e){
@@ -106,12 +124,18 @@ class PageContentController extends Controller
 
      }
 
-     public function deletepagecontent($id)
-     {
-     	$pagecontent = $this->pagecontentService->deletepagecontent($id);
-        return $this->successResponse($pagecontent,"Page Content Deleted",Response::HTTP_OK);
+    //  public function deletepagecontent($id)
+    //  {
+    //  	$pagecontent = $this->pagecontentService->deletepagecontent($id);
+    //     return $this->successResponse($pagecontent,"Page Content Deleted",Response::HTTP_OK);
 
-     }
+    //  }
+      public function deletepagecontent($id)
+      {
+      	$pagecontent = $this->pagecontentRepository->deletepagecontent($id);
+          return $this->successResponse($pagecontent,"Page Content Deleted",Response::HTTP_OK);
+  
+      }
 
      
     

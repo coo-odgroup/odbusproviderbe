@@ -23,27 +23,27 @@ class PageContentService
         $this->pagecontentRepository = $pagecontentRepository;
     }
     
-    public function getAll()
-    {      
-        return $this->pagecontentRepository->getAll();
-    }
+    // public function getAll()
+    // {      
+    //     return $this->pagecontentRepository->getAll();
+    // }
 
-    public function getAllData($request)
-    {
-        return $this->pagecontentRepository->getAllData($request);
-    }
+   // public function getAllData($request)
+    // {
+    //     return $this->pagecontentRepository->getAllData($request);
+    // }
 
-    public function addpagecontent($request)
-    {
-        return $this->pagecontentRepository->addpagecontent($request);
-    } 
-    public function updatepagecontent($request,$id)
-    {
-        return $this->pagecontentRepository->updatepagecontent($request,$id);
-    }
-    public function deletepagecontent($id)
-    {
-        return $this->pagecontentRepository->deletepagecontent($id);
-    }   
+    // public function addpagecontent($request)
+    // {
+    //     return $this->pagecontentRepository->addpagecontent($request);
+    // } 
+    // public function updatepagecontent($request,$id)
+    // {
+    //     return $this->pagecontentRepository->updatepagecontent($request,$id);
+    // }
+    // public function deletepagecontent($id)
+    // {
+    //     return $this->pagecontentRepository->deletepagecontent($id);
+    // }   
 
 }

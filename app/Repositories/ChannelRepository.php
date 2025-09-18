@@ -530,10 +530,10 @@ public function sendCancelSmsToCustomer_valueFirst($smsdata){
     }
 }
 public function sendCancelSmsToCMO_valueFirst($smsdata){
-    $seatList = implode(",", $data['seat']);
-    $doj = $data['doj'];    
-    $message = "PNR: {$data['PNR']}, Bus Details: {$data['busdetails']}, "
-             . "Route: {$data['route']}, DOJ: {$doj}, "
+    $seatList = implode(",", $smsdata['seat']);
+    $doj = $smsdata['doj'];    
+    $message = "PNR: {$smsdata['PNR']}, Bus Details: {$smsdata['busdetails']}, "
+             . "Route: {$smsdata['route']}, DOJ: {$doj}, "
              . "Seat: {$seatList} is cancelled - ODBUS.";
 
     

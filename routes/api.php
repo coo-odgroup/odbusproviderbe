@@ -470,6 +470,9 @@ Route::post('/review', [ReviewController::class, 'getData']);
 Route::put('/review/{id}', [ReviewController::class, 'changeStatus']);
 Route::delete('/review/{id}', [ReviewController::class, 'deleteData']);
 
+////////////////////////////.  SEAT OPEN REPORT //////////////////////
+
+
 
 ////SeatOpenReport/////
 Route::post('seatopenreport',[SeatOpenReportController::class,'getData']);

@@ -22,9 +22,9 @@ class FailledTransactionReportService
         $this->failledtransactionreportrepository = $failledtransactionreportrepository;
     }  
     
-    public function getData($request)
-    {
-        return $this->failledtransactionreportrepository->getData($request);
-    }
+    // public function getData($request)
+    // {
+    //     return $this->failledtransactionreportrepository->getData($request);
+    // }
 
 }

@@ -21,32 +21,32 @@ class FaqService
         $this->faqRepository = $faqRepository;
     }
     
-    public function getAll()
-    {      
-        return $this->faqRepository->getAll();
-    }
+//     public function getAll()
+//     {      
+//         return $this->faqRepository->getAll();
+//     }
 
-    public function getAllData($request)
-    {
-        return $this->faqRepository->getAllData($request);
-    }
+//     public function getAllData($request)
+//     {
+//         return $this->faqRepository->getAllData($request);
+//     }
 
-    public function addfaq($request)
-    {
-        return $this->faqRepository->addfaq($request);
-    } 
-    public function updatefaq($request,$id)
-    {
-        return $this->faqRepository->updatefaq($request,$id);
-    }
-    public function deletefaq($id)
-    {
-        return $this->faqRepository->deletefaq($id);
-    }   
+//     public function addfaq($request)
+//     {
+//         return $this->faqRepository->addfaq($request);
+//     } 
+//     public function updatefaq($request,$id)
+//     {
+//         return $this->faqRepository->updatefaq($request,$id);
+//     }
+//     public function deletefaq($id)
+//     {
+//         return $this->faqRepository->deletefaq($id);
+//     }   
 
-    public function changeStatus($id)
-    {
-        return $this->faqRepository->changeStatus($id);
-    }   
+//     public function changeStatus($id)
+//     {
+//         return $this->faqRepository->changeStatus($id);
+//     }   
 
-}
+ }

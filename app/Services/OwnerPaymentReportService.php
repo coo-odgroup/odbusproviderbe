@@ -19,9 +19,9 @@ class OwnerPaymentReportService
     {
         $this->ownerpaymentreportRepository = $ownerpaymentreportRepository;
     }  
-    public function getData($request)
-    {
-        return $this->ownerpaymentreportRepository->getData($request);
-    }
+    // public function getData($request)
+    // {
+    //     return $this->ownerpaymentreportRepository->getData($request);
+    // }
 
 }

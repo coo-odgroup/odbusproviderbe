@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\SeatBlockReportService;
-
+//se App\Services\SeatBlockReportService;
+use App\Repositories\SeatBlockReportRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -17,23 +17,38 @@ class SeatBlockReportController extends Controller
 {
     use ApiResponser;
    
-    protected $seatblockreportService;    
+   // protected $seatblockreportService; 
+    protected $seatblockreportRepository;   
     
-    public function __construct(SeatBlockReportService $seatblockreportService)
+    public function __construct(//SeatBlockReportService $seatblockreportService, 
+                                SeatBlockReportRepository $seatblockreportRepository
+)
     {
-        $this->seatblockreportService = $seatblockreportService;
+        //$this->seatblockreportService = $seatblockreportService;
+        $this->seatblockreportRepository = $seatblockreportRepository;
         
     }
 
 
-    public function getAllseatblock()
+    // public function getAllseatblock()
+    // {
+    //     $seatblock = $this->seatblockreportService->getAll();
+    //     return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // } 
+
+     public function getAllseatblock()
     {
-        $seatblock = $this->seatblockreportService->getAll();
+        $seatblock = $this->seatblockreportRepository->getAll();
         return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
+    // public function getData(Request $request)
+    // {
+    //     $seatblock = $this->seatblockreportService->getData($request);
+    //     return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
     public function getData(Request $request)
     {
-        $seatblock = $this->seatblockreportService->getData($request);
+        $seatblock = $this->seatblockreportRepository->getData($request);
         return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
