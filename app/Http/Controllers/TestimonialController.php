@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\TestimonialService;
+//use App\Services\TestimonialService;
+use App\Repositories\TestimonialRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -18,24 +19,37 @@ class TestimonialController extends Controller
 {
     use ApiResponser;
    
-    protected $testimonialService;
-    protected $testimonialValidator;   
+    //protected $testimonialService;
+    protected $testimonialValidator; 
+    protected $testimonialRepository;  
     
     
-    public function __construct(TestimonialService $testimonialService, TestimonialValidator $testimonialValidator)
+    public function __construct(//TestimonialService $testimonialService, 
+                                 TestimonialValidator $testimonialValidator,
+                                TestimonialRepository $testimonialRepository
+    )
     {
         $this->testimonialService = $testimonialService;
-        $this->testimonialValidator = $testimonialValidator;                
+        $this->testimonialValidator = $testimonialValidator;   
+        $this->testimonialRepository = $testimonialRepository;             
     }
 
-    public function getAlltestimonial(Request $request)
+    // public function getAlltestimonial(Request $request)
+    // {
+    //   // Log::info($request);
+      
+    //     $testimonial = $this->testimonialService->getAll($request);
+    //     return $this->successResponse($testimonial,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
+
+    
+     public function getAlltestimonial(Request $request)
     {
       // Log::info($request);
       
-        $testimonial = $this->testimonialService->getAll($request);
+        $testimonial = $this->testimonialRepository->getAll($request);
         return $this->successResponse($testimonial,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-
      public function addtestimonial(Request $request)
      {
       // log::info($request);exit;
@@ -58,7 +72,8 @@ class TestimonialController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }      
       try {
-        $this->testimonialService->addtestimonial($request);
+        //$this->testimonialService->addtestimonial($request);
+        $this->testimonialRepository->addtestimonial($request);
         return $this->successResponse(null, "Testimonial Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
@@ -89,7 +104,8 @@ class TestimonialController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }      
       try {
-        $this->testimonialService->updatetestimonial($request, $id);
+        //$this->testimonialService->updatetestimonial($request, $id);
+        $this->testimonialRepository->updatetestimonial($request, $id);
         return $this->successResponse(null,"Testimonial Updated", Response::HTTP_CREATED);
       }
       catch(Exception $e){
@@ -99,16 +115,30 @@ class TestimonialController extends Controller
 
      }
 
-     public function deletetestimonial($id)
+    //  public function deletetestimonial($id)
+    //  {
+
+    //  	$testimonial = $this->testimonialService->deletetestimonial($id);
+    //     return $this->successResponse($testimonial,"Testimonial Deleted",Response::HTTP_OK);
+
+    //  } 
+
+    public function deletetestimonial($id)
      {
 
-     	$testimonial = $this->testimonialService->deletetestimonial($id);
+     	$testimonial = $this->testimonialRepository->deletetestimonial($id);
         return $this->successResponse($testimonial,"Testimonial Deleted",Response::HTTP_OK);
 
      } 
+    //  public function changeStatus($id)
+    //  {
+    //   $testimonial = $this->testimonialService->changeStatus($id);
+    //     return $this->successResponse($testimonial,"Testimonial Status Updated",Response::HTTP_OK);
+
+    //  }
      public function changeStatus($id)
      {
-      $testimonial = $this->testimonialService->changeStatus($id);
+      $testimonial = $this->testimonialRepository->changeStatus($id);
         return $this->successResponse($testimonial,"Testimonial Status Updated",Response::HTTP_OK);
 
      }

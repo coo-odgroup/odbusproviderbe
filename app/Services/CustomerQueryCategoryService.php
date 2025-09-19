@@ -58,10 +58,10 @@ class CustomerQueryCategoryService
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->customerQueryCategoryRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->customerQueryCategoryRepository->getAll();
+    // }
 
     /**
      * Get post by id.
@@ -69,10 +69,10 @@ class CustomerQueryCategoryService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->customerQueryCategoryRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->customerQueryCategoryRepository->getById($id);
+    // }
 
     /**
      * Update post data
@@ -109,11 +109,11 @@ class CustomerQueryCategoryService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {   
-        $result = $this->customerQueryCategoryRepository->save($data);
-        return $result;
-    }
+    // public function savePostData($data)
+    // {   
+    //     $result = $this->customerQueryCategoryRepository->save($data);
+    //     return $result;
+    // }
    
 
 }

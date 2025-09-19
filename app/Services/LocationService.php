@@ -33,30 +33,30 @@ class LocationService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
-    {
-        try {
-            $post = $this->LocationRepository->delete($id);
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $post = $this->LocationRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Get all post.
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->LocationRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->LocationRepository->getAll();
+    // }
 
    
     /**
@@ -65,10 +65,10 @@ class LocationService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->LocationRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->LocationRepository->getById($id);
+    // }
 
     /**
      * Update post data
@@ -115,67 +115,67 @@ class LocationService
         return $result;
     }
 
-    public function addPostData($data)
-    {
+    // public function addPostData($data)
+    // {
 
-        $result = $this->LocationRepository->add($data);
+    //     $result = $this->LocationRepository->add($data);
 
-        return $result;
+    //     return $result;
        
-    }
+    // }
 
-    public function editPost($data, $id)
-    {
+    // public function editPost($data, $id)
+    // {
         
 
-        try {
-            $post = $this->LocationRepository->edit($data, $id);
+    //     try {
+    //         $post = $this->LocationRepository->edit($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
 
-    public function datafilter($request)
-    {
-        return $this->LocationRepository->filter($request);
-    }
+    // public function datafilter($request)
+    // {
+    //     return $this->LocationRepository->filter($request);
+    // }
     public function search($search)
     {
         return $this->LocationRepository->search($search);
     }
 
-    public function getAllLocationDT($request)
-    {
-        return $this->LocationRepository->getAllLocationDT($request);
-    } 
+    // public function getAllLocationDT($request)
+    // {
+    //     return $this->LocationRepository->getAllLocationDT($request);
+    // } 
 
 
-    public function locationsData($request)
-    {
-        return $this->LocationRepository->locationsData($request);
-    }
+    // public function locationsData($request)
+    // {
+    //     return $this->LocationRepository->locationsData($request);
+    // }
 
 
-    public function changeStatus($id)
-    {
-        try {
-            $post = $this->LocationRepository->changeStatus($id);
+        // public function changeStatus($id)
+        // {
+        //     try {
+        //         $post = $this->LocationRepository->changeStatus($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+        //     } catch (Exception $e) {
+        //         DB::rollBack();
+        //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
-        }
-        return $post;
+        //         throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+        //     }
+        //     return $post;
 
-    }
+        // }
 }

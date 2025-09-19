@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\UserContentService;
+//use App\Services\UserContentService;
+use App\Repositories\UserContentRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -18,21 +19,32 @@ class UserContentController extends Controller
 {
     use ApiResponser;
    
-    protected $userContentService;
-    protected $userContentValidator;   
+    //protected $userContentService;
+    protected $userContentValidator;  
+    protected $userContentRepository; 
     
     
-    public function __construct(UserContentService $userContentService, UserContentValidator $userContentValidator)
+    public function __construct(//UserContentService $userContentService,
+                               UserContentValidator $userContentValidator,
+                               UserContentRepository $userContentRepository)
     {
-        $this->userContentService = $userContentService;
-        $this->userContentValidator = $userContentValidator;                
+        //$this->userContentService = $userContentService;
+        $this->userContentValidator = $userContentValidator; 
+        $this->userContentRepository = $userContentRepository;               
     }
 
 
-    public function getAllData(Request $request)
+   //  public function getAllData(Request $request)
+   //  {
+
+   //      $usercontent = $this->userContentService->getAllData($request);
+   //      return $this->successResponse($usercontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+   //  }
+
+   public function getAllData(Request $request)
     {
 
-        $usercontent = $this->userContentService->getAllData($request);
+        $usercontent = $this->userContentRepository->getAllData($request);
         return $this->successResponse($usercontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
@@ -56,7 +68,8 @@ class UserContentController extends Controller
       }      
       else
         {
-          $response = $this->userContentService->addusercontent($request);
+          //$response = $this->userContentService->addusercontent($request);
+          $response = $this->userContentRepository->addusercontent($request);
 
            if($response=='Phone Number Exist')
            {
@@ -92,7 +105,8 @@ class UserContentController extends Controller
        //  return $this->successResponse(null,'USER DATA UPDATED' , Response::HTTP_CREATED);
 
 
-          $response = $this->userContentService->updateusercontent($request, $id);
+          //$response = $this->userContentService->updateusercontent($request, $id);
+          $response = $this->userContentRepository->updateusercontent($request, $id);
 
            if($response=='Phone Number Exist')
            {
@@ -132,26 +146,37 @@ class UserContentController extends Controller
      	 $data = $request->only([
           'password'          
         ]);
-     	 $this->userContentService->changePassword($request, $id);
+     	 //$this->userContentService->changePassword($request, $id);
+       $this->userContentRepository->changePassword($request,$id);
         return $this->successResponse(null,"USER PASSWORD UPDATED", Response::HTTP_CREATED);
      }
 
 
-     public function changeStatus($id)
+   //   public function changeStatus($id)
+   //   {
+   //    $usercontent = $this->userContentService->changeStatus($id);
+   //      return $this->successResponse($usercontent,'USER STATUS UPDATED',Response::HTTP_OK);
+
+   //   }
+   public function changeStatus($id)
      {
-      $usercontent = $this->userContentService->changeStatus($id);
+      $usercontent = $this->userContentRepository->changeStatus($id);
         return $this->successResponse($usercontent,'USER STATUS UPDATED',Response::HTTP_OK);
 
      }
 
-     public function deleteuser($id)
-     {
-     	$usercontent = $this->userContentService->deleteusercontent($id);
-        return $this->successResponse($usercontent,'USER DELETED',Response::HTTP_OK);
+   //   public function deleteuser($id)
+   //   {
+   //   	$usercontent = $this->userContentService->deleteusercontent($id);
+   //      return $this->successResponse($usercontent,'USER DELETED',Response::HTTP_OK);
 
-     }
+   //   }
+       public function deleteuser($id)
+       {
+       	$usercontent = $this->userContentRepository->deleteusercontent($id);
+         return $this->successResponse($usercontent,'USER DELETED',Response::HTTP_OK);
 
-     
+       }
     
      
 

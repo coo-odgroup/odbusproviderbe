@@ -22,60 +22,60 @@ class ReasonService
     }
 
     
-    public function deleteById($id)
-    {
-        DB::beginTransaction();
+    // public function deleteById($id)
+    // {
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->reasonRepository->delete($id);
+    //     try {
+    //         $post = $this->reasonRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to delete post data');
-        }
+    //         throw new InvalidArgumentException('Unable to delete post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
-
-    
-    public function getAll()
-    {
-        return $this->reasonRepository->getAll();
-    }
+    // }
 
     
-    public function getById($id)
-    {
-        return $this->reasonRepository->getById($id);
-    }
+    // public function getAll()
+    // {
+    //     return $this->reasonRepository->getAll();
+    // }
+
+    
+    // public function getById($id)
+    // {
+    //     return $this->reasonRepository->getById($id);
+    // }
 
    
-    public function updatePost($data, $id)
-    {
+    // public function updatePost($data, $id)
+    // {
         
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->reasonRepository->update($data, $id);
+    //     try {
+    //         $post = $this->reasonRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to update post data');
-        }
+    //         throw new InvalidArgumentException('Unable to update post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Validate post data.
@@ -84,13 +84,13 @@ class ReasonService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
+    // public function savePostData($data)
+    // {
         
 
-        $result = $this->reasonRepository->save($data);
+    //     $result = $this->reasonRepository->save($data);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 }

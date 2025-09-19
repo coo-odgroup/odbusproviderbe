@@ -43,16 +43,16 @@ class TicketCancelationService
     }
 
     
-    public function getAll()
-    {
-        return $this->TicketCancelationRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->TicketCancelationRepository->getAll();
+    // }
 
     
-    public function getById($id)
-    {
-        return $this->TicketCancelationRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->TicketCancelationRepository->getById($id);
+    // }
 
     
      
@@ -79,11 +79,11 @@ class TicketCancelationService
     }
 
     
-    public function savePostData($data)
-    {   
-        $result = $this->TicketCancelationRepository->save($data);
-        return $result;
-    }
+    // public function savePostData($data)
+    // {   
+    //     $result = $this->TicketCancelationRepository->save($data);
+    //     return $result;
+    // }
 
 
     

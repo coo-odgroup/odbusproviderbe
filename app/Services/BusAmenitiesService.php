@@ -28,27 +28,27 @@ class BusAmenitiesService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
-    {
-        try {
-            $post = $this->busAmenitiesRepository->delete($id);
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $post = $this->busAmenitiesRepository->delete($id);
 
-        } catch (Exception $e) {
-            // Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //         // Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
+    // }
 /**
      * Get all Data
      *
      * @return String
      */
     
-    public function getAll()
-    {
-        return $this->busAmenitiesRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->busAmenitiesRepository->getAll();
+    // }
 /**
      * Get  by id.
      *
@@ -56,10 +56,10 @@ class BusAmenitiesService
      * @return String
      */
     
-    public function getById($id)
-    {
-        return $this->busAmenitiesRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->busAmenitiesRepository->getById($id);
+    // }
 /**
      * Update  data
      * Store to DB if there are no errors.
@@ -68,19 +68,19 @@ class BusAmenitiesService
      * @return String
      */
    
-    public function updatePost($data, $id)
-    {
+    // public function updatePost($data, $id)
+    // {
         
-        try {
-            $post = $this->busAmenitiesRepository->update($data, $id);
+    //     try {
+    //         $post = $this->busAmenitiesRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            // Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
+    //     } catch (Exception $e) {
+    //         // Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Validate  data.
@@ -89,17 +89,17 @@ class BusAmenitiesService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        try {
-            $post =$this->busAmenitiesRepository->save($data);
-        }
-        catch (Exception $e) {
-            // Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $post;
-    }
+    // public function savePostData($data)
+    // {
+    //     try {
+    //         $post =$this->busAmenitiesRepository->save($data);
+    //     }
+    //     catch (Exception $e) {
+    //         // Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $post;
+    // }
     /**
      * Get all Data in Datatable Format.
      *

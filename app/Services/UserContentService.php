@@ -23,31 +23,31 @@ class UserContentService
         $this->userContentRepository = $userContentRepository;
     }
     
-    public function getAllData($request)
-    {
-        return $this->userContentRepository->getAllData($request);
-    }
+   // public function getAllData($request)
+    // {
+    //     return $this->userContentRepository->getAllData($request);
+    // }
 
-    public function addusercontent($request)
-    {
-        return $this->userContentRepository->addusercontent($request);
-    } 
-    public function updateusercontent($request,$id)
-    {
-        return $this->userContentRepository->updateusercontent($request,$id);
-    } 
-    public function changePassword($request,$id)
-    {
-        return $this->userContentRepository->changePassword($request,$id);
-    }
-    public function deleteusercontent($id)
-    {
-        return $this->userContentRepository->deleteusercontent($id);
-    } 
-     public function changeStatus($id)
-    {
-        return $this->userContentRepository->changeStatus($id);
-    } 
+    // public function addusercontent($request)
+    // {
+    //     return $this->userContentRepository->addusercontent($request);
+    // } 
+    // public function updateusercontent($request,$id)
+    // {
+    //     return $this->userContentRepository->updateusercontent($request,$id);
+    // } 
+    // public function changePassword($request,$id)
+    // {
+    //     return $this->userContentRepository->changePassword($request,$id);
+    // }
+    // public function deleteusercontent($id)
+    // {
+    //     return $this->userContentRepository->deleteusercontent($id);
+    // } 
+    //  public function changeStatus($id)
+    // {
+    //     return $this->userContentRepository->changeStatus($id);
+    // } 
   
 
 }

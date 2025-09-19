@@ -22,60 +22,60 @@ class BusStoppageAdditionalFareService
     }
 
     
-    public function deleteById($id)
-    {
-        DB::beginTransaction();
+    // public function deleteById($id)
+    // {
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->busStoppageAdditionalFareRepository->delete($id);
+    //     try {
+    //         $post = $this->busStoppageAdditionalFareRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to delete post data');
-        }
+    //         throw new InvalidArgumentException('Unable to delete post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
-
-    
-    public function getAll()
-    {
-        return $this->busStoppageAdditionalFareRepository->getAll();
-    }
+    // }
 
     
-    public function getById($id)
-    {
-        return $this->busStoppageAdditionalFareRepository->getById($id);
-    }
+    // public function getAll()
+    // {
+    //     return $this->busStoppageAdditionalFareRepository->getAll();
+    // }
+
+    
+    // public function getById($id)
+    // {
+    //     return $this->busStoppageAdditionalFareRepository->getById($id);
+    // }
 
    
-    public function updatePost($data, $id)
-    {
+    // public function updatePost($data, $id)
+    // {
         
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->busStoppageAdditionalFareRepository->update($data, $id);
+    //     try {
+    //         $post = $this->busStoppageAdditionalFareRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to update post data');
-        }
+    //         throw new InvalidArgumentException('Unable to update post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Validate post data.
@@ -84,13 +84,13 @@ class BusStoppageAdditionalFareService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
+    // public function savePostData($data)
+    // {
         
 
-        $result = $this->busStoppageAdditionalFareRepository->save($data);
+    //     $result = $this->busStoppageAdditionalFareRepository->save($data);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 }

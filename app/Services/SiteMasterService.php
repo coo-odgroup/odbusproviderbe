@@ -22,62 +22,62 @@ class SiteMasterService
     }
 
     
-    public function deleteById($id)
-    {
-        DB::beginTransaction();
+    // public function deleteById($id)
+    // {
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->siteMasterRepository->delete($id);
+    //     try {
+    //         $post = $this->siteMasterRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to delete post data');
-        }
+    //         throw new InvalidArgumentException('Unable to delete post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
-
-    
-    public function getAll()
-    {
-        return $this->siteMasterRepository->getAll();
-    }
+    // }
 
     
-    public function getById($id)
-    {
-        return $this->siteMasterRepository->getById($id);
-    }
+    // public function getAll()
+    // {
+    //     return $this->siteMasterRepository->getAll();
+    // }
+
+    
+    // public function getById($id)
+    // {
+    //     return $this->siteMasterRepository->getById($id);
+    // }
 
    
-    public function updatePost($data, $id)
-    {
+    // public function updatePost($data, $id)
+    // {
         
 
         
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->siteMasterRepository->update($data, $id);
+    //     try {
+    //         $post = $this->siteMasterRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to update post data');
-        }
+    //         throw new InvalidArgumentException('Unable to update post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Validate post data.
@@ -86,12 +86,12 @@ class SiteMasterService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
+    // public function savePostData($data)
+    // {
         
-        $result = $this->siteMasterRepository->save($data);
+    //     $result = $this->siteMasterRepository->save($data);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 }

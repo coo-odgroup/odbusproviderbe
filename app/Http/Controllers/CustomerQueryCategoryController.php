@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 
 use App\Models\CustomerQueryCategory;
 use App\Models\CustomerQueryCategoryIssues;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
+use App\Repositories\CustomerQueryCategoryRepository;
 use App\Services\CustomerQueryCategoryService;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
@@ -21,6 +21,7 @@ class CustomerQueryCategoryController extends Controller
      * @var CustomerQueryCategoryService
      */
     protected $customerQueryCategoryService;
+    protected $customerQueryCategoryRepository;
 
     /**
      * PostController Constructor
@@ -28,13 +29,24 @@ class CustomerQueryCategoryController extends Controller
      * @param CustomerQueryCategoryService $busTypeService
      *
      */
-    public function __construct(CustomerQueryCategoryService $customerQueryCategoryService)
+    public function __construct(CustomerQueryCategoryService $customerQueryCategoryService,
+                                CustomerQueryCategoryRepository $customerQueryCategoryRepository)
     {
         $this->customerQueryCategoryService = $customerQueryCategoryService;
+        $this->customerQueryCategoryRepository = $customerQueryCategoryRepository;
     }
+    // public function getAllCustomerQueryCategory() {
+
+    //     $users = $this->customerQueryCategoryService->getAll();
+    //     $user ['status']=1;
+    //     $user ['message']='All Data Fetched Successfully';
+    //     $user ['result']=$users;
+    //     return response($user, 200);
+    // }
+
     public function getAllCustomerQueryCategory() {
 
-        $users = $this->customerQueryCategoryService->getAll();
+        $users = $this->customerQueryCategoryRepository->getAll();
         $user ['status']=1;
         $user ['message']='All Data Fetched Successfully';
         $user ['result']=$users;
@@ -82,7 +94,9 @@ class CustomerQueryCategoryController extends Controller
         $result = ['status' => 200];
   
         try {
-            $result['data'] = $this->customerQueryCategoryService->savePostData($request);
+           // $result['data'] = $this->customerQueryCategoryService->savePostData($request);
+            $result['data'] = $this->customerQueryCategoryRepository->save($request->all());
+              
         } catch (Exception $e) {
             $result = [
                 'status' => 500,
@@ -93,9 +107,18 @@ class CustomerQueryCategoryController extends Controller
       
       } 
 
-      public function getCustomerQueryCategorybyID($id) {
+  //     public function getCustomerQueryCategorybyID($id) {
+  //       //print_r("hello");exit();     
+  //       $users = $this->customerQueryCategoryService->getById($id);
+  //       $user ['status']=1;
+  //       $user ['message']='Single Data Fetched Successfully';
+  //       $user ['result']=$users;
+  //       return response($user, 200);
+
+	// }
+   public function getCustomerQueryCategorybyID($id) {
         //print_r("hello");exit();     
-        $users = $this->customerQueryCategoryService->getById($id);
+        $users = $this->customerQueryCategoryRepository->getById($id);
         $user ['status']=1;
         $user ['message']='Single Data Fetched Successfully';
         $user ['result']=$users;

@@ -22,62 +22,62 @@ class AppVersionService
     }
 
     
-    public function deleteById($id)
-    {
-        DB::beginTransaction();
+    // public function deleteById($id)
+    // {
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->appVersionRepository->delete($id);
+    //     try {
+    //         $post = $this->appVersionRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            // Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         // Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to delete post data');
-        }
+    //         throw new InvalidArgumentException('Unable to delete post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
-
-    
-    public function getAll()
-    {
-        return $this->appVersionRepository->getAll();
-    }
+    // }
 
     
-    public function getById($id)
-    {
-        return $this->appVersionRepository->getById($id);
-    }
+    // public function getAll()
+    // {
+    //     return $this->appVersionRepository->getAll();
+    // }
+
+    
+    // public function getById($id)
+    // {
+    //     return $this->appVersionRepository->getById($id);
+    // }
 
    
-    public function updatePost($data, $id)
-    {
+    // public function updatePost($data, $id)
+    // {
         
 
         
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->appVersionRepository->update($data, $id);
+    //     try {
+    //         $post = $this->appVersionRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            // Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         // Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to update post data');
-        }
+    //         throw new InvalidArgumentException('Unable to update post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Validate post data.
@@ -86,27 +86,27 @@ class AppVersionService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        /*$validator = Validator::make($data, [
-            'info' => 'required',
-            'name' => 'required',
-            'mandatory' => 'required',
-            'version' => 'required',
-            'new_version_names' => 'required',
-            'new_version_codes' => 'required',
-            'allowed_days' => 'required',
-            'has_issues' => 'required',
-            'created_by' => 'required'
-        ]);
+    // public function savePostData($data)
+    // {
+    //     /*$validator = Validator::make($data, [
+    //         'info' => 'required',
+    //         'name' => 'required',
+    //         'mandatory' => 'required',
+    //         'version' => 'required',
+    //         'new_version_names' => 'required',
+    //         'new_version_codes' => 'required',
+    //         'allowed_days' => 'required',
+    //         'has_issues' => 'required',
+    //         'created_by' => 'required'
+    //     ]);
 
-        if ($validator->fails()) {
-            throw new InvalidArgumentException($validator->errors()->first());
-        }*/
+    //     if ($validator->fails()) {
+    //         throw new InvalidArgumentException($validator->errors()->first());
+    //     }*/
 
-        $result = $this->appVersionRepository->save($data);
+    //     $result = $this->appVersionRepository->save($data);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 }
