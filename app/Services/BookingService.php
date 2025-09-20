@@ -22,68 +22,68 @@ class BookingService
     }
 
     
-    public function deleteById($id)
-    {
-        DB::beginTransaction();
+    // public function deleteById($id)
+    // {
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->bookingRepository->delete($id);
+    //     try {
+    //         $post = $this->bookingRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            // Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         // Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to delete ');
-        }
+    //         throw new InvalidArgumentException('Unable to delete ');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
-
-    
-    public function getAll()
-    {
-        return $this->bookingRepository->getAll();
-    }
+    // }
 
     
-    public function getById($id)
-    {
-        return $this->bookingRepository->getById($id);
-    }
+    // public function getAll()
+    // {
+    //     return $this->bookingRepository->getAll();
+    // }
+
+    
+    // public function getById($id)
+    // {
+    //     return $this->bookingRepository->getById($id);
+    // }
 
    
-    public function updatePost($data, $id)
-    {
+//     public function updatePost($data, $id)
+//     {
         
 
-        DB::beginTransaction();
+//         DB::beginTransaction();
 
-        try {
-            $post = $this->bookingRepository->update($data, $id);
+//         try {
+//             $post = $this->bookingRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            // Log::info($e->getMessage());
+//         } catch (Exception $e) {
+//             DB::rollBack();
+//             // Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to update post data');
-        }
+//             throw new InvalidArgumentException('Unable to update post data');
+//         }
 
-        DB::commit();
+//         DB::commit();
 
-        return $post;
+//         return $post;
 
-    }
+//     }
 
     
-    public function saveBookingData($data)
-    {
+    // public function saveBookingData($data)
+    // {
         
-        $result = $this->bookingRepository->saveBooking($data);
+    //     $result = $this->bookingRepository->saveBooking($data);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 }

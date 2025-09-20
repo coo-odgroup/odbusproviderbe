@@ -7,6 +7,8 @@ use App\Models\BusOwnerFare;
 use App\Models\Bus;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
+use App\Repositories\FestivalFareRepository;
+use Illuminate\Support\Facades\DB;
 use App\Services\FestivalFareService;
 use App\Traits\ApiResponser;
 use Exception;
@@ -20,27 +22,34 @@ class FestivalFareController extends Controller
     use ApiResponser;
     protected $festivalFareService;
     protected $festivalFareValidator;
+    protected $festivalFareRepository;
     
-    public function __construct(FestivalFareService $festivalFareService, FestivalFareValidator $festivalFareValidator)
+    public function __construct(FestivalFareService $festivalFareService,
+                                 FestivalFareValidator $festivalFareValidator,
+                                 FestivalFareRepository $festivalFareRepository)
     {
         $this->festivalFareService = $festivalFareService;
         $this->festivalFareValidator = $festivalFareValidator;
+        $this->festivalFareRepository = $festivalFareRepository;
     }
 
     public function getAllFestivalFare() {
 
-        $busOwnerFare = $this->festivalFareService->getAll();
+        //$busOwnerFare = $this->festivalFareService->getAll();
+        $busOwnerFare = $this->festivalFareRepository->getAll();
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function getFestivalFareDT(Request $request) {      
 
-        $busOwnerFare = $this->festivalFareService->dataTable($request);
+        //$busOwnerFare = $this->festivalFareService->dataTable($request);
+        $busOwnerFare = $this->festivalFareRepository->getDatatable($request);
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function festivalFareData(Request $request) {      
 
-        $busOwnerFare = $this->festivalFareService->festivalFareData($request);
+        //$busOwnerFare = $this->festivalFareService->festivalFareData($request);
+        $busOwnerFare = $this->festivalFareRepository->festivalFareData($request);
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
 
@@ -58,7 +67,8 @@ class FestivalFareController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
           }
         try {
-           $this->festivalFareService->savePostData($request);
+           //$this->festivalFareService->savePostData($request);
+            $this->festivalFareRepository->savePostData($request);
 
         } catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -78,7 +88,8 @@ class FestivalFareController extends Controller
         try {
           $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by','bus_id',
           ]);
-          $this->festivalFareService->updatePost($data, $id);
+          //$this->festivalFareService->updatePost($data, $id);
+          $this->festivalFareRepository->updatePost($data, $id);
           return $this->successResponse($data, "Bus Festival Fare Updated",Response::HTTP_CREATED);
 
         } catch (Exception $e) {
@@ -88,7 +99,8 @@ class FestivalFareController extends Controller
 
     public function deleteFestivalFare($id) {
         try {
-            $this->festivalFareService->deleteById($id);
+            //$this->festivalFareService->deleteById($id);
+            $this->festivalFareRepository->deleteById($id);
           }
           catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -98,7 +110,8 @@ class FestivalFareController extends Controller
 
     public function getFestivalFare($id) {
         try {
-            $busOwnerFareID= $this->festivalFareService->getById($id);
+            //$busOwnerFareID= $this->festivalFareService->getById($id);
+            $busOwnerFareID= $this->festivalFareRepository->getById($id);
           }
           catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -107,9 +120,11 @@ class FestivalFareController extends Controller
     }      
     public function changeStatus($id) {
         try{
-          $this->festivalFareService->changeStatus($id);
+          //$this->festivalFareService->changeStatus($id);
+          $this->festivalFareRepository->changeStatus($id);
         }
         catch (Exception $e){
+          DB::rollBack();
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Festival Fare Status Updated", Response::HTTP_ACCEPTED);

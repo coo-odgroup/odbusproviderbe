@@ -17,10 +17,10 @@ class ListingService
     {
         $this->listingRepository = $listingRepository;
     }
-    public function getAll()
-    {
-        return $this->listingRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->listingRepository->getAll();
+    // }
 
     
    

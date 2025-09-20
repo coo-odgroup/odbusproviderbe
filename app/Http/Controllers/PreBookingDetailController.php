@@ -6,23 +6,34 @@ use Illuminate\Http\Request;
 use App\Models\PreBookingDetail;
 use Illuminate\Support\Facades\Validator;
 use App\Services\PreBookingDetailService;
+use App\Repositories\PreBookingDetailRepository;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 class PreBookingDetailController extends Controller
 {
     protected $preBookingDetailService;
+    protected $preBookingDetailRepository;
 
     
-    public function __construct(PreBookingDetailService $preBookingDetailService)
+
+    
+    public function __construct(PreBookingDetailService $preBookingDetailService,
+                                 PreBookingDetailRepository $preBookingDetailRepository   )
     {
         $this->preBookingDetailService = $preBookingDetailService;
+        $this->preBookingDetailRepository = $preBookingDetailRepository;
+
     }
 
 
     public function getAllPreBookingDetail() {
 
-        $preBookingDetail = $this->preBookingDetailService->getAll();
+        //$preBookingDetail = $this->preBookingDetailService->getAll();
+        $preBookingDetail = $this->preBookingDetailRepository->getAll();
+        
         $output ['status']=1;
         $output ['message']='All Data Fetched Successfully';
         $output ['result']=$preBookingDetail;
@@ -56,7 +67,8 @@ class PreBookingDetailController extends Controller
       $result = ['status' => 200];
 
       try {
-          $result['data'] = $this->preBookingDetailService->savePostData($data);
+          //$result['data'] = $this->preBookingDetailService->savePostData($data);
+          $result['data']  = $this->preBookingDetailRepository->save($data);
       } catch (Exception $e) {
           $result = [
               'status' => 500,
@@ -92,11 +104,15 @@ class PreBookingDetailController extends Controller
           }
 
         $result = ['status' => 200];
+       DB::beginTransaction();
 
         try {
-            $result['data'] = $this->preBookingDetailService->updatePost($data, $id);
-
+            //$result['data'] = $this->preBookingDetailService->updatePost($data, $id);
+            $result['data'] =$this->preBookingDetailRepository->update($data, $id);
+            DB::Commit();
         } catch (Exception $e) {
+            DB::Rollback();
+            Log::info($e->getMessage());
             $result = [
                 'status' => 500,
                 'error' => $e->getMessage()
@@ -110,8 +126,13 @@ class PreBookingDetailController extends Controller
       $result = ['status' => 200];
 
       try {
-          $result['data'] = $this->preBookingDetailService->deleteById($id);
+          //$result['data'] = $this->preBookingDetailService->deleteById($id);
+          $resulu['data'] =$this->preBookingDetailRepository->delete($id);
+          DB::Commit();
       } catch (Exception $e) {
+        DB::Rollback();
+        Log::info($e->getMessage());
+
           $result = [
               'status' => 500,
               'error' => $e->getMessage()
@@ -121,7 +142,9 @@ class PreBookingDetailController extends Controller
     }
 
     public function getPreBookingDetail($id) {
-      $preBookingDetail = $this->preBookingDetailService->getById($id);
+     // $preBookingDetail = $this->preBookingDetailService->getById($id);
+     $preBookingDetail = $this->preBookingDetailRepository->getById($id);
+    
       $output ['status']=1;
       $output ['message']='Single Data Fetched Successfully';
       $output ['result']=$preBookingDetail;

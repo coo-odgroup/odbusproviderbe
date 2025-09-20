@@ -33,25 +33,25 @@ class CouponTypeService
      */
 
 
-    public function deleteById($id)
-    {
-        try {
-            $role = $this->couponTypeRepository->delete($id);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $role;
-    }
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $role = $this->couponTypeRepository->delete($id);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $role;
+    // }
 
     /**
      * Get all Data
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->couponTypeRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->couponTypeRepository->getAll();
+    // }
 
     /**
      * Get  by id.
@@ -59,10 +59,10 @@ class CouponTypeService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->couponTypeRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->couponTypeRepository->getById($id);
+    // }
 
     /**
      * Update  data
@@ -71,16 +71,16 @@ class CouponTypeService
      * @param array $data
      * @return String
      */
-    public function update($data, $id)
-    {
-        try {
-            $role = $this->couponTypeRepository->update($data, $id);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $role;
+    // public function update($data, $id)
+    // {
+    //     try {
+    //         $role = $this->couponTypeRepository->update($data, $id);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $role;
 
-    }
+    // }
 
     /**
      * Validate  data.
@@ -89,39 +89,39 @@ class CouponTypeService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        try {
-            $post = $this->couponTypeRepository->save($data);
+    // public function savePostData($data)
+    // {
+    //     try {
+    //         $post = $this->couponTypeRepository->save($data);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $post;
+    // }
     /**
      * Get all Data in Datatable Format.
      *
      * @return String
      */
 
-    public function getCouponTypeDT($request)
-    {
-        return $this->couponTypeRepository->getCouponTypeDT($request);
-    } 
+    // public function getCouponTypeDT($request)
+    // {
+    //     return $this->couponTypeRepository->getCouponTypeDT($request);
+    // } 
 
-    public function CouponTypeData($request)
-    {
-        return $this->couponTypeRepository->CouponTypeData($request);
-    }
-    public function changeStatus($id)
-    {
-        try {
-            $post = $this->couponTypeRepository->changeStatus($id);
+    // public function CouponTypeData($request)
+    // {
+    //     return $this->couponTypeRepository->CouponTypeData($request);
+    // }
+    // public function changeStatus($id)
+    // {
+    //     try {
+    //         $post = $this->couponTypeRepository->changeStatus($id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException('Unable to change status');
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException('Unable to change status');
+    //     }
+    //     return $post;
+    // }
 }

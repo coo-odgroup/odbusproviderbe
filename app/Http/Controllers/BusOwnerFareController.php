@@ -8,39 +8,50 @@ use App\Models\Bus;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Services\BusOwnerFareService;
+use App\Repositories\BusOwnerFareRepository;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Traits\ApiResponser;
 use Exception;
 use InvalidArgumentException;
 use App\AppValidator\BusOwnerFareValidator;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Log;
+
 
 class BusOwnerFareController extends Controller
 {
     use ApiResponser;
     protected $BusOwnerFareService;
     protected $BusOwnerFareValidator;
+      protected $busOwnerFareRepository;
     
-    public function __construct(BusOwnerFareService $busOwnerFareService, BusOwnerFareValidator $busOwnerFareValidator)
+    public function __construct(BusOwnerFareService $busOwnerFareService,
+                                 BusOwnerFareValidator $busOwnerFareValidator,
+                                 BusOwnerFareRepository $busOwnerFareRepository)
     {
         $this->busOwnerFareService = $busOwnerFareService;
         $this->busOwnerFareValidator = $busOwnerFareValidator;
+        $this->busOwnerFareRepository = $busOwnerFareRepository;
+     
     }
 
     public function getAllBusOwnerFare() {
 
-        $busOwnerFare = $this->busOwnerFareService->getAll();
+        //$busOwnerFare = $this->busOwnerFareService->getAll();
+        $busOwnerFare = $this->busOwnerFareRepository->getAll();
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function getBusOwnerFareDT(Request $request) {      
 
-        $busOwnerFare = $this->busOwnerFareService->dataTable($request);
+       // $busOwnerFare = $this->busOwnerFareService->dataTable($request);
+      $busOwnerFare = $this->busOwnerFareRepository->getDatatable($request);
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
 
     public function busOwnerFareData(Request $request) {      
 
-        $busOwnerFare = $this->busOwnerFareService->busOwnerFareData($request);
+        //$busOwnerFare = $this->busOwnerFareService->busOwnerFareData($request);
+        $busOwnerFare = $this->busOwnerFareRepository->busOwnerFareData($request);
         return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
 
@@ -56,7 +67,10 @@ class BusOwnerFareController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
           }
         try {
-           $this->busOwnerFareService->savePostData($request);
+           //$this->busOwnerFareService->savePostData($request);
+           $this->busOwnerFareRepository->save($data);
+
+
 
         } catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -76,7 +90,8 @@ class BusOwnerFareController extends Controller
         try {
           $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by','bus_id',
           ]);
-          $this->busOwnerFareService->updatePost($data, $id);
+         // $this->busOwnerFareService->updatePost($data, $id);
+          $this->busOwnerFareRepository->update($data, $id);
           return $this->successResponse($data, "Bus Owner Fare Updated",Response::HTTP_CREATED);
 
         } catch (Exception $e) {
@@ -86,7 +101,8 @@ class BusOwnerFareController extends Controller
 
     public function deleteBusOwnerFare($id) {
         try {
-            $this->busOwnerFareService->deleteById($id);
+            //$this->busOwnerFareService->deleteById($id);
+            $this->busOwnerFareRepository->delete($id);
           }
           catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -96,7 +112,8 @@ class BusOwnerFareController extends Controller
 
     public function getBusOwnerFare($id) {
         try {
-            $busOwnerFareID= $this->busOwnerFareService->getById($id);
+            //$busOwnerFareID = $this->busOwnerFareService->getById($id);
+            $busOwnerFareID = $this->busOwnerFareRepository->getById($id);
           }
           catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -105,9 +122,11 @@ class BusOwnerFareController extends Controller
     }      
     public function changeStatus($id) {
         try{
-          $this->busOwnerFareService->changeStatus($id);
+          //$this->busOwnerFareService->changeStatus($id);
+          $this->busOwnerFareRepository->changeStatus($id);
         }
         catch (Exception $e){
+          DB::rollBack();
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Owner Fare Status Updated", Response::HTTP_ACCEPTED);

@@ -23,37 +23,37 @@ class PreBookingService
     }
 
     
-    public function deleteById($id)
-    {
-        DB::beginTransaction();
+    // public function deleteById($id)
+    // {
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->preBookingRepository->delete($id);
+    //     try {
+    //         $post = $this->preBookingRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to delete post data');
-        }
+    //         throw new InvalidArgumentException('Unable to delete post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
-
-    
-    public function getAll()
-    {
-        return $this->preBookingRepository->getAll();
-    }
+    // }
 
     
-    public function getById($id)
-    {
-        return $this->preBookingRepository->getById($id);
-    }
+    // public function getAll()
+    // {
+    //     return $this->preBookingRepository->getAll();
+    // }
+
+    
+    // public function getById($id)
+    // {
+    //     return $this->preBookingRepository->getById($id);
+    // }
 
    
     public function updatePost($data, $id)
@@ -79,13 +79,13 @@ class PreBookingService
     }
 
     
-    public function savePreBookingData($data)
-    {
+    // public function savePreBookingData($data)
+    // {
         
-        $result = $this->preBookingRepository->savePreBooking($data);
+    //     $result = $this->preBookingRepository->savePreBooking($data);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
     
     public function savePreBooking($data)
@@ -96,26 +96,26 @@ class PreBookingService
         return $result;
     }
 
-    public function updatePreBookingPhaseTwo($data, $transaction_id)
-    {
-        // print_r($data);exit;
+    // public function updatePreBookingPhaseTwo($data, $transaction_id)
+    // {
+    //     // print_r($data);exit;
  
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->preBookingRepository->updatePreBookingTwo($data, $transaction_id);
+    //     try {
+    //         $post = $this->preBookingRepository->updatePreBookingTwo($data, $transaction_id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to update');
-        }
+    //         throw new InvalidArgumentException('Unable to update');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
 }

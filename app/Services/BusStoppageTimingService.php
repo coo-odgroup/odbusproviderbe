@@ -27,34 +27,34 @@ class BusStoppageTimingService
         }
         return $post;
     }
-    public function deleteById($id)
-    {
-        try {
-            $post = $this->busStoppageTimingRepository->delete($id);
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $post = $this->busStoppageTimingRepository->delete($id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
+    // }
 
     
-    public function getAll()
-    {
-        return $this->busStoppageTimingRepository->getAll();
-    }
-    public function getById($id)
-    {
-        return $this->busStoppageTimingRepository->getById($id);
-    }
-    public function busStoppageTimingbyBusId($busid)
-    {
-        return $this->busStoppageTimingRepository->busStoppageTimingbyBusId($busid);
-    }
-    public function busStoppageTimingbyBusIdClone($busid)
-    {
-        return $this->busStoppageTimingRepository->busStoppageTimingbyBusIdClone($busid);
-    }
+    // public function getAll()
+    // {
+    //     return $this->busStoppageTimingRepository->getAll();
+    // }
+    // public function getById($id)
+    // {
+    //     return $this->busStoppageTimingRepository->getById($id);
+    // }
+    // public function busStoppageTimingbyBusId($busid)
+    // {
+    //     return $this->busStoppageTimingRepository->busStoppageTimingbyBusId($busid);
+    // }
+    // public function busStoppageTimingbyBusIdClone($busid)
+    // {
+    //     return $this->busStoppageTimingRepository->busStoppageTimingbyBusIdClone($busid);
+    // }
     // public function updatePost($data, $id)
     // {
     //     try {

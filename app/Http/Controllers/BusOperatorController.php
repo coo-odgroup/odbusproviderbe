@@ -7,6 +7,7 @@ use App\Models\BusOperator;
 use App\Services\BusOperatorService;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\BusOperatorRepository;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -22,43 +23,52 @@ class BusOperatorController extends Controller
      */
     protected $busOperatorService;
     protected $BusOperatorValidator;
+    protected $busOperatorRepository;
     /**
      * PostController Constructor
      *
      * @param BusOperatorService $busTypeService
      *
      */
-    public function __construct(BusOperatorService $busOperatorService, BusOperatorValidator $BusOperatorValidator)
+    public function __construct(BusOperatorService $busOperatorService, 
+                                BusOperatorValidator $BusOperatorValidator,
+                                BusOperatorRepository $busOperatorRepository)
     {
         $this->busOperatorService = $busOperatorService;
         $this->BusOperatorValidator= $BusOperatorValidator;
+        $this->busOperatorRepository = $busOperatorRepository;
     }
     public function getAllBusOperatorsDT(Request $request)
     {
-      $BusOperators = $this->busOperatorService->dataTable($request);
+     // $BusOperators = $this->busOperatorService->dataTable($request);
+      $BusOperators = $this->busOperatorRepository->getDatatable($request); 
       return $this->successResponse($BusOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function BusbyOperatorData(Request $request)
     {
-      $BusOperators = $this->busOperatorService->BusbyOperatorData($request);
+      //$BusOperators = $this->busOperatorService->BusbyOperatorData($request);
+      $BusOperators = $this->busOperatorRepository->BusbyOperatorData($request);
       return $this->successResponse($BusOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function userOperators(Request $request)
     {
-      $BusOperators = $this->busOperatorService->userOperators($request);
+      // $BusOperators = $this->busOperatorService->userOperators($request);
+      $BusOperators = $this->busOperatorRepository->userOperators($request);
       return $this->successResponse($BusOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
 
     public function getAllBusOperators() {
-        $prod = $this->busOperatorService->getAll();;
+       // $prod = $this->busOperatorService->getAll();
+       $prod = $this->busOperatorRepository->getAll();
         return $this->successResponse($prod,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function getOperatorEmail(Request $request)
     {
         try {
-            $result=$this->busOperatorService->getOperatorEmail($request);
+            //$result=$this->busOperatorService->getOperatorEmail($request);
+              $result = $this->busOperatorRepository->getOperatorEmail($request);
             return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         }
         catch(Exception $e){
@@ -69,7 +79,9 @@ class BusOperatorController extends Controller
     public function getOperatorPhone(Request $request)
     {
         try {
-            $result=$this->busOperatorService->getOperatorPhone($request);
+           // $result=$this->busOperatorService->getOperatorPhone($request);
+
+      $result=$this->busOperatorRepository->getOperatorPhone($request);
             return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         }
         catch(Exception $e){
@@ -106,7 +118,8 @@ class BusOperatorController extends Controller
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->busOperatorService->savePostData($data);
+            //$this->busOperatorService->savePostData($data);
+            $this->busOperatorRepository->save($data);
             return $this->successResponse(null,"Bus Operator Added", Response::HTTP_CREATED);
         }
         catch(Exception $e){
@@ -143,7 +156,9 @@ class BusOperatorController extends Controller
           return $this->errorResponse(null,Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->busOperatorService->updatePost($data, $id);
+            //$this->busOperatorService->updatePost($data, $id);
+            $this->busOperatorRepository->update($data, $id);
+
             return $this->successResponse(null, "Bus Operator Updated", Response::HTTP_CREATED);
         }
         catch(Exception $e){
@@ -154,7 +169,8 @@ class BusOperatorController extends Controller
     public function deleteBusOperator ($id) 
     {
         try{
-            $this->busOperatorService->deleteById($id);
+            //$this->busOperatorService->deleteById($id);
+            $this->busOperatorRepository->delete($id);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -164,7 +180,9 @@ class BusOperatorController extends Controller
 
     public function getBusOperator($id) {
       try {
-        $operators= $this->busOperatorService->getById($id);
+        //$operators= $this->busOperatorService->getById($id);
+        $this->busOperatorRepository->getById($id);
+
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -176,7 +194,8 @@ class BusOperatorController extends Controller
     
     public function changeStatus ($id) {
       try{
-        $this->busOperatorService->changeStatus($id);
+        //$this->busOperatorService->changeStatus($id);
+        $this->busOperatorRepository->changeStatus($id);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -186,7 +205,9 @@ class BusOperatorController extends Controller
     
     public function getBusbyOperator($id) {
       try {
-        $buses= $this->busOperatorService->getBusbyOperator($id);
+        //$buses= $this->busOperatorService->getBusbyOperator($id);
+        $this->busOperatorRepository->getBusbyOperator($id);
+
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

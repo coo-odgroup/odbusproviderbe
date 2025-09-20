@@ -20,36 +20,36 @@ class BusSpecialFareService
     {
         $this->busSpecialFareRepository = $busSpecialFareRepository;
     }
-    public function getPivotData($id)
-    {
-        return $this->busSpecialFareRepository->getPivotData($id);
-    }
+    // public function getPivotData($id)
+    // {
+    //     return $this->busSpecialFareRepository->getPivotData($id);
+    // }
     /**
      * Delete Data by ID.
      *
      * @return String
      */
-    public function deleteById($id)
-    {
-        try {
-            $specialfare = $this->busSpecialFareRepository->delete($id);
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $specialfare = $this->busSpecialFareRepository->delete($id);
 
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $specialfare;
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $specialfare;
 
-    }
+    // }
     /**
      * Get all Data.
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->busSpecialFareRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->busSpecialFareRepository->getAll();
+    // }
     /**
     * Get all Data in Datatable Format.
     *
@@ -60,20 +60,20 @@ class BusSpecialFareService
         return $this->busSpecialFareRepository->getDatatable($request);
     }
 
-    public function busSpecialFareData($request)
-    {
-        return $this->busSpecialFareRepository->busSpecialFareData($request);
-    }
+    // public function busSpecialFareData($request)
+    // {
+    //     return $this->busSpecialFareRepository->busSpecialFareData($request);
+    // }
     /**
      * Get  by id.
      *
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->busSpecialFareRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->busSpecialFareRepository->getById($id);
+    // }
     /**
      * Update  data
      * Store to DB if there are no errors.
@@ -82,17 +82,17 @@ class BusSpecialFareService
      * @return String
      */
    
-    public function updatePost($data, $id)
-    {
-        try {
-            $specialfare = $this->busSpecialFareRepository->update($data, $id);
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $specialfare;
+    // public function updatePost($data, $id)
+    // {
+    //     try {
+    //         $specialfare = $this->busSpecialFareRepository->update($data, $id);
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $specialfare;
 
-    }
+    // }
     /**
      * Validate  data.
      * Store to DB if there are no errors.
@@ -101,27 +101,27 @@ class BusSpecialFareService
      * @return String
      */
     
-    public function savePostData($data)
-    {
-        try {
-            $specialfare = $this->busSpecialFareRepository->save($data);
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $specialfare;
-    }
-    public function changeStatus($id)
-    {
-        try {
-            $specialfare = $this->busSpecialFareRepository->changeStatus($id);
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException('Unable to change status');
-        }
-        return $specialfare;
+    // public function savePostData($data)
+    // {
+    //     try {
+    //         $specialfare = $this->busSpecialFareRepository->save($data);
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $specialfare;
+    // }
+    // public function changeStatus($id)
+    // {
+    //     try {
+    //         $specialfare = $this->busSpecialFareRepository->changeStatus($id);
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException('Unable to change status');
+    //     }
+    //     return $specialfare;
 
-    }
+    // }
    
 
 

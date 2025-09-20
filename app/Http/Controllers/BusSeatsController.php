@@ -6,27 +6,42 @@ use Illuminate\Http\Request;
 use App\Models\BusSeats;
 use Illuminate\Support\Facades\Validator;
 use App\Services\BusSeatsService;
+use App\Repositories\BusSeatsRepository;
 use Exception;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Log;
+
 class BusSeatsController extends Controller
 {
     use ApiResponser;
     protected $busSeatsService;
+    protected $busSeatsRepository;
 
     
-    public function __construct(BusSeatsService $busSeatsService)
+    public function __construct(BusSeatsService $busSeatsService,
+                                 BusSeatsRepository $busSeatsRepository)
     {
         $this->busSeatsService = $busSeatsService;
+        $this->busSeatsRepository = $busSeatsRepository;
     }
 
 
+    // public function getAllBusSeats() {
+
+    //     $busSeats = $this->busSeatsService->getAll();
+    //     $output ['status']=1;
+    //     $output ['message']='All Data Fetched Successfully';
+    //     $output ['result']=$busSeats;
+    //     return response($output, 200);
+    // }
+
     public function getAllBusSeats() {
 
-        $busSeats = $this->busSeatsService->getAll();
+        $busSeats = $this->busSeatsRepository->getAll();
         $output ['status']=1;
         $output ['message']='All Data Fetched Successfully';
         $output ['result']=$busSeats;
@@ -34,7 +49,8 @@ class BusSeatsController extends Controller
     }
     public function getAllBusSeatsFare($busId) {
 
-        $busSeats = $this->busSeatsService->getAllFare($busId);
+        //$busSeats = $this->busSeatsService->getAllFare($busId);
+        $busSeats = $this->busSeatsRepository->getAllFare($busId);
         $output ['status']=1;
         $output ['message']='All Data Fetched Successfully';
         $output ['result']=$busSeats;
@@ -44,13 +60,15 @@ class BusSeatsController extends Controller
 
     public function getByBusId($id) {
 
-        $busSeats = $this->busSeatsService->getByBusId($id);
+        //$busSeats = $this->busSeatsService->getByBusId($id);
+        $busSeats = $this->busSeatsRepository->getByBusId($id);
         return $this->successResponse($busSeats,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
     public function busextraSeatsByBus($id) {
 
-        $busSeats = $this->busSeatsService->busextraSeatsByBus($id);
+        //$busSeats = $this->busSeatsService->busextraSeatsByBus($id);
+        $busSeats = $this->busSeatsRepository->busextraSeatsByBus($id);
         return $this->successResponse($busSeats,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
@@ -81,7 +99,8 @@ class BusSeatsController extends Controller
       $result = ['status' => 200];
 
       try {
-          $result['data'] = $this->busSeatsService->savePostData($data);
+          //$result['data'] = $this->busSeatsService->savePostData($data);
+            $result['data'] = $this->busSeatsRepository->create($data);
       } catch (Exception $e) {
           $result = [
               'status' => 500,
@@ -95,7 +114,10 @@ class BusSeatsController extends Controller
 
     public function updateBusSeats(Request $request, $id) {
         try {
-            $result=$this->busSeatsService->updatePost($request,$id);
+            //$result=$this->busSeatsService->updatePost($request,$id);
+            $data = $request->all();
+
+            $result=$this->busSeatsRepository->update($data ,$id);
         } 
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -105,7 +127,9 @@ class BusSeatsController extends Controller
     public function updateNewFare(Request $request)
     {
         try {
-            $result=$this->busSeatsService->updateNewFare($request);
+            //$result=$this->busSeatsService->updateNewFare($request);
+            $data = $request->all();
+            $result=$this->busSeatsRepository->updateNewFare($data);
         } 
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -114,8 +138,11 @@ class BusSeatsController extends Controller
     }
     public function updateBusSeatsExtras(Request $request, $id) {
       // Log::info($request);exit;
+        $data = $request->all();
         try {
-            $result=$this->busSeatsService->busSeatsExtra($request,$id);
+           // $result=$this->busSeatsService->busSeatsExtra($request,$id);
+           $data = $request->all();
+           $this->busSeatsRepository->updateBusSeatsExtra($data, $id);
         } 
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -129,7 +156,8 @@ class BusSeatsController extends Controller
       $result = ['status' => 200];
 
       try {
-          $result['data'] = $this->busSeatsService->deleteById($id);
+        //   $result['data'] = $this->busSeatsService->deleteById($id);
+            $result['data'] = $this->busSeatsRepository->delete($id);
       } catch (Exception $e) {
           $result = [
               'status' => 500,
@@ -140,7 +168,8 @@ class BusSeatsController extends Controller
     }
 
     public function getBusSeats($id) {
-      $busSeats = $this->busSeatsService->getById($id);
+      //$busSeats = $this->busSeatsService->getById($id);
+        $busSeats = $this->busSeatsRepository->getById($id);
       $output ['status']=1;
       $output ['message']='Single Data Fetched Successfully';
       $output ['result']=$busSeats;
@@ -150,7 +179,9 @@ class BusSeatsController extends Controller
     
 
     public function cronjob_cleanbusseat(){
-        $busSeats = $this->busSeatsService->cronjob_cleanbusseat();
+       // $busSeats = $this->busSeatsService->cronjob_cleanbusseat();
+       $this->busSeatsRepository->cronjob_cleanbusseat();
+
     }
 	     
 }

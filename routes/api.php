@@ -473,7 +473,6 @@ Route::delete('/review/{id}', [ReviewController::class, 'deleteData']);
 ////////////////////////////.  SEAT OPEN REPORT //////////////////////
 
 
-
 ////SeatOpenReport/////
 Route::post('seatopenreport',[SeatOpenReportController::class,'getData']);
 ////SeatBlockReport/////
