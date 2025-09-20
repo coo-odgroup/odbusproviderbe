@@ -22,60 +22,60 @@ class BusExtraFareService
     }
 
     
-    public function deleteById($id)
-    {
-        DB::beginTransaction();
+    // public function deleteById($id)
+    // {
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->busExtraFareRepository->delete($id);
+    //     try {
+    //         $post = $this->busExtraFareRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            // Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         // Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to delete post data');
-        }
+    //         throw new InvalidArgumentException('Unable to delete post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
-
-    
-    public function getAll()
-    {
-        return $this->busExtraFareRepository->getAll();
-    }
+    // }
 
     
-    public function getById($id)
-    {
-        return $this->busExtraFareRepository->getById($id);
-    }
+    // public function getAll()
+    // {
+    //     return $this->busExtraFareRepository->getAll();
+    // }
+
+    
+    // public function getById($id)
+    // {
+    //     return $this->busExtraFareRepository->getById($id);
+    // }
 
    
-    public function updatePost($data, $id)
-    {
+    // public function updatePost($data, $id)
+    // {
         
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->busExtraFareRepository->update($data, $id);
+    //     try {
+    //         $post = $this->busExtraFareRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            // Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         // Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to update post data');
-        }
+    //         throw new InvalidArgumentException('Unable to update post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
     
     public function savePostData($data)

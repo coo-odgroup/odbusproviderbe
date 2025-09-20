@@ -93,11 +93,11 @@ class BusLocationSequenceService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        $result = $this->busLocationSequenceRepository->save($data);
-        return $result;
-    }
+    // public function savePostData($data)
+    // {
+    //     $result = $this->busLocationSequenceRepository->save($data);
+    //     return $result;
+    // }
 
     public function deletebyBusId($id)
     {
@@ -105,11 +105,11 @@ class BusLocationSequenceService
         return $result;
     }
 
-    public function updateStatus($id)
-    {
-         $result = $this->busLocationSequenceRepository->updateStatus($id);
-        return $result;
-    }
+    // public function updateStatus($id)
+    // {
+    //      $result = $this->busLocationSequenceRepository->updateStatus($id);
+    //     return $result;
+    // }
 
     
 }

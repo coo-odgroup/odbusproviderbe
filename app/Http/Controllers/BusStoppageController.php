@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\BusStoppage;
+use App\Models\Location;
+
 use App\Services\BusStoppageService;
 use App\Models\BusStoppageTiming;
 use App\Models\BusLocationSequence;
@@ -13,10 +15,18 @@ use Exception;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
+
+use App\Repositories\BusLocationSequenceRepository;
+use App\Repositories\BusSeatsRepository;
+use App\Repositories\BusStoppageRepository;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 use InvalidArgumentException;
 use App\AppValidator\BusStoppageValidator;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Log;
+
 
 class BusStoppageController extends Controller
 {
@@ -29,11 +39,31 @@ class BusStoppageController extends Controller
     protected $busStoppageTiming;
     protected $busStoppage;
     protected $busLocationSequence;
+
+    protected $busLocationSequenceRepository;
+    protected $busSeatsRepository;
+    protected $busStoppageRepository;
+    protected $busStoppageTimingRepository;
+    protected $location;
+   
+
+
     
     
-    public function __construct(BusStoppageService $busStoppageService, 
-    BusStoppageValidator $BusStoppageValidator, BusStoppageTimingService $BusStoppageTimingService
-    ,BusSeatsService $BusSeatsService, BusLocationSequenceService $busLocationSequenceService,BusStoppageTiming $busStoppageTiming, BusStoppage $busStoppage, BusLocationSequence $busLocationSequence)
+    public function __construct(//BusStoppageService $busStoppageService,  
+                                //BusStoppageTimingService $BusStoppageTimingService,
+                                //BusSeatsService $BusSeatsService, 
+                                //BusLocationSequenceService $busLocationSequenceService,
+                                 BusStoppageValidator $BusStoppageValidator,
+                                BusStoppageTiming $busStoppageTiming,
+                                BusStoppage $busStoppage, 
+                                BusLocationSequence $busLocationSequence,
+
+                                BusLocationSequenceRepository $busLocationSequenceRepository, 
+                                BusSeatsRepository $busSeatsRepository,
+                                BusStoppageRepository $busStoppageRepository,
+                                Location $location, )
+                               
     {
         $this->busStoppageService = $busStoppageService;
         $this->busStoppageTiming = $busStoppageTiming;
@@ -43,14 +73,27 @@ class BusStoppageController extends Controller
         $this->busLocationSequenceService=$busLocationSequenceService;
         $this->busStoppage = $busStoppage;
         $this->busLocationSequence = $busLocationSequence;
+
+        $this->busLocationSequenceRepository = $busLocationSequenceRepository;
+        $this->busSeatsRepository = $busSeatsRepository;
+        $this->busStoppageRepository = $busStoppageRepository;
+        $this->location = $location;
     }
 
+
+    // public function getAllBusStoppage() {
+
+    //     $busStoppage = $this->busStoppageService->getAll();
+    //     return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
 
     public function getAllBusStoppage() {
 
-        $busStoppage = $this->busStoppageService->getAll();
+        $busStoppage = $this->busStoppageRepository->getAll();
         return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    
 
     public function createBusStoppage(Request $request) {
         $data = $request->only([
@@ -63,7 +106,8 @@ class BusStoppageController extends Controller
             return $this->errorResponse($errors,Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->busStoppageService->savePostData($data);
+            //$this->busStoppageService->savePostData($data);
+            $this->busStoppageRepository->save($data);
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -104,7 +148,8 @@ class BusStoppageController extends Controller
 
                 if($match==false){
                      /////// make status 2
-                     $this->busLocationSequenceService->updateStatus($as->id);
+                    // $this->busLocationSequenceService->updateStatus($as->id);
+                        $this->busLocationSequenceRepository->updateStatus($as->id);
                 }
             }
            }  
@@ -138,7 +183,8 @@ class BusStoppageController extends Controller
     
                     if($match==false){
                          /////// make status 2
-                         $this->BusStoppageTimingService->updateStatus($astopg->id);
+                         //$this->BusStoppageTimingService->updateStatus($astopg->id);
+                            $this->busStoppageTimingRepository->updateStatus($astopg->id);
                     }
 
                 }
@@ -165,7 +211,8 @@ class BusStoppageController extends Controller
 
                     if($match==false){
                         /////// make status 2
-                        $this->busStoppageService->updateStatus($atp->id);
+                        //$this->busStoppageService->updateStatus($atp->id);
+                        $this->busStoppageRepository->updateStatus($atp->id);
                    }
 
                 }
@@ -191,11 +238,13 @@ class BusStoppageController extends Controller
              if(count($check_bus_seq)>0) {
                 ///////update
                 $bus_location_sequence['status']=1;
-                $this->busLocationSequenceService->updatePost($bus_location_sequence,$check_bus_seq[0]->id);
+               // $this->busLocationSequenceService->updatePost($bus_location_sequence,$check_bus_seq[0]->id);
+                $this->busLocationSequenceRepository->update($bus_location_sequence,$check_bus_seq[0]->id);
 
              }else{
                 /////// add 
-                $this->busLocationSequenceService->savePostData($bus_location_sequence);
+                //$this->busLocationSequenceService->savePostData($bus_location_sequence);
+                $this->busLocationSequenceRepository->save($bus_location_sequence);
              }          
 
 
@@ -235,7 +284,8 @@ class BusStoppageController extends Controller
                         ///////// update bus stopagge timing table
                         try {
                              $timing_grp['status']=1;
-                            $this->BusStoppageTimingService->updatePost($timing_grp,$check_existing[0]->id);
+                            //$this->BusStoppageTimingService->updatePost($timing_grp,$check_existing[0]->id);
+                            $this->busStoppageTimingRepository->update($timing_grp,$check_existing[0]->id);
                         } 
                         catch (Exception $e) {                            
                             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -245,7 +295,10 @@ class BusStoppageController extends Controller
                         //////////// add new in bus stopagge timing table
 
                         try {
-                            $this->BusStoppageTimingService->savePostData($timing_grp);
+                           // $this->BusStoppageTimingService->savePostData($timing_grp);
+
+                           //Subhasis Mohanty changed on 20 sept 2025
+                            $this->busStoppageTimingRepository->save($timing_grp);
                         } 
                         catch (Exception $e) {
                             
@@ -306,7 +359,10 @@ class BusStoppageController extends Controller
                  ///////update  ticket price table
 
                  try {             
-                    $this->busStoppageService->updatePost($routeinfoData,$chk_tkt_prc[0]->id);
+                    //$this->busStoppageService->updatePost($routeinfoData,$chk_tkt_prc[0]->id);
+
+                    // Subhasis Mohanty changed on 20 sept 2025
+                    $this->busStoppageRepository->update($routeinfoData,$chk_tkt_prc[0]->id);
                  } 
                  catch (Exception $e) {                     
                      // Log::info($e);
@@ -316,7 +372,9 @@ class BusStoppageController extends Controller
               }else{
                  /////// add to ticket price table
                  try {                
-                    $this->busStoppageService->savePostData($routeinfoData);
+                    //$this->busStoppageService->savePostData($routeinfoData);
+                    // Subhasis Mohanty changed on 20 sept 2025
+                    $this->busStoppageRepository->save($routeinfoData);
                  } 
                  catch (Exception $e) {                     
                      // Log::info($e);
@@ -335,14 +393,18 @@ class BusStoppageController extends Controller
         
 
         
-        $this->BusSeatsService->updatePost($new_arr, $id);
+       // $this->BusSeatsService->updatePost($new_arr, $id);
+       //Subhasis Mohanty changed on 20 sept 2025
+        $this->busSeatsRepository->update($new_arr, $id);
 
         
         return $this->successResponse($request, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
     }
     public function deleteBusStoppage ($id) {
       try {
-          $this->busStoppageService->deleteById($id);
+        //  $this->busStoppageService->deleteById($id);
+        //Subhasis Mohanty changed on 20 sept 2025
+            $this->busStoppageRepository->delete($id);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -351,31 +413,79 @@ class BusStoppageController extends Controller
     }
 
     public function getBusStoppage($id) {
-      $busStoppage = $this->busStoppageService->getById($id);
+      //$busStoppage = $this->busStoppageService->getById($id);
+      //Subhasis Mohanty changed on 20 sept 2025
+        $busStoppage = $this->busStoppageRepository->getById($id);
       return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }      
 	   
     public function getBusStoppagebyRoutes($source_id,$destination_id) {
-        $busStoppage = $this->busStoppageService->getBusStoppagebyRoutes($source_id,$destination_id);
+        //$busStoppage = $this->busStoppageService->getBusStoppagebyRoutes($source_id,$destination_id);
+        $busStoppage = $this->busStoppageRepository->getBusStoppagebyRoutes($source_id,$destination_id);
         return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-    public function getBusStoppagebyBusId($busid) {
-        $busStoppage = $this->busStoppageService->getBusStoppagebyBusId($busid);
-        return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    } 
+    // public function getBusStoppagebyBusId($busid) {
+    //     $busStoppage = $this->busStoppageService->getBusStoppagebyBusId($busid);
+    //     return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // } 
+
+
+
+    //Subhasis Mohanty changed on 20 sept 2025
+        public function getBusStoppagebyBusId($busid)
+    {
+        try {
+            
+            $data['result'] = $this->busStoppageRepository->getBusStoppagebyBusId($busid);
+
+            
+            $data['locations'] = $this->busLocationSequence
+                                      ->where('status', '1')
+                                      ->where('bus_id', $busid)
+                                      ->select('location_id')
+                                      ->get();
+
+            
+            if ($data['locations'] && $data['locations']->isNotEmpty()) {
+                foreach ($data['locations'] as $v) {
+                    $v['location_name'] = $this->location->where('id', $v->location_id)->get();
+                }
+            }
+
+            return $this->successResponse(
+                $data,
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
+        } catch (Exception $e) {
+            Log::error('getBusStoppagebyBusId failed: '.$e->getMessage(), [
+                'bus_id' => $busid,
+                'trace'  => $e->getTraceAsString(),
+            ]);
+
+            return $this->errorResponse(
+                Config::get('constants.RECORD_NOT_FOUND'),
+                Response::HTTP_PARTIAL_CONTENT
+            );
+        }
+    }
+
     
     public function getBusByOperator($operator_id) {
-        $busStoppage = $this->busStoppageService->getBusByOperator($operator_id);
+        //$busStoppage = $this->busStoppageService->getBusByOperator($operator_id);
+        $busStoppage = $this->busStoppageRepository->getBusByOperator($operator_id);
         return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }   
 
     public function getbusRoutebyBusId($id) {
-        $busStoppage = $this->busStoppageService->getbusRoutebyBusId($id);
+        //$busStoppage = $this->busStoppageService->getbusRoutebyBusId($id);
+        $busStoppage = $this->busStoppageRepository->getbusRoutebyBusId($id);
         return $this->successResponse($busStoppage,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }   
 
       public function AllRoute(Request $request){
-        $routes = $this->busStoppageService->AllRoute($request);
+        //$routes = $this->busStoppageService->AllRoute($request);
+        $routes = $this->busStoppageRepository->AllRoute($request);
         return $this->successResponse($routes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);     
       }
 }

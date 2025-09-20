@@ -26,66 +26,66 @@ class BusStoppageService
         $this->busStoppageTiming = $busStoppageTiming;
         $this->location=$location;
     }
-    public function deleteById($id)
-    {
-        try {
-            $post = $this->busStoppageRepository->delete($id);
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $post = $this->busStoppageRepository->delete($id);
 
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
 
-    }
-    public function getAll()
-    {
-        return $this->busStoppageRepository->getAll();
-    }
-    public function getById($id)
-    {
-        return $this->busStoppageRepository->getById($id);
-    }
+    // }
+    // public function getAll()
+    // {
+    //     return $this->busStoppageRepository->getAll();
+    // }
+    // public function getById($id)
+    // {
+    //     return $this->busStoppageRepository->getById($id);
+    // }
 
-    public function getBusStoppagebyRoutes($source_id,$destination_id)
-    {
-        return $this->busStoppageRepository->getBusStoppagebyRoutes($source_id,$destination_id);
-    }
-    public function getBusStoppagebyBusId($busid)
-    {
-        $data['result']= $this->busStoppageRepository->getBusStoppagebyBusId($busid);
-        $data['locations']=$this->busLocationSequence->where('status','1')->select('location_id')->where('bus_id', $busid)->get();
+    // public function getBusStoppagebyRoutes($source_id,$destination_id)
+    // {
+    //     return $this->busStoppageRepository->getBusStoppagebyRoutes($source_id,$destination_id);
+    // }
+    // public function getBusStoppagebyBusId($busid)
+    // {
+    //     $data['result']= $this->busStoppageRepository->getBusStoppagebyBusId($busid);
+    //     $data['locations']=$this->busLocationSequence->where('status','1')->select('location_id')->where('bus_id', $busid)->get();
      
-        //$data['locations']=$this->busStoppageTiming->select('location_id')->distinct()->where('bus_id',$busid)->get();
-         if($data['locations']){
-            foreach($data['locations'] as $v)
-            { 
-                $v['location_name']=$this->location->where('id', $v->location_id)->get();
+    //     //$data['locations']=$this->busStoppageTiming->select('location_id')->distinct()->where('bus_id',$busid)->get();
+    //      if($data['locations']){
+    //         foreach($data['locations'] as $v)
+    //         { 
+    //             $v['location_name']=$this->location->where('id', $v->location_id)->get();
                
-            }
-        }
-        return $data;
-    }
+    //         }
+    //     }
+    //     return $data;
+    // }
     
-    public function getBusByOperator($operator_id)
-    {
-        return $this->busStoppageRepository->getBusByOperator($operator_id);
-    }
-    public function updatePost($data, $id)
-    {
-        try {
-            $post = $this->busStoppageRepository->update($data, $id);
+    // public function getBusByOperator($operator_id)
+    // {
+    //     return $this->busStoppageRepository->getBusByOperator($operator_id);
+    // }
+    // public function updatePost($data, $id)
+    // {
+    //     try {
+    //         $post = $this->busStoppageRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
-    }
-    public function savePostData($data)
-    {
-        $result = $this->busStoppageRepository->save($data);
-        return $result;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
+    // }
+    // public function savePostData($data)
+    // {
+    //     $result = $this->busStoppageRepository->save($data);
+    //     return $result;
+    // }
     public function checkDuplicate($data)
     {
         $result = $this->busStoppageRepository->checkDuplicate($data);
@@ -97,25 +97,25 @@ class BusStoppageService
         return $result;
     }
 
-    public function getbusRoutebyBusId($id)
-    {
-         $result = $this->busStoppageRepository->getbusRoutebyBusId($id);
-        return $result;
-    }
+    // public function getbusRoutebyBusId($id)
+    // {
+    //      $result = $this->busStoppageRepository->getbusRoutebyBusId($id);
+    //     return $result;
+    // }
 
 
-    public function updateStatus($id)
-    {
-         $result = $this->busStoppageRepository->updateStatus($id);
-        return $result;
-    }
+    // public function updateStatus($id)
+    // {
+    //      $result = $this->busStoppageRepository->updateStatus($id);
+    //     return $result;
+    // }
 
 
-    public function AllRoute($data)
-    {
-         $result = $this->busStoppageRepository->AllRoute($data);
-        return $result;
-    }
+    // public function AllRoute($data)
+    // {
+    //      $result = $this->busStoppageRepository->AllRoute($data);
+    //     return $result;
+    // }
 
     
 }

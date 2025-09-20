@@ -55,30 +55,30 @@ class BusStoppageTimingService
     {
         return $this->busStoppageTimingRepository->busStoppageTimingbyBusIdClone($busid);
     }
-    public function updatePost($data, $id)
-    {
-        try {
-            $post = $this->busStoppageTimingRepository->update($data, $id);
+    // public function updatePost($data, $id)
+    // {
+    //     try {
+    //         $post = $this->busStoppageTimingRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
 
-    }
+    // }
 
 
-    public function updateStatus($id)
-    {
-         $result = $this->busStoppageTimingRepository->updateStatus($id);
-        return $result;
-    }
+    // public function updateStatus($id)
+    // {
+    //      $result = $this->busStoppageTimingRepository->updateStatus($id);
+    //     return $result;
+    // }
 
    
-    public function savePostData($data)
-    {
-        $result = $this->busStoppageTimingRepository->save($data);
-        return $result;
-    }
-}
+//     public function savePostData($data)
+//     {
+//         $result = $this->busStoppageTimingRepository->save($data);
+//         return $result;
+//     }
+ }

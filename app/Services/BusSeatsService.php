@@ -54,18 +54,18 @@ class BusSeatsService
         return $this->busSeatsRepository->busextraSeatsByBus($id);
     }
     
-    public function updatePost($data, $id)
-    {
-        try {
-            $post = $this->busSeatsRepository->update($data, $id);
+    // public function updatePost($data, $id)
+    // {
+    //     try {
+    //         $post = $this->busSeatsRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            Log::info($e);
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
+    //     } catch (Exception $e) {
+    //         Log::info($e);
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
 
-    }
+    // }
     public function updateNewFare($data)
     {
         try {

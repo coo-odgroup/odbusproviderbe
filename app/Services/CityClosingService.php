@@ -43,48 +43,48 @@ class CityClosingService
     }
 
     
-    public function getAll()
-    {
-        return $this->cityClosingRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->cityClosingRepository->getAll();
+    // }
 
     
-    public function getById($id)
-    {
-        return $this->cityClosingRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->cityClosingRepository->getById($id);
+    // }
 
    
-    public function updatePost($data, $id)
-    {
+    // public function updatePost($data, $id)
+    // {
         
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->cityClosingRepository->update($data, $id);
+    //     try {
+    //         $post = $this->cityClosingRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to update post data');
-        }
+    //         throw new InvalidArgumentException('Unable to update post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
     
-    public function savePostData($data)
-    {
+    // public function savePostData($data)
+    // {
         
 
-        $result = $this->cityClosingRepository->save($data);
+    //     $result = $this->cityClosingRepository->save($data);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 }
