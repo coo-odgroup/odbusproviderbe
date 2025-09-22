@@ -32,26 +32,26 @@ class OffersService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
-    {
-        try {
-            $post = $this->offersRepository->delete($id);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $post = $this->offersRepository->delete($id);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Get all Data.
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->offersRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->offersRepository->getAll();
+    // }
 
     /**
      * Get  by id.
@@ -59,15 +59,15 @@ class OffersService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->offersRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->offersRepository->getById($id);
+    // }
 
-    public function getByBusId($bid)
-    {
-        return $this->offersRepository->getByBusId($bid);
-    }
+    // public function getByBusId($bid)
+    // {
+    //     return $this->offersRepository->getByBusId($bid);
+    // }
     /**
      * Update  data
      * Store to DB if there are no errors.
@@ -94,13 +94,13 @@ class OffersService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        $result = $this->offersRepository->save($data);
-        return $result;
-    }
-    public function dataTable($request)
-    {
-        return $this->offersRepository->getDatatable($request);
-    }
+    // public function savePostData($data)
+    // {
+    //     $result = $this->offersRepository->save($data);
+    //     return $result;
+    // }
+    // public function dataTable($request)
+    // {
+    //     return $this->offersRepository->getDatatable($request);
+    // }
 }

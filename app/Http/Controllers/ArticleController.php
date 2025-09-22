@@ -44,9 +44,16 @@ class ArticleController extends Controller
 
 
     
-    public function __construct(Bus $bus,SpecialFare $specialFare,
-    BusCancelled $busCancelled,BusOperator $busOperator,
-    BusStoppage $busStoppage,Location $location,Locationcode $locationcode,BusSchedule $busSchedule,Article $article,MyComment $myComment)
+    public function __construct(Bus $bus,
+                                SpecialFare $specialFare,
+                                BusCancelled $busCancelled,
+                                BusOperator $busOperator,
+                                BusStoppage $busStoppage,
+                                Location $location,
+                                Locationcode $locationcode,
+                                BusSchedule $busSchedule,
+                                Article $article,
+                                MyComment $myComment)
     {
         //$this->busSpecialFare = $busSpecialFare;
         $this->busCancelled = $busCancelled;

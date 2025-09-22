@@ -23,39 +23,39 @@ class OwnerPaymentService
 
    
     
-    public function getAll()
-    {
-        return $this->ownerPaymentRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->ownerPaymentRepository->getAll();
+    // }
    
-    public function dataTable($request)
-    {
+    // public function dataTable($request)
+    // {
         
-        return $this->ownerPaymentRepository->getDatatable($request);
-    }  
-    public function getPaymentDetails($request)
-    {
+    //     return $this->ownerPaymentRepository->getDatatable($request);
+    // }  
+    // public function getPaymentDetails($request)
+    // {
         
-        return $this->ownerPaymentRepository->getPaymentDetails($request);
-    } 
+    //     return $this->ownerPaymentRepository->getPaymentDetails($request);
+    // } 
 
-    public function ownerpaymentData($request)
-    {
+    // public function ownerpaymentData($request)
+    // {
         
-        return $this->ownerPaymentRepository->ownerpaymentData($request);
-    }
+    //     return $this->ownerPaymentRepository->ownerpaymentData($request);
+    // }
         
-    public function savePostData($data)
-    {
-        try {
-            $post = $this->ownerPaymentRepository->save($data);
+    // public function savePostData($data)
+    // {
+    //     try {
+    //         $post = $this->ownerPaymentRepository->save($data);
 
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $post;
+    // }
    
 
 }
