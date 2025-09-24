@@ -21,9 +21,9 @@ class ApiUserCompleteReportService
         $this->apiusercompletereportRepository = $apiusercompletereportRepository;
     }
     
-    public function getData($request)
-    {
-        return $this->apiusercompletereportRepository->getData($request);
-    }
+    // public function getData($request)
+    // {
+    //     return $this->apiusercompletereportRepository->getData($request);
+    // }
 
 }

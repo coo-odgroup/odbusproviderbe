@@ -33,30 +33,30 @@ class AppDownloadService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
-    {
-        try {
-            $post = $this->appDownloadRepository->delete($id);
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $post = $this->appDownloadRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            // Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         // Log::info($e->getMessage());
 
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Get all Data.
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->appDownloadRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->appDownloadRepository->getAll();
+    // }
 
     /**
      * Get  by id.
@@ -64,10 +64,10 @@ class AppDownloadService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->appDownloadRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->appDownloadRepository->getById($id);
+    // }
 
     /**
      * Update  data
@@ -76,20 +76,20 @@ class AppDownloadService
      * @param array $data
      * @return String
      */
-    public function updatePost($data, $id)
-    {
-        try {
-            $post = $this->appDownloadRepository->update($data, $id);
+    // public function updatePost($data, $id)
+    // {
+    //     try {
+    //         $post = $this->appDownloadRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            // Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         // Log::info($e->getMessage());
 
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Validate  data.
@@ -98,13 +98,13 @@ class AppDownloadService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
+    // public function savePostData($data)
+    // {
         
 
-        $result = $this->appDownloadRepository->save($data);
+    //     $result = $this->appDownloadRepository->save($data);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 }

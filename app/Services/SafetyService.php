@@ -61,24 +61,24 @@ class SafetyService
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->safetyRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->safetyRepository->getAll();
+    // }
     
-    public function dataTable($request)
-    {
-        return $this->safetyRepository->getDatatable($request);
-    }
-    public function safetyByUser($request)
-    {
-        return $this->safetyRepository->safetyByUser($request);
-    }
+    // public function dataTable($request)
+    // {
+    //     return $this->safetyRepository->getDatatable($request);
+    // }
+    // public function safetyByUser($request)
+    // {
+    //     return $this->safetyRepository->safetyByUser($request);
+    // }
 
-    public function getAllData($request)
-    {
-        return $this->safetyRepository->getAllData($request);
-    }
+    // public function getAllData($request)
+    // {
+    //     return $this->safetyRepository->getAllData($request);
+    // }
     /**
      * Get  by id.
      *
@@ -89,10 +89,10 @@ class SafetyService
     {
         return $this->safetyRepository->getById($id);
     }
-    public function getByBusId($id)
-    {
-        return $this->safetyRepository->getByBusId($id);
-    }
+    // public function getByBusId($id)
+    // {
+    //     return $this->safetyRepository->getByBusId($id);
+    // }
     /**
      * Update  data
      * Store to DB if there are no errors.
@@ -118,15 +118,15 @@ class SafetyService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {   
-        try {
-            $safety = $this->safetyRepository->save($data);
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $safety;
-    }
+    // public function savePostData($data)
+    // {   
+    //     try {
+    //         $safety = $this->safetyRepository->save($data);
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $safety;
+    // }
 
 }

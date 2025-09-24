@@ -22,18 +22,18 @@ class PermissionToRoleService
 
     public function getAllPermissionToRole($request)
     {
-        return $this->permissionToRoleRepository->getAllPermissionToRole($request);
+        //return $this->permissionToRoleRepository->getAllPermissionToRole($request);
     } 
 
-    public function addPermissionToRole($request)
-    {
-        return $this->permissionToRoleRepository->addPermissionToRole($request);
-    }
+    // public function addPermissionToRole($request)
+    // {
+    //     return $this->permissionToRoleRepository->addPermissionToRole($request);
+    // }
 
-    public function deletePermissionToRole($id)
-    {
-        return $this->permissionToRoleRepository->deletePermissionToRole($id);
-    } 
+    // public function deletePermissionToRole($id)
+    // {
+    //     return $this->permissionToRoleRepository->deletePermissionToRole($id);
+    // } 
    
     // public function changeStatus($id)
     // {

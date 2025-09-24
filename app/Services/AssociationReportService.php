@@ -22,16 +22,16 @@ class AssociationReportService
     
     
 
-    public function assocBookingReport($request)
-    {
-        return $this->AssociationReportRepository->assocBookingReport($request);
-    }  
+    // public function assocBookingReport($request)
+    // {
+    //     return $this->AssociationReportRepository->assocBookingReport($request);
+    // }  
 
 
-    public function assocCancelReport($request)
-    {
-        return $this->AssociationReportRepository->assocCancelReport($request);
-    }  
+    // public function assocCancelReport($request)
+    // {
+    //     return $this->AssociationReportRepository->assocCancelReport($request);
+    // }  
 
    
 

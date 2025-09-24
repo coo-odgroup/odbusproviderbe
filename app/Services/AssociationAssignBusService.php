@@ -22,25 +22,25 @@ class AssociationAssignBusService
     
     
 
-    public function getAssocBuslist($request)
-    {
-        return $this->AssociationAssignBusRepository->getAssocBuslist($request);
-    }  
+    // public function getAssocBuslist($request)
+    // {
+    //     return $this->AssociationAssignBusRepository->getAssocBuslist($request);
+    // }  
 
-    public function getassocAssignBus($request)
-    {
-        return $this->AssociationAssignBusRepository->getassocAssignBus($request);
-    } 
+    // public function getassocAssignBus($request)
+    // {
+    //     return $this->AssociationAssignBusRepository->getassocAssignBus($request);
+    // } 
 
-    public function assocAssignBus($request)
-    {
-        return $this->AssociationAssignBusRepository->assocAssignBus($request);
-    }
+    // public function assocAssignBus($request)
+    // {
+    //     return $this->AssociationAssignBusRepository->assocAssignBus($request);
+    // }
 
-      public function deleteassocAssignBus($request)
-    {
-        return $this->AssociationAssignBusRepository->deleteassocAssignBus($request);
-    } 
+    //   public function deleteassocAssignBus($request)
+    // {
+    //     return $this->AssociationAssignBusRepository->deleteassocAssignBus($request);
+    // } 
 
   
 

@@ -25,16 +25,16 @@ class ApiUserService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {        
-        try {            
-             return  $this->apiUserRepository->save($data);          
-        } 
-        catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));            
-        }
-        return $ApiUser;
-    }
+    // public function savePostData($data)
+    // {        
+    //     try {            
+    //          return  $this->apiUserRepository->save($data);          
+    //     } 
+    //     catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));            
+    //     }
+    //     return $ApiUser;
+    // }
 
 
     /**
@@ -99,30 +99,31 @@ class ApiUserService
      *
      * @return String
      */
-    public function getAllApiUserData($request)
-    {
-        return $this->apiUserRepository->getAllApiUserData($request);
-    } 
+    // public function getAllApiUserData($request)
+    // {
+    //     return $this->apiUserRepository->getAllApiUserData($request);
+    // } 
    
-    public function changeStatus($request)
-    {
-        try {
-            $agent = $this->apiUserRepository->changeStatus($request);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
-        }
-        return $agent;
+    // public function changeStatus($request)
+    // {
+    //     try {
+    //         $agent = $this->apiUserRepository->changeStatus($request);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+    //     }
+    //     return $agent;
 
-    } 
+    // } 
 
-    public function apiclientprofile($request)
-    {
-         return $this->apiUserRepository->apiclientprofile($request);
-    }
-    public function updateapiclient($request)
-    {
-         return $this->apiUserRepository->updateapiclient($request);
-    }  
+    // public function apiclientprofile($request)
+    // {
+    //      return $this->apiUserRepository->apiclientprofile($request);
+    // }
+    // public function updateapiclient($request)
+    // {
+    //      return $this->apiUserRepository->updateapiclient($request);
+    // }  
+
 
    
 

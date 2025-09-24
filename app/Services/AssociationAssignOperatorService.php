@@ -41,20 +41,20 @@ class AssociationAssignOperatorService
 
 
 
-    public function getAllAssignOperator($request)
-    {
-        return $this->AssociationAssignOperatorRepository->getAllAssignOperator($request);
-    } 
+    // public function getAllAssignOperator($request)
+    // {
+    //     return $this->AssociationAssignOperatorRepository->getAllAssignOperator($request);
+    // } 
 
-    public function addAssignOperator($request)
-    {
-        return $this->AssociationAssignOperatorRepository->addAssignOperator($request);
-    }
+    // public function addAssignOperator($request)
+    // {
+    //     return $this->AssociationAssignOperatorRepository->addAssignOperator($request);
+    // }
 
-      public function deleteassocAssignOperator($request)
-    {
-        return $this->AssociationAssignOperatorRepository->deleteassocAssignOperator($request);
-    } 
+    //   public function deleteassocAssignOperator($request)
+    // {
+    //     return $this->AssociationAssignOperatorRepository->deleteassocAssignOperator($request);
+    // } 
 
 
 

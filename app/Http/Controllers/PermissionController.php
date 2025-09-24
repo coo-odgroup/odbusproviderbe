@@ -7,6 +7,7 @@ use App\Models\BusSitting;
 use App\Services\PermissionService;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use App\Repositories\PermissionRepository;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
 use InvalidArgumentException;
@@ -18,27 +19,35 @@ class PermissionController extends Controller
     use ApiResponser;
     protected $permissionService;
     protected $permissionValidator;
+    protected $permissionRepository;
     /**
      * PostController Constructor
      *
      * @param PermissionService $permissionService
      *
      */
-    public function __construct(PermissionService $permissionService,PermissionValidator $permissionValidator)
+    public function __construct(PermissionService $permissionService,
+                                PermissionValidator $permissionValidator,
+                               PermissionRepository $permissionRepository )
+
+                            
     {
         $this->permissionService = $permissionService;
         $this->permissionValidator = $permissionValidator;
+         $this->permissionRepository = $permissionRepository;
     }
 
     public function getAllPermission(Request $request) 
     {
-        $role = $this->permissionService->getAll($request);
+        //$role = $this->permissionService->getAll($request);
+        $role = $this->permissionRepository->getAll();
         return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     } 
 
     public function PermissionData(Request $request) 
     {
-        $role = $this->permissionService->PermissionData($request);
+        //$role = $this->permissionService->PermissionData($request);
+        $role = $this->permissionRepository->PermissionData($request);
         return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
@@ -56,7 +65,8 @@ class PermissionController extends Controller
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-          $this->permissionService->savePostData($data);
+          //$this->permissionService->savePostData($data);
+          $this->permissionRepository->save($data);
           
       }
        catch (Exception $e) {
@@ -80,7 +90,8 @@ class PermissionController extends Controller
         }
 
         try {
-          $this->permissionService->update($data, $id);
+         // $this->permissionService->update($data, $id);
+            $this->permissionRepository->update($data, $id);  
           
         }
          catch (Exception $e) {
@@ -91,7 +102,8 @@ class PermissionController extends Controller
 
     public function deletePermission ($id) {
       try {
-        $this->permissionService->deleteById($id);
+        //$this->permissionService->deleteById($id);
+         $this->permissionRepository->delete($id);
         
       } 
       catch (Exception $e) {
@@ -102,7 +114,8 @@ class PermissionController extends Controller
 
     public function getPermission($id) {
       try {
-        $permission= $this->permissionService->getById($id);        
+        //$permission= $this->permissionService->getById($id);    
+        $permission = $this->permissionRepository->getById($id);    
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -112,14 +125,16 @@ class PermissionController extends Controller
    
     public function getPermissionDT(Request $request) 
     {              
-       $permission = $this->permissionService->getAllPermissionDT($request);
+       //$permission = $this->permissionService->getAllPermissionDT($request);
+       $permission = $this->permissionRepository->getAllPermissionDT($request);
        return $this->successResponse($permission,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);      
     }
 
     public function changeStatus ($id)
     {
       try{
-        $this->permissionService->changeStatus($id);
+        //$this->permissionService->changeStatus($id);
+          $this->permissionRepository->changeStatus($id);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

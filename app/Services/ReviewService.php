@@ -27,24 +27,24 @@ class ReviewService
         $this->reviewRepository = $reviewRepository;
     }
 
-    public function getAll()
-    {
-        return $this->reviewRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->reviewRepository->getAll();
+    // }
     
-    public function getData($request)
-    {
-        return $this->reviewRepository->getData($request);
-    }
-    public function deleteData($id)
-    {
-        return $this->reviewRepository->deleteData($id);
-    }
+    // public function getData($request)
+    // {
+    //     return $this->reviewRepository->getData($request);
+    // }
+    // public function deleteData($id)
+    // {
+    //     return $this->reviewRepository->deleteData($id);
+    // }
 
-    public function changeStatus($id)
-    {    
-        return $this->reviewRepository->changeStatus($id);
-    }
+    // public function changeStatus($id)
+    // {    
+    //     return $this->reviewRepository->changeStatus($id);
+    // }
 
 
 }

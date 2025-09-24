@@ -7,6 +7,7 @@ use App\Models\BusGallery;
 use App\Services\BusGalleryService;
 use Illuminate\Support\Facades\Validator;
 use App\AppValidator\BusGalleryValidator;
+use App\Repositories\BusGalleryRepository;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -25,19 +26,24 @@ class BusGalleryController extends Controller
      */
     protected $busGalleryService;
     protected $busGalleryValidator;
+    protected $busGalleryRepository;
     /**
      * PostController Constructor
      *
      * @param BusGalleryService $busGalleryService
      *
      */
-    public function __construct(BusGalleryService $busGalleryService, BusGalleryValidator $busGalleryValidator)
+    public function __construct(BusGalleryService $busGalleryService,
+                                 BusGalleryValidator $busGalleryValidator,
+                                 BusGalleryRepository $busGalleryRepository)
     {
         $this->busGalleryService = $busGalleryService;
         $this->busGalleryValidator = $busGalleryValidator;
+        $this->busGalleryRepository = $busGalleryRepository;
     }
     public function getAllBusGallery() {
-        $busGallery = $this->busGalleryService->getAll();;
+        //$busGallery = $this->busGalleryService->getAll();
+        $busGallery = $this->busGalleryRepository->getAll();
         return $this->successResponse($busGallery, Config::get('constants.RECORD_FETCHED'), Response::HTTP_CREATED);
     }
     public function viewBusGallery(Request $request) {
@@ -48,7 +54,8 @@ class BusGalleryController extends Controller
             'rows_number',
             'USER_BUS_OPERATOR_ID'
           ]);
-        $busGallery = $this->busGalleryService->viewBusGallery($data);
+        //$busGallery = $this->busGalleryService->viewBusGallery($data);
+        $busGallery = $this->busGalleryRepository->viewBusGallery($data);
 
          return $this->successResponse($busGallery, Config::get('constants.RECORD_FETCHED'), Response::HTTP_CREATED);
     }
@@ -73,7 +80,8 @@ class BusGalleryController extends Controller
           }
            else
         {
-          $response =  $this->busGalleryService->savePostData($data);
+         // $response =  $this->busGalleryService->savePostData($data);
+         $response = $this->busGalleryRepository->save($data);
 
            if($response=='Bus Already Exist')
            {
@@ -96,21 +104,24 @@ class BusGalleryController extends Controller
     }
 
     public function deleteBusGallery ($id) {
-        $this->busGalleryService->deleteById($id);
+        //$this->busGalleryService->deleteById($id);
+        $this->busGalleryRepository->delete($id);
         $output ['status']=1;
         $output ['message']='Gallery Image Deleted ';
         return response($output, 200);
     }
   
     public function getBusGallery($id) {
-        $ame= $this->busGalleryService->getById($id);
+        //$ame= $this->busGalleryService->getById($id);
+        $ame = $this->busGalleryRepository->getById($id);
         $output ['status']=1;
         $output ['message']='Single Data Fetched Successfully';
         $output ['result']=$ame;
         return response($output, 200);
     }
     public function getBusGalleryBus($bid) {
-        $ame= $this->busGalleryService->getByBusId($bid);
+        //$ame= $this->busGalleryService->getByBusId($bid);
+        $ame = $this->busGalleryRepository->getByBusId($bid);
         $output ['status']=1;
         $output ['message']='Single Data Fetched Successfully';
         $output ['result']=$ame;
@@ -137,7 +148,8 @@ class BusGalleryController extends Controller
           }
         else
         {
-          $response =  $this->busGalleryService->updatePost($data);
+         // $response =  $this->busGalleryService->updatePost($data);
+          $response = $this->busGalleryRepository->update($data);
 
            if($response=='Bus Already Exist')
            {

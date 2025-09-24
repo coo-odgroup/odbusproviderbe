@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BusSitting;
 use App\Services\RoleService;
+use App\Repositories\RoleRepository;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
@@ -18,27 +19,34 @@ class RoleController extends Controller
     use ApiResponser;
     protected $roleService;
     protected $roleValidator;
+     protected $roleRepository;
     /**
      * PostController Constructor
      *
      * @param RoleService $roleService
      *
      */
-    public function __construct(RoleService $roleService,RoleValidator $roleValidator)
+    public function __construct(RoleService $roleService,
+                                RoleValidator $roleValidator,
+                                RoleRepository $roleRepository)
     {
         $this->roleService = $roleService;
         $this->roleValidator = $roleValidator;
+        $this->roleRepository = $roleRepository;
     }
 
     public function getAllRole(Request $request) 
     {
-        $role = $this->roleService->getAll($request);
+       // $role = $this->roleService->getAll($request);
+        $role = $this->roleRepository->getAll();
+
         return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     } 
 
     public function RoleData(Request $request) 
     {
-        $role = $this->roleService->RoleData($request);
+        //$role = $this->roleService->RoleData($request);
+        $role = $this->roleRepository->RoleData($request);
         return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
@@ -56,7 +64,7 @@ class RoleController extends Controller
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-          $this->roleService->savePostData($data);
+          $this->roleRepository->save($data);
           
       }
        catch (Exception $e) {
@@ -80,7 +88,8 @@ class RoleController extends Controller
         }
 
         try {
-          $this->roleService->update($data, $id);
+         // $this->roleService->update($data, $id);
+         $this->roleRepository->update($data, $id);
           
         }
          catch (Exception $e) {
@@ -91,7 +100,8 @@ class RoleController extends Controller
 
     public function deleteRole ($id) {
       try {
-        $this->roleService->deleteById($id);
+        //$this->roleService->deleteById($id);
+         $this->roleRepository->delete($id);
         
       } 
       catch (Exception $e) {
@@ -102,7 +112,8 @@ class RoleController extends Controller
 
     public function getBusSitting($id) {
       try {
-        $busSittingID= $this->roleService->getById($id);
+       // $busSittingID= $this->roleService->getById($id);
+        $busSittingID = $this->roleRepository->getById($id);
         
       }
       catch (Exception $e) {
@@ -113,14 +124,16 @@ class RoleController extends Controller
    
     public function getRoleDT(Request $request) 
     {              
-       $role = $this->roleService->getAllRoleDT($request);
+      // $role = $this->roleService->getAllRoleDT($request);
+      $role =  $this->roleRepository->getAllBusSittingDT($request);
        return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);      
     }
 
     public function changeStatus ($id)
     {
       try{
-        $this->roleService->changeStatus($id);
+       // $this->roleService->changeStatus($id);
+         $this->roleRepository->changeStatus($id);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

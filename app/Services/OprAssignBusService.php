@@ -17,28 +17,28 @@ class OprAssignBusService
         $this->OprAssignBusRepository = $OprAssignBusRepository;
     }    
 
-    public function getOprBuslist($request)
-    {
-        return $this->OprAssignBusRepository->getOprBuslist($request);
-    } 
+    // public function getOprBuslist($request)
+    // {
+    //     return $this->OprAssignBusRepository->getOprBuslist($request);
+    // } 
 
-    public function getOperatorbuslist($request)
-    {
-        return $this->OprAssignBusRepository->getOperatorbuslist($request);
-    }  
+    // public function getOperatorbuslist($request)
+    // {
+    //     return $this->OprAssignBusRepository->getOperatorbuslist($request);
+    // }  
 
-    public function getOprAssignBus($request)
-    {
-        return $this->OprAssignBusRepository->getOprAssignBus($request);
-    } 
+    // public function getOprAssignBus($request)
+    // {
+    //     return $this->OprAssignBusRepository->getOprAssignBus($request);
+    // } 
 
-    public function OprAssignBus($request)
-    {
-        return $this->OprAssignBusRepository->OprAssignBus($request);
-    }
+    // public function OprAssignBus($request)
+    // {
+    //     return $this->OprAssignBusRepository->OprAssignBus($request);
+    // }
 
-      public function deleteOprAssignBus($request)
-    {
-        return $this->OprAssignBusRepository->deleteOprAssignBus($request);
-    }  
+    //   public function deleteOprAssignBus($request)
+    // {
+    //     return $this->OprAssignBusRepository->deleteOprAssignBus($request);
+    // }  
 }

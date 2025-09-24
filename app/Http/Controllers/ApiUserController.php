@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\ApiUserService;
 use Illuminate\Support\Facades\Validator;
+use App\Repositories\ApiUserRepository;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
 use InvalidArgumentException;
@@ -19,11 +20,15 @@ class ApiUserController extends Controller
       
     protected $apiUserService;
     protected $apiUserValidator;
+    protected $apiUserRepository;
     
-    public function __construct(ApiUserService $apiUserService,ApiUserValidator $apiUserValidator)
+    public function __construct(ApiUserService $apiUserService,
+                                ApiUserValidator $apiUserValidator,
+                                ApiUserRepository $apiUserRepository)
     {
         $this->apiUserService = $apiUserService;
         $this->apiUserValidator = $apiUserValidator;
+         $this->apiUserRepository = $apiUserRepository;
     }
 
     public function createApiUser(Request $request) 
@@ -56,7 +61,9 @@ class ApiUserController extends Controller
         }
         else
         {
-                $response =  $this->apiUserService->savePostData($request);
+            $data = $request->all();
+               // $response =  $this->apiUserService->savePostData($request);
+               $response =    $this->apiUserRepository->save($data);     
 
                 if($response == 'Email Already Exist')
                 {
@@ -88,7 +95,8 @@ class ApiUserController extends Controller
 
     public function getAllApiUserData(Request $request) 
     {
-        $agents = $this->apiUserService->getAllApiUserData($request);
+        //$agents = $this->apiUserService->getAllApiUserData($request);
+        $agents =  $this->apiUserRepository->getAllApiUserData($request);
         return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }        
 
@@ -116,7 +124,8 @@ class ApiUserController extends Controller
 
            //log::info($data);
 
-           $response =  $this->apiUserService->update($data, $id);
+           //$response =  $this->apiUserService->update($data, $id);
+           $response = $this->apiUserRepository->updateapiclient($request);
 
            if($response=='Email Already Exist')
            {
@@ -139,7 +148,8 @@ class ApiUserController extends Controller
     public function changeStatus(Request $request) 
     {      
         try{
-          $this->apiUserService->changeStatus($request);
+          //$this->apiUserService->changeStatus($request);
+            $this->apiUserRepository->changeStatus($request);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -149,13 +159,15 @@ class ApiUserController extends Controller
 
      public function apiclientprofile(Request $request) 
      {      
-         $agents = $this->apiUserService->apiclientprofile($request);
+         //$agents = $this->apiUserService->apiclientprofile($request);
+         $agrents = $this->apiUserRepository->apiclientprofile($request);
          return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
      } 
 
      public function updateapiclient(Request $request) 
      {      
-          $agents = $this->apiUserService->updateapiclient($request);
+          //$agents = $this->apiUserService->updateapiclient($request);
+           $agents = $this->apiUserRepository->updateapiclient($request);
           return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
      }  
 }

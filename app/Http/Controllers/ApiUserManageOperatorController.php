@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\ApiUserManageOperatorService;
+
+use App\Repositories\ApiUserManageOperatorRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
@@ -19,12 +21,16 @@ class ApiUserManageOperatorController extends Controller
       
       
     protected $ApiUserManageOperatorService;
+    protected $ApiUserManageOperatorRepository;
     protected $agentValidator;
     
-    public function __construct(ApiUserManageOperatorService $ApiUserManageOperatorService,AgentValidator $agentValidator)
+    public function __construct(ApiUserManageOperatorService $ApiUserManageOperatorService,
+                                AgentValidator $agentValidator,
+                                ApiUserManageOperatorRepository $ApiUserManageOperatorRepository)
     {
         $this->ApiUserManageOperatorService = $ApiUserManageOperatorService;
         $this->agentValidator = $agentValidator;
+          $this->ApiUserManageOperatorRepository = $ApiUserManageOperatorRepository;
     }
 
 
@@ -33,7 +39,8 @@ class ApiUserManageOperatorController extends Controller
 
     public function manageClientOperatorData(Request $request) {
 
-      $agents = $this->ApiUserManageOperatorService->manageClientOperatorData($request);
+     // $agents = $this->ApiUserManageOperatorService->manageClientOperatorData($request);
+     $agents = $this->ApiUserManageOperatorRepository->manageClientOperatorData($request);
       return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     } 
 
@@ -41,7 +48,8 @@ class ApiUserManageOperatorController extends Controller
     public function manageClientOperator (Request $request) {
 
       try {
-        $this->ApiUserManageOperatorService->manageClientOperator($request);
+        // $this->ApiUserManageOperatorService->manageClientOperator($request);
+        $this->ApiUserManageOperatorRepository->manageClientOperator($request);
       } 
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -54,7 +62,8 @@ class ApiUserManageOperatorController extends Controller
     public function deletemanageClientOperator ($id) {
 
       try {
-        $this->ApiUserManageOperatorService->deletemanageClientOperator($id);
+       // $this->ApiUserManageOperatorService->deletemanageClientOperator($id);
+       $this->ApiUserManageOperatorRepository->deletemanageClientOperator($id);
         
       } 
       catch (Exception $e) {

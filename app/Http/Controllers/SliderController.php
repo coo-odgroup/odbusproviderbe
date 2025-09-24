@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Slider;
 use App\Services\SliderService;
+use App\Repositories\SliderRepository;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponser;
@@ -20,21 +21,27 @@ class SliderController extends Controller
     use ApiResponser;  
     protected $sliderService;
     protected $sliderValidator;
+    protected $sliderRepository;
 
-    public function __construct(SliderService $sliderService, SliderValidator $sliderValidator)
+    public function __construct(SliderService $sliderService,
+                                 SliderValidator $sliderValidator,
+                                 SliderRepository $sliderRepository)
     {
         $this->sliderService = $sliderService;
         $this->sliderValidator = $sliderValidator;
+        $this->sliderRepository = $sliderRepository;
     }
 
     public function getAllSlider() {
-        $slider = $this->sliderService->getAllSlider();
+        //$slider = $this->sliderService->getAllSlider();
+        $slider = $this->sliderRepository->getAllSlider();
         return $this->successResponse($slider,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function getData(Request $request)
     {
-        $sliderData = $this->sliderService->getData($request);
+        //$sliderData = $this->sliderService->getData($request);
+        $sliderData = $this->sliderRepository->getData($request);
         return $this->successResponse($sliderData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
@@ -47,10 +54,12 @@ class SliderController extends Controller
           return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-          $response = $this->sliderService->save($data);
+          //$response = $this->sliderService->save($data);
+          $slider = $this->sliderRepository->save($data);
           return $this->successResponse($response, "Special Slider Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
+        Log::info($e->getMessage());
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }	
     } 
@@ -64,8 +73,10 @@ class SliderController extends Controller
            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
          }
         try {
-          $response = $this->sliderService->update($data);
+          //$response = $this->sliderService->update($data);
+          $response = $this->sliderRepository->update($data);
           return $this->successResponse($response, "Special Slider Updated", Response::HTTP_CREATED);
+          
 
       } catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -73,7 +84,9 @@ class SliderController extends Controller
     }
     public function deleteSlider($id) {
         try{
-          $response = $this->sliderService->deleteById($id);
+         // $response = $this->sliderService->deleteById($id);
+         $response = $this->sliderRepository->delete($id);
+
           return $this->successResponse($response, "Special Slider Deleted", Response::HTTP_ACCEPTED);
         }
         catch (Exception $e){
@@ -82,7 +95,8 @@ class SliderController extends Controller
       }
       public function getSlider($id) { 
         try{
-          $slider= $this->sliderService->getById($id);
+         // $slider= $this->sliderService->getById($id);
+          $slider = $this->sliderRepository->getById($id);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -91,7 +105,8 @@ class SliderController extends Controller
       }
       public function changeStatus ($id) {
         try{
-          $response = $this->sliderService->changeStatus($id);
+          //$response = $this->sliderService->changeStatus($id);
+          $response = $this->sliderRepository->changeStatus($id);
           return $this->successResponse($response, "Special Slider Status Updated", Response::HTTP_ACCEPTED);
         }
         catch (Exception $e){

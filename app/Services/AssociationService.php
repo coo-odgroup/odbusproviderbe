@@ -23,46 +23,46 @@ class AssociationService
         $this->AssociationRepository = $AssociationRepository;
     }
     
-    public function getAllData($request)
-    {
-        return $this->AssociationRepository->getAllData($request);
-    }
+    // public function getAllData($request)
+    // {
+    //     return $this->AssociationRepository->getAllData($request);
+    // }
 
-    public function getAllAssoc()
-    {
-        return $this->AssociationRepository->getAllAssoc();
-    }
+    // public function getAllAssoc()
+    // {
+    //     return $this->AssociationRepository->getAllAssoc();
+    // }
 
-    public function getAllAgent()
-    {
-        return $this->AssociationRepository->getAllAgent();
-    }
+    // public function getAllAgent()
+    // {
+    //     return $this->AssociationRepository->getAllAgent();
+    // }
 
-    public function getAllUserOperator()
-    {
-        return $this->AssociationRepository->getAllUserOperator();
-    }
+    // public function getAllUserOperator()
+    // {
+    //     return $this->AssociationRepository->getAllUserOperator();
+    // }
 
-    public function addusercontent($request)
-    {
-        return $this->AssociationRepository->addusercontent($request);
-    } 
-    public function updateusercontent($request,$id)
-    {
-        return $this->AssociationRepository->updateusercontent($request,$id);
-    } 
-    public function changePassword($request,$id)
-    {
-        return $this->AssociationRepository->changePassword($request,$id);
-    }
-    public function deleteusercontent($id)
-    {
-        return $this->AssociationRepository->deleteusercontent($id);
-    } 
-     public function changeStatus($id)
-    {
-        return $this->AssociationRepository->changeStatus($id);
-    } 
+    // public function addusercontent($request)
+    // {
+    //     return $this->AssociationRepository->addusercontent($request);
+    // } 
+    // public function updateusercontent($request,$id)
+    // {
+    //     return $this->AssociationRepository->updateusercontent($request,$id);
+    // } 
+    // public function changePassword($request,$id)
+    // {
+    //     return $this->AssociationRepository->changePassword($request,$id);
+    // }
+    // public function deleteusercontent($id)
+    // {
+    //     return $this->AssociationRepository->deleteusercontent($id);
+    // } 
+    //  public function changeStatus($id)
+    // {
+    //     return $this->AssociationRepository->changeStatus($id);
+    // } 
   
 
 }

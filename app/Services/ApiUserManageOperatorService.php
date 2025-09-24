@@ -19,27 +19,27 @@ class ApiUserManageOperatorService
         $this->ApiUserManageOperatorRepository = $ApiUserManageOperatorRepository;
     }
 
-    public function deletemanageClientOperator($id)
-    {
-        try {
-            $busType = $this->ApiUserManageOperatorRepository->deletemanageClientOperator($id);
+    // public function deletemanageClientOperator($id)
+    // {
+    //     try {
+    //         $busType = $this->ApiUserManageOperatorRepository->deletemanageClientOperator($id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $busType;
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $busType;
 
-    }
+    // }
    
-    public function manageClientOperatorData($request)
-    {
-        return $this->ApiUserManageOperatorRepository->manageClientOperatorData($request);
-    }
+    // public function manageClientOperatorData($request)
+    // {
+    //     return $this->ApiUserManageOperatorRepository->manageClientOperatorData($request);
+    // }
 
 
-    public function manageClientOperator($request)
-    {
-        return $this->ApiUserManageOperatorRepository->manageClientOperator($request);
-    }
+    // public function manageClientOperator($request)
+    // {
+    //     return $this->ApiUserManageOperatorRepository->manageClientOperator($request);
+    // }
     
 }

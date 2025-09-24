@@ -32,31 +32,31 @@ class BusGalleryService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
-    {
-        try {
-            $post = $this->busGalleryRepository->delete($id);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $post = $this->busGalleryRepository->delete($id);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Get all Data.
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->busGalleryRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->busGalleryRepository->getAll();
+    // }
 
-    public function viewBusGallery($data)
-    {
-        return $this->busGalleryRepository->viewBusGallery($data);
-    }
+    // public function viewBusGallery($data)
+    // {
+    //     return $this->busGalleryRepository->viewBusGallery($data);
+    // }
 
     /**
      * Get  by id.
@@ -64,15 +64,15 @@ class BusGalleryService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->busGalleryRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->busGalleryRepository->getById($id);
+    // }
 
-    public function getByBusId($bid)
-    {
-        return $this->busGalleryRepository->getByBusId($bid);
-    }
+    // public function getByBusId($bid)
+    // {
+    //     return $this->busGalleryRepository->getByBusId($bid);
+    // }
     /**
      * Update  data
      * Store to DB if there are no errors.
@@ -80,17 +80,17 @@ class BusGalleryService
      * @param array $data
      * @return String
      */
-    public function updatePost($data)
-    {
-        try {
-            $post = $this->busGalleryRepository->update($data);
+    // public function updatePost($data)
+    // {
+    //     try {
+    //         $post = $this->busGalleryRepository->update($data);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $post;
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Validate  data.
@@ -99,9 +99,9 @@ class BusGalleryService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        $result = $this->busGalleryRepository->save($data);
-        return $result;
-    }
+    // public function savePostData($data)
+    // {
+    //     $result = $this->busGalleryRepository->save($data);
+    //     return $result;
+    // }
 }

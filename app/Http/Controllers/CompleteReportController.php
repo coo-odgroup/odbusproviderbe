@@ -24,8 +24,9 @@ class CompleteReportController extends Controller
     protected $completereportRepository;
 
     
-    public function __construct(//CompleteReportService $completereportService
-                                 CompleteReportService $completereportService
+    public function __construct(
+                                CompleteReportService $completereportService,
+                                CompleteReportRepository $completereportRepository
     )
     {
         //$this->completereportService = $completereportService;   

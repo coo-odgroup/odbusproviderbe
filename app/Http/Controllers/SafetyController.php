@@ -7,6 +7,7 @@ use App\Models\Safety;
 use App\Services\SafetyService;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use App\Repositories\SafetyRepository;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
@@ -22,25 +23,31 @@ class SafetyController extends Controller
      */
     protected $safetyService;
     protected $safetyValidator;
+    protected $safetyRepository;
     /**
      * PostController Constructor
      *
      * @param SafetyService $busTypeService
      *
      */
-    public function __construct(SafetyService $safetyService, SafetyValidator $safetyValidator)
+    public function __construct(SafetyService $safetyService,
+                                SafetyValidator $safetyValidator,
+                                SafetyRepository $safetyRepository)
     {
         $this->safetyService = $safetyService;
         $this->safetyValidator=$safetyValidator;
+        $this->safetyRepository = $safetyRepository;
     }
     public function getAll() {
-      $result = $this->safetyService->getAll();;
+      //$result = $this->safetyService->getAll();
+      $result = $this->safetyRepository->getAll();
       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function getByBusId($id)
     {
       try{
-        $result= $this->safetyService->getByBusId($id);
+       // $result= $this->safetyService->getByBusId($id);
+       $result = $this->safetyRepository->getByBusId($id);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -49,19 +56,22 @@ class SafetyController extends Controller
     }
     public function getSafetyDT(Request $request)
     {
-      $result = $this->safetyService->dataTable($request);
+      // $result = $this->safetyService->dataTable($request);
+      $result = $this->safetyRepository->getDatatable($request);
       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function safetyByUser(Request $request)
     {
-      $result = $this->safetyService->safetyByUser($request);
+      //$result = $this->safetyService->safetyByUser($request);
+      $result = $this->safetyRepository->safetyByUser($request);
       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     
     public function getAllData(Request $request)
     {
-      $result = $this->safetyService->getAllData($request);
+      //$result = $this->safetyService->getAllData($request);
+      $result = $this->safetyRepository->getAllData($request);
       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     
@@ -77,7 +87,11 @@ class SafetyController extends Controller
         }
         else
         {
-          $response =  $this->safetyService->savePostData($request);
+
+          $data = $request->all();
+          //$response =  $this->safetyService->savePostData($request);
+          $response = $this->safetyRepository->save($data);
+    //     } catch (Exception $e) {
 
            if($response=='Safety Already Exist')
            {

@@ -55,15 +55,15 @@ class UserService
 
     }
 
-    public function getallAgent()
-    {
-       return $this->userRepository->getallAgent();  
-    } 
+    // public function getallAgent()
+    // {
+    //    return $this->userRepository->getallAgent();  
+    // } 
 
-    public function allApiClient()
-    {
-       return $this->userRepository->allApiClient();  
-    }
+    // public function allApiClient()
+    // {
+    //    return $this->userRepository->allApiClient();  
+    // }
 
     /**
      * Get all post.
@@ -86,10 +86,10 @@ class UserService
         return $this->userRepository->getById($id);
     }
 
-    public function specifieUser($request)
-    {
-        return $this->userRepository->specifieUser($request);
-    }
+    // public function specifieUser($request)
+    // {
+    //     return $this->userRepository->specifieUser($request);
+    // }
 
     /**
      * Update post data
@@ -144,56 +144,56 @@ class UserService
 
     /////////////////////Agent registration//////////////////////////////////
 
-    public function Register($data)
-    {   
-        $agent = $this->userRepository->Register($data);
-        return $agent;
-    }
+    // public function Register($data)
+    // {   
+    //     $agent = $this->userRepository->Register($data);
+    //     return $agent;
+    // }
     public function verifyOtp($data)
     {   
         $agent = $this->userRepository->verifyOtp($data);
         return $agent;
     }
-    public function login($data)
-    {
-        return $this->userRepository->login($data);
-    }
-    public function getRoles()
-    {
-        return $this->userRepository->getRoles();
-    }
-    public function agentRegister($data)
-    {   
-        $agent = $this->userRepository->agentRegister($data);
-        return $agent;
-    }
+    // public function login($data)
+    // {
+    //     return $this->userRepository->login($data);
+    //  }
+    // public function getRoles()
+    // {
+    //     return $this->userRepository->getRoles();
+    // }
+    // public function agentRegister($data)
+    // {   
+    //     $agent = $this->userRepository->agentRegister($data);
+    //     return $agent;
+    // }
 
-    public function AllUser()
-    {
-       $list = $this->userRepository->AllUser();
-        return $list;
-    }
+    // public function AllUser()
+    // {
+    //    $list = $this->userRepository->AllUser();
+    //     return $list;
+    // }
 
-    public function AgentForgetPasswordOtp($request){
+    // public function AgentForgetPasswordOtp($request){
 
-        $res = $this->userRepository->AgentForgetPasswordOtp($request);
-        return $res;
+    //     $res = $this->userRepository->AgentForgetPasswordOtp($request);
+    //     return $res;
 
-    }
+    // }
 
-    public function AgentVerifyOtp($request){
+    // public function AgentVerifyOtp($request){
 
-        $res = $this->userRepository->AgentVerifyOtp($request);
-        return $res;
+    //     $res = $this->userRepository->AgentVerifyOtp($request);
+    //     return $res;
 
-    }
+    // }
 
-    public function AgentResetPassword($request){
+    // public function AgentResetPassword($request){
 
-        $res = $this->userRepository->AgentResetPassword($request);
-        return $res;
+    //     $res = $this->userRepository->AgentResetPassword($request);
+    //     return $res;
 
-    }
+    // }
 
     
 

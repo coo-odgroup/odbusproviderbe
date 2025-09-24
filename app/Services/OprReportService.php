@@ -18,14 +18,14 @@ class OprReportService
         $this->OprReportRepository = $OprReportRepository;
     }    
 
-    public function oprBookingReport($request)
-    {
-        return $this->OprReportRepository->oprBookingReport($request);
-    }  
+    // public function oprBookingReport($request)
+    // {
+    //     return $this->OprReportRepository->oprBookingReport($request);
+    // }  
 
-    public function oprCancelReport($request)
-    {
-        return $this->OprReportRepository->oprCancelReport($request);
-    }  
+    // public function oprCancelReport($request)
+    // {
+    //     return $this->OprReportRepository->oprCancelReport($request);
+    // }  
 
 }

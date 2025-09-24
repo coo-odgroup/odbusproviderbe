@@ -33,25 +33,25 @@ class PermissionService
      */
 
 
-    public function deleteById($id)
-    {
-        try {
-            $role = $this->permissionRepository->delete($id);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $role;
-    }
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $role = $this->permissionRepository->delete($id);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $role;
+    // }
 
     /**
      * Get all Data
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->permissionRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->permissionRepository->getAll();
+    // }
 
     /**
      * Get  by id.
@@ -59,10 +59,10 @@ class PermissionService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->permissionRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->permissionRepository->getById($id);
+    // }
 
     /**
      * Update  data
@@ -71,16 +71,16 @@ class PermissionService
      * @param array $data
      * @return String
      */
-    public function update($data, $id)
-    {
-        try {
-            $role = $this->permissionRepository->update($data, $id);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $role;
+    // public function update($data, $id)
+    // {
+    //     try {
+    //         $role = $this->permissionRepository->update($data, $id);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $role;
 
-    }
+    // }
 
     /**
      * Validate  data.
@@ -89,39 +89,39 @@ class PermissionService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        try {
-            $post = $this->permissionRepository->save($data);
+    // public function savePostData($data)
+    // {
+    //     try {
+    //         $post = $this->permissionRepository->save($data);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $post;
+    // }
     /**
      * Get all Data in Datatable Format.
      *
      * @return String
      */
 
-    public function getAllPermissionDT($request)
-    {
-        return $this->permissionRepository->getAllPermissionDT($request);
-    } 
+    // public function getAllPermissionDT($request)
+    // {
+    //     return $this->permissionRepository->getAllPermissionDT($request);
+    // } 
 
-    public function PermissionData($request)
-    {
-        return $this->permissionRepository->PermissionData($request);
-    }
-    public function changeStatus($id)
-    {
-        try {
-            $post = $this->permissionRepository->changeStatus($id);
+    // public function PermissionData($request)
+    // {
+    //     return $this->permissionRepository->PermissionData($request);
+    // }
+    // public function changeStatus($id)
+    // {
+    //     try {
+    //         $post = $this->permissionRepository->changeStatus($id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException('Unable to change status');
-        }
-        return $post;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException('Unable to change status');
+    //     }
+    //     return $post;
+    // }
 }

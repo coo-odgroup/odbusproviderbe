@@ -33,35 +33,35 @@ class CustomerQueryService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
-    {
-        DB::beginTransaction();
+    // public function deleteById($id)
+    // {
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->customerQueryRepository->delete($id);
+    //     try {
+    //         $post = $this->customerQueryRepository->delete($id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to delete post data');
-        }
+    //         throw new InvalidArgumentException('Unable to delete post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Get all Data.
      *
      * @return String
      */
-    public function getAll()
-    {
-        return $this->customerQueryRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->customerQueryRepository->getAll();
+    // }
 
     /**
      * Get  by id.
@@ -69,10 +69,10 @@ class CustomerQueryService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->customerQueryRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->customerQueryRepository->getById($id);
+    // }
 
     /**
      * Update  data
@@ -81,27 +81,27 @@ class CustomerQueryService
      * @param array $data
      * @return String
      */
-    public function updatePost($data, $id)
-    {
+    // public function updatePost($data, $id)
+    // {
         
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            $post = $this->customerQueryRepository->update($data, $id);
+    //     try {
+    //         $post = $this->customerQueryRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException('Unable to update post data');
-        }
+    //         throw new InvalidArgumentException('Unable to update post data');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        return $post;
+    //     return $post;
 
-    }
+    // }
 
     /**
      * Validate  data.
@@ -110,13 +110,13 @@ class CustomerQueryService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
+    // public function savePostData($data)
+    // {
         
 
-        $result = $this->customerQueryRepository->save($data);
+    //     $result = $this->customerQueryRepository->save($data);
 
-        return $result;
-    }
+    //     return $result;
+    // }
 
 }

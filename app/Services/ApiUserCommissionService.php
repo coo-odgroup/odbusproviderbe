@@ -23,26 +23,26 @@ class ApiUserCommissionService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
-    {
-        try {
-            $busType = $this->apiUserCommissionRepository->delete($id);
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $busType = $this->apiUserCommissionRepository->delete($id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $busType;
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $busType;
 
-    }
+    // }
     /**
      * Get all Data
      *
      * @return String
      */
-    public function getAll($request)
-    {
-        return $this->apiUserCommissionRepository->getAll($request);
-    }
+    // public function getAll($request)
+    // {
+    //     return $this->apiUserCommissionRepository->getAll($request);
+    // }
 
    
     /**
@@ -51,10 +51,10 @@ class ApiUserCommissionService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->apiUserCommissionRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->apiUserCommissionRepository->getById($id);
+    // }
     /**
      * Update  data
      * Store to DB if there are no errors.
@@ -62,16 +62,16 @@ class ApiUserCommissionService
      * @param array $data
      * @return String
      */
-    public function update($data, $id)
-    {
-        try {
-            $busType = $this->apiUserCommissionRepository->update($data, $id);
+    // public function update($data, $id)
+    // {
+    //     try {
+    //         $busType = $this->apiUserCommissionRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $busType;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $busType;
+    // }
 
     /**
      * Validate  data.
@@ -80,24 +80,24 @@ class ApiUserCommissionService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        try {
-            $busType = $this->apiUserCommissionRepository->save($data);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $busType;
-    }
+    // public function savePostData($data)
+    // {
+    //     try {
+    //         $busType = $this->apiUserCommissionRepository->save($data);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $busType;
+    // }
     /**
      * Get all Data in Datatable Format.
      *
      * @return String
      */
-    public function getAllApiUserCommissionData($request)
-    {
-        return $this->apiUserCommissionRepository->getAllApiUserCommissionData($request);
-    }
+    // public function getAllApiUserCommissionData($request)
+    // {
+    //     return $this->apiUserCommissionRepository->getAllApiUserCommissionData($request);
+    // }
     public function changeStatus($id)
     {
         try {

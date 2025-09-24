@@ -23,35 +23,35 @@ class AgentService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
-    {
-        try {
-            $busType = $this->agentRepository->delete($id);
+    // public function deleteById($id)
+    // {
+    //     try {
+    //         $busType = $this->agentRepository->delete($id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $busType;
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $busType;
 
-    }
+    // }
     /**
      * Get all Data
      *
      * @return String
      */
-    public function getAll($request)
-    {
-        return $this->agentRepository->getAll($request);
-    }
+    // public function getAll($request)
+    // {
+    //     return $this->agentRepository->getAll($request);
+    // }
 
-    public function agentprofile($request)
-    {
-        return $this->agentRepository->agentprofile($request);
-    }
-     public function updateAgentProfile($request)
-    {
-        return $this->agentRepository->updateAgentProfile($request);
-    }
+    // public function agentprofile($request)
+    // {
+    //     return $this->agentRepository->agentprofile($request);
+    // }
+    //  public function updateAgentProfile($request)
+    // {
+    //     return $this->agentRepository->updateAgentProfile($request);
+    // }
 
    
     /**
@@ -60,10 +60,10 @@ class AgentService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return $this->agentRepository->getById($id);
-    }
+    // public function getById($id)
+    // {
+    //     return $this->agentRepository->getById($id);
+    // }
     /**
      * Update  data
      * Store to DB if there are no errors.
@@ -71,16 +71,16 @@ class AgentService
      * @param array $data
      * @return String
      */
-    public function update($data, $id)
-    {
-        try {
-            $agent = $this->agentRepository->update($data, $id);
+    // public function update($data, $id)
+    // {
+    //     try {
+    //         $agent = $this->agentRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            throw new InvalidArgumentException($e->getMessage());
-        }
-        return $agent;
-    }
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException($e->getMessage());
+    //     }
+    //     return $agent;
+    // }
 
     /**
      * Validate  data.
@@ -89,48 +89,48 @@ class AgentService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
-    {
-        try {
-            $agent = $this->agentRepository->save($data);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $agent;
-    }
+    // public function savePostData($data)
+    // {
+    //     try {
+    //         $agent = $this->agentRepository->save($data);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $agent;
+    // }
     /**
      * Get all Data in Datatable Format.
      *
      * @return String
      */
-    public function getAllAgentData($request)
-    {
-        return $this->agentRepository->getAllAgentData($request);
-    } 
+    // public function getAllAgentData($request)
+    // {
+    //     return $this->agentRepository->getAllAgentData($request);
+    // } 
 
-    public function ourAgentData($request)
-    {
-        return $this->agentRepository->ourAgentData($request);
-    }
-    public function changeStatus($request)
-    {
-        try {
-            $agent = $this->agentRepository->changeStatus($request);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
-        }
-        return $agent;
+    // public function ourAgentData($request)
+    // {
+    //     return $this->agentRepository->ourAgentData($request);
+    // }
+    // public function changeStatus($request)
+    // {
+    //     try {
+    //         $agent = $this->agentRepository->changeStatus($request);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+    //     }
+    //     return $agent;
 
-    }
-     public function blockAgent($request)
-    {
-        try {
-            $agent = $this->agentRepository->blockAgent($request);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
-        }
-        return $agent;
+    // }
+    //  public function blockAgent($request)
+    // {
+    //     try {
+    //         $agent = $this->agentRepository->blockAgent($request);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+    //     }
+    //     return $agent;
 
-    }
+    // }
 
 }

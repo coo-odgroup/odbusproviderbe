@@ -20,9 +20,9 @@ class ApiUserCancelTicketReportService
     {
         $this->apiusercancelticketreportRepository = $apiusercancelticketreportRepository;
     }
-    public function getData($request)
-    {
-        return $this->apiusercancelticketreportRepository->getData($request);
-    }
+    // public function getData($request)
+    // {
+    //     return $this->apiusercancelticketreportRepository->getData($request);
+    // }
 
 }
