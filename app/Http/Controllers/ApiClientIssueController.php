@@ -147,4 +147,14 @@ class ApiClientIssueController extends Controller
     //     }
     //     return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
     //   }
+        public function changeStatus(Request $request) {
+      
+        try{
+          $this->ApiClientIssueRepository->changeStatus($request);
+        }
+        catch (Exception $e){
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
+      }
 }
