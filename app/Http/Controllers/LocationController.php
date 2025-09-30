@@ -35,11 +35,11 @@ class LocationController extends Controller
      */
     public function __construct(//LocationService $locationService,
                               LocationValidator $LocationValidator,
-                                LocationRepository $locationService)
+                                LocationRepository $locationRepository)
     {
         //$this->locationService = $locationService;
         $this->LocationValidator = $LocationValidator;
-        $this->locationRepository = $locationService;
+        $this->locationRepository = $locationRepository;
         
     }
     // public function getAllLocations() {
@@ -49,13 +49,12 @@ class LocationController extends Controller
     // }
 public function getAllLocations() {
 
-        $locations = $this->LocationRepository->getAll();
+        $locations = $this->locationRepository->getAll();
         return $this->successResponse($locations,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function getlocationbyID($id) {
       //print_r("hello");exit();     
       try {
-        //$locations = $this->locationService->getById($id);
         $locations = $this->locationRepository->getById($id);
       }
       catch (Exception $e) {
@@ -99,7 +98,7 @@ public function getAllLocations() {
 
         public function getLocationDT(Request $request) {      
           
-          $locations = $this->LocationRepository->getAllLocationDT($request);
+          $locations = $this->locationRepository->getAllLocationDT($request);
           return $this->successResponse($locations,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
           
         }
@@ -113,7 +112,7 @@ public function getAllLocations() {
 
        public function locationsData(Request $request) {      
         
-        $locations = $this->LocationRepository->locationsData($request);
+        $locations = $this->locationRepository->locationsData($request);
         return $this->successResponse($locations,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
         
       }
@@ -250,7 +249,7 @@ public function getAllLocations() {
   // }
 
    public function filterLocation(request $request) {
-    $prod= $this->LocationRepository->filter($request);
+    $prod= $this->locationRepository->filter($request);
   
     return $this->successResponse($prod,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
   }

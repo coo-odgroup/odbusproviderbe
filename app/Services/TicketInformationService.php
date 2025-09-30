@@ -100,10 +100,10 @@ class TicketInformationService
     //     return $this->ticketInformationRepository->getBookingID($request);
     // }  
 
-    public function git($request)
-    {
-        return $this->ticketInformationRepository->save_customSMS($request);
-    } 
+    // public function git($request)
+    // {
+    //     return $this->ticketInformationRepository->save_customSMS($request);
+    // } 
 
     // public function GetCancelSmsToCustomer($request)
     // {

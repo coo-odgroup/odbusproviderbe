@@ -1,5 +1,5 @@
 <?php
-use DB;
+use Illuminate\Support\Facades\DB;
 
 function encryptResponse($data){
 
