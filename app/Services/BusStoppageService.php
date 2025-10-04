@@ -86,11 +86,11 @@ class BusStoppageService
     //     $result = $this->busStoppageRepository->save($data);
     //     return $result;
     // }
-    public function checkDuplicate($data)
-    {
-        $result = $this->busStoppageRepository->checkDuplicate($data);
-        return $result;
-    }
+    // public function checkDuplicate($data)
+    // {
+    //     $result = $this->busStoppageRepository->checkDuplicate($data);
+    //     return $result;
+    // }
     public function deletebyBusId($id)
     {
          $result = $this->busStoppageRepository->deletebyBusId($id);

@@ -9,12 +9,13 @@ use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\DashboardRepository;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-class DashboardController extends Controller
+class   DashboardController extends Controller
 {
     use ApiResponser;
    

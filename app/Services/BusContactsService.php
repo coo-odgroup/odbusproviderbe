@@ -21,10 +21,10 @@ class BusContactsService
         $this->busContactsRepository = $busContactsRepository;
     }
 
-    public function deleteByBusId($id)
-    {
-        $post = $this->busContactsRepository->deletebyBusid($id);
-    }
+    // public function deleteByBusId($id)
+    // {
+    //     $post = $this->busContactsRepository->deletebyBusid($id);
+    // }
     // public function deleteById($id)
     // {
     //     try {
