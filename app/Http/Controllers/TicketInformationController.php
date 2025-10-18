@@ -102,8 +102,13 @@ class TicketInformationController extends Controller
     // }  
     public function cancelticket(Request $request)
     {
-        $pnr_details = $this->ticketInformationRepository->cancelticket($request);
-        return $this->successResponse($pnr_details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $result = $this->ticketInformationRepository->cancelticket($request);
+        if($result=='failed'){
+             return $this->errorResponse("Ticket Cancellation is failed",Response::HTTP_PARTIAL_CONTENT);
+        }else{
+             return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        }
+       
     }  
     //   public function cancelticketdata(Request $request)
     // {

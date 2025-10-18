@@ -490,7 +490,7 @@ class TicketInformationRepository
                  ]);
 
                       $response = json_decode($res->getBody());
-                      //log::info($response);
+                     
                       $res_sts = $response->data;
                 }
                 else
@@ -498,7 +498,9 @@ class TicketInformationRepository
                     $res_sts = 'success';
                 }
 
-
+              if($res_sts == 'failed'){
+                return 'failed';
+              }   
             if($res_sts == 'success'){
 
                 if($user_id!= NULL && $user_id>0)
