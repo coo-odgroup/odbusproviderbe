@@ -256,6 +256,7 @@ class TicketInformationRepository
 
       $cancelticket = $this->booking->find($id);     
       $cancelticket->refund_amount = $request['refund_amount'];
+      $cancelticket->deduction_percent = $request['percentage_deduct'];
       $cancelticket->cancel_reason = $request['reason'];             
       $cancelticket->created_by = $request['cancelled_by'];
       $cancelticket->status = 2;
@@ -457,12 +458,13 @@ class TicketInformationRepository
         $pnr = $request->pnr;
         $id=$request->id ;
         $user_id=$request->user_id ;
+        $full_refund=$request->full_refund ;
 
         
             $cancelticket = $this->booking->find($id);   
             // log::info($cancelticket); 
 
-                if( $cancelticket->origin == 'DOLPHIN'){
+                if( $cancelticket->origin == 'DOLPHIN' && $full_refund == false ){
                      $client = new \GuzzleHttp\Client();       
 
                     $api_url = Config::get('constants.CONSUMER_API_URL');
@@ -481,7 +483,7 @@ class TicketInformationRepository
 
                     $access_token = $access_token_res->data;
         
-                    $pnr_data['pnr']= $cancelticket->pnr; /////this for the cancellation of dolphine seat.
+                    $pnr_data['pnr']= $cancelticket->pnr; /////this for the cancellation of dolphin seat.
 
                      $res = $client->request('POST', $api_url.'CancelDolphinSeat',  [
                     'verify' => false,
