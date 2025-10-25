@@ -8,7 +8,6 @@ use Exception;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
-use App\Repositories\OdbusChargesRepository;
 use InvalidArgumentException;
 use App\AppValidator\OdbusChargesValidator;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +21,6 @@ class OdbusChargesController extends Controller
      */
     protected $odbusChargesService;
     protected $odbusChargesValidator;
-    protected $odbusChargesRepository;
 
     /**
      * PostController Constructor
@@ -30,23 +28,18 @@ class OdbusChargesController extends Controller
      * @param odbusChargesService $busTypeService
      *
      */
-    public function __construct(OdbusChargesService $odbusChargesService,
-                                OdbusChargesValidator $odbusChargesValidator,
-                                OdbusChargesRepository $odbusChargesRepository)
+    public function __construct(OdbusChargesService $odbusChargesService,OdbusChargesValidator $odbusChargesValidator)
     {
         $this->odbusChargesService = $odbusChargesService;
         $this->odbusChargesValidator = $odbusChargesValidator;
-        $this->odbusChargesRepository = $odbusChargesRepository;
     }
     public function getData(Request $request)
     {
-       // $result = $this->odbusChargesService->getData($request);
-       $result = $this->odbusChargesRepository->getData($request);
+        $result = $this->odbusChargesService->getData($request);
         return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function getAll() {
-     // $result = $this->odbusChargesService->getAll();
-     $result = $this->odbusChargesRepository->getAll();
+      $result = $this->odbusChargesService->getAll();;
       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
    
@@ -62,8 +55,7 @@ class OdbusChargesController extends Controller
         }
          else
         {
-           //$response = $this->odbusChargesService->savePostData($data);
-            $response = $this->odbusChargesRepository->savePostData($data);
+           $response = $this->odbusChargesService->savePostData($data);
 
            if($response=='User already taken')
            {
@@ -86,8 +78,7 @@ class OdbusChargesController extends Controller
       }
       else
       {
-        //$response = $this->odbusChargesService->updatePost($request);
-        $response = $this->odbusChargesRepository->updatePost($request);
+        $response = $this->odbusChargesService->updatePost($request);
 
         if($response=='User already taken')
         {
@@ -102,8 +93,7 @@ class OdbusChargesController extends Controller
 
     public function getById($id) { 
       try{
-        //$result= $this->odbusChargesService->getById($id);
-        $result= $this->odbusChargesRepository->getById($id);
+        $result= $this->odbusChargesService->getById($id);
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -112,8 +102,7 @@ class OdbusChargesController extends Controller
     }
     public function delete($id) {
       try{
-        //$response = $this->odbusChargesService->deleteById($id);
-        $response = $this->odbusChargesRepository->deleteById($id);
+        $response = $this->odbusChargesService->deleteById($id);
         return $this->successResponse($response, "Master Settings Deleted", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
@@ -122,8 +111,7 @@ class OdbusChargesController extends Controller
     } 
     public function changeStatus($id) {
       try{
-        //$response = $this->odbusChargesService->changeStatus($id);
-        $response = $this->odbusChargesRepository->changeStatus($id);
+        $response = $this->odbusChargesService->changeStatus($id);
         return $this->successResponse($response, "Master Settings Status Updated", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
@@ -134,8 +122,7 @@ class OdbusChargesController extends Controller
     
     public function removePopup($id) {
       try{
-       // $response = $this->odbusChargesService->removePopup($id);
-        $response = $this->odbusChargesRepository->removePopup($id);
+        $response = $this->odbusChargesService->removePopup($id);
         return $this->successResponse($response, "PopUp Image Deleted", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){

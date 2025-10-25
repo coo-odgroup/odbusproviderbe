@@ -5,10 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\BusContacts;
 use App\Services\BusContactsService;
 use Exception;
-use App\Repositories\BusContactsRepository;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
@@ -20,22 +17,13 @@ class BusContactsController extends Controller
     use ApiResponser;
     protected $busContactsService;
     protected $BusContactsValidator;
-     protected $busContactsRepository;
-
-    public function __construct(BusContactsService $busContactsService, 
-                                    BusContactsValidator $BusContactsValidator,
-                                    BusContactsRepository $busContactsRepository)
+    public function __construct(BusContactsService $busContactsService, BusContactsValidator $BusContactsValidator)
     {
         $this->busContactsService = $busContactsService;
         $this->BusContactsValidator=$BusContactsValidator;
-        $this->busContactsRepository = $busContactsRepository;
     }
-    // public function getAllBusContacts() {
-    //     $busContacts = $this->busContactsService->getAll();
-    //     return $this->successResponse($busContacts,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // }
     public function getAllBusContacts() {
-        $busContacts = $this->busContactsRepository->getAll();
+        $busContacts = $this->busContactsService->getAll();
         return $this->successResponse($busContacts,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function createBusContacts(Request $request) {
@@ -48,8 +36,7 @@ class BusContactsController extends Controller
             return $this->errorResponse($errors,Response::HTTP_PARTIAL_CONTENT);
         }
         try{
-            //$this->busContactsService->savePostData($data);
-            $this->busContactsRepository->save($data);
+            $this->busContactsService->savePostData($data);
         } 
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -68,8 +55,7 @@ class BusContactsController extends Controller
             return $this->errorResponse($errors,Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-           // $this->busContactsService->updatePost($data, $id);
-            $this->busContactsRepository->update($data, $id);
+            $this->busContactsService->updatePost($data, $id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
@@ -80,8 +66,7 @@ class BusContactsController extends Controller
         $result = ['status' => 200];
 
         try {
-            //$result['data'] = $this->busContactsService->deleteById($id);
-            $result['data'] = $this->busContactsRepository->delete($id);
+            $result['data'] = $this->busContactsService->deleteById($id);
         } 
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -89,22 +74,13 @@ class BusContactsController extends Controller
         return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
     }
 
-    // public function getBusContacts($id) {
-    //   $busContacts = $this->busContactsService->getById($id);
-    //   return $this->successResponse($busContacts,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // }      
     public function getBusContacts($id) {
-      $busContacts = $this->busContactsRepository->getById($id);
+      $busContacts = $this->busContactsService->getById($id);
       return $this->successResponse($busContacts,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }  
-    // public function busContactsByBusId($id) {
-    //     $busContacts = $this->busContactsService->getByBusId($id);
-    //     return $this->successResponse($busContacts,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    //   }  
-
+    }      
     public function busContactsByBusId($id) {
-        $busContacts = $this->busContactsRepository->getByBusId($id);
+        $busContacts = $this->busContactsService->getByBusId($id);
         return $this->successResponse($busContacts,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      }
+      }  
 	     
 }

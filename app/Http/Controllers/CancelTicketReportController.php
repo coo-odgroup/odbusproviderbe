@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use App\Services\CancelTicketReportService;
-use App\Repositories\CancelTicketReportRepository;
+use App\Services\CancelTicketReportService;
+
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -17,22 +17,16 @@ class CancelTicketReportController extends Controller
 {
     use ApiResponser;
    
-    //protected $cancelticketreportService;  
-    protected  $cancelticketreportRepository;
+    protected $cancelticketreportService;    
     
-    public function __construct(//CancelTicketReportService $cancelticketreportService
-                                CancelTicketReportRepository $cancelticketreportRepository)
+    public function __construct(CancelTicketReportService $cancelticketreportService)
     {
-        //$this->cancelticketreportService = $cancelticketreportService;
-       $this->cancelticketreportRepository = $cancelticketreportRepository;
+        $this->cancelticketreportService = $cancelticketreportService;
+        
     } 
     public function getData(Request $request)
-    // {
-    //     $cancelticketData = $this->cancelticketreportService->getData($request);
-    //     return $this->successResponse($cancelticketData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // }
     {
-        $cancelticketData = $this->cancelticketreportRepository->getData($request);
+        $cancelticketData = $this->cancelticketreportService->getData($request);
         return $this->successResponse($cancelticketData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

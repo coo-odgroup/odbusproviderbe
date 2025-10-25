@@ -5,7 +5,6 @@ use Illuminate\Http\Request;
 use App\Models\BusStoppageTiming;
 use App\Services\BusStoppageTimingService;
 use Exception;
-use App\Repositories\BusStoppageTimingRepository;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -18,22 +17,17 @@ class BusStoppageTimingController extends Controller
     use ApiResponser;
     protected $busStoppageTimingService;
     protected $BusStoppageTimingValidator;
-    protected $busStoppageTimingRepository;
     
-    public function __construct(BusStoppageTimingService $busStoppageTimingService, 
-                                BusStoppageTimingValidator $BusStoppageTimingValidator,
-                                BusStoppageTimingRepository $busStoppageTimingRepository)
+    public function __construct(BusStoppageTimingService $busStoppageTimingService, BusStoppageTimingValidator $BusStoppageTimingValidator)
     {
         $this->busStoppageTimingService = $busStoppageTimingService;
         $this->BusStoppageTimingValidator = $BusStoppageTimingValidator;
-        $this->busStoppageTimingRepository = $busStoppageTimingRepository;
     }
 
 
     public function getAllBusStoppageTiming() {
 
-        //$busstoppageTiming = $this->busStoppageTimingService->getAll();
-        $busstoppageTiming = $this->busStoppageTimingRepository->getAll();
+        $busstoppageTiming = $this->busStoppageTimingService->getAll();
         return $this->successResponse($busstoppageTiming,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
@@ -76,9 +70,7 @@ class BusStoppageTimingController extends Controller
 
     public function deleteBusStoppageTiming($id) {
       try {
-         // $this->busStoppageTimingService->deleteById($id);
-            $this->busStoppageTimingRepository->delete($id);
-
+          $this->busStoppageTimingService->deleteById($id);
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -87,20 +79,17 @@ class BusStoppageTimingController extends Controller
     }
 
     public function getBusStoppageTiming($id) {
-      //$busstoppageTiming = $this->busStoppageTimingService->getById($id);
-        $busstoppageTiming = $this->busStoppageTimingRepository->getById($id);
+      $busstoppageTiming = $this->busStoppageTimingService->getById($id);
       return $this->successResponse($busstoppageTiming,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }     
     
     public function busStoppageTimingbyBusId($id) {
-        //$busstoppageTiming = $this->busStoppageTimingService->busStoppageTimingbyBusId($id);
-        $busstoppageTiming = $this->busStoppageTimingRepository->busStoppageTimingbyBusId($id);
+        $busstoppageTiming = $this->busStoppageTimingService->busStoppageTimingbyBusId($id);
         return $this->successResponse($busstoppageTiming,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }   
       
 	public function busStoppageTimingbyBusIdClone($id) {
-        //$busstoppageTiming = $this->busStoppageTimingService->busStoppageTimingbyBusIdClone($id);
-        $busstoppageTiming = $this->busStoppageTimingRepository->busStoppageTimingbyBusIdClone($id);
+        $busstoppageTiming = $this->busStoppageTimingService->busStoppageTimingbyBusIdClone($id);
         return $this->successResponse($busstoppageTiming,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }      
 }

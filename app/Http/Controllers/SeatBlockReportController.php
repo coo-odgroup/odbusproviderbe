@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//se App\Services\SeatBlockReportService;
-use App\Repositories\SeatBlockReportRepository;
+use App\Services\SeatBlockReportService;
+
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -17,38 +17,23 @@ class SeatBlockReportController extends Controller
 {
     use ApiResponser;
    
-   // protected $seatblockreportService; 
-    protected $seatblockreportRepository;   
+    protected $seatblockreportService;    
     
-    public function __construct(//SeatBlockReportService $seatblockreportService, 
-                                SeatBlockReportRepository $seatblockreportRepository
-)
+    public function __construct(SeatBlockReportService $seatblockreportService)
     {
-        //$this->seatblockreportService = $seatblockreportService;
-        $this->seatblockreportRepository = $seatblockreportRepository;
+        $this->seatblockreportService = $seatblockreportService;
         
     }
 
 
-    // public function getAllseatblock()
-    // {
-    //     $seatblock = $this->seatblockreportService->getAll();
-    //     return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // } 
-
-     public function getAllseatblock()
+    public function getAllseatblock()
     {
-        $seatblock = $this->seatblockreportRepository->getAll();
+        $seatblock = $this->seatblockreportService->getAll();
         return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
-    // public function getData(Request $request)
-    // {
-    //     $seatblock = $this->seatblockreportService->getData($request);
-    //     return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // }
     public function getData(Request $request)
     {
-        $seatblock = $this->seatblockreportRepository->getData($request);
+        $seatblock = $this->seatblockreportService->getData($request);
         return $this->successResponse($seatblock,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

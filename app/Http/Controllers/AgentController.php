@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\AgentService;
 use Illuminate\Support\Facades\Validator;
-use App\Repositories\AgentRepository;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
 use InvalidArgumentException;
@@ -21,54 +20,42 @@ class AgentController extends Controller
       
     protected $agentService;
     protected $agentValidator;
-    protected $agentRepository;
     
-    public function __construct(AgentService $agentService,
-                                AgentValidator $agentValidator,
-                                AgentRepository $agentRepository
-                                )
+    public function __construct(AgentService $agentService,AgentValidator $agentValidator)
     {
         $this->agentService = $agentService;
         $this->agentValidator = $agentValidator;
-        $this->agentRepository = $agentRepository;
     }
 
 
     public function agentprofile(Request $request) {
 
-     // $agents = $this->agentService->agentprofile($request);
-     $agents = $this->agentRepository->agentprofile($request);
+      $agents = $this->agentService->agentprofile($request);
       return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     } 
 
     public function updateAgentProfile(Request $request) {
 
-     // $agents = $this->agentService->updateAgentProfile($request);
-     $agents = $this->agentRepository->updateAgentProfile($request);
+      $agents = $this->agentService->updateAgentProfile($request);
       return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     } 
 
     public function getAllAgent(Request $request) {
 
-      //$agents = $this->agentService->getAll($request);
-      $agents = $this->agentRepository->getAll($request);
-
+      $agents = $this->agentService->getAll($request);
       return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     } 
 
 
     public function getAllAgentData(Request $request) {
 
-      //$agents = $this->agentService->getAllAgentData($request);
-      $agents = $this->agentRepository->getAllAgentData($request);
-
+      $agents = $this->agentService->getAllAgentData($request);
       return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     } 
 
     public function ourAgentData(Request $request) {
 
-      //$agents = $this->agentService->ourAgentData($request);
-       $agents = $this->agentRepository->ourAgentData($request);
+      $agents = $this->agentService->ourAgentData($request);
       return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
@@ -106,9 +93,7 @@ class AgentController extends Controller
       }
       else
         {
-          $data = $request->all();
-          ///$response =  $this->agentService->savePostData($request);
-           $response = $agent = $this->agentRepository->save($data);
+          $response =  $this->agentService->savePostData($request);
 
            if($response=='Email Already Exist')
            {
@@ -164,9 +149,7 @@ class AgentController extends Controller
           'created_by'
         ]);
 
-        //$response =  $this->agentService->update($data, $id);
-
-       $respons = $this->agentRepository->update($data, $id);
+        $response =  $this->agentService->update($data, $id);
 
            if($response=='Email Already Exist')
            {
@@ -194,8 +177,7 @@ class AgentController extends Controller
     public function deleteAgent ($id) {
 
       try {
-        //$this->agentService->deleteById($id);
-        $this->agentRepository->delete($id);
+        $this->agentService->deleteById($id);
         
       } 
       catch (Exception $e) {
@@ -207,8 +189,7 @@ class AgentController extends Controller
 
     public function getAgent($id) {
       try {
-       // $AgentID= $this->agentService->getById($id);
-         $AgentID = $this->agentRepository->getById($id);
+        $AgentID= $this->agentService->getById($id);
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -220,8 +201,7 @@ class AgentController extends Controller
     public function changeStatus(Request $request) {
       // Log::info($request);exit;
         try{
-          //$this->agentService->changeStatus($request);
-          $this->agentRepository->changeStatus($request);
+          $this->agentService->changeStatus($request);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -231,8 +211,7 @@ class AgentController extends Controller
 
       public function blockAgent(Request $request) {
         try{
-         // $this->agentService->blockAgent($request);
-             $this->agentRepository->blockAgent($request);
+          $this->agentService->blockAgent($request);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

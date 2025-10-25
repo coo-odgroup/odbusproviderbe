@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\AppDownload;
+
 use App\Services\AppDownloadService;
 use Exception;
 use InvalidArgumentException;
+
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Repositories\AppDownloadRepository;
+
 use Illuminate\Support\Facades\Config;
 use App\AppValidator\AppDownloadValidator;
 use App\Traits\ApiResponser;
@@ -24,9 +25,6 @@ class AppDownloadController extends Controller
      */
     protected $appDownloadService;
     protected $AppDownloadValidator;
-    protected $appDownloadRepository;
-
-
 
     /**
      * PostController Constructor
@@ -34,20 +32,16 @@ class AppDownloadController extends Controller
      * @param AppDownloadService $appDownloadService
      *
      */
-    public function __construct(AppDownloadService $appDownloadService,
-                                   AppDownloadValidator $AppDownloadValidator,
-                                   AppDownloadRepository $appDownloadRepository)
+    public function __construct(AppDownloadService $appDownloadService, AppDownloadValidator $AppDownloadValidator)
     {
         $this->appDownloadService = $appDownloadService;
         $this->AppDownloadValidator = $AppDownloadValidator;
-        $this->appDownloadRepository = $appDownloadRepository;
     }
 
 
 
     public function getAllAppDownload() {
-        //$prod = $this->appDownloadService->getAll();
-        $prod = $this->appDownloadRepository->getAll();
+        $prod = $this->appDownloadService->getAll();;
         return $this->successResponse($prod,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
@@ -64,8 +58,7 @@ class AppDownloadController extends Controller
           return $errors->toJson();
         }    
         try {
-          //$this->appDownloadService->savePostData($data);
-            $this->appDownloadRepository->save($data);
+          $this->appDownloadService->savePostData($data);
           return $this->successResponse(null, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
         }
           catch(Exception $e){
@@ -89,12 +82,10 @@ class AppDownloadController extends Controller
     
         
         try {
-          //$this->appDownloadService->updatePost($data, $id);
-          $this->appDownloadRepository->update($data, $id);
+          $this->appDownloadService->updatePost($data, $id);
           return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
         }
           catch(Exception $e){
-             DB::rollBack();
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }      
         
@@ -102,12 +93,9 @@ class AppDownloadController extends Controller
 
     public function deleteAppDownload ($id) {
       try{
-        //$this->appDownloadService->deleteById($id);
-        $this->appDownloadRepository->update($data, $id);
-         
+        $this->appDownloadService->deleteById($id);
       }
       catch (Exception $e){
-        DB::rollBack();
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
       return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
@@ -115,8 +103,7 @@ class AppDownloadController extends Controller
 
     public function getAppDownload($id) {
       try {
-        //$ame= $this->appDownloadService->getById($id);
-        $ame = $this->appDownloadRepository->getById($id);
+        $ame= $this->appDownloadService->getById($id);
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

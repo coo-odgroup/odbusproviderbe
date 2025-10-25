@@ -9,61 +9,49 @@ use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
 use App\Services\BusScheduleService;
 use App\AppValidator\BusScheduleValidator;
-use App\Repositories\BusScheduleRepository;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Log;
 
 class BusScheduleController extends Controller
 {
     use ApiResponser;
     protected $busScheduleService;
     protected $busScheduleValidator;
-    protected $busScheduleRepository;
     
-    public function __construct(BusScheduleService $busScheduleService, 
-                                BusScheduleValidator $busScheduleValidator,
-                                BusScheduleRepository $busScheduleRepository)
+    public function __construct(BusScheduleService $busScheduleService, BusScheduleValidator $busScheduleValidator)
     {
         $this->busScheduleService = $busScheduleService;
         $this->busScheduleValidator = $busScheduleValidator;
-        $this->busScheduleRepository = $busScheduleRepository;
     }
     public function getAllBusSchedule(Request $request) {
-        //$busSchedule = $this->busScheduleService->getAll();
-        $busSchedule = $this->busScheduleRepository->getAllBusSchedule($request);
+        $busSchedule = $this->busScheduleService->getAll();
         return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function scheduleCronJob() {
-        //$busSchedule = $this->busScheduleService->scheduleCronJob();
-        $busSchedule = $this->busScheduleRepository->scheduleCronJob();
+        $busSchedule = $this->busScheduleService->scheduleCronJob();
         return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
     public function removeOldBusScheduleCronjob() {
-       // $busSchedule = $this->busScheduleService->removeOldBusScheduleCronjob();
-        $busSchedule = $this->busScheduleRepository->removeOldBusScheduleCronjob();
+        $busSchedule = $this->busScheduleService->removeOldBusScheduleCronjob();
         return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function getAllBusScheduleDT(Request $request) {
-       // $busSchedule = $this->busScheduleService->dataTable($request);
-        $busSchedule = $this->busScheduleRepository->getDatatable($request);
+        $busSchedule = $this->busScheduleService->dataTable($request);
         return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
 
      public function busScheduleById($id)
     {
-       // return $this->busScheduleService->busScheduleById($id);
-       return $this->busScheduleRepository->busScheduleById($id);
+        return $this->busScheduleService->busScheduleById($id);
     }   
 
 
     public function busSchedulerData(Request $request) {
-       // $busSchedule = $this->busScheduleService->busSchedulerData($request);
-        $busSchedule = $this->busScheduleRepository->busSchedulerData($request);
+        $busSchedule = $this->busScheduleService->busSchedulerData($request);
         return $this->successResponse($busSchedule,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
@@ -78,8 +66,8 @@ class BusScheduleController extends Controller
         }
         else
         {
-           //$response = $this->busScheduleService->savePostData($data);
-              $response = $this->busScheduleRepository->save($data);
+           $response = $this->busScheduleService->savePostData($data);
+
            if($response=='Bus Schedule Already Exist')
            {
               return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
@@ -106,8 +94,7 @@ class BusScheduleController extends Controller
             'bus_id','entry_date','created_by','running_cycle'   
         ]);
 
-        //$response = $this->busScheduleService->updatePost($data, $id);
-        $response = $this->busScheduleRepository->update($data, $id);
+        $response = $this->busScheduleService->updatePost($data, $id);
 
            if($response == 'Can Not Add Old Date')
            {
@@ -130,8 +117,7 @@ class BusScheduleController extends Controller
 
     public function deleteBusSchedule ($id) {
         try {
-            //$response = $this->busScheduleService->deleteById($id);
-            $response = $this->busScheduleRepository->delete($id);
+            $response = $this->busScheduleService->deleteById($id);
             return $this->successResponse($response,"Bus Schedule Deleted", Response::HTTP_ACCEPTED);
         }
         catch (Exception $e) {
@@ -141,8 +127,7 @@ class BusScheduleController extends Controller
 
     public function getBusSchedule($id) {
       try {
-        //$busschedule= $this->busScheduleService->getById($id);
-        $busschedule= $this->busScheduleRepository->getById($id);
+        $busschedule= $this->busScheduleService->getById($id);
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -151,8 +136,7 @@ class BusScheduleController extends Controller
     }  
     public function changeStatus ($id) {
         try{
-           // $response = $this->busScheduleService->changeStatus($id);
-            $response = $this->busScheduleRepository->changeStatus($id);
+            $response = $this->busScheduleService->changeStatus($id);
         }
         catch (Exception $e){
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -164,8 +148,7 @@ class BusScheduleController extends Controller
     public function unscheduledbuslist()
     {
         try{
-            //$response = $this->busScheduleService->unscheduledbuslist();
-            $response = $this->busScheduleRepository->unscheduledbuslist();
+            $response = $this->busScheduleService->unscheduledbuslist();
             return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
         }
         catch (Exception $e){

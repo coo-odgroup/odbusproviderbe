@@ -8,30 +8,24 @@ use App\Models\PreBooking;
 use App\Models\PreBookingDetail;
 //use App\Models\Bus;
 use Illuminate\Support\Facades\Validator;
-use App\Repositories\PreBookingRepository;
 use App\Services\PreBookingService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Exception;
 use InvalidArgumentException;
 
 class PreBookingController extends Controller
 {
     protected $preBookingService;
-    protected $preBookingRepository;
+
     
-    public function __construct(PreBookingService $preBookingService,
-                                PreBookingRepository $preBookingRepository  )
+    public function __construct(PreBookingService $preBookingService)
     {
         $this->preBookingService = $preBookingService;
-        $this->preBookingRepository = $preBookingRepository;
     }
 
 
     public function getAllPreBooking() {
 
-        //$preBooking = $this->preBookingService->getAll();
-        $preBooking = $this->preBookingRepository->getAll();
+        $preBooking = $this->preBookingService->getAll();
         $output ['status']=1;
         $output ['message']='All Data Fetched Successfully';
         $output ['result']=$preBooking;
@@ -103,8 +97,7 @@ class PreBookingController extends Controller
             //var_dump($busRequest);
            // $request['bus_info'] = $busRequest;
 
-             //$result['data'] = $this->preBookingService->savePreBookingData($request);
-              $result['data'] = $this->preBookingService->savePreBooking($request);
+             $result['data'] = $this->preBookingService->savePreBookingData($request);
         } catch (Exception $e) {
           $result = [
               'status' => 500,
@@ -151,17 +144,11 @@ class PreBookingController extends Controller
           }
 
         $result = ['status' => 200];
-        DB::beginTransaction();
 
         try {
-           // $result['data'] = $this->preBookingService->updatePost($data, $id);
-            $result['data'] = $this->preBookingRepository->update($data, $id);
-            DB::commit();
-
+            $result['data'] = $this->preBookingService->updatePost($data, $id);
 
         } catch (Exception $e) {
-          DB::rollBack();
-          Log::info($e->getMessage());
             $result = [
                 'status' => 500,
                 'error' => $e->getMessage()
@@ -174,14 +161,9 @@ class PreBookingController extends Controller
     public function deletePreBooking($id) {
       $result = ['status' => 200];
 
-     DB::beginTransaction(); 
       try {
-          //$result['data'] = $this->preBookingService->deleteById($id);
-          $result['data'] = $this->preBookingRepository->delete($id);
-          DB::commit();
+          $result['data'] = $this->preBookingService->deleteById($id);
       } catch (Exception $e) {
-          DB::rollBack();
-          Log::info($e->getMessage());
           $result = [
               'status' => 500,
               'error' => $e->getMessage()
@@ -191,8 +173,7 @@ class PreBookingController extends Controller
     }
 
     public function getPreBooking($id) {
-      //$couponassignedBus = $this->preBookingService->getById($id);
-      $couponassignedBus = $this->preBookingRepository->getById($id);
+      $couponassignedBus = $this->preBookingService->getById($id);
       $output ['status']=1;
       $output ['message']='Single Data Fetched Successfully';
       $output ['result']=$couponassignedBus;
@@ -262,15 +243,13 @@ class PreBookingController extends Controller
           } 
            
         $result = ['status' => 200];
-               $data = $request->all();
         try {
-          
+
         // $busRequest = $busService->getBusListingReplica();
             //var_dump($busRequest);
            // $request['bus_info'] = $busRequest;
 
-            // $result['data'] = $this->preBookingService->savePreBookingData($request);
-              $result['data'] = $this->preBookingService->savePreBooking($data);
+             $result['data'] = $this->preBookingService->savePreBookingData($request);
         } catch (Exception $e) {
           $result = [
               'status' => 500,
@@ -310,15 +289,11 @@ class PreBookingController extends Controller
           }
 
         $result = ['status' => 200];
-        DB::beginTransaction();
 
         try {
-            //$result['data'] = $this->preBookingService->updatePreBookingPhaseTwo($data, $transaction_id);
-            $result['data'] = $this->preBookingRepository->updatePreBookingTwo($data, $transaction_id);
-         DB::commit();
+            $result['data'] = $this->preBookingService->updatePreBookingPhaseTwo($data, $transaction_id);
+
         } catch (Exception $e) {
-          DB::rollBack();
-          Log::info($e->getMessage());
             $result = [
                 'status' => 500,
                 'error' => $e->getMessage()

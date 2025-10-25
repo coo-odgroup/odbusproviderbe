@@ -7,7 +7,6 @@ use App\Models\Amenities;
 use App\Services\AmenitiesService;
 use Exception;
 use Illuminate\Support\Facades\Validator;
-use App\Repositories\ListingRepository;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
@@ -22,7 +21,6 @@ class ListingController extends Controller
      * @var amenitiesService
      */
     protected $listingService;
-    protected $listingRepository;
   
 
 
@@ -32,16 +30,13 @@ class ListingController extends Controller
      * @param ListingService $listingService,ListingValidator $listingValidator
      *
      */
-    public function __construct(ListingService $listingService,
-                                istingRepository $listingRepository)
+    public function __construct(ListingService $listingService)
     {
-        $this->listingService = $listingService;    
-        $this->listingRepository = $listingRepository;   
+        $this->listingService = $listingService;       
     }
  
     public function getAllListing() {
-        //$listingData = $this->listingService->getAll();
-        $listingData = $this->listingRepository->getAll();
+        $listingData = $this->listingService->getAll();
         return $this->successResponse($listingData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

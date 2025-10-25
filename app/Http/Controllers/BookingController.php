@@ -6,31 +6,23 @@ use Illuminate\Http\Request;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Validator;
 use App\Services\BookingService;
-use App\Repositories\BookingRepository;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Exception;
 use InvalidArgumentException;
 
 class BookingController extends Controller
 {
     protected $bookingService;
-    protected $bookingRepository;
-
 
     
-    public function __construct(BookingService $bookingService,
-                             BookingRepository $bookingRepository)
+    public function __construct(BookingService $bookingService)
     {
         $this->bookingService = $bookingService;
-        $this->bookingRepository = $bookingRepository;
     }
 
 
     public function getAllBooking() {
 
-        //$bookings = $this->bookingService->getAll();
-        $bookings = $this->bookingRepository->getAll();
+        $bookings = $this->bookingService->getAll();
         $output ['status']=1;
         $output ['message']='All Data Fetched Successfully';
         $output ['result']=$bookings;
@@ -87,8 +79,7 @@ class BookingController extends Controller
       $result = ['status' => 200];
 
       try {
-          //$result['data'] = $this->bookingService->saveBookingData($data);
-          $result['data'] = $this->bookingRepository->saveBooking($data);
+          $result['data'] = $this->bookingService->saveBookingData($data);
       } catch (Exception $e) {
           $result = [
               'status' => 500,
@@ -148,15 +139,11 @@ class BookingController extends Controller
           }
 
         $result = ['status' => 200];
-         DB::beginTransaction();
 
         try {
-            //$result['data'] = $this->bookingService->updatePost($data, $id);
-            $result['data'] = $this->bookingRepository->saveBooking($data);
-            DB::Commit();
-        } catch (Exception $e) {
-            DB::Rollback();
+            $result['data'] = $this->bookingService->updatePost($data, $id);
 
+        } catch (Exception $e) {
             $result = [
                 'status' => 500,
                 'error' => $e->getMessage()
@@ -168,15 +155,11 @@ class BookingController extends Controller
 
     public function deleteBooking($id) {
       $result = ['status' => 200];
-      DB::beginTransaction();
 
       try {
-          //$result['data'] = $this->bookingService->deleteById($id);
-          $result['data'] = $this->bookingRepository->delete($id);
-          DB::Commit();
-              } catch (Exception $e) {
-                DB::Rollback();
-        $result = [
+          $result['data'] = $this->bookingService->deleteById($id);
+      } catch (Exception $e) {
+          $result = [
               'status' => 500,
               'error' => $e->getMessage()
           ];
@@ -185,8 +168,7 @@ class BookingController extends Controller
     }
 
     public function getBooking($id) {
-      //$bookings = $this->bookingService->getById($id);
-      $bookings = $this->bookingRepository->getById($id);
+      $bookings = $this->bookingService->getById($id);
       $output ['status']=1;
       $output ['message']='Single Data Fetched Successfully';
       $output ['result']=$bookings;

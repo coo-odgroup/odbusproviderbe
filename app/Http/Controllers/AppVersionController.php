@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AppVersion;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
-// use App\Services\AppVersionService;
-use App\Repositories\AppVersionRepository;
+use App\Services\AppVersionService;
 use Exception;
 use Middleware;
 use InvalidArgumentException;
@@ -15,31 +13,18 @@ use InvalidArgumentException;
 class AppVersionController extends Controller
 {
     
-   // protected $appVersionService;
-    protected $appVersionRepository;
-
+    protected $appVersionService;
 
     
-    public function __construct(//AppVersionService $appVersionService,
-                                AppVersionRepository $appVersionRepository)
+    public function __construct(AppVersionService $appVersionService)
     {
-        //$this->appVersionService = $appVersionService;
-        $this->appVersionRepository = $appVersionRepository;
+        $this->appVersionService = $appVersionService;
     }
 
 
-    // public function getAllAppVersion() {
+    public function getAllAppVersion() {
 
-    //     $appVersion = $this->appVersionService->getAll();
-    //     $output ['status']=1;
-    //     $output ['message']='All Data Fetched Successfully';
-    //     $output ['result']=$appVersion;
-    //     return response($output, 200);
-    // }
-
-     public function getAllAppVersion() {
-
-        $appVersion = $this->appVersionRepository->getAll();
+        $appVersion = $this->appVersionService->getAll();
         $output ['status']=1;
         $output ['message']='All Data Fetched Successfully';
         $output ['result']=$appVersion;
@@ -106,8 +91,7 @@ class AppVersionController extends Controller
       $result = ['status' => 200];
 
       try {
-          //$result['data'] = $this->appVersionService->savePostData($data);
-            $result['data'] = $this->appVersionRepository->save($data);
+          $result['data'] = $this->appVersionService->savePostData($data);
       } catch (Exception $e) {
           $result = [
               'status' => 500,
@@ -119,144 +103,68 @@ class AppVersionController extends Controller
 
     } 
 
-    // public function updateAppVersion(Request $request, $id) {
-    //     $data = $request->only(['info','name', 'mandatory','version','new_version_names','new_version_codes', 
-    //     'allowed_days', 'has_issues', 'created_by'
-    //     ]);
-    //     $appversionRules = [
-    //         'info' => 'required',
-    //         'name' => 'required',
-    //         'mandatory' => 'required',
-    //         'version' => 'required',
-    //         'new_version_names' => 'required',
-    //         'new_version_codes' => 'required',
-    //         'allowed_days' => 'required',
-    //         'has_issues' => 'required',
-    //         'created_by' => 'required',
-
-    //     ];
-        
-    //     $appversionValidation = Validator::make($data, $appversionRules);
-
-
-    //     if ($appversionValidation->fails()) {
-    //         $errors = $appversionValidation->errors();
-    //         return $errors->toJson();
-    //       }
-
-
-    //     $result = ['status' => 200];
-
-    //     try {
-    //         $result['data'] = $this->appVersionService->updatePost($data, $id);
-
-    //     } catch (Exception $e) {
-    //         $result = [
-    //             'status' => 500,
-    //             'error' => $e->getMessage()
-    //         ];
-    //     }
-
-    //     return response()->json($result, $result['status']);
-    // }
-
-
     public function updateAppVersion(Request $request, $id) {
-    $data = $request->only([
-        'info','name', 'mandatory','version','new_version_names','new_version_codes', 
+        $data = $request->only(['info','name', 'mandatory','version','new_version_names','new_version_codes', 
         'allowed_days', 'has_issues', 'created_by'
-    ]);
+        ]);
+        $appversionRules = [
+            'info' => 'required',
+            'name' => 'required',
+            'mandatory' => 'required',
+            'version' => 'required',
+            'new_version_names' => 'required',
+            'new_version_codes' => 'required',
+            'allowed_days' => 'required',
+            'has_issues' => 'required',
+            'created_by' => 'required',
 
-    $appversionRules = [
-        'info' => 'required',
-        'name' => 'required',
-        'mandatory' => 'required',
-        'version' => 'required',
-        'new_version_names' => 'required',
-        'new_version_codes' => 'required',
-        'allowed_days' => 'required',
-        'has_issues' => 'required',
-        'created_by' => 'required',
-    ];
-
-    $appversionValidation = Validator::make($data, $appversionRules);
-
-    if ($appversionValidation->fails()) {
-        $errors = $appversionValidation->errors();
-        return response()->json([
-            'status' => 422,
-            'errors' => $errors
-        ], 422);
-    }
-
-    $result = ['status' => 200];
-
-    DB::beginTransaction();
-    try {
-        
-        $result['data'] = $this->appVersionRepository->update($data, $id);
-
-        DB::commit();
-    } catch (Exception $e) {
-        DB::rollBack();
-        $result = [
-            'status' => 500,
-            'error' => $e->getMessage()
         ];
+        
+        $appversionValidation = Validator::make($data, $appversionRules);
+
+
+        if ($appversionValidation->fails()) {
+            $errors = $appversionValidation->errors();
+            return $errors->toJson();
+          }
+
+
+        $result = ['status' => 200];
+
+        try {
+            $result['data'] = $this->appVersionService->updatePost($data, $id);
+
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        return response()->json($result, $result['status']);
     }
-
-    return response()->json($result, $result['status']);
-}
-
-    // public function deleteAppVersion ($id) {
-    //   $result = ['status' => 200];
-
-    //   try {
-    //       $result['data'] = $this->appVersionService->deleteById($id);
-    //   } catch (Exception $e) {
-    //       $result = [
-    //           'status' => 500,
-    //           'error' => $e->getMessage()
-    //       ];
-    //   }
-    //   return response()->json($result, $result['status']);
-    // }
 
     public function deleteAppVersion ($id) {
       $result = ['status' => 200];
-          DB::beginTransaction();
-      try {
-          $result['data'] =  $this->appVersionRepository->delete($id);
 
-          DB::commit();
+      try {
+          $result['data'] = $this->appVersionService->deleteById($id);
       } catch (Exception $e) {
-         DB::rollBack();
           $result = [
               'status' => 500,
               'error' => $e->getMessage()
-              
           ];
-          return response()->json($result, $result['status']);
       }
-      
       return response()->json($result, $result['status']);
     }
 
-    // public function getAppVersion($id) {
-    //   $app = $this->appVersionService->getById($id);
-    //   $output ['status']=1;
-    //   $output ['message']='Single Data Fetched Successfully';
-    //   $output ['result']=$app;
-    //   return response($output, 200);
-    // }
-    
     public function getAppVersion($id) {
-      $app = this->appVersionRepository->getById($id);
+      $app = $this->appVersionService->getById($id);
       $output ['status']=1;
       $output ['message']='Single Data Fetched Successfully';
       $output ['result']=$app;
       return response($output, 200);
-    }    
+    }      
 	     
 
 }

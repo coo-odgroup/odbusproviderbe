@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use App\Services\FaqService;
-use App\Repositories\FaqRepository;
+use App\Services\FaqService;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -19,46 +18,29 @@ class FaqController extends Controller
 {
     use ApiResponser;
    
-    //protected $faqService;
-    protected $faqValidator; 
-    protected $faqRepository;  
+    protected $faqService;
+    protected $faqValidator;   
     
     
-    public function __construct(//FaqService $faqService, 
-                                FaqValidator $faqValidator,
-                                FaqRepository $faqRepository)
+    public function __construct(FaqService $faqService, FaqValidator $faqValidator)
     {
-        //$this->faqService = $faqService;
-        $this->faqValidator = $faqValidator;  
-        $this->faqRepository = $faqRepository;              
+        $this->faqService = $faqService;
+        $this->faqValidator = $faqValidator;                
     }
 
-    // public function getAllfaq()
-    // {
-
-    //     $faq = $this->faqService->getAll();
-    //     return $this->successResponse($faq,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // }
-
-     public function getAllfaq()
+    public function getAllfaq()
     {
 
-        $faq = $this->$this->faqRepository->getAll();
+        $faq = $this->faqService->getAll();
         return $this->successResponse($faq,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    // public function getAllData(Request $request)
-    // {
+    public function getAllData(Request $request)
+    {
 
-    //     $faq = $this->faqService->getAllData($request);
-    //     return $this->successResponse($faq,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // }
-      public function getAllData(Request $request)
-      {
-  
-          $faq = $this->faqRepository->getAllData($request);
-          return $this->successResponse($faq,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      }
+        $faq = $this->faqService->getAllData($request);
+        return $this->successResponse($faq,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
 
      public function addfaq(Request $request)
      {
@@ -75,8 +57,7 @@ class FaqController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }      
       try {
-        //$this->faqService->addfaq($request);
-        $this->faqRepository->addfaq($request);
+        $this->faqService->addfaq($request);
         return $this->successResponse(null,"FAQ Added", Response::HTTP_CREATED);
       }
       catch(Exception $e){
@@ -101,8 +82,7 @@ class FaqController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }      
       try {
-       // $this->faqService->updatefaq($request, $id);
-       $this->faqRepository->updatefaq($request,$id);
+        $this->faqService->updatefaq($request, $id);
         return $this->successResponse(null,"FAQ Updated", Response::HTTP_CREATED);
       }
       catch(Exception $e){
@@ -112,33 +92,18 @@ class FaqController extends Controller
 
      }
 
-    //  public function deletefaq($id)
-    //  {
-    //  	$faq = $this->faqService->deletefaq($id);
-    //     return $this->successResponse($faq,"FAQ Deleted",Response::HTTP_OK);
-
-    //  }
-
-    public function deletefaq($id)
+     public function deletefaq($id)
      {
-     //	$faq = $this->faqService->deletefaq($id);
-     $faq = $this->faqRepository->deletefaq($id);
+     	$faq = $this->faqService->deletefaq($id);
         return $this->successResponse($faq,"FAQ Deleted",Response::HTTP_OK);
 
      }
-     //public function changeStatus($id)
-    //  {
-    //  	$faq = $this->faqService->changeStatus($id);
-    //     return $this->successResponse($faq,"Status Updated",Response::HTTP_OK);
-
-    //  }
-    public function changeStatus($id)
+     public function changeStatus($id)
      {
-     $faq = $this->faqRepository->changeStatus($id);
+     	$faq = $this->faqService->changeStatus($id);
         return $this->successResponse($faq,"Status Updated",Response::HTTP_OK);
 
      }
-    
 
      
     

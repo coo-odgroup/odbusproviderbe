@@ -6,38 +6,23 @@ use Illuminate\Http\Request;
 use App\Models\BusExtraFare;
 use Illuminate\Support\Facades\Validator;
 use App\Services\BusExtraFareService;
-use App\Repositories\BusExtraFareRepository;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Exception;
 use InvalidArgumentException;
 
 class BusEXtraFareController extends Controller
 {
     protected $busExtraFareService;
-    protected $busExtraFareRepository;
 
     
-    public function __construct(BusExtraFareService $busExtraFareService,
-                                BusExtraFareRepository $busExtraFareRepository)
+    public function __construct(BusExtraFareService $busExtraFareService)
     {
         $this->busExtraFareService = $busExtraFareService;
-        $this->busExtraFareRepository = $busExtraFareRepository;
     }
 
 
-    // public function getAllBusExtraFare() {
+    public function getAllBusExtraFare() {
 
-    //     $busExtraFare = $this->busExtraFareService->getAll();
-    //     $output ['status']=1;
-    //     $output ['message']='All Data Fetched Successfully';
-    //     $output ['result']=$busExtraFare;
-    //     return response($output, 200);
-    // }
-
-     public function getAllBusExtraFare() {
-
-        $busExtraFare = $this->busExtraFareRepository->getAll();
+        $busExtraFare = $this->busExtraFareService->getAll();
         $output ['status']=1;
         $output ['message']='All Data Fetched Successfully';
         $output ['result']=$busExtraFare;
@@ -71,8 +56,7 @@ class BusEXtraFareController extends Controller
       $result = ['status' => 200];
 
       try {
-          //$result['data'] = $this->busExtraFareService->savePostData($data);
-            $result['data'] = $this->busExtraFareRepository->save($data);
+          $result['data'] = $this->busExtraFareService->savePostData($data);
       } catch (Exception $e) {
           $result = [
               'status' => 500,
@@ -108,16 +92,10 @@ class BusEXtraFareController extends Controller
 
         $result = ['status' => 200];
 
-        DB::beginTransaction();
-
         try {
-            //$result['data'] = $this->busExtraFareService->updatePost($data, $id);
-            $result['data'] = $this->busExtraFareRepository->update($data, $id);
-            DB::commit();
+            $result['data'] = $this->busExtraFareService->updatePost($data, $id);
 
         } catch (Exception $e) {
-            DB::rollBack();
-            // Log::info($e->getMessage());
             $result = [
                 'status' => 500,
                 'error' => $e->getMessage()
@@ -130,15 +108,9 @@ class BusEXtraFareController extends Controller
     public function deleteBusExtraFare ($id) {
       $result = ['status' => 200];
 
-      DB::beginTransaction();
-
       try {
-         // $result['data'] = $this->busExtraFareService->deleteById($id);
-            $result['data'] = $this->busExtraFareRepository->delete($id);
-            DB::commit();
+          $result['data'] = $this->busExtraFareService->deleteById($id);
       } catch (Exception $e) {
-        DB::rollBack();
-          // Log::info($e->getMessage());
           $result = [
               'status' => 500,
               'error' => $e->getMessage()
@@ -147,16 +119,8 @@ class BusEXtraFareController extends Controller
       return response()->json($result, $result['status']);
     }
 
-    // public function getBusExtraFare($id) {
-    //   $busExtraFare = $this->busExtraFareService->getById($id);
-    //   $output ['status']=1;
-    //   $output ['message']='Single Data Fetched Successfully';
-    //   $output ['result']=$busExtraFare;
-    //   return response($output, 200);
-    // }   
-    
-     public function getBusExtraFare($id) {
-      $busExtraFare = $this->busExtraFareRepository->getById($id);
+    public function getBusExtraFare($id) {
+      $busExtraFare = $this->busExtraFareService->getById($id);
       $output ['status']=1;
       $output ['message']='Single Data Fetched Successfully';
       $output ['result']=$busExtraFare;

@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\BusSeatsExtra;
 use Illuminate\Support\Facades\Validator;
 use App\Services\BusSeatsExtraService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Repositories\BusSeatsExtraRepository;
 use Exception;
 use InvalidArgumentException;
 
@@ -16,21 +13,17 @@ class BusSeatsExtraController extends Controller
 {
     
     protected $busSeatsExtraService;
-    protected $busSeatsExtraRepository;
 
     
-    public function __construct(BusSeatsExtraService $busSeatsExtraService,
-                                BusSeatsExtraRepository $busSeatsExtraRepository)
+    public function __construct(BusSeatsExtraService $busSeatsExtraService)
     {
         $this->busSeatsExtraService = $busSeatsExtraService;
-        $this->busSeatsExtraRepository = $busSeatsExtraRepository;
     }
 
 
     public function getAllBusSeatsExtra() {
 
-        //$busseatsExtra = $this->busSeatsExtraService->getAll();
-        $busseatsExtra = $this->busSeatsExtraRepository->getAll();
+        $busseatsExtra = $this->busSeatsExtraService->getAll();
         $output ['status']=1;
         $output ['message']='All Data Fetched Successfully';
         $output ['result']=$busseatsExtra;
@@ -63,8 +56,7 @@ class BusSeatsExtraController extends Controller
       $result = ['status' => 200];
 
       try {
-          //$result['data'] = $this->busSeatsExtraService->savePostData($data);
-            $result['data'] = $this->busSeatsExtraRepository->save($data);
+          $result['data'] = $this->busSeatsExtraService->savePostData($data);
       } catch (Exception $e) {
           $result = [
               'status' => 500,
@@ -99,17 +91,11 @@ class BusSeatsExtraController extends Controller
           }
 
         $result = ['status' => 200];
-        DB::beginTransaction();
 
         try {
-            //$result['data'] = $this->busSeatsExtraService->updatePost($data, $id);
-            $result['data'] = $this->busSeatsExtraRepository->update($data, $id);
-
-            DB::commit();
+            $result['data'] = $this->busSeatsExtraService->updatePost($data, $id);
 
         } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
             $result = [
                 'status' => 500,
                 'error' => $e->getMessage()
@@ -122,15 +108,9 @@ class BusSeatsExtraController extends Controller
     public function deleteBusSeatsExtra ($id) {
       $result = ['status' => 200];
 
-
-      DB::beginTransaction();
       try {
-         // $result['data'] = $this->busSeatsExtraService->deleteById($id);
-            $result['data'] = $this->busSeatsExtraRepository->delete($id);
-            DB::commit();
+          $result['data'] = $this->busSeatsExtraService->deleteById($id);
       } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
           $result = [
               'status' => 500,
               'error' => $e->getMessage()
@@ -140,8 +120,7 @@ class BusSeatsExtraController extends Controller
     }
 
     public function getBusSeatsExtra($id) {
-      //$busseatsExtra = $this->busSeatsExtraService->getById($id);
-        $busseatsExtra = $this->busSeatsExtraRepository->getById($id);
+      $busseatsExtra = $this->busSeatsExtraService->getById($id);
       $output ['status']=1;
       $output ['message']='Single Data Fetched Successfully';
       $output ['result']=$busseatsExtra;

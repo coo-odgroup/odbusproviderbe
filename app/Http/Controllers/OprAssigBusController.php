@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\OprAssignBusService;
 use Illuminate\Support\Facades\Validator;
-use App\Repositories\OprAssignBusRepository;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -18,52 +17,42 @@ class OprAssigBusController extends Controller
    
     protected $OprAssignBusService;
     protected $OprAssignBusValidator;   
-       protected $OprAssignBusRepository;
     
     
-    public function __construct(OprAssignBusService $OprAssignBusService,
-                               OprAssignBusValidator $OprAssignBusValidator,
-                               OprAssignBusRepository $OprAssignBusRepository)
+    public function __construct(OprAssignBusService $OprAssignBusService, OprAssignBusValidator $OprAssignBusValidator)
     {
         $this->OprAssignBusService = $OprAssignBusService;
-        $this->OprAssignBusValidator = $OprAssignBusValidator; 
-       $this->OprAssignBusRepository = $OprAssignBusRepository;
-            
+        $this->OprAssignBusValidator = $OprAssignBusValidator;                
     }
 
 
      public function getOprBuslist(Request $request)
      {
-          // $this->OprAssignBusService->getOprBuslist($request);
-           return $this->OprAssignBusRepository->getOprBuslist($request);
+          return $this->OprAssignBusService->getOprBuslist($request);
             
 	   }  
 
      public function getOperatorbuslist(Request $request)
      {
-          //return $this->OprAssignBusService->getOperatorbuslist($request);
-          return $this->OprAssignBusRepository->getOperatorbuslist($request);
+          return $this->OprAssignBusService->getOperatorbuslist($request);
             
      }  
 
 	 public function getOprAssignBus(Request $request)
      {
-         // return $this->OprAssignBusService->getOprAssignBus($request);
-         return $this->OprAssignBusRepository->getOprAssignBus($request);
+          return $this->OprAssignBusService->getOprAssignBus($request);
             
 	 }   
 
 	 public function deleteOprAssignBus(Request $request)
      {
-          //$response= $this->OprAssignBusService->deleteOprAssignBus($request);
-          $response = $this->OprAssignBusRepository->deleteOprAssignBus($request);
+          $response= $this->OprAssignBusService->deleteOprAssignBus($request);
           return $this->successResponse($response,"Delete Successful", Response::HTTP_CREATED);  
 	 }   
 
 	 public function OprAssignBus(Request $request)
      {
-          //$response = $this->OprAssignBusService->OprAssignBus($request);
-          $response = $this->OprAssignBusRepository->OprAssignBus($request);
+          $response = $this->OprAssignBusService->OprAssignBus($request);
           if($response=='done')
           {
             return $this->successResponse($response,"Bus assigned to the Operator", Response::HTTP_CREATED);

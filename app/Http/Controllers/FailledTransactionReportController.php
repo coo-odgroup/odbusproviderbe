@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use App\Services\FailledTransactionReportService;
-use App\Repositories\FailledTransactionReportRepository;
+use App\Services\FailledTransactionReportService;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -16,18 +15,16 @@ class FailledTransactionReportController extends Controller
 {
     use ApiResponser;
    
-    //protected $failledtransactionreportService;  
-    protected $failledtransactionreportrepository;  
+    protected $failledtransactionreportService;    
     
-    public function __construct(//FailledTransactionReportService $failledtransactionreportService
-                                FailedTransactionReportRepository $failledtransactionreportService)
+    public function __construct(FailledTransactionReportService $failledtransactionreportService)
     {
-        //$this->failledtransactionreportService = $failledtransactionreportService;
-        $this->failledtransactionreportrepository = $failledtransactionreportrepository;
+        $this->failledtransactionreportService = $failledtransactionreportService;
+        
     }
     public function getData(Request $request)
     {
-        $failledtransactionData = $this->failledtransactionreportrepository->getData($request);
+        $failledtransactionData = $this->failledtransactionreportService->getData($request);
         return $this->successResponse($failledtransactionData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

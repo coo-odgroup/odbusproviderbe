@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\AssociationReportService;
-use App\Repositories\AssociationReportRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -18,27 +17,23 @@ class AssociationReportController extends Controller
     use ApiResponser;
    
     protected $AssociationReportService;
-    protected $AssociationReportRepository;
     
-    public function __construct(AssociationReportService $AssociationReportService,
-                                AssociationReportRepository $AssociationReportRepository )
+    
+    public function __construct(AssociationReportService $AssociationReportService )
     {
-        $this->AssociationReportService = $AssociationReportService;       
-        $this->AssociationReportRepository = $AssociationReportRepository;       
+        $this->AssociationReportService = $AssociationReportService;              
     }
 
 
      public function assocBookingReport(Request $request)
      {
-          //return $this->AssociationReportService->assocBookingReport($request);
-          return $this->AssociationReportRepository->assocBookingReport($request);
+          return $this->AssociationReportService->assocBookingReport($request);
             
 	 }  
 
 	 public function assocCancelReport(Request $request)
      {
-          //return $this->AssociationReportService->assocCancelReport($request);
-           return $this->AssociationReportRepository->assocCancelReport($request);
+          return $this->AssociationReportService->assocCancelReport($request);
             
 	 }  
 

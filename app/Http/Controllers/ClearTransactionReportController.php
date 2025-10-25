@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use App\Services\ClearTransactionReportService;
-use App\Repositories\ClearTransactionReportRepository;
+use App\Services\ClearTransactionReportService;
+
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -17,24 +17,16 @@ class ClearTransactionReportController extends Controller
 {
     use ApiResponser;
    
-    // protected $cleartransactionreportService; 
-    protected $cleartransactionreportRepository;   
+    protected $cleartransactionreportService;    
     
-    public function __construct(//ClearTransactionReportService $cleartransactionreportService,
-                                  ClearTransactionReportRepository $cleartransactionreportRepository)
+    public function __construct(ClearTransactionReportService $cleartransactionreportService)
     {
-        //$this->cleartransactionreportService = $cleartransactionreportService;  
-        $this->cleartransactionreportRepository = $cleartransactionreportRepository;      
+        $this->cleartransactionreportService = $cleartransactionreportService;        
     }
 
-    // public function getAll()
-    // {
-    //     $extraseatopen = $this->cleartransactionreportService->getAll();
-    //     return $this->successResponse($extraseatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // }
-     public function getAll()
+    public function getAll()
     {
-        $extraseatopen = $this->cleartransactionreportRepository->getAll();
+        $extraseatopen = $this->cleartransactionreportService->getAll();
         return $this->successResponse($extraseatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

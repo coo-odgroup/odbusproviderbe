@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use App\Services\CouponUsedUserReportService;
-use App\Repositories\CouponUsedUserReportRepository;
+use App\Services\CouponUsedUserReportService;
+
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -17,25 +17,16 @@ class CouponUsedUserReportController extends Controller
 {
     use ApiResponser;
    
-    //protected $couponuseduserreportService; 
-    protected $couponuseduserreportRepository;   
+    protected $couponuseduserreportService;    
     
-    public function __construct(//CouponUsedUserReportService $couponuseduserreportService                        
-                                CoupenUsedUserReportRepository $couponuseduserreportRepository)
+    public function __construct(CouponUsedUserReportService $couponuseduserreportService)
     {
-        //$this->couponuseduserreportService = $couponuseduserreportService;  
-        $this->couponuseduserreportRepository = $couponuseduserreportRepository;      
+        $this->couponuseduserreportService = $couponuseduserreportService;        
     }
-
-    // public function getData(Request $request)
-    // {
-    //     $couponused = $this->couponuseduserreportService->getData($request);
-    //     return $this->successResponse($couponused,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // }
 
     public function getData(Request $request)
     {
-        $couponused = $this->couponuseduserreportRepository->getData($request);
+        $couponused = $this->couponuseduserreportService->getData($request);
         return $this->successResponse($couponused,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

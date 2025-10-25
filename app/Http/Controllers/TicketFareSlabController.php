@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\TicketFareSlabService;
-use App\Repositories\TicketFareSlabRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +21,6 @@ class TicketFareSlabController extends Controller
      */
     protected $ticketFareSlabService;
     protected $ticketFareSlabValidator;
-    protected $ticketFareSlabRepository;
     
     /**
      * PostController Constructor
@@ -31,13 +28,10 @@ class TicketFareSlabController extends Controller
      * @param LocationService $busTypeService
      *
      */
-    public function __construct(TicketFareSlabService $ticketFareSlabService,
-                              TicketFareSlabValidator $ticketFareSlabValidator,
-                              TicketFareSlabRepository $ticketFareSlabRepository)
+    public function __construct(TicketFareSlabService $ticketFareSlabService,TicketFareSlabValidator $ticketFareSlabValidator)
     {
       $this->ticketFareSlabService = $ticketFareSlabService;
       $this->ticketFareSlabValidator = $ticketFareSlabValidator;
-      $this->ticketFareSlabRepository = $ticketFareSlabRepository;
 
     }
     // public function getAllLocations() {
@@ -75,55 +69,26 @@ class TicketFareSlabController extends Controller
 
     //   } 
 
-    // public function ticketFareSlabData(Request $request) {      
-
-    //   $ticketFare = $this->ticketFareSlabService->ticketFareSlabData($request);
-    //   return $this->successResponse($ticketFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-
-    // }
-
     public function ticketFareSlabData(Request $request) {      
-    $data = $request->all();
-      $ticketFare = $this->ticketFareSlabRepository->ticketFareSlabData($request);
+
+      $ticketFare = $this->ticketFareSlabService->ticketFareSlabData($request);
       return $this->successResponse($ticketFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
     }
-    // public function changeStatusticketFareSlab($id) {
-
-    //   try{
-    //     $this->ticketFareSlabService->changeStatusticketFareSlab($id);
-    //   }
-    //   catch (Exception $e){
-    //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-    //   }
-    //   return $this->successResponse(null,"Location Status Updated", Response::HTTP_ACCEPTED);
-    // } 
-
     public function changeStatusticketFareSlab($id) {
 
       try{
-        $this->ticketFareSlabRepository->changeStatusticketFareSlab($id);
+        $this->ticketFareSlabService->changeStatusticketFareSlab($id);
       }
       catch (Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
       return $this->successResponse(null,"Location Status Updated", Response::HTTP_ACCEPTED);
     } 
-    // public function deleteticketFareSlab($id) {
-      
-    //   try{
-    //     $this->ticketFareSlabService->deleteticketFareSlab($id);
-    //   }
-    //   catch (Exception $e){
-    //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-    //   }
-    //   return $this->successResponse(null,"Ticket Fare Slab Deleted", Response::HTTP_ACCEPTED);
-    // }
-
-     public function deleteticketFareSlab($id) {
+    public function deleteticketFareSlab($id) {
       
       try{
-        $this->ticketFareSlabRepository->deleteticketFareSlab($id);
+        $this->ticketFareSlabService->deleteticketFareSlab($id);
       }
       catch (Exception $e){
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -131,30 +96,12 @@ class TicketFareSlabController extends Controller
       return $this->successResponse(null,"Ticket Fare Slab Deleted", Response::HTTP_ACCEPTED);
     }
 
-  //   public function createslab(Request $request) {
-
-  //     $data = $request->all();          
-      
-
-  //     $response =  $this->ticketFareSlabService->createslab($data);;
-
-  //     if($response=='Operator Already Exist')
-  //     {
-  //       return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-  //     }
-  //     else
-  //     {
-  //      return $this->successResponse($response,"Ticket fare Slab Added Successfully", Response::HTTP_CREATED);
-  //    }
-     
-  //  } 
-
-   public function createslab(Request $request) {
+    public function createslab(Request $request) {
 
       $data = $request->all();          
       
 
-      $response =  $this->ticketFareSlabRepository->createslab($data);;
+      $response =  $this->ticketFareSlabService->createslab($data);;
 
       if($response=='Operator Already Exist')
       {
@@ -164,7 +111,8 @@ class TicketFareSlabController extends Controller
       {
        return $this->successResponse($response,"Ticket fare Slab Added Successfully", Response::HTTP_CREATED);
      }
-     
+
+
    } 
 
 

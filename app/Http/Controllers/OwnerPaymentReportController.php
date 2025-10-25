@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use App\Services\OwnerPaymentReportService;
-use App\Repositories\OwnerPaymentReportRepository;
+use App\Services\OwnerPaymentReportService;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -16,26 +15,17 @@ class OwnerPaymentReportController extends Controller
 {
     use ApiResponser;   
    
-    //protected $ownerpaymentreportService;
-    protected $ownerpaymentreporRepository;    
+    protected $ownerpaymentreportService;    
     
-    public function __construct(//OwnerPaymentReportService $ownerpaymentreportService 
-        OwnerPaymentReportRepository $ownerpaymentreportRepository)
+    public function __construct(OwnerPaymentReportService $ownerpaymentreportService)
     {
-        //$this->ownerpaymentreportService = $ownerpaymentreportService; 
-        $this->ownerpaymentreportService = $ownerpaymentreportRepository;       
+        $this->ownerpaymentreportService = $ownerpaymentreportService;        
     }
 
-    // public function getData(Request $request)
-    // {
-    //     $ownerpayment = $this->ownerpaymentreportService->getData($request);
-    //     return $this->successResponse($ownerpayment,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    // }
-
-
-     public function getData(Request $request)
+    public function getData(Request $request)
     {
-        $ownerpayment = $this->ownerpaymentreportRepository->getData($request);
+        $ownerpayment = $this->ownerpaymentreportService->getData($request);
         return $this->successResponse($ownerpayment,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
 }

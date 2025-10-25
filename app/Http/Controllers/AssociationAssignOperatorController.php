@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\AssociationAssignOperatorService;
-use App\Repositories\AssociationAssignOperatorRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -21,38 +20,31 @@ class AssociationAssignOperatorController extends Controller
     use ApiResponser;
    
     protected $AssociationAssignOperatorService;
-    protected $AssociationAssignOperatorValidator; 
-     protected $AssociationAssignOperatorRepository;  
+    protected $AssociationAssignOperatorValidator;   
     
     
-    public function __construct(AssociationAssignOperatorService $AssociationAssignOperatorService,
-                             AssociationAssignOperatorValidator $AssociationAssignOperatorValidator,
-                             AssociationAssignOperatorRepository $AssociationAssignOperatorRepository)
+    public function __construct(AssociationAssignOperatorService $AssociationAssignOperatorService, AssociationAssignOperatorValidator $AssociationAssignOperatorValidator)
     {
         $this->AssociationAssignOperatorService = $AssociationAssignOperatorService;
-        $this->AssociationAssignOperatorValidator = $AssociationAssignOperatorValidator;    
-        $this->AssociationAssignOperatorRepository = $AssociationAssignOperatorRepository;            
+        $this->AssociationAssignOperatorValidator = $AssociationAssignOperatorValidator;                
     }
 
 
      public function getAllAssignOperator(Request $request)
      {
-          //return $this->AssociationAssignOperatorService->getAllAssignOperator($request);
-         return $this->AssociationAssignOperatorRepository->getAllAssignOperator($request);
+          return $this->AssociationAssignOperatorService->getAllAssignOperator($request);
             
 	 }   
 
 	  public function deleteassocAssignOperator(Request $request)
      {
-         // $response= $this->AssociationAssignOperatorService->deleteassocAssignOperator($request);
-          $response = $this->AssociationAssignOperatorRepository->deleteassocAssignOperator($request);
+          $response= $this->AssociationAssignOperatorService->deleteassocAssignOperator($request);
           return $this->successResponse($response,"Delete Successful", Response::HTTP_CREATED);  
 	 }   
 
 	  public function addAssignOperator(Request $request)
      {
-          //$response = $this->AssociationAssignOperatorService->addAssignOperator($request);
-          $response = $this->AssociationAssignOperatorRepository->addAssignOperator($request);
+          $response = $this->AssociationAssignOperatorService->addAssignOperator($request);
             return $this->successResponse($response,"Operators assigned to the Association", Response::HTTP_CREATED);   
 	 }     
 

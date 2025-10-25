@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Services\UsersService;
 use App\Services\UserService;
-use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
 use InvalidArgumentException;
@@ -24,28 +24,34 @@ class UserController extends Controller
    
     use ApiResponser;    
       
+    protected $usersService;
     protected $userService;
     protected $userValidator;
     protected $loginValidator;
     protected $agentDetailsValidator;
     protected $agentForgetOtpValidator;
     protected $agentVerifyOtpValidator;
-    protected $userRepository;
     protected $agentResetPasswordValidator;
     
     
 
-    public function __construct(UserService $userService,UserValidator $userValidator,LoginValidator $loginValidator,AgentDetailsValidator $agentDetailsValidator, AgentForgetOtpValidator $agentForgetOtpValidator,AgentVerifyOtpValidator $agentVerifyOtpValidator, AgentResetPasswordValidator $agentResetPasswordValidator,UserRepository $userRepository)
+    public function __construct(UsersService $usersService,UserService $userService,UserValidator $userValidator,LoginValidator $loginValidator,AgentDetailsValidator $agentDetailsValidator, AgentForgetOtpValidator $agentForgetOtpValidator,AgentVerifyOtpValidator $agentVerifyOtpValidator, AgentResetPasswordValidator $agentResetPasswordValidator)
     {
+        $this->usersService = $usersService;
         $this->userService = $userService;
         $this->userValidator = $userValidator;    
         $this->loginValidator = $loginValidator; 
         $this->agentDetailsValidator = $agentDetailsValidator;       
         $this->agentForgetOtpValidator = $agentForgetOtpValidator;       
         $this->agentVerifyOtpValidator = $agentVerifyOtpValidator;       
-        $this->agentResetPasswordValidator = $agentResetPasswordValidator;      
-         $this->userRepository = $userRepository;
+        $this->agentResetPasswordValidator = $agentResetPasswordValidator;       
     }
+
+    // public function login(Request $request) {    
+
+    //   $user = $this->usersService->login($request);
+    //   return $this->successResponse($user,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    // } 
 
 /////////////////////////Agent Registration//////////////////////////////////////////////////////////
     public function Register(Request $request) {  
@@ -58,7 +64,7 @@ class UserController extends Controller
          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
        }
        try {
-         $response = $this->userRepository->Register($request);
+         $response = $this->userService->Register($request);
          if($response!='Registered Agent')
          {
             return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
@@ -74,7 +80,8 @@ class UserController extends Controller
 
     public function verifyOtp(Request $request) 
     {
-     $verify = $this->userRepository->verifyOtp($request);
+     $data = $request->all();
+     $verify = $this->userService->verifyOtp($request);
      if($verify == ''){
        return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_OK);
      }elseif($verify == 'Inval OTP'){
@@ -100,8 +107,8 @@ class UserController extends Controller
       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
     }
     try {
-      $response = $this->userRepository->login($request);
-     
+
+      $response = $this->userService->login($request);
       switch($response){
           case('un_registered_agent'):   //Agent is not registered
               return $this->errorResponse(Config::get('constants.UNREGISTERED'),Response::HTTP_OK);
@@ -124,7 +131,7 @@ class UserController extends Controller
     } 
 
     public function getRoles() {
-      $roles = $this->userRepository->getRoles();
+      $roles = $this->userService->getRoles();
       return $this->successResponse($roles,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
@@ -138,7 +145,7 @@ class UserController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }
       try {
-        $agent = $this->userRepository->agentRegister($request);
+        $agent = $this->userService->agentRegister($request);
       return $this->successResponse($agent,Config::get('constants.REGT_SUCCESS'),Response::HTTP_OK);
       }
       catch (Exception $e) {
@@ -149,25 +156,25 @@ class UserController extends Controller
 
     public function getallAgent()
     {
-        $data = $this->userRepository->getallAgent();  
+        $data = $this->userService->getallAgent();
         return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
     public function allApiClient()
     {
-        $data = $this->userRepository->allApiClient();  
+        $data = $this->userService->allApiClient();
         return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
     public function AllUser()
     {
-       $list = $this->userRepository->AllUser();
+        $list = $this->userService->AllUser();
         return $this->successResponse($list,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
     public function specifieUser(Request $request)
     {
-        $list = $this->userRepository->specifieUser($request);
+        $list = $this->userService->specifieUser($request);
         return $this->successResponse($list,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
     }
 
@@ -183,7 +190,7 @@ class UserController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }
       try {
-        $response = $this->userRepository->AgentForgetPasswordOtp($request);
+        $response = $this->userService->AgentForgetPasswordOtp($request);
         if($response=='NOT FOUND'){
           return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
 
@@ -213,7 +220,7 @@ class UserController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }
       try {
-        $response = $this->userRepository->AgentVerifyOtp($request);
+        $response = $this->userService->AgentVerifyOtp($request);
         if($response=='NOT FOUND'){
           return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
 
@@ -245,7 +252,7 @@ class UserController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }
       try {
-        $response = $this->userRepository->AgentResetPassword($request);
+        $response = $this->userService->AgentResetPassword($request);
         if($response=='NOT FOUND'){
           return $this->errorResponse(Config::get('constants.INVALID_EMAIL'),Response::HTTP_OK);         
 
