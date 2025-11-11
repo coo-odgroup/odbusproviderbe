@@ -15,11 +15,11 @@ class BoardingDroping extends Model
 
     public function location()
     {
-    	return $this->belongsTo(Location::class);
+        return $this->belongsTo(Location::class);
     }
     public function busStoppageTiming()
     {
         return $this->hasMany(BusStoppageTiming::class);
-        
-    } 
+
+    }
 }

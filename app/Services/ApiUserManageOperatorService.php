@@ -13,7 +13,7 @@ use InvalidArgumentException;
 class ApiUserManageOperatorService
 {
     protected $ApiUserManageOperatorRepository;
- 
+
     public function __construct(ApiUserManageOperatorRepository $ApiUserManageOperatorRepository)
     {
         $this->ApiUserManageOperatorRepository = $ApiUserManageOperatorRepository;
@@ -30,7 +30,7 @@ class ApiUserManageOperatorService
     //     return $busType;
 
     // }
-   
+
     // public function manageClientOperatorData($request)
     // {
     //     return $this->ApiUserManageOperatorRepository->manageClientOperatorData($request);
@@ -41,5 +41,5 @@ class ApiUserManageOperatorService
     // {
     //     return $this->ApiUserManageOperatorRepository->manageClientOperator($request);
     // }
-    
+
 }

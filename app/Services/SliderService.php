@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SliderService
 {
-   
     protected $sliderRepository;
 
     public function __construct(SliderRepository $sliderRepository)
@@ -26,7 +25,7 @@ class SliderService
     // {
     //     return $this->sliderRepository->getAllSlider();
     // }
-    
+
     // public function getData($request)
     // {
     //     return $this->sliderRepository->getData($request);
@@ -47,7 +46,7 @@ class SliderService
     //     return $this->sliderRepository->getById($id);
     // }
     // public function save($data)
-    // {   
+    // {
     //     try {
     //         $slider = $this->sliderRepository->save($data);
     //     } catch (Exception $e) {
@@ -77,5 +76,5 @@ class SliderService
     //     return $slider;
     // }
 
-    
+
 }

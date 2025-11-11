@@ -57,11 +57,11 @@ class BusScheduleService
     // {
     //     return $this->busScheduleRepository->busScheduleById($id);
     // }
-     /**
-     * Get all Data in Datatable Format.
-     *
-     * @return String
-     */
+    /**
+    * Get all Data in Datatable Format.
+    *
+    * @return String
+    */
     // public function dataTable($request)
     // {
     //     return $this->busScheduleRepository->getDatatable($request);
@@ -88,7 +88,7 @@ class BusScheduleService
      * @param array $data
      * @return String
      */
-   
+
     public function updatePost($data, $id)
     {
         try {
@@ -137,6 +137,6 @@ class BusScheduleService
     //         Log::info($e->getMessage());
     //         throw new InvalidArgumentException(Config::get('constants.EXCEPTION_ERROR'));
     //     }
-       
+
     // }
 }

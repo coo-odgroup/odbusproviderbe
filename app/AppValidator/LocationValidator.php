@@ -1,23 +1,23 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class LocationValidator 
-{   
+class LocationValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
         $rules = [
             'name' => 'required|max:50',
             'state_id' => 'required',
             'synonym' => '',
             'created_by' => 'required',
-        ];      
-      
-        $LocationValidation = Validator::make($data, $rules);
-        return $LocationValidation;
+        ];
+
+        return Validator::make($data, $rules);
     }
 
 }

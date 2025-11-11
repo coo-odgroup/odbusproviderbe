@@ -10,6 +10,6 @@ class Dummy extends Model
     use HasFactory;
     protected $table = 'dummy';
     protected $fillable = [
-        'name', 
+        'name',
     ];
 }

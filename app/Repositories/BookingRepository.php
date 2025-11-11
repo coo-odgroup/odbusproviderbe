@@ -6,42 +6,41 @@ use App\Models\Booking;
 
 class BookingRepository
 {
-    
     protected $booking;
 
-    
+
     public function __construct(Booking $booking)
     {
         $this->booking = $booking;
     }
 
-    
+
     public function getAll()
     {
         return $this->booking->whereNotIn('status', [2])->get();
     }
 
-    
+
     public function getById($id)
     {
         return $this->booking ->where('id', $id)->get();
     }
 
-    
+
     public function saveBooking($data)
     {
-        $bookings = new $this->booking;
+        $bookings = new $this->booking();
 
         do {
             $PNR = date('YmdHis');
-             //$random = mt_rand( 1000, 9999 );
-        
-          } while ( $bookings ->where( 'pnr', $PNR )->exists());
+            //$random = mt_rand( 1000, 9999 );
+
+        } while ($bookings ->where('pnr', $PNR)->exists());
 
         $bookings->pnr = $PNR;
 
         $bookings->transaction_id = $data['transaction_id'];
-       // $bookings->pnr = $data['pnr'];
+        // $bookings->pnr = $data['pnr'];
         $bookings->customer_id = $data['customer_id'];
         $bookings->user_id = $data['user_id'];
         $bookings->bus_id = $data['bus_id'];
@@ -68,13 +67,13 @@ class BookingRepository
 
 
         $bookings->save();
-        
+
         return $bookings->fresh();
 
     }
     public function update($data, $id)
     {
-        
+
         $bookings = $this->booking->find($id);
 
         $bookings->transaction_id = $data['transaction_id'];
@@ -107,10 +106,10 @@ class BookingRepository
         return $bookings;
     }
 
-    
+
     public function delete($id)
     {
-        
+
         $bookings = $this->booking->find($id);
         $bookings->status = 2;
         $bookings->delete();

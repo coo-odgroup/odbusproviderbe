@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class AppVersionService
 {
-    
     protected $appVersionRepository;
 
-    
+
     public function __construct(AppVersionRepository $appVersionRepository)
     {
         $this->appVersionRepository = $appVersionRepository;
     }
 
-    
+
     // public function deleteById($id)
     // {
     //     DB::beginTransaction();
@@ -42,24 +41,24 @@ class AppVersionService
 
     // }
 
-    
+
     // public function getAll()
     // {
     //     return $this->appVersionRepository->getAll();
     // }
 
-    
+
     // public function getById($id)
     // {
     //     return $this->appVersionRepository->getById($id);
     // }
 
-   
+
     // public function updatePost($data, $id)
     // {
-        
 
-        
+
+
 
     //     DB::beginTransaction();
 

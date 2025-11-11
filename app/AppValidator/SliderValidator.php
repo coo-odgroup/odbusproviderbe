@@ -1,12 +1,14 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SliderValidator 
-{   
-    public function validate($data) { 
+class SliderValidator
+{
+    public function validate($data)
+    {
 
         $rules = [
             'user_id' => 'required',
@@ -17,10 +19,10 @@ class SliderValidator
             'start_time' => 'required',
             'end_date' => 'required',
             'end_time' => 'required',
-        ];      
-        
+        ];
+
         $sliderValidation = Validator::make($data, $rules);
-     
+
         return $sliderValidation;
     }
 

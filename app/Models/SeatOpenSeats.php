@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Seats;
 
-
-
-
 class SeatOpenSeats extends Model
 {
     use HasFactory;
@@ -16,12 +13,11 @@ class SeatOpenSeats extends Model
     protected $fillable = ['seat_open_id','seats_id'];
 
 
-	public function seats()
+    public function seats()
     {
-    	return $this->belongsTo(Seats::class);
+        return $this->belongsTo(Seats::class);
     }
 
-   
+
 
 }
-

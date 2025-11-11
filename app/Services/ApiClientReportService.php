@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\BusOwnerFare;
@@ -12,16 +13,15 @@ use InvalidArgumentException;
 
 class ApiClientReportService
 {
-    
     protected $ApiClientReportRepository;
 
-    
+
     public function __construct(ApiClientReportRepository $ApiClientReportRepository)
     {
         $this->ApiClientReportRepository = $ApiClientReportRepository;
-    } 
+    }
 
-   
+
     // public function getAllData($request)
     // {
     //   return $this->ApiClientReportRepository->getAllData($request);
@@ -31,11 +31,10 @@ class ApiClientReportService
     // {
     //   return $this->ApiClientReportRepository->getAllCancelData($request);
     // }
-	
-	// public function datewiseroute($request)
-  //   {
-  //     return $this->ApiClientReportRepository->datewiseroute($request);
-  //   }
+
+    // public function datewiseroute($request)
+    //   {
+    //     return $this->ApiClientReportRepository->datewiseroute($request);
+    //   }
 
 }
-

@@ -17,7 +17,7 @@ class UsersService
     {
         $this->usersRepository = $usersRepository;
     }
-   
+
     /**
      * Get all users Data
      *
@@ -28,6 +28,6 @@ class UsersService
     //     return $this->usersRepository->login($request);
     // }
 
-   
+
 
 }

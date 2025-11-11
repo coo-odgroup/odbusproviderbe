@@ -17,7 +17,7 @@ class ApiClientIssueService
     {
         $this->ApiClientIssueRepository = $ApiClientIssueRepository;
     }
-    
+
 
     // public function apiclientissuetype()
     // {
@@ -45,7 +45,7 @@ class ApiClientIssueService
     //     return $this->ApiClientIssueRepository->addapiclientissue($request);
     // }
 
-    
+
     // public function changeStatus($id)
     // {
     //     try {

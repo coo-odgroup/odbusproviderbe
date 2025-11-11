@@ -7,15 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Offers;
 use App\Models\Amenities;
 
-
 class OfferCategory extends Model
 {
     use HasFactory;
     protected $table = 'offer_category';
     protected $fillable = ['category_name'];
-   
+
     public function offers()
     {
-    	return $this->hasMany(Offers::class);
+        return $this->hasMany(Offers::class);
     }
 }

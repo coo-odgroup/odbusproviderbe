@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
-
-
 class UserService
 {
     /**
@@ -57,12 +55,12 @@ class UserService
 
     // public function getallAgent()
     // {
-    //    return $this->userRepository->getallAgent();  
-    // } 
+    //    return $this->userRepository->getallAgent();
+    // }
 
     // public function allApiClient()
     // {
-    //    return $this->userRepository->allApiClient();  
+    //    return $this->userRepository->allApiClient();
     // }
 
     /**
@@ -100,7 +98,7 @@ class UserService
      */
     public function updateUser($data, $id)
     {
-       
+
         DB::beginTransaction();
 
         try {
@@ -127,11 +125,11 @@ class UserService
      * @return String
      */
     public function savePostData($data)
-    {   
+    {
         $result = $this->userRepository->save($data);
         return $result;
     }
-   
+
     public function getCustomerInformation($id)
     {
         return $this->userRepository->get($id);
@@ -145,12 +143,12 @@ class UserService
     /////////////////////Agent registration//////////////////////////////////
 
     // public function Register($data)
-    // {   
+    // {
     //     $agent = $this->userRepository->Register($data);
     //     return $agent;
     // }
     public function verifyOtp($data)
-    {   
+    {
         $agent = $this->userRepository->verifyOtp($data);
         return $agent;
     }
@@ -163,7 +161,7 @@ class UserService
     //     return $this->userRepository->getRoles();
     // }
     // public function agentRegister($data)
-    // {   
+    // {
     //     $agent = $this->userRepository->agentRegister($data);
     //     return $agent;
     // }
@@ -195,8 +193,8 @@ class UserService
 
     // }
 
-    
 
-    
-    
+
+
+
 }

@@ -31,7 +31,7 @@ class ReviewService
     // {
     //     return $this->reviewRepository->getAll();
     // }
-    
+
     // public function getData($request)
     // {
     //     return $this->reviewRepository->getData($request);
@@ -42,7 +42,7 @@ class ReviewService
     // }
 
     // public function changeStatus($id)
-    // {    
+    // {
     //     return $this->reviewRepository->changeStatus($id);
     // }
 

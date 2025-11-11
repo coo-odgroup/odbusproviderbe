@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class BusSlotsService
 {
-    
     protected $BusSlotsRepository;
 
-    
+
     public function __construct(BusSlotsRepository $BusSlotsRepository)
     {
         $this->BusSlotsRepository = $BusSlotsRepository;
     }
 
-    
+
     // public function deleteById($id)
     // {
     //     DB::beginTransaction();
@@ -42,22 +41,22 @@ class BusSlotsService
 
     // }
 
-    
+
     // public function getAll()
     // {
     //     return $this->BusSlotsRepository->getAll();
     // }
 
-    
+
     // public function getById($id)
     // {
     //     return $this->BusSlotsRepository->getById($id);
     // }
 
-   
+
     // public function updatePost($data, $id)
     // {
-        
+
 
     //     DB::beginTransaction();
 
@@ -77,10 +76,10 @@ class BusSlotsService
 
     // }
 
-    
+
     // public function savePostData($data)
     // {
-        
+
 
     //     $result = $this->BusSlotsRepository->save($data);
 

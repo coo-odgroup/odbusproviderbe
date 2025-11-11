@@ -24,106 +24,104 @@ class PermissionController extends Controller
      * @param PermissionService $permissionService
      *
      */
-    public function __construct(PermissionService $permissionService,PermissionValidator $permissionValidator)
+    public function __construct(PermissionService $permissionService, PermissionValidator $permissionValidator)
     {
         $this->permissionService = $permissionService;
         $this->permissionValidator = $permissionValidator;
     }
 
-    public function getAllPermission(Request $request) 
+    public function getAllPermission(Request $request)
     {
         $role = $this->permissionService->getAll($request);
-        return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
-
-    public function PermissionData(Request $request) 
-    {
-        $role = $this->permissionService->PermissionData($request);
-        return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+        return $this->successResponse($role, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function createPermission(Request $request) 
+    public function PermissionData(Request $request)
     {
-        $data = $request->only([
-          'name','created_by'          
-        ]);
-        
-        $permissionValidation = $this->permissionValidator->validate($data);
-        
-        if ($permissionValidation->fails()) {
-          $errors = $permissionValidation->errors();
-          // return $errors->toJson();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        try {
-          $this->permissionService->savePostData($data);
-          
-      }
-       catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }  
-      return $this->successResponse($data,"Permission Added",Response::HTTP_CREATED); 
-      
-    } 
+        $role = $this->permissionService->PermissionData($request);
+        return $this->successResponse($role, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-    public function updatePermission(Request $request, $id) {
+    public function createPermission(Request $request)
+    {
         $data = $request->only([
           'name','created_by'
         ]);
-        
-        $permissionValidation =   $this->permissionValidator->validate($data);
-        
+
+        $permissionValidation = $this->permissionValidator->validate($data);
+
         if ($permissionValidation->fails()) {
-          $errors = $permissionValidation->errors();
-          // return $errors->toJson();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            $errors = $permissionValidation->errors();
+            // return $errors->toJson();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        try {
+            $this->permissionService->savePostData($data);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse($data, "Permission Added", Response::HTTP_CREATED);
+
+    }
+
+    public function updatePermission(Request $request, $id)
+    {
+        $data = $request->only([
+          'name','created_by'
+        ]);
+
+        $permissionValidation =   $this->permissionValidator->validate($data);
+
+        if ($permissionValidation->fails()) {
+            $errors = $permissionValidation->errors();
+            // return $errors->toJson();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
 
         try {
-          $this->permissionService->update($data, $id);
-          
+            $this->permissionService->update($data, $id);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-         catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        return $this->successResponse($data,"Permission Updated",Response::HTTP_CREATED);     
+        return $this->successResponse($data, "Permission Updated", Response::HTTP_CREATED);
     }
 
-    public function deletePermission ($id) {
-      try {
-        $this->permissionService->deleteById($id);
-        
-      } 
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),"404");
-      }
-      return $this->successResponse(Null,"Permission Deleted",Response::HTTP_ACCEPTED);
-    }
-
-    public function getPermission($id) {
-      try {
-        $permission= $this->permissionService->getById($id);        
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse($permission,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
-   
-    public function getPermissionDT(Request $request) 
-    {              
-       $permission = $this->permissionService->getAllPermissionDT($request);
-       return $this->successResponse($permission,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);      
-    }
-
-    public function changeStatus ($id)
+    public function deletePermission($id)
     {
-      try{
-        $this->permissionService->changeStatus($id);
-      }
-      catch (Exception $e){
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse(null, "Permission Status Updated", Response::HTTP_ACCEPTED);
+        try {
+            $this->permissionService->deleteById($id);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), "404");
+        }
+        return $this->successResponse(null, "Permission Deleted", Response::HTTP_ACCEPTED);
+    }
+
+    public function getPermission($id)
+    {
+        try {
+            $permission = $this->permissionService->getById($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse($permission, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function getPermissionDT(Request $request)
+    {
+        $permission = $this->permissionService->getAllPermissionDT($request);
+        return $this->successResponse($permission, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function changeStatus($id)
+    {
+        try {
+            $this->permissionService->changeStatus($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Permission Status Updated", Response::HTTP_ACCEPTED);
     }
 }

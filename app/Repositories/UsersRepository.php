@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Repositories;
+
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+
 class UsersRepository
 {
     /**
@@ -20,7 +22,7 @@ class UsersRepository
         $this->user = $user;
     }
 
-    
+
     public function login($request)
     {
 
@@ -29,6 +31,6 @@ class UsersRepository
         return $this->user->with('role')->where('email', $email)->where('password', $password)->get();
     }
 
-    
-    
+
+
 }

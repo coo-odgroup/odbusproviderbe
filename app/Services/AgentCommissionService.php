@@ -44,7 +44,7 @@ class AgentCommissionService
         return $this->agentCommissionRepository->getAll($request);
     }
 
-   
+
     /**
      * Get  by id.
      *

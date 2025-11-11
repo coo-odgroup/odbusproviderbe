@@ -23,13 +23,13 @@ class CouponService
     // public function getAll()
     // {
     //     return $this->couponRepository->getAll();
-    // } 
+    // }
 
     // public function getAllCouponType()
     // {
     //     return $this->couponRepository->getAllCouponType();
     // }
-    
+
     //  public function getData($request)
     // {
     //     return $this->couponRepository->getData($request);
@@ -76,5 +76,5 @@ class CouponService
     //     return $result;
     // }
     //COUPON ADD FOR BUS, ROUTE AND OPERATOR ENDS HERE
-    
+
 }

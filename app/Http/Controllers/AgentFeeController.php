@@ -12,107 +12,109 @@ use Exception;
 use App\AppValidator\AgentFeeValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+
 class AgentFeeController extends Controller
 {
-   
     use ApiResponser;
-      
-      
+
+
     protected $agentFeeService;
     protected $agentFeeValidator;
-    
-    public function __construct(AgentFeeService $agentFeeService,AgentFeeValidator $agentFeeValidator)
+
+    public function __construct(AgentFeeService $agentFeeService, AgentFeeValidator $agentFeeValidator)
     {
         $this->agentFeeService = $agentFeeService;
         $this->agentFeeValidator = $agentFeeValidator;
     }
 
 
-    public function getAllAgentFee(Request $request) {
+    public function getAllAgentFee(Request $request)
+    {
 
-      $agentFees = $this->agentFeeService->getAll($request);
-      return $this->successResponse($agentFees,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
-
-
-    public function getAllAgentFeeData(Request $request) {
-
-      $agentFees = $this->agentFeeService->getAllAgentFeeData($request);
-      return $this->successResponse($agentFees,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+        $agentFees = $this->agentFeeService->getAll($request);
+        return $this->successResponse($agentFees, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function createAgentFee(Request $request) {
-      $data = $request->only([
-        'price_from',
-        'price_to',
-        'max_comission',
-        'created_by'
-      ]);
-      $agentFeeValidation = $this->agentFeeValidator->validate($data);
-      
-      if ($agentFeeValidation->fails()) {
-        $errors = $agentFeeValidation->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      }
 
-      try {
-          $this->agentFeeService->savePostData($data);
-          
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }   
-      return $this->successResponse($data,"Agent Fee Slab Added",Response::HTTP_CREATED); 
-    } 
+    public function getAllAgentFeeData(Request $request)
+    {
 
-    public function updateAgentFee(Request $request, $id) {
+        $agentFees = $this->agentFeeService->getAllAgentFeeData($request);
+        return $this->successResponse($agentFees, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function createAgentFee(Request $request)
+    {
         $data = $request->only([
           'price_from',
           'price_to',
           'max_comission',
           'created_by'
         ]);
-        
         $agentFeeValidation = $this->agentFeeValidator->validate($data);
 
         if ($agentFeeValidation->fails()) {
-          $errors = $agentFeeValidation->errors();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            $errors = $agentFeeValidation->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
-        
+
         try {
-          $this->agentFeeService->update($data, $id);
-          return $this->successResponse(null, "Agent Fee Slab Updated",Response::HTTP_CREATED);
-         
+            $this->agentFeeService->savePostData($data);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        
+        return $this->successResponse($data, "Agent Fee Slab Added", Response::HTTP_CREATED);
     }
 
-    public function deleteAgentFee ($id) {
+    public function updateAgentFee(Request $request, $id)
+    {
+        $data = $request->only([
+          'price_from',
+          'price_to',
+          'max_comission',
+          'created_by'
+        ]);
 
-      try {
-        $this->agentFeeService->deleteById($id);
-        
-      } 
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse(Null,"Agent Fee Slab Deleted",Response::HTTP_ACCEPTED); 
-     
+        $agentFeeValidation = $this->agentFeeValidator->validate($data);
+
+        if ($agentFeeValidation->fails()) {
+            $errors = $agentFeeValidation->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+
+        try {
+            $this->agentFeeService->update($data, $id);
+            return $this->successResponse(null, "Agent Fee Slab Updated", Response::HTTP_CREATED);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+
     }
 
-    public function getAgentFee($id) {
-      try {
-        $AgentFeeID= $this->agentFeeService->getById($id);
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse($AgentFeeID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-      
-    }   
-    
+    public function deleteAgentFee($id)
+    {
+
+        try {
+            $this->agentFeeService->deleteById($id);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Agent Fee Slab Deleted", Response::HTTP_ACCEPTED);
+
+    }
+
+    public function getAgentFee($id)
+    {
+        try {
+            $AgentFeeID = $this->agentFeeService->getById($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse($AgentFeeID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+
+    }
+
 }

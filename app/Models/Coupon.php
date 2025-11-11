@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\BusOperator;
@@ -11,31 +13,31 @@ class Coupon extends Model
 {
     use HasFactory;
     protected $table = 'coupon';
-    protected $fillable = [  'coupon_title','coupon_code','type','amount', 
+    protected $fillable = [  'coupon_title','coupon_code','type','amount',
                             'max_discount_price','min_tran_amount','max_redeem',
                             'max_use_limit','bus_id','category','from_date','to_date','short_desc','full_desc',
                             'created_by'];
- 
-
- 	public function BusOperator()
-	{        
-		return $this->belongsTo(BusOperator::class);        
-	}
 
 
-	public function Bus()
-	{        
-		return $this->belongsTo(Bus::class);        
-	}
+    public function BusOperator()
+    {
+        return $this->belongsTo(BusOperator::class);
+    }
 
-	public function couponType()
-	{        
-		return $this->belongsTo(CouponType::class);        
-	}
 
-	public function Slider()
-	{        
-		return $this->belongsTo(CouponType::class);        
-	}
+    public function Bus()
+    {
+        return $this->belongsTo(Bus::class);
+    }
+
+    public function couponType()
+    {
+        return $this->belongsTo(CouponType::class);
+    }
+
+    public function Slider()
+    {
+        return $this->belongsTo(CouponType::class);
+    }
 
 }

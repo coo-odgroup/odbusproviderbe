@@ -52,7 +52,7 @@ class AppDownloadRepository
      */
     public function save($data)
     {
-        $post = new $this->appDownload;
+        $post = new $this->appDownload();
 
         $post->mobileno = $data['mobileno'];
         // $post->created_date = date('Y-m-d H:i:s');
@@ -71,7 +71,7 @@ class AppDownloadRepository
      */
     public function update($data, $id)
     {
-        
+
         $post = $this->appDownload->find($id);
 
         $post->mobileno = $data['mobileno'];
@@ -89,7 +89,7 @@ class AppDownloadRepository
      */
     public function delete($id)
     {
-        
+
         $post = $this->appDownload->find($id);
         $post->status = 2;
         $post->update();

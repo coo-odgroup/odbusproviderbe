@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+
 use Illuminate\Support\Facades\Log;
 use App\Models\ApiUserCommission;
 use App\Models\Bus;
@@ -22,15 +23,15 @@ class ApiUserCommissionRepository
      *
      * @param Post $apiUserCommission
      */
-    public function __construct(ApiUserCommission $apiUserCommission,Booking $booking ,Location $location ,Bus $bus)
+    public function __construct(ApiUserCommission $apiUserCommission, Booking $booking, Location $location, Bus $bus)
     {
         $this->apiUserCommission = $apiUserCommission;
-        $this->booking = $booking;       
-        $this->location = $location;       
-        $this->bus = $bus;     
+        $this->booking = $booking;
+        $this->location = $location;
+        $this->bus = $bus;
     }
 
-    
+
     public function getAll($request)
     {
         return $this->apiUserCommission->get();
@@ -40,54 +41,51 @@ class ApiUserCommissionRepository
     {
         $paginate = $request['rows_number'] ;
 
-        $data= $this->apiUserCommission->with('User')
+        $data = $this->apiUserCommission->with('User')
                     ->whereNotIn('status', [2])
-                    ->orderBy('id','DESC');
+                    ->orderBy('id', 'DESC');
 
-        if($paginate=='all') 
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
-        }       
+        }
 
-        $data=$data->paginate($paginate);
+        $data = $data->paginate($paginate);
         // Log::info($data);
 
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
              "data" => $data
-           );   
-           return $response;
+           );
+        return $response;
 
-       
+
     }
     public function getModel($data, apiUserCommission $apiUserCommission)
-    {     
-              
+    {
+
         $apiUserCommission->user_id = $data['user_id'];
         $apiUserCommission->starting_fare = $data['starting_fare'];
-        $apiUserCommission->upto_fare = $data['upto_fare'];    
-        $apiUserCommission->commision = $data['commision'];    
-        $apiUserCommission->addationalcharges = $data['addationalCharges'];     
-        $apiUserCommission->dolphinaddationalCharges = $data['dolphinaddationalCharges'];     
-        $apiUserCommission->cancellation_commission = $data['cancelCommission'];     
-        $apiUserCommission->created_by = $data['created_by'];    
-        $apiUserCommission->status = 1;   
+        $apiUserCommission->upto_fare = $data['upto_fare'];
+        $apiUserCommission->commision = $data['commision'];
+        $apiUserCommission->addationalcharges = $data['addationalCharges'];
+        $apiUserCommission->dolphinaddationalCharges = $data['dolphinaddationalCharges'];
+        $apiUserCommission->cancellation_commission = $data['cancelCommission'];
+        $apiUserCommission->created_by = $data['created_by'];
+        $apiUserCommission->status = 1;
         return $apiUserCommission;
     }
-    
+
     public function getById($id)
     {
         return $this->apiUserCommission->where('id', $id)->get();
     }
     public function save($data)
-    {     
-        $apiUserCommission = new $this->apiUserCommission;
-        $apiUserCommission = $this->getModel($data,$apiUserCommission);            
+    {
+        $apiUserCommission = new $this->apiUserCommission();
+        $apiUserCommission = $this->getModel($data, $apiUserCommission);
         $apiUserCommission->save();
         return $apiUserCommission;
     }
@@ -100,9 +98,9 @@ class ApiUserCommissionRepository
      */
     public function update($data, $id)
     {
-       // Log::info($data);exit;
+        // Log::info($data);exit;
         $apiUserCommission = $this->apiUserCommission->find($id);
-        $apiUserCommission=$this->getModel($data,$apiUserCommission);
+        $apiUserCommission = $this->getModel($data, $apiUserCommission);
         $apiUserCommission->update();
         return $apiUserCommission;
     }
@@ -125,13 +123,13 @@ class ApiUserCommissionRepository
     public function changeStatus($id)
     {
         $post = $this->apiUserCommission->find($id);
-        if($post->status==0){
+        if ($post->status == 0) {
             $post->status = 1;
-        }elseif($post->status==1){
+        } elseif ($post->status == 1) {
             $post->status = 0;
         }
         $post->update();
         return $post;
-    }   
-    
+    }
+
 }

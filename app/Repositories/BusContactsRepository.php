@@ -6,10 +6,9 @@ use App\Models\BusContacts;
 
 class BusContactsRepository
 {
-    
     protected $busContacts;
 
-    
+
     public function __construct(BusContacts $busContacts)
     {
         $this->busContacts = $busContacts;
@@ -38,15 +37,15 @@ class BusContactsRepository
     }
     public function save($data)
     {
-        $busContacts = new $this->busContacts;
-        $busContacts=$this->getModel($data, $busContacts);
+        $busContacts = new $this->busContacts();
+        $busContacts = $this->getModel($data, $busContacts);
         $busContacts->save();
         return $busContacts;
     }
     public function update($data, $id)
     {
         $busContacts = $this->busContacts->find($id);
-        $busContacts=$this->getModel($data, $busContacts);
+        $busContacts = $this->getModel($data, $busContacts);
         $busContacts->update();
         return $busContacts;
     }
@@ -59,7 +58,7 @@ class BusContactsRepository
     }
     public function deletebyBusid($id)
     {
-        $busContacts = $this->busContacts->where("bus_id",$id);
+        $busContacts = $this->busContacts->where("bus_id", $id);
         $busContacts->delete();
         return $busContacts;
     }

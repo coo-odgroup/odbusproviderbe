@@ -34,17 +34,17 @@ class AgentFeeService
     //     return $busType;
 
     // }
-     /**
-     * Get all Data
-     *
-     * @return String
-     */
+    /**
+    * Get all Data
+    *
+    * @return String
+    */
     // public function getAll($request)
     // {
     //     return $this->agentFeeRepository->getAll($request);
     // }
 
-   
+
     /**
      * Get  by id.
      *

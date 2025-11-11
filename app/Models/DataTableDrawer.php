@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 class DataTableDrawer
 {
     protected String $draw;
@@ -13,19 +15,19 @@ class DataTableDrawer
     protected String $columnName;
     protected String $columnSortOrder;
     protected String $searchValue;
-    public function __construct(String $draw,String $start,String $rowperpage,String $columnIndex_arr,String $columnName_arr,String $order_arr,String $search_arr,String $columnIndex,String $columnName,String $columnSortOrder,String $searchValue)
+    public function __construct(String $draw, String $start, String $rowperpage, String $columnIndex_arr, String $columnName_arr, String $order_arr, String $search_arr, String $columnIndex, String $columnName, String $columnSortOrder, String $searchValue)
     {
-        $this->draw=$draw;
-        $this->start=$start;
-        $this->rowperpage=$rowperpage;
-        $this->columnIndex_arr=$columnIndex_arr;
-        $this->columnName_arr=$columnName_arr;
-        $this->order_arr=$order_arr;
-        $this->search_arr=$search_arr;
-        $this->columnIndex=$columnIndex;
-        $this->columnName=$columnName;
-        $this->columnSortOrder=$columnSortOrder;
-        $this->searchValue=$searchValue;
+        $this->draw = $draw;
+        $this->start = $start;
+        $this->rowperpage = $rowperpage;
+        $this->columnIndex_arr = $columnIndex_arr;
+        $this->columnName_arr = $columnName_arr;
+        $this->order_arr = $order_arr;
+        $this->search_arr = $search_arr;
+        $this->columnIndex = $columnIndex;
+        $this->columnName = $columnName;
+        $this->columnSortOrder = $columnSortOrder;
+        $this->searchValue = $searchValue;
     }
     public function getDraw()
     {
@@ -75,7 +77,7 @@ class DataTableDrawer
 
     public function setDraw(String $draw)
     {
-        $this->draw=$draw;
+        $this->draw = $draw;
     }
     public function setStart()
     {
@@ -117,8 +119,7 @@ class DataTableDrawer
     {
         return $this->searchValue;
     }
-    
+
 
 
 }
-

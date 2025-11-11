@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -7,12 +8,12 @@ use App\Models\UserNotification;
 
 class Notification extends Model
 {
-    use HasFactory; 
+    use HasFactory;
     protected $table = 'notification';
-    protected $fillable = ['notification_heading','notification_details'];  
+    protected $fillable = ['notification_heading','notification_details'];
 
     public function userNotification()
     {
-    	 return $this->hasMany(UserNotification::class);        
-    }  
+        return $this->hasMany(UserNotification::class);
+    }
 }

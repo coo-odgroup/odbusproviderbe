@@ -14,18 +14,18 @@ use Symfony\Component\HttpFoundation\Response;
 class BusCancellationReportController extends Controller
 {
     use ApiResponser;
-   
-    protected $buscancellationreportService;    
-    
+
+    protected $buscancellationreportService;
+
     public function __construct(BusCancellationReportService $buscancellationreportService)
     {
-        $this->buscancellationreportService = $buscancellationreportService;        
+        $this->buscancellationreportService = $buscancellationreportService;
     }
 
     public function getData(Request $request)
     {
         $buscancel = $this->buscancellationreportService->getData($request);
-        return $this->successResponse($buscancel,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($buscancel, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 }

@@ -7,21 +7,19 @@ use App\Repositories\BusSeatsExtraRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 use InvalidArgumentException;
 
 class BusSeatsExtraService
 {
-    
     protected $busSeatsExtraRepository;
 
-    
+
     public function __construct(busSeatsExtraRepository $busSeatsExtraRepository)
     {
         $this->busSeatsExtraRepository = $busSeatsExtraRepository;
     }
 
-    
+
     // public function deleteById($id)
     // {
     //     DB::beginTransaction();
@@ -42,22 +40,22 @@ class BusSeatsExtraService
 
     // }
 
-    
+
     // public function getAll()
     // {
     //     return $this->busSeatsExtraRepository->getAll();
     // }
 
-    
+
     // public function getById($id)
     // {
     //     return $this->busSeatsExtraRepository->getById($id);
     // }
 
-   
+
     // public function updatePost($data, $id)
     // {
-        
+
 
     //     DB::beginTransaction();
 
@@ -77,10 +75,10 @@ class BusSeatsExtraService
 
     // }
 
-    
+
     // public function savePostData($data)
     // {
-        
+
 
     //     $result = $this->busSeatsExtraRepository->save($data);
 

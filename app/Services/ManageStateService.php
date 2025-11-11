@@ -34,7 +34,7 @@ class ManageStateService
      */
     // public function statelist(){
     // 	 return $this->manageStateRepository->statelist();
-    // } 
+    // }
 
     // public function getAllstate($request){
     // 	 return $this->manageStateRepository->getAllstate($request);

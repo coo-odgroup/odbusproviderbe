@@ -13,60 +13,63 @@ class BusSlotsController extends Controller
 {
     protected $busSlotsService;
 
-    
+
     public function __construct(BusSlotsService $busSlotsService)
     {
         $this->busSlotsService = $busSlotsService;
     }
 
 
-    public function getAllBusSlots() {
+    public function getAllBusSlots()
+    {
 
         $busSlots = $this->busSlotsService->getAll();
-        $output ['status']=1;
-        $output ['message']='All Data Fetched Successfully';
-        $output ['result']=$busSlots;
+        $output ['status'] = 1;
+        $output ['message'] = 'All Data Fetched Successfully';
+        $output ['result'] = $busSlots;
         return response($output, 200);
     }
 
-    public function createBusSlots(Request $request) {
+    public function createBusSlots(Request $request)
+    {
         $data = $request->only([
 
             'bus_id', 'name','type','created_by'
-            
+
           ]);
-        
-          $busSlotsRules = [
-            'bus_id' => 'required',
-            'name' => 'required',
-            'type' => 'required',
-            'created_by' => 'required',
-            
+
+        $busSlotsRules = [
+          'bus_id' => 'required',
+          'name' => 'required',
+          'type' => 'required',
+          'created_by' => 'required',
+
         ];
-        
+
         $busSlotsValidation = Validator::make($data, $busSlotsRules);
 
 
         if ($busSlotsValidation->fails()) {
             $errors = $busSlotsValidation->errors();
             return $errors->toJson();
-          }
-      $result = ['status' => 200];
+        }
+        $result = ['status' => 200];
 
-      try {
-          $result['data'] = $this->busSlotsService->savePostData($data);
-      } catch (Exception $e) {
-          $result = [
-              'status' => 500,
-              'error' => $e->getMessage()
-          ];
-      }
+        try {
+            $result['data'] = $this->busSlotsService->savePostData($data);
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
 
-      return response()->json($result, $result['status']);
+        return response()->json($result, $result['status']);
 
-    } 
+    }
 
-    public function updateBusSlots(Request $request, $id) {
+    public function updateBusSlots(Request $request, $id)
+    {
         $data = $request->only([
             'bus_id', 'name','type','created_by'
         ]);
@@ -75,16 +78,16 @@ class BusSlotsController extends Controller
             'name' => 'required',
             'type' => 'required',
             'created_by' => 'required',
-            
+
         ];
-        
+
         $busSlotsValidation = Validator::make($data, $busSlotsValidation);
 
 
         if ($busSlotsValidation->fails()) {
             $errors = $busSlotsValidation->errors();
             return $errors->toJson();
-          }
+        }
 
         $result = ['status' => 200];
 
@@ -101,26 +104,28 @@ class BusSlotsController extends Controller
         return response()->json($result, $result['status']);
     }
 
-    public function deleteBusSlots ($id) {
-      $result = ['status' => 200];
+    public function deleteBusSlots($id)
+    {
+        $result = ['status' => 200];
 
-      try {
-          $result['data'] = $this->busSlotsService->deleteById($id);
-      } catch (Exception $e) {
-          $result = [
-              'status' => 500,
-              'error' => $e->getMessage()
-          ];
-      }
-      return response()->json($result, $result['status']);
+        try {
+            $result['data'] = $this->busSlotsService->deleteById($id);
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+        return response()->json($result, $result['status']);
     }
 
-    public function getBusBusSlots($id) {
-      $busExtraFare = $this->busSlotsService->getById($id);
-      $output ['status']=1;
-      $output ['message']='Single Data Fetched Successfully';
-      $output ['result']=$busExtraFare;
-      return response($output, 200);
-    }      
-	     
+    public function getBusBusSlots($id)
+    {
+        $busExtraFare = $this->busSlotsService->getById($id);
+        $output ['status'] = 1;
+        $output ['message'] = 'Single Data Fetched Successfully';
+        $output ['result'] = $busExtraFare;
+        return response($output, 200);
+    }
+
 }

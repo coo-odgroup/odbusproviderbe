@@ -5,11 +5,10 @@ namespace App\Repositories;
 use App\Models\Banner;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\File;
 
 class BannerRepository
 {
-    
     public function __construct(Banner $banner)
     {
         $this->banner = $banner;
@@ -21,47 +20,47 @@ class BannerRepository
     public function getData($request)
     {
         // Log::info($request);
-        
+
         $paginate = $request['per_page'];
-        $searchBy = $request['searchBy']; 
+        $searchBy = $request['searchBy'];
         $status = $request['status'];
         $userID = $request['userID'] ;
         $role_id = $request['role_id'] ;
 
-       
-        if($searchBy!='' && $status!=''){
+
+        if ($searchBy != '' && $status != '') {
             $list = $this->banner->with('User')
                                  ->where('occassion', 'like', '%' .$searchBy . '%')
-                                 ->where('status', $status) 
-                                 ->orWhereHas('User', function ($query) use ($searchBy){$query->where('name', 'like', '%' .$searchBy . '%');
-                            })->whereNotIn('status', [2])->orderBy('id','desc');
+                                 ->where('status', $status)
+                                 ->orWhereHas('User', function ($query) use ($searchBy) {
+                                     $query->where('name', 'like', '%' .$searchBy . '%');
+                                 })->whereNotIn('status', [2])->orderBy('id', 'desc');
 
-        }elseif($searchBy!='' && $status==''){
+        } elseif ($searchBy != '' && $status == '') {
             $list = $this->banner->with('User')->where('occassion', $searchBy)
-                                 ->orWhereHas('User', function ($query) use ($searchBy){
-                                    $query->where('name', 'like', '%' .$searchBy . '%');
-                                   })->whereNotIn('status', [2])->orderBy('id','desc');
-        }elseif($searchBy=='' && $status!=''){
+                                 ->orWhereHas('User', function ($query) use ($searchBy) {
+                                     $query->where('name', 'like', '%' .$searchBy . '%');
+                                 })->whereNotIn('status', [2])->orderBy('id', 'desc');
+        } elseif ($searchBy == '' && $status != '') {
             $list = $this->banner->with('User')->where('status', $status)
-                                 ->whereNotIn('status', [2])->orderBy('id','desc');
-        }else{
-            $list = $this->banner->with('User')->whereNotIn('status', [2])->orderBy('id','desc');    
+                                 ->whereNotIn('status', [2])->orderBy('id', 'desc');
+        } else {
+            $list = $this->banner->with('User')->whereNotIn('status', [2])->orderBy('id', 'desc');
         }
 
-         if($userID!= null && $role_id!= 1 )
-          {
+        if ($userID != null && $role_id != 1) {
             $list = $list->Where('user_id', $userID);
-          }
+        }
 
         $list =  $list->paginate($paginate);
         //return $list;
         $response = array(
-            "count" => $list->count(), 
+            "count" => $list->count(),
             "total" => $list->total(),
             "data" => $list
-           );   
-           return $response;
-                            
+           );
+        return $response;
+
     }
     public function getById($id)
     {
@@ -69,7 +68,7 @@ class BannerRepository
             ->where('id', $id)
             ->get();
     }
-     public function getModel($data, Banner $banner)
+    public function getModel($data, Banner $banner)
     {
         $banner->occassion = $data['occassion'];
         // $banner->category = $data['category'];
@@ -87,18 +86,17 @@ class BannerRepository
 
     public function save($data)
     {
-        
-        $picture="";
-        $bannerObject = new $this->banner;
-        $banner=$this->getModel($data,$bannerObject);
-        $file = collect($data)->get('banner_img');  
-        if(($file)!=null)
-        {
+
+        $picture = "";
+        $bannerObject = new $this->banner();
+        $banner = $this->getModel($data, $bannerObject);
+        $file = collect($data)->get('banner_img');
+        if (($file) != null) {
             $filename  = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
             $picture   =  rand().'-'.$filename;
             $banner->banner_image = $picture;
-            $file->move(public_path('uploads/operatorbanner/'), $picture);          
+            $file->move(public_path('uploads/operatorbanner/'), $picture);
         }
 
         $banner->save();
@@ -114,30 +112,25 @@ class BannerRepository
 
         $banner = $this->banner->find($id);
         $file = collect($data)->get('banner_img');
-        
-        if($file !="null")
-        {
-            $banner=$this->getModel($data,$banner);
+
+        if ($file != "null") {
+            $banner = $this->getModel($data, $banner);
             $filename  = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
             $picture =  rand().'-'.$filename;
             $banner->banner_image =  $picture;
-       
+
             $file->move(public_path('uploads/operatorbanner/'), $picture);
 
             $old_image_path_consumer = public_path('uploads/operatorbanner/').$existing_image;
-            if(isset($existing_image))
-            {
-                if(File::exists($old_image_path_consumer))
-                 {
+            if (isset($existing_image)) {
+                if (File::exists($old_image_path_consumer)) {
                     unlink($old_image_path_consumer);
-                 }  
+                }
             }
-                   
-        }
-        else
-        {
-             $banner=$this->getModel($data,$banner);
+
+        } else {
+            $banner = $this->getModel($data, $banner);
         }
         $banner->update();
         return $banner;
@@ -154,9 +147,9 @@ class BannerRepository
     public function changeStatus($id)
     {
         $bann = $this->banner->find($id);
-        if($bann->status==0){
+        if ($bann->status == 0) {
             $bann->status = 1;
-        }elseif($bann->status==1){
+        } elseif ($bann->status == 1) {
             $bann->status = 0;
         }
         $bann->update();

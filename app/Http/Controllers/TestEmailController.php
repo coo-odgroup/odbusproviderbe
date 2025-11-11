@@ -12,20 +12,20 @@ use InvalidArgumentException;
 
 class TestEmailController extends Controller
 {
-    
     protected $testEmailService;
 
-    
+
     public function __construct(TestEmailService $testEmailService)
     {
         $this->testEmailService = $testEmailService;
     }
 
 
-    public function emailtest() {
-       return  $this->testEmailService->emailtest(); 
+    public function emailtest()
+    {
+        return  $this->testEmailService->emailtest();
     }
 
-     
+
 
 }

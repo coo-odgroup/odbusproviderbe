@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class CouponAssignedBusService
 {
-    
     protected $couponAssignedBusRepository;
 
-    
+
     public function __construct(couponAssignedBusRepository $couponAssignedBusRepository)
     {
         $this->couponAssignedBusRepository = $couponAssignedBusRepository;
     }
 
-    
+
     public function deleteById($id)
     {
         DB::beginTransaction();
@@ -42,22 +41,22 @@ class CouponAssignedBusService
 
     }
 
-    
+
     public function getAll()
     {
         return $this->couponAssignedBusRepository->getAll();
     }
 
-    
+
     public function getById($id)
     {
         return $this->couponAssignedBusRepository->getById($id);
     }
 
-   
+
     public function updatePost($data, $id)
     {
-        
+
 
         DB::beginTransaction();
 
@@ -80,7 +79,7 @@ class CouponAssignedBusService
 
     public function savePostData($data)
     {
-        
+
 
         $result = $this->couponAssignedBusRepository->save($data);
 

@@ -18,7 +18,10 @@ use App\Models\BusClass;
 
 class SendEmailToCustomerJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -38,7 +41,7 @@ class SendEmailToCustomerJob implements ShouldQueue
     protected $busname;
     protected $source;
     protected $destination;
-    protected $busNumber;      
+    protected $busNumber;
     protected $bustype;
     protected $busTypeName;
     protected $sittingType;
@@ -51,7 +54,7 @@ class SendEmailToCustomerJob implements ShouldQueue
     protected $customer_comission;
     protected $conductor_number;
     protected $agent_number;
-    protected $customer_number;    
+    protected $customer_number;
     protected $passengerDetails;
     protected $total_seats;
     protected $seat_names;
@@ -78,30 +81,30 @@ class SendEmailToCustomerJob implements ShouldQueue
     protected $gst_name;
     protected $bus_sitting;
     protected $bus_type;
-    
 
-    public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
+
+    public function __construct($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $request, $email_pnr, $cancelation_policy, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount)
     {
 
-          ///////// get additional festival fare & special fare (oct , 7,2023 changes made by Lima)
+        ///////// get additional festival fare & special fare (oct , 7,2023 changes made by Lima)
 
-          $bk_dtl=Booking::with(["bus" => function($bs){
+        $bk_dtl = Booking::with(["bus" => function ($bs) {
             $bs->with('BusType.busClass');
-            $bs->with('BusSitting');  
-          } ] )->where('pnr', $email_pnr)->first();
+            $bs->with('BusSitting');
+        } ])->where('pnr', $email_pnr)->first();
 
-          $this->bus_sitting = $bk_dtl->bus->BusSitting->name;
-          $this->bus_type = $bk_dtl->bus->BusType->name;
+        $this->bus_sitting = $bk_dtl->bus->BusSitting->name;
+        $this->bus_type = $bk_dtl->bus->BusType->name;
 
-          $this->add_festival_fare = $bk_dtl->additional_festival_fare;
-          $this->add_special_fare = $bk_dtl->additional_special_fare;
-  
-          ////////////////////////////////////////////////////////////////////////////////////////////
+        $this->add_festival_fare = $bk_dtl->additional_festival_fare;
+        $this->add_special_fare = $bk_dtl->additional_special_fare;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
 
         $this->name = $request['name'];
         $this->to = $request['email'];
-        $this->bookingdate = date('d-m-Y',strtotime($request['bookingdate']));
-        $this->journeydate = date('d-m-Y',strtotime($request['journeydate']));
+        $this->bookingdate = date('d-m-Y', strtotime($request['bookingdate']));
+        $this->journeydate = date('d-m-Y', strtotime($request['journeydate']));
         $this->boarding_point = $request['boarding_point'];
         $this->dropping_point = $request['dropping_point'];
         $this->departureTime = $request['departureTime'];
@@ -132,51 +135,51 @@ class SendEmailToCustomerJob implements ShouldQueue
         $this->customer_gst_percent = $customer_gst_percent;
         $this->customer_gst_amount = $customer_gst_amount;
         $this->coupon_discount = $coupon_discount;
-        
+
         $this->cancelation_policy = $cancelation_policy;
 
         $this->conductor_number = $request['conductor_number'];
-        $this->agent_number = (isset($request['agent_number'])) ? $request['agent_number'] : '';        
+        $this->agent_number = (isset($request['agent_number'])) ? $request['agent_number'] : '';
         $this->customer_number = $request['phone'];
         $this->passengerDetails = $request['passengerDetails'];
-        $this->total_seats = count($request['passengerDetails']); 
+        $this->total_seats = count($request['passengerDetails']);
         ///////////////////////////
         $collection = collect($request['seat_no']);
         $this->seat_names = $collection->implode(',');
-        $this->seat_names = implode(',',$request['seat_no']);
+        $this->seat_names = implode(',', $request['seat_no']);
         ///////////////////////////
-        $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;    
-        $this->email_pnr= $email_pnr;
-        $CONSUMER_FRONT_URL=Config::get('constants.CONSUMER_FRONT_URL');
+        $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;
+        $this->email_pnr = $email_pnr;
+        $CONSUMER_FRONT_URL = Config::get('constants.CONSUMER_FRONT_URL');
 
         // $this->qrCodeText= $CONSUMER_FRONT_URL."pnr/".$this->email_pnr;
 
-       //Log::info($this->qrCodeText);
+        //Log::info($this->qrCodeText);
 
         // \QrCode::size(500)
         // ->format('png')
-        // ->generate($this->qrCodeText, public_path('qrcode/'.$this->email_pnr.'.png')); 
+        // ->generate($this->qrCodeText, public_path('qrcode/'.$this->email_pnr.'.png'));
 
-        $this->subject ='';
+        $this->subject = '';
         $this->qrcode_image_path = 'https://consumer.odbus.co.in/public/qrcode/'.$this->email_pnr.'.png';
 
-        $this->gstpdf='https://consumer.odbus.co.in/public/gst/'.$bk_dtl->gst_invoice_no;
-        $this->email_pdf= 'https://consumer.odbus.co.in/public/ticketpdf/'.$this->email_pnr.'.pdf';  
+        $this->gstpdf = 'https://consumer.odbus.co.in/public/gst/'.$bk_dtl->gst_invoice_no;
+        $this->email_pdf = 'https://consumer.odbus.co.in/public/ticketpdf/'.$this->email_pnr.'.pdf';
 
-        $p_name=[];
-        foreach($request['passengerDetails'] as $p){
+        $p_name = [];
+        foreach ($request['passengerDetails'] as $p) {
             $pp = $p['passenger_name']." (".$p['passenger_gender'].") ";
-            array_push($p_name,$pp);
+            array_push($p_name, $pp);
         }
 
-        $pp_names='';
+        $pp_names = '';
 
-        if($p_name){
-            $pp_names = implode(',',$p_name);
+        if ($p_name) {
+            $pp_names = implode(',', $p_name);
         }
 
-        $this->p_names=$pp_names;
-       
+        $this->p_names = $pp_names;
+
     }
 
     /**
@@ -188,67 +191,67 @@ class SendEmailToCustomerJob implements ShouldQueue
     public function handle()
     {
 
-        $rr=explode('-to-',$this->routedetails);
+        $rr = explode('-to-', $this->routedetails);
 
 
         $data = [
             'name' => $this->name,
             'pnr' => $this->email_pnr,
-            'bookingdate'=> $this->bookingdate,
+            'bookingdate' => $this->bookingdate,
             'journeydate' => $this->journeydate ,
-            'boarding_point'=> $this->boarding_point,
+            'boarding_point' => $this->boarding_point,
             'dropping_point' => $this->dropping_point,
-            'departureTime'=> $this->departureTime,
-            'arrivalTime'=> $this->arrivalTime,
+            'departureTime' => $this->departureTime,
+            'arrivalTime' => $this->arrivalTime,
             'seat_no' => $this->seat_no,
-            'busname'=> $this->busname,
-            'source'=> $this->source,
-            'destination'=> $this->destination,
-            'busNumber'=> $this->busNumber,
+            'busname' => $this->busname,
+            'source' => $this->source,
+            'destination' => $this->destination,
+            'busNumber' => $this->busNumber,
             'bustype' => $this->bustype,
             'busTypeName' => $this->busTypeName,
-            'sittingType' => $this->sittingType, 
-            'conductor_number'=> $this->conductor_number,
-            'customer_number'=> $this->customer_number,
-            'agent_number'=> $this->agent_number,
+            'sittingType' => $this->sittingType,
+            'conductor_number' => $this->conductor_number,
+            'customer_number' => $this->customer_number,
+            'agent_number' => $this->agent_number,
             'passengerDetails' => $this->passengerDetails ,
-            'totalfare'=> $this->totalfare,
+            'totalfare' => $this->totalfare,
             'discount' =>  $this->discount,
             'payable_amount' => $this->payable_amount ,
-            'odbus_gst'=> $this->odbus_gst,
-            'odbus_charges'=> $this->odbus_charges,
-            'owner_fare'=> $this->owner_fare,
-            'transactionFee'=> $this->transactionFee,             
-            'customer_gst_status'=> $this->customer_gst_status, 
-            'customer_gst_number'=> $this->customer_gst_number, 
-            'customer_gst_business_name'=> $this->customer_gst_business_name, 
-            'customer_gst_business_email'=> $this->customer_gst_business_email, 
-            'customer_gst_business_address'=> $this->customer_gst_business_address, 
-            'customer_gst_percent'=> $this->customer_gst_percent, 
-            'customer_gst_amount'=> $this->customer_gst_amount, 
-            'coupon_discount'=> $this->coupon_discount,
-            'total_seats'=>  $this->total_seats ,
-            'seat_names'=>  $this->seat_names ,
-            'customer_comission'=> $this->customer_comission,
+            'odbus_gst' => $this->odbus_gst,
+            'odbus_charges' => $this->odbus_charges,
+            'owner_fare' => $this->owner_fare,
+            'transactionFee' => $this->transactionFee,
+            'customer_gst_status' => $this->customer_gst_status,
+            'customer_gst_number' => $this->customer_gst_number,
+            'customer_gst_business_name' => $this->customer_gst_business_name,
+            'customer_gst_business_email' => $this->customer_gst_business_email,
+            'customer_gst_business_address' => $this->customer_gst_business_address,
+            'customer_gst_percent' => $this->customer_gst_percent,
+            'customer_gst_amount' => $this->customer_gst_amount,
+            'coupon_discount' => $this->coupon_discount,
+            'total_seats' =>  $this->total_seats ,
+            'seat_names' =>  $this->seat_names ,
+            'customer_comission' => $this->customer_comission,
             'qrcode_image_path' => $this->qrcode_image_path ,
             'cancelation_policy' => $this->cancelation_policy,
-            'p_names' => $this->p_names,   
-            'routedetails'=>$this->routedetails , 
-            'start'=>$rr[0],
-            'end'=>$rr[1],
-            'add_festival_fare' => $this->add_festival_fare, 
+            'p_names' => $this->p_names,
+            'routedetails' => $this->routedetails ,
+            'start' => $rr[0],
+            'end' => $rr[1],
+            'add_festival_fare' => $this->add_festival_fare,
             'add_special_fare' => $this->add_special_fare,
-            'gst_name' => str_replace('.pdf','',$this->gst_name) ,      
-            'bus_sitting' => $this->bus_sitting,  
-            'bus_type' => $this->bus_type   
+            'gst_name' => str_replace('.pdf', '', $this->gst_name) ,
+            'bus_sitting' => $this->bus_sitting,
+            'bus_type' => $this->bus_type
         ];
 
-       
-                    
-        $this->subject = config('services.email.subjectTicket');
-        $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
 
-        if($this->customer_gst_status==0){
+
+        $this->subject = config('services.email.subjectTicket');
+        $this->subject = str_replace("<PNR>", $this->email_pnr, $this->subject);
+
+        if ($this->customer_gst_status == 0) {
 
             Mail::send('EmailToCustomer', $data, function ($messageNew) {
                 $messageNew->from(config('mail.contact.address'))
@@ -257,11 +260,11 @@ class SendEmailToCustomerJob implements ShouldQueue
                 ->subject($this->subject);
                 return 'Email Sent';
             });
-       }
+        }
 
-         /////////////// pdf attach ///////////////////////
+        /////////////// pdf attach ///////////////////////
 
-         else if($this->customer_gst_status==1){
+        elseif ($this->customer_gst_status == 1) {
             Mail::send('EmailToCustomer', $data, function ($messageNew) {
                 $messageNew->from(config('mail.contact.address'));
                 $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
@@ -270,10 +273,10 @@ class SendEmailToCustomerJob implements ShouldQueue
 
         }
 
-      
+
         // check for failures
         // if (Mail::failures()) {
-        //     return new Error(Mail::failures()); 
+        //     return new Error(Mail::failures());
         //     return "Email failed";
         // }
 

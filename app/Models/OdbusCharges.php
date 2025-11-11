@@ -17,11 +17,11 @@ class OdbusCharges extends Model
     ];
     public function busOperator()
     {
-    	return $this->belongsTo(BusOperator::class);
+        return $this->belongsTo(BusOperator::class);
     }
 
     public function user()
     {
-    	return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 }

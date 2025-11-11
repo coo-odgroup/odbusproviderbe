@@ -1,19 +1,20 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SeoSettingValidator 
-{   
+class SeoSettingValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
         $rules = [
             'page_url' => 'required',
             'user_id' => 'required',
-        ];      
-      
+        ];
+
         $seosettingValidator = Validator::make($data, $rules);
         return $seosettingValidator;
     }

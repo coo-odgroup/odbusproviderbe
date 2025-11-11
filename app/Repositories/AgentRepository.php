@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+
 use Illuminate\Support\Facades\Log;
 use App\Models\Agent;
 use App\Jobs\SendAgentCreationEmailJob;
@@ -12,20 +13,20 @@ class AgentRepository
      * @var Agent
      */
     protected $agent;
-       protected $channelRepository;
+    protected $channelRepository;
 
     /**
      * AgentRepository constructor.
      *
      * @param Post $agent
      */
-    public function __construct(Agent $agent,ChannelRepository $channelRepository)
+    public function __construct(Agent $agent, ChannelRepository $channelRepository)
     {
-        $this->agent = $agent;  
+        $this->agent = $agent;
         $this->channelRepository = $channelRepository;
     }
 
-    
+
     public function getAll($request)
     {
         return $this->agent->get();
@@ -36,14 +37,13 @@ class AgentRepository
     {
         // log::info($request);
         // exit;
-        $agent=$this->agent->find($request['user_id']);
-   
-        
+        $agent = $this->agent->find($request['user_id']);
+
+
         $agent->name = $request['name'];
-        $agent->email = $request['email'];    
+        $agent->email = $request['email'];
         $agent->phone = $request['phone'];
-        if($request['pwd_check']==true && $request['password']!='')
-        {
+        if ($request['pwd_check'] == true && $request['password'] != '') {
             $agent->password = bcrypt($request['password']);
         }
         $agent->location = $request['location'];
@@ -67,179 +67,162 @@ class AgentRepository
 
     }
 
-     public function agentprofile($request)
+    public function agentprofile($request)
     {
-       
-        $data= $this->agent->where('id',$request['user_id'])->get();
+
+        $data = $this->agent->where('id', $request['user_id'])->get();
         // log::info($data);
-         return $data;
+        return $data;
 
     }
 
     public function getAllAgentData($request)
     {
-       
-         $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;
-         $status = $request['status'];
-         $start_date  =  $request->rangeFromDate;
-         $end_date  =  $request->rangeToDate;
 
-        $data= $this->agent
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+        $status = $request['status'];
+        $start_date  =  $request->rangeFromDate;
+        $end_date  =  $request->rangeToDate;
+
+        $data = $this->agent
                     ->where('status', 0)
-                    ->where('role_id',3)
-                    ->where('email','!=',NULL)
-                    ->orderBy('updated_at','DESC');
+                    ->where('role_id', 3)
+                    ->where('email', '!=', null)
+                    ->orderBy('updated_at', 'DESC');
 
-        if($paginate=='all') 
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
         //  if($status!=null)
         // {
         //     if($status== 1){
-        //         $data = $data->where('status', 1); 
+        //         $data = $data->where('status', 1);
         //     }
         //     elseif($status== 0)
         //     {
-        //         $data = $data->where('status', 0); 
-        //     }                                      
+        //         $data = $data->where('status', 0);
+        //     }
         // }
 
-        
 
-        if($name!=null && $status!=null)
-        {
+
+        if ($name != null && $status != null) {
             $data = $data->where('name', 'like', '%' .$name . '%')
                          ->orWhere('email', 'like', '%' .$name . '%')
                          ->orWhere('phone', 'like', '%' .$name . '%')
                          ->orWhere('bank_account_no', 'like', '%' .$name . '%')
                          ->orWhere('ifsc_code', 'like', '%' .$name . '%')
                          ->orWhere('organization_name', 'like', '%' .$name . '%')
-                         ->where('status', $status);                        
-        }
-        elseif($name!=null && $status==null)
-        {
+                         ->where('status', $status);
+        } elseif ($name != null && $status == null) {
             $data = $data->where('name', 'like', '%' .$name . '%')
                          ->orWhere('email', 'like', '%' .$name . '%')
                          ->orWhere('phone', 'like', '%' .$name . '%')
                          ->orWhere('bank_account_no', 'like', '%' .$name . '%')
                          ->orWhere('ifsc_code', 'like', '%' .$name . '%')
-                         ->orWhere('organization_name', 'like', '%' .$name . '%');                        
+                         ->orWhere('organization_name', 'like', '%' .$name . '%');
+        } elseif ($name == null && $status != null) {
+            $data = $data->where('status', $status);
         }
-        elseif($name==null && $status!=null)
-        {
-            $data = $data->where('status', $status);                        
-        }
-        
 
-        if($start_date != null && $end_date != null)
-        {
-            if($start_date == $end_date){
-                $data =$data->where('created_at','like','%'.$start_date.'%')
-                        ->orderBy('created_at','DESC');
-                       
-            }else{
-                 $data =$data->whereBetween('created_at', [$start_date, $end_date]);
+
+        if ($start_date != null && $end_date != null) {
+            if ($start_date == $end_date) {
+                $data = $data->where('created_at', 'like', '%'.$start_date.'%')
+                        ->orderBy('created_at', 'DESC');
+
+            } else {
+                $data = $data->whereBetween('created_at', [$start_date, $end_date]);
             }
-                       
-        }
-        
 
-        $data=$data->paginate($paginate);
+        }
+
+
+        $data = $data->paginate($paginate);
         // Log::info($data);
 
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
-           );   
-           return $response;
+           );
+        return $response;
 
-       
+
     }
 
 
     public function ourAgentData($request)
     {
         // log::info($request);
-        
-         $paginate = $request['rows_number'] ;
-         $name = $request['name'] ;
-         $status = $request['status'];
 
-        $data= $this->agent->where('role_id',3)
-                    ->wherenotIn('status',[0,2  ])
-                    ->orderBy('id','DESC');
+        $paginate = $request['rows_number'] ;
+        $name = $request['name'] ;
+        $status = $request['status'];
 
-        if($paginate=='all') 
-        {
+        $data = $this->agent->where('role_id', 3)
+                    ->wherenotIn('status', [0,2  ])
+                    ->orderBy('id', 'DESC');
+
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
         //  if($status!=null)
         // {
         //     if($status== 1){
-        //         $data = $data->where('status', 1); 
+        //         $data = $data->where('status', 1);
         //     }
         //     elseif($status== 0)
         //     {
-        //         $data = $data->where('status', 0); 
-        //     }                                      
+        //         $data = $data->where('status', 0);
+        //     }
         // }
-        if($name!=null && $status!=null)
-        {
+        if ($name != null && $status != null) {
             $data = $data->where('name', 'like', '%' .$name . '%')
                          ->orWhere('email', 'like', '%' .$name . '%')
                          ->orWhere('phone', 'like', '%' .$name . '%')
                          ->orWhere('bank_account_no', 'like', '%' .$name . '%')
                          ->orWhere('ifsc_code', 'like', '%' .$name . '%')
                          ->orWhere('organization_name', 'like', '%' .$name . '%')
-                         ->where('status', $status);                        
-        }
-        elseif($name!=null && $status==null)
-        {
+                         ->where('status', $status);
+        } elseif ($name != null && $status == null) {
             $data = $data->where('name', 'like', '%' .$name . '%')
                          ->orWhere('email', 'like', '%' .$name . '%')
                          ->orWhere('phone', 'like', '%' .$name . '%')
                          ->orWhere('bank_account_no', 'like', '%' .$name . '%')
                          ->orWhere('ifsc_code', 'like', '%' .$name . '%')
-                         ->orWhere('organization_name', 'like', '%' .$name . '%');                        
+                         ->orWhere('organization_name', 'like', '%' .$name . '%');
+        } elseif ($name == null && $status != null) {
+            $data = $data->where('status', $status);
         }
-        elseif($name==null && $status!=null)
-        {
-            $data = $data->where('status', $status);                        
-        }
-        
 
-        
 
-        $data=$data->paginate($paginate);
+
+
+        $data = $data->paginate($paginate);
         // Log::info($data);
 
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
-           );   
-           return $response;
+           );
+        return $response;
 
-       
+
     }
     public function getModel($data, Agent $agent)
     {
         $agent->name = $data['name'];
-        $agent->email = $data['email'];    
-        $agent->phone = $data['phone'];    
+        $agent->email = $data['email'];
+        $agent->phone = $data['phone'];
         $agent->password = bcrypt($data['password']);
         $agent->user_type = "Agent";
         $agent->role_id = "3";
@@ -261,76 +244,64 @@ class AgentRepository
         $agent->status = 0;
         return $agent;
     }
-    
+
     public function getById($id)
     {
         return $this->agent->where('id', $id)->get();
     }
     public function save($data)
     {
-    
-        $email = $this->agent->where('email',$data['email'])->where('status','!=',2)->get();
-        $phone = $this->agent->where('phone',$data['phone'])->where('status','!=',2)->get();
-        $aadhaar = $this->agent->where('adhar_no',$data['adhar_no'])->where('status','!=',2)->get();
-        $pancard = $this->agent->where('pancard_no',$data['pancard_no'])->where('status','!=',2)->get();
-       
-        if(count($email)==0)
-        {
-            if(count($phone)==0)
-            {
-                if(count($aadhaar)==0)
-                {
-                    if(count($pancard)==0)
-                    {
-                            $agent = new $this->agent;
-                            $agent=$this->getModel($data,$agent);
-                            $agent->save();
+
+        $email = $this->agent->where('email', $data['email'])->where('status', '!=', 2)->get();
+        $phone = $this->agent->where('phone', $data['phone'])->where('status', '!=', 2)->get();
+        $aadhaar = $this->agent->where('adhar_no', $data['adhar_no'])->where('status', '!=', 2)->get();
+        $pancard = $this->agent->where('pancard_no', $data['pancard_no'])->where('status', '!=', 2)->get();
+
+        if (count($email) == 0) {
+            if (count($phone) == 0) {
+                if (count($aadhaar) == 0) {
+                    if (count($pancard) == 0) {
+                        $agent = new $this->agent();
+                        $agent = $this->getModel($data, $agent);
+                        $agent->save();
 
 
-                            $smsData = array(
-                            'phone' => $data->phone,
-                            'agentName' => $data->name,
-                            'url' => 'https://agent.odbus.in/#/login', 
-                            'agentEmail' => $data->email,
-                            'agentPassword' => $data->password
+                        $smsData = array(
+                        'phone' => $data->phone,
+                        'agentName' => $data->name,
+                        'url' => 'https://agent.odbus.in/#/login',
+                        'agentEmail' => $data->email,
+                        'agentPassword' => $data->password
                         );
 
                         // $this->channelRepository->SendAgentCreationSms($smsData);
 
 
-                               $to_user = $data->email;
-                               $subject = "Agent Creation Email";
-                               $agentData= [
-                                        'userName'=>$data->name,
-                                        'userEmail'=> $data->email,
-                                        'userPassword'=> $data->password,
-                                        'loginUrl'=>'https://agent.odbus.in/#/login',
-                                    
-                                       ] ;
-                                SendAgentCreationEmailJob::dispatch($to_user, $subject, $agentData);
-                          
-                            return $agent;
-                   
+                        $to_user = $data->email;
+                        $subject = "Agent Creation Email";
+                        $agentData = [
+                                 'userName' => $data->name,
+                                 'userEmail' => $data->email,
+                                 'userPassword' => $data->password,
+                                 'loginUrl' => 'https://agent.odbus.in/#/login',
 
-                    }
-                    else 
-                    {
+                                ] ;
+                        SendAgentCreationEmailJob::dispatch($to_user, $subject, $agentData);
+
+                        return $agent;
+
+
+                    } else {
                         return 'Pan Card Already Exist';
                     }
-                }
-                else
-                {
+                } else {
                     return 'Aadhaar Card Already Exist';
                 }
 
-            }
-            else
-            {
+            } else {
                 return 'Phone Already Exist';
             }
-        }
-        else
-        {
+        } else {
             return 'Email Already Exist';
         }
     }
@@ -344,62 +315,49 @@ class AgentRepository
     public function update($data, $id)
     {
         // log::info($data);exit;
-        
-        $email = $this->agent->where('email',$data['email'])->where('id','!=',$id )->where('status','!=',2)->get();
-        $phone = $this->agent->where('phone',$data['phone'])->where('id','!=',$id )->where('status','!=',2)->get();
-        $aadhaar = $this->agent->where('adhar_no',$data['adhar_no'])->where('id','!=',$id )->where('status','!=',2)->get();
-        $pancard = $this->agent->where('pancard_no',$data['pancard_no'])->where('id','!=',$id )->where('status','!=',2)->get();
-         if(count($email)==0)
-        {
-            if(count($phone)==0)
-            {
-                if(count($aadhaar)==0)
-                {
-                    if(count($pancard)==0)
-                    {
-                            $agent = $this->agent->find($id);
-                            if($agent->password != $data['password'])
-                            {
-                                 $agent->password = bcrypt($data['password']);
-                            }                        
-                            $agent->name = $data['name'];
-                            $agent->email = $data['email'];    
-                            $agent->phone = $data['phone'];   
-                            $agent->user_type = "Agent";
-                            $agent->role_id = "3";
-                            $agent->location = $data['location'];
-                            $agent->agent_type = $data['agentType'];
-                            $agent->adhar_no = $data['adhar_no'];
-                            $agent->pancard_no = $data['pancard_no'];
-                            $agent->organization_name = $data['organization_name'];
-                            $agent->address = $data['address'];
-                            $agent->landmark = $data['landmark'];
-                            $agent->pincode = $data['pincode'];
-                            $agent->name_on_bank_account = $data['name_on_bank_account'];
-                            $agent->bank_name = $data['bank_name'];
-                            $agent->ifsc_code = $data['ifsc_code'];
-                            $agent->bank_account_no = $data['bank_account_no'];
-                            $agent->created_by = $data['created_by'];
-                            $agent->update();
-                            return $agent;
-                    }
-                    else
-                    {
+
+        $email = $this->agent->where('email', $data['email'])->where('id', '!=', $id)->where('status', '!=', 2)->get();
+        $phone = $this->agent->where('phone', $data['phone'])->where('id', '!=', $id)->where('status', '!=', 2)->get();
+        $aadhaar = $this->agent->where('adhar_no', $data['adhar_no'])->where('id', '!=', $id)->where('status', '!=', 2)->get();
+        $pancard = $this->agent->where('pancard_no', $data['pancard_no'])->where('id', '!=', $id)->where('status', '!=', 2)->get();
+        if (count($email) == 0) {
+            if (count($phone) == 0) {
+                if (count($aadhaar) == 0) {
+                    if (count($pancard) == 0) {
+                        $agent = $this->agent->find($id);
+                        if ($agent->password != $data['password']) {
+                            $agent->password = bcrypt($data['password']);
+                        }
+                        $agent->name = $data['name'];
+                        $agent->email = $data['email'];
+                        $agent->phone = $data['phone'];
+                        $agent->user_type = "Agent";
+                        $agent->role_id = "3";
+                        $agent->location = $data['location'];
+                        $agent->agent_type = $data['agentType'];
+                        $agent->adhar_no = $data['adhar_no'];
+                        $agent->pancard_no = $data['pancard_no'];
+                        $agent->organization_name = $data['organization_name'];
+                        $agent->address = $data['address'];
+                        $agent->landmark = $data['landmark'];
+                        $agent->pincode = $data['pincode'];
+                        $agent->name_on_bank_account = $data['name_on_bank_account'];
+                        $agent->bank_name = $data['bank_name'];
+                        $agent->ifsc_code = $data['ifsc_code'];
+                        $agent->bank_account_no = $data['bank_account_no'];
+                        $agent->created_by = $data['created_by'];
+                        $agent->update();
+                        return $agent;
+                    } else {
                         return 'Pan Card Already Exist';
                     }
-                }
-                else
-                {
+                } else {
                     return 'Aadhaar Card Already Exist';
                 }
-            }
-            else
-            {
+            } else {
                 return 'Phone Already Exist';
             }
-        }
-        else
-        {
+        } else {
             return 'Email Already Exist';
         }
     }
@@ -420,15 +378,15 @@ class AgentRepository
     }
     public function changeStatus($request)
     {
-        $agent_id =random_int(100000, 999999);
+        $agent_id = random_int(100000, 999999);
         $post = $this->agent->find($request->id);
-     // log::info($agent_id);
-     // exit;
-        if($post->status==0){
+        // log::info($agent_id);
+        // exit;
+        if ($post->status == 0) {
             $post->status = 1;
             $post->created_by = $request->created_by;
             $post->unique_id = $agent_id;
-        }elseif($post->status==1){
+        } elseif ($post->status == 1) {
             $post->status = 0;
             $post->created_by = $request->created_by;
             $post->unique_id = $agent_id;
@@ -441,18 +399,17 @@ class AgentRepository
     {
         $post = $this->agent->find($request->id);
 
-        if($post->status==1){
+        if ($post->status == 1) {
             $post->status = 3;
-        }elseif($post->status==3){
+        } elseif ($post->status == 3) {
             $post->status = 1;
-            $post->reason ="";
+            $post->reason = "";
         }
-        if($request->reason!= NULL)
-        {
-             $post->reason =$request->reason;
+        if ($request->reason != null) {
+            $post->reason = $request->reason;
         }
         $post->update();
         return $post;
     }
-    
+
 }

@@ -7,12 +7,11 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Validator; 
+use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
 class PermissionService
 {
-    
     protected $permissionRepository;
 
     /**
@@ -108,7 +107,7 @@ class PermissionService
     // public function getAllPermissionDT($request)
     // {
     //     return $this->permissionRepository->getAllPermissionDT($request);
-    // } 
+    // }
 
     // public function PermissionData($request)
     // {

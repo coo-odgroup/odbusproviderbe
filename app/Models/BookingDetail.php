@@ -16,18 +16,18 @@ class BookingDetail extends Model
                             'passenger_name','passenger_gender','passenger_age',
                             'created_by'];
 
-     public function Bus()
-      {
-            return $this->belongsTo(Bus::class);
-      }
-      public function BusSeats()
-      {
-            return $this->belongsTo(BusSeats::class);
-      }
+    public function Bus()
+    {
+        return $this->belongsTo(Bus::class);
+    }
+    public function BusSeats()
+    {
+        return $this->belongsTo(BusSeats::class);
+    }
 
-      // public function Booking()
-      // {
-      //       return $this->belongsTo(Booking::class);
-      // }
-      
+    // public function Booking()
+    // {
+    //       return $this->belongsTo(Booking::class);
+    // }
+
 }

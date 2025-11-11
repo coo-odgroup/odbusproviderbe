@@ -10,12 +10,13 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
+
 class BusService
 {
-    protected $busRepository;    
+    protected $busRepository;
     public function __construct(BusRepository $busRepository)
     {
-        $this->busRepository = $busRepository; 
+        $this->busRepository = $busRepository;
     }
     // public function deleteById($id)
     // {
@@ -33,15 +34,15 @@ class BusService
     // public function seatsBus($request)
     // {
     //     return $this->busRepository->seatsBus($request);
-    // }  
-    
+    // }
+
     // public function locationBusss($request)
     // {
     //     return $this->busRepository->locationBusss($request);
-    // }  
+    // }
 
     // {
-        // public function busseatfarereport($request)
+    // public function busseatfarereport($request)
     //     return $this->busRepository->busseatfarereport($request);
     // }
     // public function getByOperaor($id)
@@ -57,7 +58,7 @@ class BusService
     // public function getById($id)
     // {
     //     return $this->busRepository->getById($id);
-    // } 
+    // }
 
     // public function busDisplayInfo()
     // {
@@ -106,7 +107,7 @@ class BusService
     //     return $post;
     // }
 
-    
+
     // public function savePostData($data)
     // {
     //     // log::info($data);
@@ -126,7 +127,7 @@ class BusService
     // public function busSeatsFareData($request)
     // {
     //     return $this->busRepository->busSeatsFareData($request);
-    // } 
+    // }
 
     // public function busupdatesequenceData($request)
     // {
@@ -136,9 +137,9 @@ class BusService
     // public function BusData($request)
     // {
     //     return $this->busRepository->BusData($request);
-        
+
     // }
-    
+
     // public function changeStatus($id)
     // {
     //     try {
@@ -160,7 +161,7 @@ class BusService
     // public function getBusScheduleEntryDatesFilter($data)
     // {
     //     return $this->busRepository->getBusScheduleEntryDatesFilter($data);
-    // } 
+    // }
 
     // public function getBusScheduleEntry($data)
     // {

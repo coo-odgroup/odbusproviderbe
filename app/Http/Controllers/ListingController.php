@@ -15,13 +15,12 @@ use App\Services\ListingService;
 
 class ListingController extends Controller
 {
-
     use ApiResponser;
     /**
      * @var amenitiesService
      */
     protected $listingService;
-  
+
 
 
     /**
@@ -32,13 +31,14 @@ class ListingController extends Controller
      */
     public function __construct(ListingService $listingService)
     {
-        $this->listingService = $listingService;       
-    }
- 
-    public function getAllListing() {
-        $listingData = $this->listingService->getAll();
-        return $this->successResponse($listingData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $this->listingService = $listingService;
     }
 
-    
+    public function getAllListing()
+    {
+        $listingData = $this->listingService->getAll();
+        return $this->successResponse($listingData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+
 }

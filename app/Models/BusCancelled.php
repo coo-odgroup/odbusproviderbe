@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
 use App\Models\BusCancelledDate;
+
 class BusCancelled extends Model
 {
     use HasFactory;
@@ -14,11 +15,11 @@ class BusCancelled extends Model
 'cancelled_by','status','month','year'];
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
     public function busCancelledDate()
-    {        
-        return $this->hasMany(BusCancelledDate::class);        
+    {
+        return $this->hasMany(BusCancelledDate::class);
     }
-    
+
 }

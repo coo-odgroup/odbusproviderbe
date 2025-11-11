@@ -15,11 +15,11 @@ class BusStoppageAdditionalFare extends Model
 
     public function BusStoppage()
     {
-    	return $this->belongsTo(BusStoppage::class);
+        return $this->belongsTo(BusStoppage::class);
     }
     public function BusSeats()
     {
-    	return $this->belongsTo(BusSeats::class);
+        return $this->belongsTo(BusSeats::class);
     }
-    
+
 }

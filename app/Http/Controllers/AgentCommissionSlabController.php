@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -16,25 +17,25 @@ class AgentCommissionSlabController extends Controller
 {
     use ApiResponser;
     protected $agentCommissionSlabService;
-    
+
     public function __construct(AgentCommissionSlabService $agentCommissionSlabService)
     {
         $this->agentCommissionSlabService = $agentCommissionSlabService;
-    }  
-  
+    }
 
-    public function agentcommissionslab() 
-    {      
+
+    public function agentcommissionslab()
+    {
         $wallet = $this->agentCommissionSlabService->agentcommissionslab();
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($wallet, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function customercommissionslab() 
-    {      
+    public function customercommissionslab()
+    {
         $wallet = $this->agentCommissionSlabService->customercommissionslab();
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($wallet, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    
-	     
+
+
 }

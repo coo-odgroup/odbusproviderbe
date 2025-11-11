@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class CityClosingService
 {
-    
     protected $cityClosingRepository;
 
-    
+
     public function __construct(cityClosingRepository $cityClosingRepository)
     {
         $this->cityClosingRepository = $cityClosingRepository;
     }
 
-    
+
     public function deleteById($id)
     {
         DB::beginTransaction();
@@ -42,22 +41,22 @@ class CityClosingService
 
     }
 
-    
+
     // public function getAll()
     // {
     //     return $this->cityClosingRepository->getAll();
     // }
 
-    
+
     // public function getById($id)
     // {
     //     return $this->cityClosingRepository->getById($id);
     // }
 
-   
+
     // public function updatePost($data, $id)
     // {
-        
+
 
     //     DB::beginTransaction();
 
@@ -77,10 +76,10 @@ class CityClosingService
 
     // }
 
-    
+
     // public function savePostData($data)
     // {
-        
+
 
     //     $result = $this->cityClosingRepository->save($data);
 

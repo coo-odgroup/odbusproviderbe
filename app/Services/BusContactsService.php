@@ -12,10 +12,9 @@ use InvalidArgumentException;
 
 class BusContactsService
 {
-    
     protected $busContactsRepository;
 
-    
+
     public function __construct(busContactsRepository $busContactsRepository)
     {
         $this->busContactsRepository = $busContactsRepository;

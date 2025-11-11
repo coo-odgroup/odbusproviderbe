@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class CustomSMS extends Model
 {
     use HasFactory;
-    protected $table = 'custom_sms';    
+    protected $table = 'custom_sms';
 }

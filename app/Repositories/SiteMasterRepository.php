@@ -6,31 +6,30 @@ use App\Models\SiteMaster;
 
 class SiteMasterRepository
 {
-    
     protected $siteMaster;
 
-    
+
     public function __construct(SiteMaster $siteMaster)
     {
         $this->siteMaster = $siteMaster;
     }
 
-    
+
     public function getAll()
     {
         return $this->siteMaster->get();
     }
 
-    
+
     public function getById($id)
     {
         return $this->siteMaster ->where('id', $id)->get();
     }
 
-    
+
     public function save($data)
     {
-        $sitemaster = new $this->siteMaster;
+        $sitemaster = new $this->siteMaster();
         $sitemaster->site_live = $data['site_live'];
         $sitemaster->live_at = $data['live_at'];
         $sitemaster->extra_price = $data['extra_price'];
@@ -53,16 +52,16 @@ class SiteMasterRepository
         $sitemaster->googleplus_url = $data['googleplus_url'];
         $sitemaster->min_fare_amt = $data['min_fare_amt'];
         $sitemaster->earned_pts = $data['earned_pts'];
-        
+
         $sitemaster->save();
 
         return $sitemaster->fresh();
     }
 
-    
+
     public function update($data, $id)
     {
-        
+
         $sitemaster = $this->siteMaster->find($id);
 
         $sitemaster->site_live = $data['site_live'];
@@ -100,7 +99,7 @@ class SiteMasterRepository
      */
     public function delete($id)
     {
-        
+
         $sitemaster = $this->siteMaster->find($id);
         $sitemaster->delete();
 

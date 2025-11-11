@@ -14,20 +14,20 @@ use Symfony\Component\HttpFoundation\Response;
 class AgentCancelTicketReportController extends Controller
 {
     use ApiResponser;
-   
-    protected $agentCancelTicketReportService; 
- 
 
-    
+    protected $agentCancelTicketReportService;
+
+
+
     public function __construct(AgentCancelTicketReportService $agentCancelTicketReportService)
     {
-        $this->agentCancelTicketReportService = $agentCancelTicketReportService;        
+        $this->agentCancelTicketReportService = $agentCancelTicketReportService;
     }
 
     public function getalldata(Request $request)
     {
         $completeData = $this->agentCancelTicketReportService->getalldata($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 }

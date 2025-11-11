@@ -11,17 +11,19 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 class SendCancelAdjTicketEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    protected $to;    
+    protected $to;
     protected $email;
     protected $pnr;
     protected $journeydate;
@@ -31,7 +33,7 @@ class SendCancelAdjTicketEmailJob implements ShouldQueue
     protected $refundAmount;
     protected $seat_no;
     protected $cancellationDateTime;
-    protected $totalfare;    
+    protected $totalfare;
     protected $subject;
 
     public function __construct($to, $subject, $request)
@@ -43,11 +45,11 @@ class SendCancelAdjTicketEmailJob implements ShouldQueue
         $this->contactNo = $request['contactNo'];
         $this->route = $request['route'];
         $this->deductionPercentage = $request['deductionPercentage'];
-        $this->refundAmount = number_format($request['refundAmount'],2);
+        $this->refundAmount = number_format($request['refundAmount'], 2);
         $this->seat_no = $request['seat_no'];
         $this->totalfare = $request['totalfare'];
         $this->cancellationDateTime = $request['cancellationDateTime'];
-        
+
     }
 
     /**
@@ -60,15 +62,15 @@ class SendCancelAdjTicketEmailJob implements ShouldQueue
         $data = [
             'email' => $this->to,
             'pnr' => $this->pnr,
-            'contactNo'=> $this->contactNo,
+            'contactNo' => $this->contactNo,
             'journeydate' => $this->journeydate ,
-            'route'=> $this->route,
+            'route' => $this->route,
             'seat_no' => $this->seat_no,
-            'totalfare'=> $this->totalfare,
-            'deductionPercentage'=> $this->deductionPercentage,
-            'refundAmount'=> $this->refundAmount,
-            'cancellationDateTime'=> $this->cancellationDateTime,
-            
+            'totalfare' => $this->totalfare,
+            'deductionPercentage' => $this->deductionPercentage,
+            'refundAmount' => $this->refundAmount,
+            'cancellationDateTime' => $this->cancellationDateTime,
+
         ];
 
         //Log::info($data);

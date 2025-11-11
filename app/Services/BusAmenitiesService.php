@@ -13,10 +13,9 @@ use InvalidArgumentException;
 
 class BusAmenitiesService
 {
-    
     protected $busAmenitiesRepository;
 
-    
+
     public function __construct(busAmenitiesRepository $busAmenitiesRepository)
     {
         $this->busAmenitiesRepository = $busAmenitiesRepository;
@@ -39,38 +38,38 @@ class BusAmenitiesService
     //     }
     //     return $post;
     // }
-/**
-     * Get all Data
-     *
-     * @return String
-     */
-    
+    /**
+         * Get all Data
+         *
+         * @return String
+         */
+
     // public function getAll()
     // {
     //     return $this->busAmenitiesRepository->getAll();
     // }
-/**
-     * Get  by id.
-     *
-     * @param $id
-     * @return String
-     */
-    
+    /**
+         * Get  by id.
+         *
+         * @param $id
+         * @return String
+         */
+
     // public function getById($id)
     // {
     //     return $this->busAmenitiesRepository->getById($id);
     // }
-/**
-     * Update  data
-     * Store to DB if there are no errors.
-     *
-     * @param array $data
-     * @return String
-     */
-   
+    /**
+         * Update  data
+         * Store to DB if there are no errors.
+         *
+         * @param array $data
+         * @return String
+         */
+
     // public function updatePost($data, $id)
     // {
-        
+
     //     try {
     //         $post = $this->busAmenitiesRepository->update($data, $id);
 
@@ -105,5 +104,5 @@ class BusAmenitiesService
      *
      * @return String
      */
-    
+
 }

@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class SiteMasterService
 {
-    
     protected $siteMasterRepository;
 
-    
+
     public function __construct(SiteMasterRepository $siteMasterRepository)
     {
         $this->siteMasterRepository = $siteMasterRepository;
     }
 
-    
+
     // public function deleteById($id)
     // {
     //     DB::beginTransaction();
@@ -42,24 +41,24 @@ class SiteMasterService
 
     // }
 
-    
+
     // public function getAll()
     // {
     //     return $this->siteMasterRepository->getAll();
     // }
 
-    
+
     // public function getById($id)
     // {
     //     return $this->siteMasterRepository->getById($id);
     // }
 
-   
+
     // public function updatePost($data, $id)
     // {
-        
 
-        
+
+
 
     //     DB::beginTransaction();
 
@@ -88,7 +87,7 @@ class SiteMasterService
      */
     // public function savePostData($data)
     // {
-        
+
     //     $result = $this->siteMasterRepository->save($data);
 
     //     return $result;

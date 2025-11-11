@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CustomerQueryCategoryIssues;
 
-
 class CustomerQueryCategory extends Model
 {
     use HasFactory;
@@ -17,5 +16,5 @@ class CustomerQueryCategory extends Model
     public function customerQueryCategoryIssues()
     {
         return $this->hasMany(CustomerQueryCategoryIssues::class);
-    } 
+    }
 }

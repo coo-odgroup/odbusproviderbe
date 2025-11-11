@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use App\Models\Bus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,17 +17,17 @@ class BusOperator extends Model
         'email_id','password','operator_name','contact_number','organisation_name','location_name'
     ];
     public function bus()
-    {        
-        return $this->hasMany(Bus::class)->where('status','!=',2);               
-    } 
+    {
+        return $this->hasMany(Bus::class)->where('status', '!=', 2);
+    }
     public function odbusCharges()
     {
         return $this->hasMany(OdbusCharges::class);
-        
-    } 
+
+    }
     public function ticketFareSlab()
     {
         return $this->hasMany(TicketFareSlab::class);
-        
-    } 
+
+    }
 }

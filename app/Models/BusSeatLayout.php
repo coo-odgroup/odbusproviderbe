@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Seats;
 use App\Models\BusOperator;
 
-
 class BusSeatLayout extends Model
 {
     use HasFactory;
@@ -19,11 +18,11 @@ class BusSeatLayout extends Model
     public function seats()
     {
         return $this->hasMany(Seats::class);
-        
-    } 
+
+    }
     public function busOperator()
     {
         return $this->belongsTo(BusOperator::class);
-        
-    } 
+
+    }
 }

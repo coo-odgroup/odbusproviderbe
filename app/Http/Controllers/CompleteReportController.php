@@ -14,13 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 class CompleteReportController extends Controller
 {
     use ApiResponser;
-   
-    protected $completereportService; 
 
-    
+    protected $completereportService;
+
+
     public function __construct(CompleteReportService $completereportService)
     {
-        $this->completereportService = $completereportService;        
+        $this->completereportService = $completereportService;
     }
 
     public function getData(Request $request)
@@ -29,7 +29,7 @@ class CompleteReportController extends Controller
         // exit;
 
         $completeData = $this->completereportService->getData($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     //Created By Chakra 26-04-2022 11:56 AM
@@ -39,12 +39,13 @@ class CompleteReportController extends Controller
         // exit;
 
         $completeData = $this->completereportService->getPendingPNR($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function getLessBookingUrls(){
+    public function getLessBookingUrls()
+    {
         $result = $this->completereportService->getLessBookingUrls();
-        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 }

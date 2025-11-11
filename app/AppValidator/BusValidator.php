@@ -1,14 +1,15 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class BusValidator 
-{   
+class BusValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
         $rules = [
             'user_id' => 'required',
             'bus_operator_id' => 'required',
@@ -21,32 +22,33 @@ class BusValidator
             'cancellationslabs_id' => 'required',
             'bus_seat_layout_id' => 'required',
             'max_seat_book' => 'required',
-            'created_by' => 'required',  
-            'safety' => 'required|array|min:1', 
-            'bus_seat_layout_data' => 'required|array|min:1', 
-            'busRoutes' => 'required|array|min:1',            
+            'created_by' => 'required',
+            'safety' => 'required|array|min:1',
+            'bus_seat_layout_data' => 'required|array|min:1',
+            'busRoutes' => 'required|array|min:1',
             'busRoutes.*.source_id' => 'required',
             'busRoutes.*.sequence' => 'required',
             'busRoutes.*.sourceBoarding' => 'required|array|min:1',
             'busRoutes.*.sourceBoarding.*.sourceLocation' => 'required',
             'busRoutes.*.sourceBoarding.*.boarding_droping_id' => 'required',
             'busRoutes.*.sourceBoarding.*.sourceTime' => 'required',
-            'busRoutesInfo' => 'required|array|min:1',            
-            'busRoutesInfo.*.from_location' => 'required',            
-            'busRoutesInfo.*.to_location' => 'required',            
-            'busRoutesInfo.*.arr_days' => 'required',            
-            'busRoutesInfo.*.dep_days' => 'required',            
-            'busRoutesInfo.*.booking_seized' => 'required',            
-            'busRoutesInfo.*.seater_fare' => 'required',            
-            'busRoutesInfo.*.sleeper_fare' => 'required' 
-        ];      
-      
+            'busRoutesInfo' => 'required|array|min:1',
+            'busRoutesInfo.*.from_location' => 'required',
+            'busRoutesInfo.*.to_location' => 'required',
+            'busRoutesInfo.*.arr_days' => 'required',
+            'busRoutesInfo.*.dep_days' => 'required',
+            'busRoutesInfo.*.booking_seized' => 'required',
+            'busRoutesInfo.*.seater_fare' => 'required',
+            'busRoutesInfo.*.sleeper_fare' => 'required'
+        ];
+
         $busValidation = Validator::make($data, $rules);
         return $busValidation;
     }
 
-    public function basicValidate($data) { 
-        
+    public function basicValidate($data)
+    {
+
         $rules = [
             'user_id' => 'required',
             'bus_operator_id' => 'required',
@@ -58,11 +60,11 @@ class BusValidator
             'amenities' => 'required|array|min:1',
             'cancellationslabs_id' => 'required',
             'max_seat_book' => 'required',
-            'created_by' => 'required',  
-            'safety' => 'required|array|min:1', 
-            
-        ];      
-      
+            'created_by' => 'required',
+            'safety' => 'required|array|min:1',
+
+        ];
+
         $busValidation = Validator::make($data, $rules);
         return $busValidation;
     }

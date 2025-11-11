@@ -11,20 +11,22 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 class SendEmailToSupportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    protected $to;    
+    protected $to;
     protected $pnr;
     protected $user;
-    protected $refundAmount;   
+    protected $refundAmount;
     protected $subject;
     protected $reason;
 
@@ -35,8 +37,8 @@ class SendEmailToSupportJob implements ShouldQueue
         $this->pnr = $request['pnr'];
         $this->user = $request['user'];
         $this->reason = $request['reason'];
-        $this->refundAmount = number_format($request['refundAmount'],2);
-        
+        $this->refundAmount = number_format($request['refundAmount'], 2);
+
     }
 
     /**
@@ -50,8 +52,8 @@ class SendEmailToSupportJob implements ShouldQueue
             'email' => $this->to,
             'pnr' => $this->pnr,
             'user' => $this->user,
-            'refundAmount'=> $this->refundAmount,        
-            'reason'=> $this->reason,        
+            'refundAmount' => $this->refundAmount,
+            'reason' => $this->reason,
         ];
 
         Mail::send('apicancelticketbyadmintosupport', $data, function ($messageNew) {

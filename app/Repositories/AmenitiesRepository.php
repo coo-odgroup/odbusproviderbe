@@ -1,15 +1,15 @@
 <?php
 
 namespace App\Repositories;
+
 use Illuminate\Http\Request;
 use App\Models\Amenities;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Arr;
 
-
-class AmenitiesRepository 
+class AmenitiesRepository
 //extends AbstractRepository
 {
     protected $amenities;
@@ -26,10 +26,9 @@ class AmenitiesRepository
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;
 
-        $data=$this->amenities->where('status',"1");
-        if($user_role==5)
-        {
-            $data= $data->where('user_id',$user_id);   
+        $data = $this->amenities->where('status', "1");
+        if ($user_role == 5) {
+            $data = $data->where('user_id', $user_id);
         }
 
         return $data->get();
@@ -41,45 +40,39 @@ class AmenitiesRepository
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;
 
-        $data= $this->amenities->whereNotIn('status', [2])
-                               ->orderBy('id','DESC');
+        $data = $this->amenities->whereNotIn('status', [2])
+                               ->orderBy('id', 'DESC');
 
-        if($paginate=='all') 
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
-        if($name!=null)
-        {
-            $data=$data->where('name', 'like', '%' .$name . '%')
+        if ($name != null) {
+            $data = $data->where('name', 'like', '%' .$name . '%')
                        ->orWhere('created_by', 'like', '%' .$name . '%');
-        }       
-        if($user_role==5)
-        {
-            $data= $data->where('user_id',$user_id);   
         }
-        $data=$data->paginate($paginate);
+        if ($user_role == 5) {
+            $data = $data->where('user_id', $user_id);
+        }
+        $data = $data->paginate($paginate);
 
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
-           );   
-           return $response;
-        
+           );
+        return $response;
+
     }
     public function getDatatable($request)
     {
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = Config::get('constants.ALL_RECORDS');
         }
 
         $columnIndex_arr = $request->get('order');
@@ -98,8 +91,8 @@ class AmenitiesRepository
         ->where('name', 'like', "%" .$searchValue . "%")
         ->whereNotIn('status', [2])
         ->count();
-        
-        $records = $this->amenities->orderBy($columnName,$columnSortOrder)
+
+        $records = $this->amenities->orderBy($columnName, $columnSortOrder)
             ->where('name', "like", "%" .$searchValue . "%")
             ->whereNotIn('status', [2])
             ->skip($start)
@@ -108,18 +101,17 @@ class AmenitiesRepository
 
 
         $data_arr = array();
-        foreach($records as $key=>$record)
-        {
-            $data_arr[]=$record->toArray();
-            $data_arr[$key]['created_at']=date('j M Y h:i a',strtotime($record->created_at));
-            $data_arr[$key]['updated_at']=date('j M Y h:i a',strtotime($record->updated_at));
-        }    
+        foreach ($records as $key => $record) {
+            $data_arr[] = $record->toArray();
+            $data_arr[$key]['created_at'] = date('j M Y h:i a', strtotime($record->created_at));
+            $data_arr[$key]['updated_at'] = date('j M Y h:i a', strtotime($record->updated_at));
+        }
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
+        );
         return ($response);
     }
 
@@ -134,7 +126,7 @@ class AmenitiesRepository
         $amenity->name = $data['name'];
         $amenity->icon = $data['icon'];
         $amenity->created_by = $data['created_by'];
-         $amenity->user_id = $data['user_id'];
+        $amenity->user_id = $data['user_id'];
         return $amenity;
     }
     /**
@@ -148,44 +140,41 @@ class AmenitiesRepository
         // Log::info($data);exit;
 
         $duplicate_data = $this->amenities
-                               ->where('name',$data['name'])
-                               ->where('status','!=',2)
-                               ->where('user_id',$data['user_id'])
+                               ->where('name', $data['name'])
+                               ->where('status', '!=', 2)
+                               ->where('user_id', $data['user_id'])
                                ->get();
-        if(count($duplicate_data)==0)
-        {
-            $amenity = new $this->amenities;
-            $amenity=$this->getModel($data,$amenity);
+        if (count($duplicate_data) == 0) {
+            $amenity = new $this->amenities();
+            $amenity = $this->getModel($data, $amenity);
             $file = collect($data)->get('icon');
-           
-            if(($file)!=null){
+
+            if (($file) != null) {
                 $filename  = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $picture   = $filename;
                 $amenity->amenities_image = $picture;
                 $file->move(public_path('uploads/amenities'), $picture);
-                
-           }
-             $androidfile = collect($data)->get('android_image');
-           if(($androidfile)!=null){
+
+            }
+            $androidfile = collect($data)->get('android_image');
+            if (($androidfile) != null) {
                 $filename  = $androidfile->getClientOriginalName();
                 $extension = $androidfile->getClientOriginalExtension();
                 $androidpicture   = $filename;
                 $amenity->android_image = $androidpicture;
                 $androidfile->move(public_path('uploads/amenities'), $androidpicture);
-                
-           }
+
+            }
             $amenity->save();
             return $amenity;
 
-        }
-        else
-        {
+        } else {
             return 'Amenities Already Exist';
         }
 
 
-        
+
     }
     /**
      * Update amenities
@@ -201,66 +190,61 @@ class AmenitiesRepository
         $amentiyId = $data['id'];
 
         $duplicate_data = $this->amenities
-                               ->where('name',$data['name'])
-                               ->where('id','!=',$amentiyId)
-                               ->where('status','!=',2)
+                               ->where('name', $data['name'])
+                               ->where('id', '!=', $amentiyId)
+                               ->where('status', '!=', 2)
                                ->get();
-        if(count($duplicate_data)==0)
-        {
+        if (count($duplicate_data) == 0) {
             $amenity_data = $this->amenities->where('id', $amentiyId)->get();
-            $amenity = $this->amenities->find($amentiyId); 
+            $amenity = $this->amenities->find($amentiyId);
             $file = collect($data)->get('icon');
 
-            if(($file)!=null){
-                $amenity=$this->getModel($data,$amenity);
+            if (($file) != null) {
+                $amenity = $this->getModel($data, $amenity);
                 $filename  = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $picture   = $filename;
                 $amenity->amenities_image = $picture;
-                $file->move( public_path('uploads/amenities/'), $picture);
-                
+                $file->move(public_path('uploads/amenities/'), $picture);
+
                 $old_image_path_consumer =  public_path('uploads/amenities/').$amenity_data[0]->amenities_image;
-                
-                if($amenity_data[0]->amenities_image != ''){
-                  
-                   if(File::exists($old_image_path_consumer)){
-                    unlink($old_image_path_consumer);
-                  }
-                        
-                    }   
+
+                if ($amenity_data[0]->amenities_image != '') {
+
+                    if (File::exists($old_image_path_consumer)) {
+                        unlink($old_image_path_consumer);
+                    }
+
+                }
             }
 
-             $androidfile = collect($data)->get('android_image');
+            $androidfile = collect($data)->get('android_image');
 
-            if(($androidfile)!=null){
-                $amenity=$this->getModel($data,$amenity);
+            if (($androidfile) != null) {
+                $amenity = $this->getModel($data, $amenity);
                 $filename  = $androidfile->getClientOriginalName();
                 $extension = $androidfile->getClientOriginalExtension();
                 $androidpicture   = $filename;
                 $amenity->android_image = $androidpicture;
                 $androidfile->move(public_path('uploads/amenities/'), $androidpicture);
-                
-                $old_image_path_consumer =  public_path('uploads/amenities/').$amenity_data[0]->android_image;
-                
-                if($amenity_data[0]->android_image != ''){
-                  
-                   if(File::exists($old_image_path_consumer)){
-                    unlink($old_image_path_consumer);
-                  }
-                        
-                    }   
-            }
 
-            else{
-                 $amenity=$this->getModel($data,$amenity);
+                $old_image_path_consumer =  public_path('uploads/amenities/').$amenity_data[0]->android_image;
+
+                if ($amenity_data[0]->android_image != '') {
+
+                    if (File::exists($old_image_path_consumer)) {
+                        unlink($old_image_path_consumer);
+                    }
+
+                }
+            } else {
+                $amenity = $this->getModel($data, $amenity);
             }
             $amenity->update();
             return $amenity;
-        }
-        else
-        {
+        } else {
             return 'Amenities Already Exist';
-        }        
+        }
     }
     /**
      * Update amenities
@@ -276,13 +260,13 @@ class AmenitiesRepository
         return $amenity;
     }
 
-    public function changeStatus($data,$id)
+    public function changeStatus($data, $id)
     {
         $amenity = $this->amenities->find($id);
         $amenity->reason = $data['reason'];
-        if($amenity->status==0){
+        if ($amenity->status == 0) {
             $amenity->status = 1;
-        }elseif($amenity->status==1){
+        } elseif ($amenity->status == 1) {
             $amenity->status = 0;
         }
         $amenity->update();

@@ -12,8 +12,6 @@ use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
-
-
 use Exception;
 
 class BusGalleryController extends Controller
@@ -36,11 +34,14 @@ class BusGalleryController extends Controller
         $this->busGalleryService = $busGalleryService;
         $this->busGalleryValidator = $busGalleryValidator;
     }
-    public function getAllBusGallery() {
-        $busGallery = $this->busGalleryService->getAll();;
+    public function getAllBusGallery()
+    {
+        $busGallery = $this->busGalleryService->getAll();
+        ;
         return $this->successResponse($busGallery, Config::get('constants.RECORD_FETCHED'), Response::HTTP_CREATED);
     }
-    public function viewBusGallery(Request $request) {
+    public function viewBusGallery(Request $request)
+    {
 
         $data = $request->only([
             'bus_id',
@@ -50,12 +51,12 @@ class BusGalleryController extends Controller
           ]);
         $busGallery = $this->busGalleryService->viewBusGallery($data);
 
-         return $this->successResponse($busGallery, Config::get('constants.RECORD_FETCHED'), Response::HTTP_CREATED);
+        return $this->successResponse($busGallery, Config::get('constants.RECORD_FETCHED'), Response::HTTP_CREATED);
     }
 
     public function addBusGallery(Request $request)
     {
-      // log:info($request);
+        // log:info($request);
         $data = $request->only([
             'bus_id',
             'bus_operator_id',
@@ -66,23 +67,18 @@ class BusGalleryController extends Controller
             'bus_image_5',
             'created_by',
           ]);
-          $busGalleryValidation = $this->busGalleryValidator->validate($data);
-          if ($busGalleryValidation->fails()) {
+        $busGalleryValidation = $this->busGalleryValidator->validate($data);
+        if ($busGalleryValidation->fails()) {
             $errors = $busGalleryValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-          }
-           else
-        {
-          $response =  $this->busGalleryService->savePostData($data);
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        } else {
+            $response =  $this->busGalleryService->savePostData($data);
 
-           if($response=='Bus Already Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           else
-           {
-               return $this->successResponse($response,"Bus Gallery Image Added", Response::HTTP_CREATED);
-           }
+            if ($response == 'Bus Already Exist') {
+                return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+            } else {
+                return $this->successResponse($response, "Bus Gallery Image Added", Response::HTTP_CREATED);
+            }
 
         }
 
@@ -92,32 +88,36 @@ class BusGalleryController extends Controller
         // }
         // catch(Exception $e){
         //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        // }	
+        // }
     }
 
-    public function deleteBusGallery ($id) {
+    public function deleteBusGallery($id)
+    {
         $this->busGalleryService->deleteById($id);
-        $output ['status']=1;
-        $output ['message']='Gallery Image Deleted ';
+        $output ['status'] = 1;
+        $output ['message'] = 'Gallery Image Deleted ';
         return response($output, 200);
     }
-  
-    public function getBusGallery($id) {
-        $ame= $this->busGalleryService->getById($id);
-        $output ['status']=1;
-        $output ['message']='Single Data Fetched Successfully';
-        $output ['result']=$ame;
+
+    public function getBusGallery($id)
+    {
+        $ame = $this->busGalleryService->getById($id);
+        $output ['status'] = 1;
+        $output ['message'] = 'Single Data Fetched Successfully';
+        $output ['result'] = $ame;
         return response($output, 200);
     }
-    public function getBusGalleryBus($bid) {
-        $ame= $this->busGalleryService->getByBusId($bid);
-        $output ['status']=1;
-        $output ['message']='Single Data Fetched Successfully';
-        $output ['result']=$ame;
+    public function getBusGalleryBus($bid)
+    {
+        $ame = $this->busGalleryService->getByBusId($bid);
+        $output ['status'] = 1;
+        $output ['message'] = 'Single Data Fetched Successfully';
+        $output ['result'] = $ame;
         return response($output, 200);
     }
-    public function updateGallery(Request $request) {
-      // log::info($request);exit;
+    public function updateGallery(Request $request)
+    {
+        // log::info($request);exit;
         $data = $request->only([
           'id',
           'bus_id',
@@ -133,20 +133,15 @@ class BusGalleryController extends Controller
         $busGalleryValidation = $this->busGalleryValidator->validate($data);
         if ($busGalleryValidation->fails()) {
             $errors = $busGalleryValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-          }
-        else
-        {
-          $response =  $this->busGalleryService->updatePost($data);
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        } else {
+            $response =  $this->busGalleryService->updatePost($data);
 
-           if($response=='Bus Already Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           else
-           {
-               return $this->successResponse($response,"Bus Gallery Image Updated", Response::HTTP_CREATED);
-           }
+            if ($response == 'Bus Already Exist') {
+                return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+            } else {
+                return $this->successResponse($response, "Bus Gallery Image Updated", Response::HTTP_CREATED);
+            }
 
         }
     }

@@ -13,13 +13,13 @@ class PreBookingDetail extends Model
     protected $table = 'pre_booking_detail';
     protected $fillable = ['pre_booking_id','journey_date','j_day','bus_id','seat_name','created_by'];
     public function PreBooking()
-      {
-            return $this->belongsTo(PreBooking::class);
-      }
-      public function Bus()
-      {
-            return $this->belongsTo(Bus::class);
-      } 
-       
-                            
+    {
+        return $this->belongsTo(PreBooking::class);
+    }
+    public function Bus()
+    {
+        return $this->belongsTo(Bus::class);
+    }
+
+
 }

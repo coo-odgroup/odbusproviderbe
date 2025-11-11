@@ -14,10 +14,10 @@ class CityClosingExtended extends Model
     protected $fillable = ['bus_id', 'location_id','journey_date','closing_hours','created_by'];
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
     public function location()
     {
-    	return $this->belongsTo(Location::class);
+        return $this->belongsTo(Location::class);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use App\Repositories\SeatOpenRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -11,19 +10,18 @@ use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 
-
 class SeatOpenService
 {
     protected $seatopenRepository;
 
-    
-   
+
+
     public function __construct(SeatOpenRepository $seatopenRepository)
     {
         $this->seatopenRepository = $seatopenRepository;
     }
 
-   
+
     public function deleteById($request)
     {
         try {
@@ -45,7 +43,7 @@ class SeatOpenService
         }
         return $post;
     }
-    
+
     public function getAll()
     {
         return $this->seatopenRepository->getAll();
@@ -54,22 +52,22 @@ class SeatOpenService
     public function addseatopen($request)
     {
         return $this->seatopenRepository->addseatopen($request);
-    }  
+    }
 
     public function addseatOpenByOperator($request)
     {
         return $this->seatopenRepository->addseatOpenByOperator($request);
-    }  
+    }
 
     public function editseatOpen($request)
     {
         return $this->seatopenRepository->editseatOpen($request);
-    } 
+    }
 
-     public function updateSeatOpenData($request)
+    public function updateSeatOpenData($request)
     {
         return $this->seatopenRepository->updateSeatOpenData($request);
-    } 
+    }
 
     public function updateseatopen($request, $id)
     {
@@ -81,7 +79,7 @@ class SeatOpenService
         }
         return $seatopen;
     }
-    
+
     public function getseatopenDT($request)
     {
         return $this->seatopenRepository->getseatopenDT($request);
@@ -96,13 +94,13 @@ class SeatOpenService
     {
         return $this->seatopenRepository->alreadyOpen($request);
     }
-   
-    
+
+
     public function getById($id)
     {
         return $this->seatopenRepository->getById($id);
     }
-    
+
     public function updatePost($data, $id)
     {
         try {
@@ -114,9 +112,9 @@ class SeatOpenService
         return $amenity;
     }
 
-   
+
     public function savePostData($data)
-    {   
+    {
         try {
             $amenity = $this->seatopenRepository->save($data);
         } catch (Exception $e) {

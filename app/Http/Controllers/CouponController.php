@@ -21,16 +21,18 @@ class CouponController extends Controller
     {
         $this->couponService = $couponService;
     }
-    public function getAllCoupon() {
+    public function getAllCoupon()
+    {
 
         $coupon = $this->couponService->getAll();
-        return $this->successResponse($coupon,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    } 
+        return $this->successResponse($coupon, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-    public function getAllCouponType() {
+    public function getAllCouponType()
+    {
 
         $coupon = $this->couponService->getAllCouponType();
-        return $this->successResponse($coupon,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($coupon, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function createCouponBus(Request $request)
@@ -40,11 +42,10 @@ class CouponController extends Controller
         ]);
         try {
             $this->couponService->saveBusCouponData($data);
-        } 
-        catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,"Coupon Added",Response::HTTP_CREATED);
+        return $this->successResponse($data, "Coupon Added", Response::HTTP_CREATED);
     }
     public function createCouponRoute(Request $request)
     {
@@ -53,11 +54,10 @@ class CouponController extends Controller
         ]);
         try {
             $this->couponService->saveRouteCouponData($data);
-        } 
-        catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,"Coupon Added",Response::HTTP_CREATED);
+        return $this->successResponse($data, "Coupon Added", Response::HTTP_CREATED);
     }
     public function createCouponOperator(Request $request)
     {
@@ -66,13 +66,13 @@ class CouponController extends Controller
         ]);
         try {
             $this->couponService->saveOperatorCouponData($data);
-        } 
-        catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,"Coupon Added",Response::HTTP_CREATED);
+        return $this->successResponse($data, "Coupon Added", Response::HTTP_CREATED);
     }
-    public function createCoupon(Request $request) {
+    public function createCoupon(Request $request)
+    {
         // Log::info($request);exit;
         $data = $request->only(['coupon_type',
                                 'via',
@@ -82,7 +82,7 @@ class CouponController extends Controller
                                 'route',
                                 'bus_id',
                                 //'destination_id',
-                                'full_description',                      
+                                'full_description',
                                 'coupon_discount_type',
                                 'percentage',
                                 'max_discount_price',
@@ -93,46 +93,46 @@ class CouponController extends Controller
                                 'to_date',
                                 'bus_operator_id',
                                 'max_redeem','auto_apply','apply_once','created_by','user_id']);
-        
-          $couponRules = [           
-            'coupon_title' => 'required',
-            'coupon_type' => 'required',
-            'coupon_code' => 'required',
-            'coupon_discount_type' => 'required',
-            'valid_by' => 'required',
-            'max_redeem' => 'required',
-            'from_date' => 'required',
-            'to_date' => 'required',
-            'created_by' => 'required',
+
+        $couponRules = [
+          'coupon_title' => 'required',
+          'coupon_type' => 'required',
+          'coupon_code' => 'required',
+          'coupon_discount_type' => 'required',
+          'valid_by' => 'required',
+          'max_redeem' => 'required',
+          'from_date' => 'required',
+          'to_date' => 'required',
+          'created_by' => 'required',
         ];
-        
+
         $couponValidation = Validator::make($data, $couponRules);
         if ($couponValidation->fails()) {
             $errors = $couponValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-           $res= $this->couponService->savePostData($data);
+            $res = $this->couponService->savePostData($data);
 
-           if(isset($res['status']) && $res['status']=='exist'){
+            if (isset($res['status']) && $res['status'] == 'exist') {
 
-            return $this->errorResponse($res['message'],Response::HTTP_PARTIAL_CONTENT);
+                return $this->errorResponse($res['message'], Response::HTTP_PARTIAL_CONTENT);
 
 
-           }else{
+            } else {
 
-            return $this->successResponse($res,"Coupon Added",Response::HTTP_CREATED);
+                return $this->successResponse($res, "Coupon Added", Response::HTTP_CREATED);
 
-           }
-            
-        } 
-        catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+            }
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-       
-    } 
 
-    public function updateCoupon(Request $request, $id) {
+    }
+
+    public function updateCoupon(Request $request, $id)
+    {
 
         // Log::info($request);
         // exit;
@@ -144,7 +144,7 @@ class CouponController extends Controller
         //                         'route',
         //                         'bus_id',
         //                        // 'destination_id',
-        //                         'full_description',                      
+        //                         'full_description',
         //                         'coupon_discount_type',
         //                         'percentage',
         //                         'max_discount_price',
@@ -155,8 +155,8 @@ class CouponController extends Controller
         //                         'to_date',
         //                         'bus_operator_id',
         //                         'max_redeem','created_by']);
-        
-        //   $couponRules = [           
+
+        //   $couponRules = [
         //     'coupon_title' => 'required',
         //     'coupon_type' => 'required',
         //     'coupon_code' => 'required',
@@ -173,46 +173,47 @@ class CouponController extends Controller
         //     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         // }
         try {
-            $data= $this->couponService->updatePost($request,$id);
-        } 
-        catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+            $data = $this->couponService->updatePost($request, $id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($data,"Coupon Updated",Response::HTTP_CREATED);
+        return $this->successResponse($data, "Coupon Updated", Response::HTTP_CREATED);
 
 
     }
 
-    public function deleteCoupon ($id) {
-     $coupon = $this->couponService->delete($id);
-        return $this->successResponse($coupon,"Coupon Deleted",Response::HTTP_OK);
+    public function deleteCoupon($id)
+    {
+        $coupon = $this->couponService->delete($id);
+        return $this->successResponse($coupon, "Coupon Deleted", Response::HTTP_OK);
 
     }
 
-    public function getBusCoupon($id) {
-      $coupon = $this->couponService->getById($id);
-      $output ['status']=1;
-      $output ['message']='Single Data Fetched Successfully';
-      $output ['result']=$coupon;
-      return response($output, 200);
-    }    
+    public function getBusCoupon($id)
+    {
+        $coupon = $this->couponService->getById($id);
+        $output ['status'] = 1;
+        $output ['message'] = 'Single Data Fetched Successfully';
+        $output ['result'] = $coupon;
+        return response($output, 200);
+    }
 
     public function getData(Request $request)
     {
         $coupon = $this->couponService->getData($request);
-        return $this->successResponse($coupon,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($coupon, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
 
-    }  
+    }
 
-     public function changeStatus ($id) {
-        try{
+    public function changeStatus($id)
+    {
+        try {
             $response = $this->couponService->changeStatus($id);
-        }
-        catch (Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse($response,"Coupon Status Updated", Response::HTTP_ACCEPTED);
-      }    
-         
-	     
+    }
+
+
 }

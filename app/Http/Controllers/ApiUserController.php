@@ -14,19 +14,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 
 class ApiUserController extends Controller
-{    
-    use ApiResponser;   
-      
+{
+    use ApiResponser;
+
     protected $apiUserService;
     protected $apiUserValidator;
-    
-    public function __construct(ApiUserService $apiUserService,ApiUserValidator $apiUserValidator)
+
+    public function __construct(ApiUserService $apiUserService, ApiUserValidator $apiUserValidator)
     {
         $this->apiUserService = $apiUserService;
         $this->apiUserValidator = $apiUserValidator;
     }
 
-    public function createApiUser(Request $request) 
+    public function createApiUser(Request $request)
     {
         $data = $request->only([
                                 'name',
@@ -35,127 +35,110 @@ class ApiUserController extends Controller
                                 'phone',
                                 'client_id',
                                 'password',
-                                'user_type',                    
+                                'user_type',
                                 'city',
                                 'street',
-                                'location',            
+                                'location',
                                 'pancard_no',
-                                'organization_name', 
+                                'organization_name',
                                 'has_gst',
                                 'address',
                                 'landmark',
-                                'pincode',            
+                                'pincode',
                                 'created_by'
                               ]);
-        
+
         $apiUserValidation = $this->apiUserValidator->validate($data);
-       
+
         if ($apiUserValidation->fails()) {
             $errors = $apiUserValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        } else {
+            $response =  $this->apiUserService->savePostData($request);
+
+            if ($response == 'Email Already Exist') {
+                return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+            } elseif ($response == 'Phone Already Exist') {
+                return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+            } elseif ($response == 'Pan Card Already Exist') {
+                return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+            } else {
+                return $this->successResponse($response, "API User Added", Response::HTTP_CREATED);
+            }
         }
-        else
-        {
-                $response =  $this->apiUserService->savePostData($request);
+        // try {
+        //     $this->apiUserService->savePostData($data);
 
-                if($response == 'Email Already Exist')
-                {
-                    return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-                }
-                else if($response == 'Phone Already Exist')
-                {
-                    return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-                }
-                else if($response == 'Pan Card Already Exist')
-                {
-                    return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-                }           
-                else
-                {
-                    return $this->successResponse($response,"API User Added", Response::HTTP_CREATED);
-                }
-        }
-      // try {
-      //     $this->apiUserService->savePostData($data);
-          
-      // }
-      // catch (Exception $e) {
-      //   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      // }   
-      // return $this->successResponse($data,"Agent Created Successfully",Response::HTTP_CREATED); 
-    }    
+        // }
+        // catch (Exception $e) {
+        //   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        // }
+        // return $this->successResponse($data,"Agent Created Successfully",Response::HTTP_CREATED);
+    }
 
 
-    public function getAllApiUserData(Request $request) 
+    public function getAllApiUserData(Request $request)
     {
         $agents = $this->apiUserService->getAllApiUserData($request);
-        return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    }        
+        return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-    public function updateApiUser(Request $request, $id) 
+    public function updateApiUser(Request $request, $id)
     {
-          $data = $request->only([
-                            'name',
-                            'email',
-                            'alternate_email',
-                            'phone',
-                            'password',
-                            'user_type',
-                            'location',
-                            'pancard_no',
-                            'organization_name', 
-                            'has_gst',
-                            'city',
-                            'street',
-                            'location', 
-                            'address',
-                            'landmark',
-                            'pincode',                           
-                            'created_by'
-                 ]);                              
+        $data = $request->only([
+                          'name',
+                          'email',
+                          'alternate_email',
+                          'phone',
+                          'password',
+                          'user_type',
+                          'location',
+                          'pancard_no',
+                          'organization_name',
+                          'has_gst',
+                          'city',
+                          'street',
+                          'location',
+                          'address',
+                          'landmark',
+                          'pincode',
+                          'created_by'
+               ]);
 
-           //log::info($data);
+        //log::info($data);
 
-           $response =  $this->apiUserService->update($data, $id);
+        $response =  $this->apiUserService->update($data, $id);
 
-           if($response=='Email Already Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           else if($response=='Phone Already Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           else if($response=='Pan Card Already Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }          
-           else
-           {
-               return $this->successResponse($response,"Api User Updated", Response::HTTP_CREATED);
-           }        
-    }     
-
-    public function changeStatus(Request $request) 
-    {      
-        try{
-          $this->apiUserService->changeStatus($request);
+        if ($response == 'Email Already Exist') {
+            return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+        } elseif ($response == 'Phone Already Exist') {
+            return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+        } elseif ($response == 'Pan Card Already Exist') {
+            return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+        } else {
+            return $this->successResponse($response, "Api User Updated", Response::HTTP_CREATED);
         }
-        catch (Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    }
+
+    public function changeStatus(Request $request)
+    {
+        try {
+            $this->apiUserService->changeStatus($request);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Api User Status Updated", Response::HTTP_ACCEPTED);
-    } 
+    }
 
-     public function apiclientprofile(Request $request) 
-     {      
-         $agents = $this->apiUserService->apiclientprofile($request);
-         return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-     } 
+    public function apiclientprofile(Request $request)
+    {
+        $agents = $this->apiUserService->apiclientprofile($request);
+        return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-     public function updateapiclient(Request $request) 
-     {      
-          $agents = $this->apiUserService->updateapiclient($request);
-          return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-     }  
+    public function updateapiclient(Request $request)
+    {
+        $agents = $this->apiUserService->updateapiclient($request);
+        return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 }

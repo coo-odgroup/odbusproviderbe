@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class BookingDetailService
 {
-    
     protected $bookingDetailRepository;
 
-    
+
     public function __construct(BookingDetailRepository $bookingDetailRepository)
     {
         $this->bookingDetailRepository = $bookingDetailRepository;
     }
 
-    
+
     public function deleteById($id)
     {
         DB::beginTransaction();
@@ -42,22 +41,22 @@ class BookingDetailService
 
     }
 
-    
+
     public function getAll()
     {
         return $this->bookingDetailRepository->getAll();
     }
 
-    
+
     public function getById($id)
     {
         return $this->bookingDetailRepository->getById($id);
     }
 
-   
+
     public function updatePost($data, $id)
     {
-        
+
         DB::beginTransaction();
 
         try {
@@ -76,10 +75,10 @@ class BookingDetailService
 
     }
 
-    
+
     public function savePostData($data)
     {
-        
+
         $result = $this->bookingDetailRepository->save($data);
 
         return $result;

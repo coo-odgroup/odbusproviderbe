@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\BusOperator;
 use App\Models\User;
 
-
 class SocialMedia extends Model
 {
     use HasFactory;
@@ -18,12 +17,12 @@ class SocialMedia extends Model
 
 
     public function BusOperator()
-	{        
-		return $this->belongsTo(BusOperator::class);        
-	} 
+    {
+        return $this->belongsTo(BusOperator::class);
+    }
 
     public function User()
-	{        
-		return $this->belongsTo(User::class);        
-	} 
+    {
+        return $this->belongsTo(User::class);
+    }
 }

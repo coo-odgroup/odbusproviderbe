@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -6,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApiUserCommission extends Model
 {
-    use HasFactory; 
+    use HasFactory;
     protected $table = 'client_commission_slab';
     protected $fillable = ['user_id','starting_fare','upto_fare','commision','addationalCharges','created_by','status'];
 
@@ -14,5 +15,5 @@ class ApiUserCommission extends Model
     {
         return $this->belongsTo(User::class);
     }
-    
+
 }

@@ -13,13 +13,12 @@ use InvalidArgumentException;
 
 class ExtendedBusClosingHourService
 {
-    
     protected $extendedbusClosingHourRepository;
 
-    
+
     public function __construct(ExtendedBusClosingHourRepository $extendedbusClosingHourRepository)
     {
-        $this->extendedbusClosingHourRepository = $extendedbusClosingHourRepository; 
+        $this->extendedbusClosingHourRepository = $extendedbusClosingHourRepository;
     }
     // public function deleteById($id)
     // {
@@ -89,18 +88,18 @@ class ExtendedBusClosingHourService
      * @param array $data
      * @return String
      */
-        // public function savePostData($data)
-        // {
-        //     try {
-        //         $post = $this->extendedbusClosingHourRepository->save($data);
+    // public function savePostData($data)
+    // {
+    //     try {
+    //         $post = $this->extendedbusClosingHourRepository->save($data);
 
-        //     } catch (Exception $e) {
-        //         Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
 
-        //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        //     }
-        //     return $post;
-        // }
-   
+    //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+    //     }
+    //     return $post;
+    // }
+
 
 }

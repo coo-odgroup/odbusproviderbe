@@ -1,20 +1,21 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class AgentValidator 
-{   
+class AgentValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
         $rules = [
          'email' => 'required|email:rfc,dns',
          'phone' => 'required',
          'agentType' => 'required',
-        ];      
-      
+        ];
+
         $agentFeeValidation = Validator::make($data, $rules);
         return $agentFeeValidation;
     }

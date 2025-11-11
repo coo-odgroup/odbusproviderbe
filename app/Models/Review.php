@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\BusOperator;
 use App\Models\Bus;
 
-
 class Review extends Model
 {
     use HasFactory;
@@ -16,10 +15,10 @@ class Review extends Model
     'rating_timing','comments','created_by'];
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
     public function BusOperator()
-	{        
-		return $this->belongsTo(BusOperator::class);        
-	} 
+    {
+        return $this->belongsTo(BusOperator::class);
+    }
 }

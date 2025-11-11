@@ -13,12 +13,11 @@ class SeatBlockSeats extends Model
     protected $fillable = ['seat_open_id','seats_id'];
 
 
-	public function seats()
+    public function seats()
     {
-    	return $this->belongsTo(Seats::class);
+        return $this->belongsTo(Seats::class);
     }
 
-   
+
 
 }
-

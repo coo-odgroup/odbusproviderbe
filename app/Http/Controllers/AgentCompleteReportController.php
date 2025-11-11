@@ -14,20 +14,20 @@ use Symfony\Component\HttpFoundation\Response;
 class AgentCompleteReportController extends Controller
 {
     use ApiResponser;
-   
-    protected $agentcompletereportService; 
- 
 
-    
+    protected $agentcompletereportService;
+
+
+
     public function __construct(AgentCompleteReportService $agentcompletereportService)
     {
-        $this->agentcompletereportService = $agentcompletereportService;        
+        $this->agentcompletereportService = $agentcompletereportService;
     }
 
     public function getalldata(Request $request)
     {
         $completeData = $this->agentcompletereportService->getalldata($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 }

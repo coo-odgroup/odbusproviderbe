@@ -14,17 +14,17 @@ use Symfony\Component\HttpFoundation\Response;
 class SeatOpenReportController extends Controller
 {
     use ApiResponser;
-   
-    protected $seatopenreportService;   
-    
+
+    protected $seatopenreportService;
+
     public function __construct(SeatOpenReportService $seatopenreportService)
     {
-        $this->seatopenreportService = $seatopenreportService;        
+        $this->seatopenreportService = $seatopenreportService;
     }
     public function getData(Request $request)
     {
         $seatopen = $this->seatopenreportService->getData($request);
-        return $this->successResponse($seatopen,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($seatopen, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 

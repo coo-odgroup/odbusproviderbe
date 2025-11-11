@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use App\Repositories\SeatBlockRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
-
 
 class SeatBlockService
 {
@@ -21,7 +19,7 @@ class SeatBlockService
         $this->seatblockRepository = $seatblockRepository;
     }
 
-   
+
     public function deleteById($request)
     {
         try {
@@ -43,7 +41,7 @@ class SeatBlockService
         }
         return $post;
     }
-    
+
     public function getAll()
     {
         return $this->seatblockRepository->getAll();
@@ -62,7 +60,7 @@ class SeatBlockService
     public function addseatBlockByOperator($request)
     {
         return $this->seatblockRepository->addseatBlockByOperator($request);
-    } 
+    }
     public function updateseatblock($request, $id)
     {
         try {
@@ -73,16 +71,16 @@ class SeatBlockService
         }
         return $seatblock;
     }
-    
+
     public function getseatblockDT($request)
     {
         return $this->seatblockRepository->getseatblockDT($request);
     }
-   
+
     public function seatblockData($request)
     {
         return $this->seatblockRepository->seatblockData($request);
-    } 
+    }
 
     public function editseatblock($request)
     {
@@ -93,18 +91,18 @@ class SeatBlockService
     {
         return $this->seatblockRepository->updateSeatBlockData($request);
     }
-   
+
     public function alreadyBlocks($request)
     {
         return $this->seatblockRepository->alreadyBlocks($request);
     }
-   
-    
+
+
     public function getById($id)
     {
         return $this->seatblockRepository->getById($id);
     }
-    
+
     public function updatePost($data, $id)
     {
         try {
@@ -116,9 +114,9 @@ class SeatBlockService
         return $amenity;
     }
 
-   
+
     public function savePostData($data)
-    {   
+    {
         try {
             $amenity = $this->seatblockRepository->save($data);
         } catch (Exception $e) {

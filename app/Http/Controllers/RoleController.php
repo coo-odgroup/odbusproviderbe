@@ -24,107 +24,105 @@ class RoleController extends Controller
      * @param RoleService $roleService
      *
      */
-    public function __construct(RoleService $roleService,RoleValidator $roleValidator)
+    public function __construct(RoleService $roleService, RoleValidator $roleValidator)
     {
         $this->roleService = $roleService;
         $this->roleValidator = $roleValidator;
     }
 
-    public function getAllRole(Request $request) 
+    public function getAllRole(Request $request)
     {
         $role = $this->roleService->getAll($request);
-        return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
-
-    public function RoleData(Request $request) 
-    {
-        $role = $this->roleService->RoleData($request);
-        return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+        return $this->successResponse($role, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function createRole(Request $request) 
+    public function RoleData(Request $request)
     {
-        $data = $request->only([
-          'name','created_by'          
-        ]);
-        
-        $roleValidation = $this->roleValidator->validate($data);
-        
-        if ($roleValidation->fails()) {
-          $errors = $roleValidation->errors();
-          // return $errors->toJson();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        try {
-          $this->roleService->savePostData($data);
-          
-      }
-       catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }  
-      return $this->successResponse($data,"Role Added",Response::HTTP_CREATED); 
-      
-    } 
+        $role = $this->roleService->RoleData($request);
+        return $this->successResponse($role, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-    public function updateRole(Request $request, $id) {
+    public function createRole(Request $request)
+    {
         $data = $request->only([
           'name','created_by'
         ]);
-        
-        $roleValidation =   $this->roleValidator->validate($data);
-        
+
+        $roleValidation = $this->roleValidator->validate($data);
+
         if ($roleValidation->fails()) {
-          $errors = $roleValidation->errors();
-          // return $errors->toJson();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            $errors = $roleValidation->errors();
+            // return $errors->toJson();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        try {
+            $this->roleService->savePostData($data);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse($data, "Role Added", Response::HTTP_CREATED);
+
+    }
+
+    public function updateRole(Request $request, $id)
+    {
+        $data = $request->only([
+          'name','created_by'
+        ]);
+
+        $roleValidation =   $this->roleValidator->validate($data);
+
+        if ($roleValidation->fails()) {
+            $errors = $roleValidation->errors();
+            // return $errors->toJson();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
 
         try {
-          $this->roleService->update($data, $id);
-          
+            $this->roleService->update($data, $id);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-         catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }
-        return $this->successResponse($data,"Role Updated",Response::HTTP_CREATED);     
+        return $this->successResponse($data, "Role Updated", Response::HTTP_CREATED);
     }
 
-    public function deleteRole ($id) {
-      try {
-        $this->roleService->deleteById($id);
-        
-      } 
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),"404");
-      }
-      return $this->successResponse(Null,"Role Deleted",Response::HTTP_ACCEPTED);
-    }
-
-    public function getBusSitting($id) {
-      try {
-        $busSittingID= $this->roleService->getById($id);
-        
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse($busSittingID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
-   
-    public function getRoleDT(Request $request) 
-    {              
-       $role = $this->roleService->getAllRoleDT($request);
-       return $this->successResponse($role,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);      
-    }
-
-    public function changeStatus ($id)
+    public function deleteRole($id)
     {
-      try{
-        $this->roleService->changeStatus($id);
-      }
-      catch (Exception $e){
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse(null, "Role Status Updated", Response::HTTP_ACCEPTED);
+        try {
+            $this->roleService->deleteById($id);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), "404");
+        }
+        return $this->successResponse(null, "Role Deleted", Response::HTTP_ACCEPTED);
+    }
+
+    public function getBusSitting($id)
+    {
+        try {
+            $busSittingID = $this->roleService->getById($id);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse($busSittingID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function getRoleDT(Request $request)
+    {
+        $role = $this->roleService->getAllRoleDT($request);
+        return $this->successResponse($role, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function changeStatus($id)
+    {
+        try {
+            $this->roleService->changeStatus($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Role Status Updated", Response::HTTP_ACCEPTED);
     }
 }

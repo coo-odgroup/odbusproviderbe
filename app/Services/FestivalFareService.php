@@ -13,12 +13,11 @@ use InvalidArgumentException;
 
 class FestivalFareService
 {
-    
     protected $festivalFareRepository;
 
 
 
-    
+
     public function __construct(FestivalFareRepository $festivalFareRepository)
     {
         $this->festivalFareRepository = $festivalFareRepository;
@@ -57,13 +56,13 @@ class FestivalFareService
     */
     // public function dataTable($request)
     // {
-        
+
     //     return $this->festivalFareRepository->getDatatable($request);
-    // } 
+    // }
 
     // public function festivalFareData($request)
     // {
-        
+
     //     return $this->festivalFareRepository->festivalFareData($request);
     // }
     /**
@@ -83,7 +82,7 @@ class FestivalFareService
      * @param array $data
      * @return String
      */
-   
+
     // public function updatePost($data, $id)
     // {
     //     try {
@@ -103,7 +102,7 @@ class FestivalFareService
      * @param array $data
      * @return String
      */
-    
+
     // public function savePostData($data)
     // {
     //     try {
