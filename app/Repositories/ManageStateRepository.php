@@ -49,7 +49,7 @@ class ManageStateRepository
 
             $data = $data->where(
                 function ($query) use ($name) {
-                    $data = $query->where(function ($query) use ($name) {
+                    $query->where(function ($query) use ($name) {
                         $query->where('state_name', 'like', '%' .$name . '%')
                         ->orWhere('created_by', 'like', '%' .$name . '%')->whereNotIn('status', [2]);
                     });
@@ -58,13 +58,12 @@ class ManageStateRepository
         }
         $data = $data->paginate($paginate);
 
-        $response = array(
+        return array(
              "count" => $data->count(),
              "total" => $data->total(),
              "test" => "hello",
-            "data" => $data
+             "data" => $data
            );
-        return $response;
     }
 
 

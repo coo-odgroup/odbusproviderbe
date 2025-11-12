@@ -25,7 +25,6 @@ class BoardingDropingRepository
         ->select('id', 'name', 'status', 'created_at', 'updated_at', 'created_by')
         ->where('status', "!=", '2')
         ->get();
-        //return $this->boardingDroping->whereNotIn('status', [2])->get();
     }
     public function getById($id)
     {
@@ -40,7 +39,6 @@ class BoardingDropingRepository
     {
         $boardingdroping->location_id = $data['location_id'];
         $boardingdroping->boarding_point = $stoppage;
-        //$boardingdroping->dropping_point = $data['dropping_point'];
         $boardingdroping->created_by = $data['created_by'];
         $boardingdroping->status = 0;
         return $boardingdroping;
@@ -76,79 +74,85 @@ class BoardingDropingRepository
         $boardingDroping->created_by = $data['created_by'];
         return $boardingDroping;
     }
-    public function update($data, $id)
+    public function update($data)
     {
-
         $this->location = $this->location->find($data['location_id']);
-
         $allboarding_droping = $this->boardingDroping->where("location_id", $data['location_id'])->get();
+        $allbdarr = $this->extractBoardingDropingIds($allboarding_droping);
 
-        $allbdarr = [];
+        $stoppages = $this->processBoardingPoints($data, $allbdarr);
 
-        if (count($allboarding_droping) > 0) {
+        $this->updateRemainingBoardingDropings($allbdarr);
 
-            foreach ($allboarding_droping as $ad) {
-                $allbdarr[] = $ad->id;
-            }
-
-        }
-
-
-        $stoppages = [];
-        foreach ($data['boarding_point'] as $stoppage) {
-
-            if (isset($stoppage['id']) && $stoppage['id'] != null && $stoppage['id'] != '') {  /////////// update existing and add new ones ///
-
-                //////// check if posted array has less items than table data and make status=2
-
-                if (count($allbdarr) > 0 && in_array($stoppage['id'], $allbdarr)) {
-
-                    if (($key = array_search($stoppage['id'], $allbdarr)) !== false) {
-                        unset($allbdarr[$key]);
-                    }
-
-                }
-
-                ////////////////////////////////
-
-
-
-                $updateBoarding = $this->boardingDroping->find($stoppage['id']);
-
-                $UpdRecord = $stoppage;
-                $UpdRecord['location_id'] = $data['location_id'];
-                $UpdRecord['created_by'] = $data['created_by'];
-                $boardingDroping = $this->getUpdateModel($updateBoarding, $UpdRecord);
-                $boardingDroping->update();
-
-            } else {
-                $boardingdrop = new $this->boardingDroping();
-                $boardingdrop->location_id = $data['location_id'];
-                $boardingdrop->boarding_point = $stoppage['boarding_point'];
-                $boardingdrop->landmark = $stoppage['landmark'];
-                $boardingdrop->created_by = $data['created_by'];
-                $stoppages[] = $boardingdrop;
-
-            }
-        }
-
-        //////// check if posted array has less items than table data and make status=2
-
-        if (count($allbdarr) > 0) {
-            foreach ($allbdarr as $a) {
-                $this->boardingDroping = $this->boardingDroping->find($a);
-                $this->boardingDroping->where("id", $a)->update([ 'status' => 2 ]);
-            }
-        }
-
-        /////////////////
         $this->location->boardingDropping()->saveMany($stoppages);
 
-        $upd_dt = date("Y-m-d H:i:s");
-
-        $this->location->where("id", $data['location_id'])->update([ 'updated_at' => $upd_dt ]);
+        $this->updateLocationTimestamp($data['location_id']);
 
         return $data;
+    }
+
+    private function extractBoardingDropingIds($allboarding_droping)
+    {
+        $allbdarr = [];
+        foreach ($allboarding_droping as $ad) {
+            $allbdarr[] = $ad->id;
+        }
+        return $allbdarr;
+    }
+
+    private function processBoardingPoints($data, &$allbdarr)
+    {
+        $stoppages = [];
+        foreach ($data['boarding_point'] as $stoppage) {
+            if ($this->isExistingBoardingPoint($stoppage)) {
+                $this->updateExistingBoardingPoint($stoppage, $data, $allbdarr);
+            } else {
+                $stoppages[] = $this->createNewBoardingPoint($stoppage, $data);
+            }
+        }
+        return $stoppages;
+    }
+
+    private function isExistingBoardingPoint($stoppage)
+    {
+        return isset($stoppage['id']) && $stoppage['id'] != null && $stoppage['id'] != '';
+    }
+
+    private function updateExistingBoardingPoint($stoppage, $data, &$allbdarr)
+    {
+        if (($key = array_search($stoppage['id'], $allbdarr)) !== false) {
+            unset($allbdarr[$key]);
+        }
+
+        $updateBoarding = $this->boardingDroping->find($stoppage['id']);
+        $upd_record = $stoppage;
+        $upd_record['location_id'] = $data['location_id'];
+        $upd_record['created_by'] = $data['created_by'];
+        $boardingDroping = $this->getUpdateModel($updateBoarding, $upd_record);
+        $boardingDroping->update();
+    }
+
+    private function createNewBoardingPoint($stoppage, $data)
+    {
+        $boardingdrop = new $this->boardingDroping();
+        $boardingdrop->location_id = $data['location_id'];
+        $boardingdrop->boarding_point = $stoppage['boarding_point'];
+        $boardingdrop->landmark = $stoppage['landmark'];
+        $boardingdrop->created_by = $data['created_by'];
+        return $boardingdrop;
+    }
+
+    private function updateRemainingBoardingDropings($allbdarr)
+    {
+        foreach ($allbdarr as $a) {
+            $this->boardingDroping->where("id", $a)->update(['status' => 2]);
+        }
+    }
+
+    private function updateLocationTimestamp($locationId)
+    {
+        $upd_dt = date("Y-m-d H:i:s");
+        $this->location->where("id", $locationId)->update(['updated_at' => $upd_dt]);
     }
     /**
      * Update Post
@@ -200,16 +204,14 @@ class BoardingDropingRepository
             $data_arr[] = $record->toArray();
             $data_arr[$key]['created_at'] = date('j M Y h:i a', strtotime($record->created_at));
             $data_arr[$key]['created_by'] = $record->created_by;
-            //$data_arr[$key]['location_name']= $record->location->name;
             $data_arr[$key]['location_name'] = $record->name;
         }
-        $response = array(
+        return array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
         );
-        return $response;
 
     }
 
@@ -226,12 +228,7 @@ class BoardingDropingRepository
                     })
                     ->orderBy('updated_at', 'DESC');
 
-        // $data= $this->location->with(['boardingDropping' => function ($q){
-        //                          $q->orderBy('id', 'DESC');}])
-        //                      ->where('status','!=' ,2)
-        //                     ->whereHas('boardingDropping', function ($query){
-        //                            $query->where('status', '!=','2');
-        //                        });
+       
 
 
         if ($paginate == 'all') {
@@ -246,12 +243,11 @@ class BoardingDropingRepository
         }
 
         $data = $data->paginate($paginate);
-        $response = array(
+        return array(
              "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
            );
-        return $response;
 
     }
     public function changeStatus($locationId)

@@ -7,6 +7,7 @@ use App\Models\BoardingDroping;
 use App\Models\Location;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
+use App\Repositories\BoardingDropingRepository;
 use App\Traits\ApiResponser;
 use App\Services\BoardingDropingService;
 use Exception;
@@ -21,23 +22,24 @@ class BoardingDropingController extends Controller
     protected $boardingDropingService;
     protected $boardingDropingValidator;
 
-    public function __construct(BoardingDropingService $boardingDropingService, BoardingDropingValidator $boardingDropingValidator)
+    public function __construct(BoardingDropingService $boardingDropingService, BoardingDropingValidator $boardingDropingValidator, BoardingDropingRepository $boardingDropingRepository)
     {
         $this->boardingDropingService = $boardingDropingService;
         $this->boardingDropingValidator = $boardingDropingValidator;
+        $this->boardingDropingRepository = $boardingDropingRepository;
     }
 
     public function getAllBoardingDroping()
     {
 
-        $boardingdroping = $this->boardingDropingService->getAll();
+        //$boardingdroping = $this->boardingDropingService->getAll();
+        $boardingdroping = $this->boardingDropingRepository->getAll();
         return $this->successResponse($boardingdroping, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function createBoardingDroping(Request $request)
     {
-        //   log::info($request);
-        // exit();
+        
         $data = $request->only([
           'location_id',
           'boarding_point',
@@ -51,7 +53,8 @@ class BoardingDropingController extends Controller
         }
 
         try {
-            $response = $this->boardingDropingService->savePostData($data);
+            //$response = $this->boardingDropingService->savePostData($data);
+            $response = $this->boardingDropingRepository->save($data);
             return $this->successResponse($response, "Bus Stoppage Added ", Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -74,7 +77,8 @@ class BoardingDropingController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $response = $this->boardingDropingService->updatePost($data, $id);
+            // $response = $this->boardingDropingService->updatePost($data, $id);
+            $response = $this->boardingDropingRepository->update($data, $id);
             return $this->successResponse($response, "Bus Stoppage Updated", Response::HTTP_CREATED);
 
         } catch (Exception $e) {
@@ -85,7 +89,8 @@ class BoardingDropingController extends Controller
     public function deleteBoardingDroping($id)
     {
         try {
-            $response = $this->boardingDropingService->deleteById($id);
+            //$response = $this->boardingDropingService->deleteById($id);
+            $response =  $this->boardingDropingRepository->delete($id);
             return $this->successResponse($response, "Bus Stoppage Deleted", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -95,7 +100,8 @@ class BoardingDropingController extends Controller
     public function getBoardingDroping($id)
     {
         try {
-            $boardingDropingID = $this->boardingDropingService->getById($id);
+            //$boardingDropingID = $this->boardingDropingService->getById($id);
+            $boardingDropingID = $this->boardingDropingRepository->getById($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -106,7 +112,8 @@ class BoardingDropingController extends Controller
     public function getBoardingDropingbyLoacationId($id)
     {
         try {
-            $boardingDropingID = $this->boardingDropingService->getByLocationId($id);
+            //$boardingDropingID = $this->boardingDropingService->getByLocationId($id);
+            $boardingDropingID = $this->boardingDropingRepository->getByLocationId($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -117,14 +124,16 @@ class BoardingDropingController extends Controller
     public function getBoardingDropingDT(Request $request)
     {
 
-        $boardingDroping = $this->boardingDropingService->getBoardingDropingDT($request);
+        //$boardingDroping = $this->boardingDropingService->getBoardingDropingDT($request);
+        $boardingDroping = $this->boardingDropingRepository->getBoardingDropingDT($request);
         return $this->successResponse($boardingDroping, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function boardingData(Request $request)
     {
 
-        $boardingDroping = $this->boardingDropingService->boardingData($request);
+        //$boardingDroping = $this->boardingDropingService->boardingData($request);
+        $boardingDroping = $this->boardingDropingRepository->boardingData($request);
         return $this->successResponse($boardingDroping, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -156,7 +165,8 @@ class BoardingDropingController extends Controller
     {
 
         try {
-            $response = $this->boardingDropingService->changeStatus($locationId);
+            //$response = $this->boardingDropingService->changeStatus($locationId);
+            $response = $this->boardingDropingRepository->changeStatus($locationId);
 
             return $this->successResponse($response, "Bus Stoppage  Status Updated", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {

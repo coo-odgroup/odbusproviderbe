@@ -86,16 +86,16 @@ class BusSafetyService
      * @param array $data
      * @return String
      */
-    public function updatePost($data, $id)
-    {
-        try {
-            $busSafety = $this->busSafetyRepository->update($data, $id);
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $busSafety;
-    }
+    // public function updatePost($data, $id)
+    // {
+    //     try {
+    //         $busSafety = $this->busSafetyRepository->update($data, $id);
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $busSafety;
+    // }
 
     /**
      * Validate  data.

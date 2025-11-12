@@ -21,7 +21,8 @@ class CouponTypeService
      */
     public function __construct(CouponTypeRepository $couponTypeRepository)
     {
-        $this->couponTypeRepository = $couponTypeRepository;
+          $this->couponTypeRepository = $couponTypeRepository;
+
     }
 
     /**

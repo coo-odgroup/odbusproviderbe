@@ -152,10 +152,10 @@ class UserService
         $agent = $this->userRepository->verifyOtp($data);
         return $agent;
     }
-    // public function login($data)
-    // {
-    //     return $this->userRepository->login($data);
-    //  }
+    public function login($data)
+    {
+        return $this->userRepository->login($data);
+     }
     // public function getRoles()
     // {
     //     return $this->userRepository->getRoles();
@@ -174,7 +174,7 @@ class UserService
 
     // public function AgentForgetPasswordOtp($request){
 
-    //     $res = $this->userRepository->AgentForgetPasswordOtp($request);
+    //     $res = z
     //     return $res;
 
     // }

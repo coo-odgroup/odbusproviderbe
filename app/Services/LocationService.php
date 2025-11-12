@@ -77,30 +77,30 @@ class LocationService
      * @param array $data
      * @return String
      */
-    public function updateLocation($data, $id)
-    {
-        /*$validator = Validator::make($data, [
-            // 'type' => 'bail|min:2',
-            'name' => 'bail|max:50'
-        ]);
+    // public function updateLocation($data, $id)
+    // {
+    //     /*$validator = Validator::make($data, [
+    //         // 'type' => 'bail|min:2',
+    //         'name' => 'bail|max:50'
+    //     ]);
 
-        if ($validator->fails()) {
-            throw new InvalidArgumentException($validator->errors()->first());
-        }*/
+    //     if ($validator->fails()) {
+    //         throw new InvalidArgumentException($validator->errors()->first());
+    //     }*/
 
-        try {
-            $location = $this->LocationRepository->update($data, $id);
+    //     try {
+    //         $location = $this->LocationRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
 
-        return $location;
+    //     return $location;
 
-    }
+    // }
 
     /**
      * Validate post data.

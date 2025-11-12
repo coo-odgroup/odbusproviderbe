@@ -21,31 +21,31 @@ class SeoSettingService
         $this->seosettingRepository = $seosettingRepository;
     }
 
-    public function getAll()
-    {
-        return $this->seosettingRepository->getAll();
-    }
+    // public function getAll()
+    // {
+    //     return $this->seosettingRepository->getAll();
+    // }
 
-    public function addseosetting($request)
-    {
-        return $this->seosettingRepository->addseosetting($request);
-    }
+    // public function addseosetting($request)
+    // {
+    //     return $this->seosettingRepository->addseosetting($request);
+    // }
 
-    public function seosettingData($request)
-    {
-        return $this->seosettingRepository->seosettingData($request);
-    }
-    public function updateseosetting($request, $id)
-    {
-        return $this->seosettingRepository->updateseosetting($request, $id);
-    }
-    public function deleteseosetting($id)
-    {
-        return $this->seosettingRepository->deleteseosetting($id);
-    }
-    public function changeStatusseosetting($id)
-    {
-        return $this->seosettingRepository->changeStatusseosetting($id);
-    }
+    // public function seosettingData($request)
+    // {
+    //     return $this->seosettingRepository->seosettingData($request);
+    // }
+    // public function updateseosetting($request, $id)
+    // {
+    //     return $this->seosettingRepository->updateseosetting($request, $id);
+    // }
+    // public function deleteseosetting($id)
+    // {
+    //     return $this->seosettingRepository->deleteseosetting($id);
+    // }
+    // public function changeStatusseosetting($id)
+    // {
+    //     return $this->seosettingRepository->changeStatusseosetting($id);
+    // }
 
 }

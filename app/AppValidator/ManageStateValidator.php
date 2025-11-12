@@ -15,8 +15,7 @@ class ManageStateValidator
             'created_by' => 'required',
         ];
 
-        $stateValidation = Validator::make($data, $rules);
-        return $stateValidation;
+        return Validator::make($data, $rules);
     }
 
 }
