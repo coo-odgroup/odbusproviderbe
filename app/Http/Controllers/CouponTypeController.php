@@ -47,28 +47,27 @@ class CouponTypeController extends Controller
         return $this->successResponse($CouponType, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function createCouponType(Request $request)
-    {
-        $data = $request->only([
-          'coupon_type_name','created_by'
-        ]);
+public function createCouponType(Request $request)
+{
+    $data = $request->only([
+        'coupon_type_name', 'created_by'
+    ]);
 
-        $CouponTypeValidation = $this->couponTypeValidator->validate($data);
+    $CouponTypeValidation = $this->couponTypeValidator->validate($data);
 
-        if ($CouponTypeValidation->fails()) {
-            $errors = $CouponTypeValidation->errors();
-            // return $errors->toJson();
-            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
-        }
-        try {
-            $this->couponTypeRepository->save($data);
-             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        return $this->successResponse($data, "Coupon Type Added", Response::HTTP_CREATED);
-
+    if ($CouponTypeValidation->fails()) {
+        $errors = $CouponTypeValidation->errors();
+        return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
     }
+
+    try {
+        $this->couponTypeRepository->save($data);
+        return $this->successResponse($data, "Coupon Type Added", Response::HTTP_CREATED);
+    } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
 
     public function updateCouponType(Request $request, $id)
     {
@@ -80,7 +79,7 @@ class CouponTypeController extends Controller
 
         if ($CouponTypeValidation->fails()) {
             $errors = $CouponTypeValidation->errors();
-            // return $errors->toJson();
+            
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
 
@@ -107,7 +106,7 @@ class CouponTypeController extends Controller
     public function getCouponType($id)
     {
         try {
-          
+        
             $CouponType = $this->couponTypeRepository->getById($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
@@ -115,17 +114,14 @@ class CouponTypeController extends Controller
         return $this->successResponse($CouponType, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-   
+    
     public function changeStatus($id)
-{
-    try {
-        
-        $this->couponTypeRepository->changeStatus($id);
-    } catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+    {
+        try {
+            $this->couponTypeService->changeStatus($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Coupon Type Status Updated", Response::HTTP_ACCEPTED);
     }
-
-    return $this->successResponse(null, "Coupon Type Status Updated", Response::HTTP_ACCEPTED);
-}
-
 }
