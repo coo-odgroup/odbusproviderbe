@@ -35,14 +35,14 @@ class CouponTypeController extends Controller
 
     public function getAllCouponType(Request $request)
     {
-        //$CouponType = $this->couponTypeService->getAll($request);
+       
         $CouponType = $this->couponTypeRepository->getAll();
         return $this->successResponse($CouponType, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function CouponTypeData(Request $request)
     {
-        //$CouponType = $this->couponTypeService->CouponTypeData($request);
+        
         $CouponType = $this->couponTypeRepository->CouponTypeData($request);
         return $this->successResponse($CouponType, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
@@ -107,7 +107,7 @@ class CouponTypeController extends Controller
     public function getCouponType($id)
     {
         try {
-            //$CouponType = $this->couponTypeService->getById($id);
+          
             $CouponType = $this->couponTypeRepository->getById($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
@@ -115,23 +115,7 @@ class CouponTypeController extends Controller
         return $this->successResponse($CouponType, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    // public function getCouponTypeDT(Request $request)
-    // {
-    //     $CouponType = $this->couponTypeService->getAllCouponTypeDT($request);
-    //     return $this->successResponse($CouponType, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-    // }
-    //Needs to be checked as no function is present in service page.
-
-    // public function changeStatus($id)
-    // {
-    //     try {
-    //         $this->couponTypeService->changeStatus($id);
-    //     } catch (Exception $e) {
-    //         return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
-    //     }
-    //     return $this->successResponse(null, "Coupon Type Status Updated", Response::HTTP_ACCEPTED);
-    // }
-
+   
     public function changeStatus($id)
 {
     try {
