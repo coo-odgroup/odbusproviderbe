@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class CustomPagesService
 {
-    
     protected $customPagesRepository;
 
-    
+
     public function __construct(CustomPagesRepository $customPagesRepository)
     {
         $this->customPagesRepository = $customPagesRepository;
     }
 
-    
+
     public function deleteById($id)
     {
         DB::beginTransaction();
@@ -42,24 +41,24 @@ class CustomPagesService
 
     }
 
-    
+
     public function getAll()
     {
         return $this->customPagesRepository->getAll();
     }
 
-    
+
     public function getById($id)
     {
         return $this->customPagesRepository->getById($id);
     }
 
-   
+
     public function updatePost($data, $id)
     {
-        
 
-        
+
+
 
         DB::beginTransaction();
 
@@ -88,7 +87,7 @@ class CustomPagesService
      */
     public function savePostData($data)
     {
-        
+
         $result = $this->customPagesRepository->save($data);
 
         return $result;

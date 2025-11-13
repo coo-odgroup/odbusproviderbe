@@ -7,10 +7,8 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Auth;
 
-
 class LoginController extends Controller
 {
-    
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -36,15 +34,15 @@ class LoginController extends Controller
      *
      * @return void
      */
-   
+
     public function __construct()
     {
-            $this->middleware('guest')->except('logout');
-            $this->middleware('guest:admin')->except('logout');
-            $this->middleware('guest:super_admin')->except('logout');
+        $this->middleware('guest')->except('logout');
+        $this->middleware('guest:admin')->except('logout');
+        $this->middleware('guest:super_admin')->except('logout');
     }
 
-     
+
     public function adminLogin(Request $request)
     {
         $this->validate($request, [
@@ -59,7 +57,7 @@ class LoginController extends Controller
         return back()->withInput($request->only('email', 'remember'));
     }
 
-    
+
 
     public function super_adminLogin(Request $request)
     {

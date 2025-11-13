@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AgentCommissionReportController extends Controller
 {
     use ApiResponser;
+<<<<<<< HEAD
    
     protected $agentcommissionreportService;
     protected $agentcommissionreportRepository;
@@ -24,12 +25,28 @@ class AgentCommissionReportController extends Controller
     {
         $this->agentcommissionreportService = $agentcommissionreportService;
         $this->agentcommissionreportRepository = $agentcommissionreportRepository;
+=======
+
+    protected $agentcommissionreportService;
+
+
+
+    public function __construct(AgentCommissionReportService $agentcommissionreportService)
+    {
+        $this->agentcommissionreportService = $agentcommissionreportService;
+>>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     }
 
     public function getalldata(Request $request)
     {
+<<<<<<< HEAD
         $completeData = $this->agentcommissionreportRepository->getData($request);
         return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+=======
+
+        $completeData = $this->agentcommissionreportService->getalldata($request);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+>>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     }
 
 }

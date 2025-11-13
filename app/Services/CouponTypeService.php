@@ -7,12 +7,11 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Validator; 
+use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
 class CouponTypeService
 {
-    
     protected $couponTypeRepository;
 
     /**
@@ -108,7 +107,7 @@ class CouponTypeService
     // public function getCouponTypeDT($request)
     // {
     //     return $this->couponTypeRepository->getCouponTypeDT($request);
-    // } 
+    // }
 
     // public function CouponTypeData($request)
     // {

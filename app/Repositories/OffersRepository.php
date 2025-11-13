@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Repositories;
+
 use App\Models\Offers;
 use Storage;
-
 
 class OffersRepository
 {
@@ -70,8 +70,8 @@ class OffersRepository
     public function save($data)
     {
 
-        $offersRepository = new $this->offers;
-        $offersRepository=$this->getModel($data,$offersRepository);
+        $offersRepository = new $this->offers();
+        $offersRepository = $this->getModel($data, $offersRepository);
         $offersRepository->save();
         return $offersRepository;
     }
@@ -84,7 +84,7 @@ class OffersRepository
      */
     public function update($data, $id)
     {
-        
+
         // $post = $this->offers->find($id);
 
         // $post->mobileno = $data['mobileno'];
@@ -102,7 +102,7 @@ class OffersRepository
      */
     public function delete($id)
     {
-        
+
         $post = $this->offers->find($id);
         $post->status = 2;
         $post->update();
@@ -115,9 +115,8 @@ class OffersRepository
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = Config::get('constants.ALL_RECORDS');
         }
 
         $columnIndex_arr = $request->get('order');
@@ -136,8 +135,8 @@ class OffersRepository
         ->where('offer_text', 'like', "%" .$searchValue . "%")
         ->whereNotIn('status', [2])
         ->count();
-        
-        $records = $this->offers->orderBy($columnName,$columnSortOrder)
+
+        $records = $this->offers->orderBy($columnName, $columnSortOrder)
             ->where('offer_text', "like", "%" .$searchValue . "%")
             ->whereNotIn('status', [2])
             ->skip($start)
@@ -146,18 +145,17 @@ class OffersRepository
 
 
         $data_arr = array();
-        foreach($records as $key=>$record)
-        {
-            $data_arr[]=$record->toArray();
-            $data_arr[$key]['created_at']=date('j M Y h:i a',strtotime($record->created_at));
-            $data_arr[$key]['updated_at']=date('j M Y h:i a',strtotime($record->updated_at));
-        }    
+        foreach ($records as $key => $record) {
+            $data_arr[] = $record->toArray();
+            $data_arr[$key]['created_at'] = date('j M Y h:i a', strtotime($record->created_at));
+            $data_arr[$key]['updated_at'] = date('j M Y h:i a', strtotime($record->updated_at));
+        }
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
+        );
         return ($response);
     }
 

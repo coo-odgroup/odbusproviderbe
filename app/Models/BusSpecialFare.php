@@ -13,6 +13,6 @@ class BusSpecialFare extends Model
 
     public function busSpecialFare()
     {
-        return $this->belongsToMany(BuSpecialFare::class,'bus_id','spcial_fare_id');
+        return $this->belongsToMany(BuSpecialFare::class, 'bus_id', 'spcial_fare_id');
     }
 }

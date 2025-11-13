@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Log;
 
 class SendResetPasswordEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $to;
     protected $subject;
@@ -21,13 +24,13 @@ class SendResetPasswordEmailJob implements ShouldQueue
     protected $password;
     protected $name;
 
-    public function __construct($to,$subject, $req)
+    public function __construct($to, $subject, $req)
     {
-       
+
         $this->to = $to;
         $this->subject = $subject;
-        $this->password=$req['password'];
-        $this->name=$req['name'];
+        $this->password = $req['password'];
+        $this->name = $req['name'];
     }
     /**
      * Execute the job.
@@ -36,12 +39,12 @@ class SendResetPasswordEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'password'=>$this->password,
+        $data = [
+            'password' => $this->password,
             'name' => $this->name
         ];
 
-       // Log::info($data);
+        // Log::info($data);
 
         Mail::send('agentResetPassword', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))

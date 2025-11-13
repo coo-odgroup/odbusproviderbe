@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 class SendWalletApproveEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -34,11 +36,11 @@ class SendWalletApproveEmailJob implements ShouldQueue
     {
         $this->to = $to;
         $this->subject = $subject;
-        $this->userName=$req['userName'];
-        $this->amount=$req['amount'];
-        $this->via=$req['via'];
-        $this->tran_id=$req['tran_id'];
-        $this->balance=$req['balance'];
+        $this->userName = $req['userName'];
+        $this->amount = $req['amount'];
+        $this->via = $req['via'];
+        $this->tran_id = $req['tran_id'];
+        $this->balance = $req['balance'];
     }
 
     /**
@@ -48,8 +50,8 @@ class SendWalletApproveEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'userName'=>$this->userName,
+        $data = [
+            'userName' => $this->userName,
             'amount' => $this->amount,
             'via' => $this->via,
             'tran_id' => $this->tran_id,

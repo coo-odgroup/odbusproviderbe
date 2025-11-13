@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 class SendOwnerCancelBusEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -32,16 +34,16 @@ class SendOwnerCancelBusEmailJob implements ShouldQueue
     protected $dates;
     public function __construct($to, $subject, $req)
     {
-        
+
         $this->to = $to;
         $this->subject = $subject;
-        $this->month=$req['month'];
-        $this->year=$req['year'];
-        $this->cancelled_by=$req['cancelled_by'];
-        $this->reason=$req['reason'];
-        $this->other_reson=$req['other_reson'];
-        $this->busName=$req['busName'];
-        $this->dates=$req['dates'];
+        $this->month = $req['month'];
+        $this->year = $req['year'];
+        $this->cancelled_by = $req['cancelled_by'];
+        $this->reason = $req['reason'];
+        $this->other_reson = $req['other_reson'];
+        $this->busName = $req['busName'];
+        $this->dates = $req['dates'];
 
     }
 
@@ -52,19 +54,19 @@ class SendOwnerCancelBusEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'month'=>$this->month,
+        $data = [
+            'month' => $this->month,
             'year' => $this->year,
             'cancelled_by' => $this->cancelled_by,
             'reason' => $this->reason,
             'other_reson' => $this->other_reson,
             'busName' => $this->busName,
             'dates' => $this->dates,
-        ]; 
+        ];
 
-            // Log::info($data);exit;
-        Mail::send('sendOwnerCancelBusEmailJob', $data, function ($messageNew) {              
-            $messageNew->from(config('mail.contact.address'))           
+        // Log::info($data);exit;
+        Mail::send('sendOwnerCancelBusEmailJob', $data, function ($messageNew) {
+            $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });

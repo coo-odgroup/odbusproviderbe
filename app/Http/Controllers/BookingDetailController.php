@@ -13,74 +13,78 @@ class BookingDetailController extends Controller
 {
     protected $bookingDetailService;
 
-    
+
     public function __construct(BookingDetailService $bookingDetailService)
     {
         $this->bookingDetailService = $bookingDetailService;
     }
 
 
-    public function getAllBookingDetail() {
+    public function getAllBookingDetail()
+    {
 
         $bookingDetails = $this->bookingDetailService->getAll();
-        $output ['status']=1;
-        $output ['message']='All Data Fetched Successfully';
-        $output ['result']=$bookingDetails;
+        $output ['status'] = 1;
+        $output ['message'] = 'All Data Fetched Successfully';
+        $output ['result'] = $bookingDetails;
         return response($output, 200);
     }
 
-    public function createBookingDetail(Request $request) {
+    public function createBookingDetail(Request $request)
+    {
         $data = $request->only([
 
             'booking_id','pnr','jrny_dt','j_day','bus_id','seat_no',
             'passenger_name','passenger_gender','passenger_age',
             'created_by'
           ]);
-        
-          $bookingDetailsRules = [
-            'booking_id' => 'required',
-            'pnr' => 'required',
-            'jrny_dt' => 'required',
-            'j_day' => 'required',
-            'bus_id' => 'required',
-            'passenger_name' => 'required',
-            'passenger_age' => 'required',
-            'created_by' => 'required',
-            
-             
+
+        $bookingDetailsRules = [
+          'booking_id' => 'required',
+          'pnr' => 'required',
+          'jrny_dt' => 'required',
+          'j_day' => 'required',
+          'bus_id' => 'required',
+          'passenger_name' => 'required',
+          'passenger_age' => 'required',
+          'created_by' => 'required',
+
+
         ];
-        
+
         $bookingDetailValidation = Validator::make($data, $bookingDetailsRules);
 
 
         if ($bookingDetailValidation->fails()) {
             $errors = $bookingDetailValidation->errors();
             return $errors->toJson();
-          }
-      $result = ['status' => 200];
+        }
+        $result = ['status' => 200];
 
-      try {
-          $result['data'] = $this->bookingDetailService->savePostData($data);
-      } catch (Exception $e) {
-          $result = [
-              'status' => 500,
-              'error' => $e->getMessage()
-          ];
-      }
+        try {
+            $result['data'] = $this->bookingDetailService->savePostData($data);
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
 
-      return response()->json($result, $result['status']);
+        return response()->json($result, $result['status']);
 
-    } 
+    }
 
-    public function updateBookingDetail(Request $request, $id) {
+    public function updateBookingDetail(Request $request, $id)
+    {
         $data = $request->only([
             'booking_id','pnr','jrny_dt','j_day','bus_id','seat_no',
             'passenger_name','passenger_gender','passenger_age',
             'created_by'
-            
-        ]);print_r("hello");
+
+        ]);
+        print_r("hello");
         $bookingDetailsRules = [
-            
+
             'booking_id' => 'required',
             'pnr' => 'required',
             'jrny_dt' => 'required',
@@ -89,17 +93,17 @@ class BookingDetailController extends Controller
             'passenger_name' => 'required',
             'passenger_age' => 'required',
             'created_by' => 'required',
-            
+
         ];
-       // print_r($request);exit();
-        
+        // print_r($request);exit();
+
         $bookingDetailValidation = Validator::make($data, $bookingDetailsRules);
 
 
         if ($bookingDetailValidation->fails()) {
             $errors = $bookingDetailValidation->errors();
             return $errors->toJson();
-          }
+        }
 
         $result = ['status' => 200];
 
@@ -116,27 +120,29 @@ class BookingDetailController extends Controller
         return response()->json($result, $result['status']);
     }
 
-    public function deleteBookingDetail($id) {
-      $result = ['status' => 200];
+    public function deleteBookingDetail($id)
+    {
+        $result = ['status' => 200];
 
-      try {
-          $result['data'] = $this->bookingDetailService->deleteById($id);
-      } catch (Exception $e) {
-          $result = [
-              'status' => 500,
-              'error' => $e->getMessage()
-          ];
-      }
-      return response()->json($result, $result['status']);
+        try {
+            $result['data'] = $this->bookingDetailService->deleteById($id);
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+        return response()->json($result, $result['status']);
     }
 
-    public function getBookingDetail($id) {
-      $bookings = $this->bookingDetailService->getById($id);
-      $output ['status']=1;
-      $output ['message']='Single Data Fetched Successfully';
-      $output ['result']=$bookings;
-      return response($output, 200);
-    }      
-	     
+    public function getBookingDetail($id)
+    {
+        $bookings = $this->bookingDetailService->getById($id);
+        $output ['status'] = 1;
+        $output ['message'] = 'Single Data Fetched Successfully';
+        $output ['result'] = $bookings;
+        return response($output, 200);
+    }
+
 
 }

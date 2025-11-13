@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Log;
 
 class SendForgetOtpEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $to;
     protected $subject;
@@ -21,13 +24,13 @@ class SendForgetOtpEmailJob implements ShouldQueue
     protected $otp;
     protected $name;
 
-    public function __construct($to,$subject, $req)
+    public function __construct($to, $subject, $req)
     {
-       
+
         $this->to = $to;
         $this->subject = $subject;
-        $this->otp=$req['otp'];
-        $this->name=$req['name'];
+        $this->otp = $req['otp'];
+        $this->name = $req['name'];
     }
     /**
      * Execute the job.
@@ -36,12 +39,12 @@ class SendForgetOtpEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'otp'=>$this->otp,
+        $data = [
+            'otp' => $this->otp,
             'name' => $this->name
         ];
 
-       // Log::info($data);
+        // Log::info($data);
 
         Mail::send('agentOtp', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))

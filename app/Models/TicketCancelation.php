@@ -11,9 +11,9 @@ class TicketCancelation extends Model
     protected $table = 'ticket_cancelation';
     protected $fillable = ['name','created_by'];
 
-public function ticketCancelationRule()
+    public function ticketCancelationRule()
     {
         return $this->hasMany(TicketCancelationRule::class);
-        
-    } 
+
+    }
 }

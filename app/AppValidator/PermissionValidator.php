@@ -1,18 +1,19 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class PermissionValidator 
-{   
+class PermissionValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
-        $rules = [          
-          'name' => 'required|max:25',         
-        ];      
-      
+        $rules = [
+          'name' => 'required|max:25',
+        ];
+
         $permissionValidation = Validator::make($data, $rules);
         return $permissionValidation;
     }

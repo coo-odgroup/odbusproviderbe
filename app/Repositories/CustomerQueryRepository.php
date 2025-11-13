@@ -52,7 +52,7 @@ class CustomerQueryRepository
      */
     public function save($data)
     {
-        $post = new $this->customerQuery;
+        $post = new $this->customerQuery();
 
         $post->email = $data['email'];
         $post->phone = $data['phone'];
@@ -73,7 +73,7 @@ class CustomerQueryRepository
      */
     public function update($data, $id)
     {
-        
+
         $post = $this->customerQuery->find($id);
 
         $post->email = $data['email'];
@@ -94,7 +94,7 @@ class CustomerQueryRepository
      */
     public function delete($id)
     {
-        
+
         $post = $this->customerQuery->find($id);
         $post->status = 2;
         $post->update();

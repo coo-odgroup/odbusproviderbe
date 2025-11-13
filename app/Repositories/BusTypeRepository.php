@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+
 use Illuminate\Support\Facades\Log;
 use App\Models\BusType;
 use Illuminate\Support\Facades\Config;
@@ -24,8 +25,8 @@ class BusTypeRepository
 
     public function getBusTypeOperator($request)
     {
-        
-        $data=$this->busType->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID'])->get();
+
+        $data = $this->busType->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID'])->get();
         // Log::info($request);
         // Log::info($data);
         return $data;
@@ -37,10 +38,9 @@ class BusTypeRepository
         $user_id = $request['user_id'] ;
 
 
-        $data=$this->busType->where('status',"1");
-        if($user_role==5)
-        {
-            $data= $data->where('user_id',$user_id);   
+        $data = $this->busType->where('status', "1");
+        if ($user_role == 5) {
+            $data = $data->where('user_id', $user_id);
         }
         // Log::info($request);
         // Log::info($data);
@@ -62,65 +62,59 @@ class BusTypeRepository
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;
 
-        $data= $this->busType->with('BusClass','busOperator')
+        $data = $this->busType->with('BusClass', 'busOperator')
                              ->whereNotIn('status', [2])
-                             ->orderBy('id','DESC');
-        if($request['USER_BUS_OPERATOR_ID']!="")
-        {
-            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
-        }                             
-
-        if($paginate=='all') 
-        {
-            $paginate = Config::get('constants.ALL_RECORDS');
+                             ->orderBy('id', 'DESC');
+        if ($request['USER_BUS_OPERATOR_ID'] != "") {
+            $data = $data->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);
         }
-        elseif ($paginate == null) 
-        {
+
+        if ($paginate == 'all') {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
-        
-        if($name!=null)
-        {
+
+        if ($name != null) {
             $data = $data->where(
-                function($query) use ($name) {
-                    return $query->where('name','like', '%' . $name . '%')
-                                 ->orWhere('created_by','like', '%' . $name . '%');
-            });        
-        } 
-        if($bus_type!=null)
-        {
-            $data=$data->where('bus_class_id', $bus_type);
+                function ($query) use ($name) {
+                    return $query->where('name', 'like', '%' . $name . '%')
+                                 ->orWhere('created_by', 'like', '%' . $name . '%');
+                }
+            );
+        }
+        if ($bus_type != null) {
+            $data = $data->where('bus_class_id', $bus_type);
         }
 
-        if($user_role==5)
-        {
-            $data= $data->where('user_id',$user_id);   
+        if ($user_role == 5) {
+            $data = $data->where('user_id', $user_id);
         }
 
-        $data=$data->paginate($paginate);
+        $data = $data->paginate($paginate);
         // Log::info($data);
 
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
              "data" => $data
-        );   
+        );
         return $response;
 
-       
+
     }
     public function getModel($data, BusType $busType)
     {
         $busType->bus_class_id = $data['type'];
-        $busType->name = $data['name'];    
-        $busType->user_id = $data['user_id'];    
+        $busType->name = $data['name'];
+        $busType->user_id = $data['user_id'];
         $busType->bus_operator_id = $data['bus_operator_id'];
         $busType->created_by = $data['created_by'];
         $busType->status = 0;
         return $busType;
     }
-    
+
     public function getById($id)
     {
         return $this->busType->where('id', $id)->get();
@@ -128,9 +122,9 @@ class BusTypeRepository
 
     public function save($data)
     {
-       
-        $busType = new $this->busType;
-        $busType=$this->getModel($data,$busType);
+
+        $busType = new $this->busType();
+        $busType = $this->getModel($data, $busType);
         $busType->save();
         return $busType;
     }
@@ -144,7 +138,7 @@ class BusTypeRepository
     public function update($data, $id)
     {
         $busType = $this->busType->find($id);
-        $busType=$this->getModel($data,$busType);
+        $busType = $this->getModel($data, $busType);
         $busType->update();
         return $busType;
     }
@@ -166,14 +160,13 @@ class BusTypeRepository
     }
 
     //BusType Data Table
-    public function getAllBusTypeDT($request)   
+    public function getAllBusTypeDT($request)
     {
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = Config::get('constants.ALL_RECORDS');
         }
 
         $columnIndex_arr = $request->get('order');
@@ -193,18 +186,15 @@ class BusTypeRepository
         ->count();
 
         // Fetch records
-        $records = $this->busType->orderBy($columnName,$columnSortOrder)
+        $records = $this->busType->orderBy($columnName, $columnSortOrder)
             ->where('name', 'like', '%' .$searchValue . '%')
             ->whereNotIn('status', [2])
-            ->orWhere(function($query) use ($searchValue)
-            {
-                if($searchValue=="AC")
-                {
-                    $query->orWhere('type','0');
+            ->orWhere(function ($query) use ($searchValue) {
+                if ($searchValue == "AC") {
+                    $query->orWhere('type', '0');
                 }
-                if($searchValue=="NON AC")
-                {
-                    $query->orWhere('type','1');
+                if ($searchValue == "NON AC") {
+                    $query->orWhere('type', '1');
                 }
             })
             ->select('*')
@@ -217,36 +207,35 @@ class BusTypeRepository
             "1" => "AC",
             "2" => "NON AC"
         );
-        foreach($records as $key=>$record)
-        {
-            $data_arr[]=$record->toArray();
-            $data_arr[$key]['created_at']=date('j M Y h:i a',strtotime($record->created_at));
-            $data_arr[$key]['updated_at']=date('j M Y h:i a',strtotime($record->updated_at));
-            $data_arr[$key]['type']=$typename[$record->bus_class_id];
-            
-        }    
-        
+        foreach ($records as $key => $record) {
+            $data_arr[] = $record->toArray();
+            $data_arr[$key]['created_at'] = date('j M Y h:i a', strtotime($record->created_at));
+            $data_arr[$key]['updated_at'] = date('j M Y h:i a', strtotime($record->updated_at));
+            $data_arr[$key]['type'] = $typename[$record->bus_class_id];
+
+        }
+
 
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
+        );
         return $response;
-        
+
     }
 
     public function changeStatus($id)
     {
         $post = $this->busType->find($id);
-        if($post->status==0){
+        if ($post->status == 0) {
             $post->status = 1;
-        }elseif($post->status==1){
+        } elseif ($post->status == 1) {
             $post->status = 0;
         }
         $post->update();
         return $post;
     }
-    
+
 }

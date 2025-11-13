@@ -12,99 +12,101 @@ use InvalidArgumentException;
 
 class AppVersionController extends Controller
 {
-    
     protected $appVersionService;
 
-    
+
     public function __construct(AppVersionService $appVersionService)
     {
         $this->appVersionService = $appVersionService;
     }
 
 
-    public function getAllAppVersion() {
+    public function getAllAppVersion()
+    {
 
         $appVersion = $this->appVersionService->getAll();
-        $output ['status']=1;
-        $output ['message']='All Data Fetched Successfully';
-        $output ['result']=$appVersion;
+        $output ['status'] = 1;
+        $output ['message'] = 'All Data Fetched Successfully';
+        $output ['result'] = $appVersion;
         return response($output, 200);
     }
 
-    public function createAppVersion(Request $request) {
+    public function createAppVersion(Request $request)
+    {
         $data = $request->only([
-        
-            'info','name', 'mandatory','version','new_version_names','new_version_codes', 'allowed_days', 
-            'has_issues','created_by' 
+
+            'info','name', 'mandatory','version','new_version_names','new_version_codes', 'allowed_days',
+            'has_issues','created_by'
           ]);
 
-          $appversionRules = [
-            'info' => 'required',
-            'name' => 'required',
-            'mandatory' => 'required',
-            'version' => 'required',
-            'new_version_names' => 'required',
-            'new_version_codes' => 'required',
-            'allowed_days' => 'required',
-            'has_issues' => 'required',
-            'created_by' => 'required',
+        $appversionRules = [
+          'info' => 'required',
+          'name' => 'required',
+          'mandatory' => 'required',
+          'version' => 'required',
+          'new_version_names' => 'required',
+          'new_version_codes' => 'required',
+          'allowed_days' => 'required',
+          'has_issues' => 'required',
+          'created_by' => 'required',
 
         ];
-        
+
         $appversionValidation = Validator::make($data, $appversionRules);
 
 
         if ($appversionValidation->fails()) {
             $errors = $appversionValidation->errors();
             return $errors->toJson();
-          }
-       /* $errors = $appversionValidation->errors();
+        }
+        /* $errors = $appversionValidation->errors();
 
-        return $errors->toJson();
+         return $errors->toJson();
 
-        $this->appVersionService->savePostData($data);
-    
-        $output ['status']=1;
-        $output ['message']='Data Added Successfully';
-        return response($output, 200);*/
+         $this->appVersionService->savePostData($data);
 
-        
-       /* $validator = Validator::make($data, [
+         $output ['status']=1;
+         $output ['message']='Data Added Successfully';
+         return response($output, 200);*/
 
-            'info' => 'required',
-            'name' => 'required',
-            'mandatory' => 'required',
-            'version' => 'required',
-            'new_version_names' => 'required',
-            'new_version_codes' => 'required',
-            'allowed_days' => 'required',
-            'has_issues' => 'required',
-            'created_by' => 'required'
-        ]);
 
-        if ($validator->fails()) {
-            throw new InvalidArgumentException($validator->errors()->first());
-        }*/
-        
-      
+        /* $validator = Validator::make($data, [
 
-      $result = ['status' => 200];
+             'info' => 'required',
+             'name' => 'required',
+             'mandatory' => 'required',
+             'version' => 'required',
+             'new_version_names' => 'required',
+             'new_version_codes' => 'required',
+             'allowed_days' => 'required',
+             'has_issues' => 'required',
+             'created_by' => 'required'
+         ]);
 
-      try {
-          $result['data'] = $this->appVersionService->savePostData($data);
-      } catch (Exception $e) {
-          $result = [
-              'status' => 500,
-              'error' => $e->getMessage()
-          ];
-      }
+         if ($validator->fails()) {
+             throw new InvalidArgumentException($validator->errors()->first());
+         }*/
 
-      return response()->json($result, $result['status']);
 
-    } 
 
-    public function updateAppVersion(Request $request, $id) {
-        $data = $request->only(['info','name', 'mandatory','version','new_version_names','new_version_codes', 
+        $result = ['status' => 200];
+
+        try {
+            $result['data'] = $this->appVersionService->savePostData($data);
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        return response()->json($result, $result['status']);
+
+    }
+
+    public function updateAppVersion(Request $request, $id)
+    {
+        $data = $request->only(['info','name', 'mandatory','version','new_version_names','new_version_codes',
         'allowed_days', 'has_issues', 'created_by'
         ]);
         $appversionRules = [
@@ -119,14 +121,14 @@ class AppVersionController extends Controller
             'created_by' => 'required',
 
         ];
-        
+
         $appversionValidation = Validator::make($data, $appversionRules);
 
 
         if ($appversionValidation->fails()) {
             $errors = $appversionValidation->errors();
             return $errors->toJson();
-          }
+        }
 
 
         $result = ['status' => 200];
@@ -144,27 +146,29 @@ class AppVersionController extends Controller
         return response()->json($result, $result['status']);
     }
 
-    public function deleteAppVersion ($id) {
-      $result = ['status' => 200];
+    public function deleteAppVersion($id)
+    {
+        $result = ['status' => 200];
 
-      try {
-          $result['data'] = $this->appVersionService->deleteById($id);
-      } catch (Exception $e) {
-          $result = [
-              'status' => 500,
-              'error' => $e->getMessage()
-          ];
-      }
-      return response()->json($result, $result['status']);
+        try {
+            $result['data'] = $this->appVersionService->deleteById($id);
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+        return response()->json($result, $result['status']);
     }
 
-    public function getAppVersion($id) {
-      $app = $this->appVersionService->getById($id);
-      $output ['status']=1;
-      $output ['message']='Single Data Fetched Successfully';
-      $output ['result']=$app;
-      return response($output, 200);
-    }      
-	     
+    public function getAppVersion($id)
+    {
+        $app = $this->appVersionService->getById($id);
+        $output ['status'] = 1;
+        $output ['message'] = 'Single Data Fetched Successfully';
+        $output ['result'] = $app;
+        return response($output, 200);
+    }
+
 
 }

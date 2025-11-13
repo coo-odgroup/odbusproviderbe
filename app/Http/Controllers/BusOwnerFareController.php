@@ -20,97 +20,102 @@ class BusOwnerFareController extends Controller
     use ApiResponser;
     protected $BusOwnerFareService;
     protected $BusOwnerFareValidator;
-    
+
     public function __construct(BusOwnerFareService $busOwnerFareService, BusOwnerFareValidator $busOwnerFareValidator)
     {
         $this->busOwnerFareService = $busOwnerFareService;
         $this->busOwnerFareValidator = $busOwnerFareValidator;
     }
 
-    public function getAllBusOwnerFare() {
+    public function getAllBusOwnerFare()
+    {
 
         $busOwnerFare = $this->busOwnerFareService->getAll();
-        return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($busOwnerFare, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-    public function getBusOwnerFareDT(Request $request) {      
+    public function getBusOwnerFareDT(Request $request)
+    {
 
         $busOwnerFare = $this->busOwnerFareService->dataTable($request);
-        return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      }
+        return $this->successResponse($busOwnerFare, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-    public function busOwnerFareData(Request $request) {      
+    public function busOwnerFareData(Request $request)
+    {
 
         $busOwnerFare = $this->busOwnerFareService->busOwnerFareData($request);
-        return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      }
+        return $this->successResponse($busOwnerFare, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-      public function createBusOwnerFare(Request $request) {
+    public function createBusOwnerFare(Request $request)
+    {
         $data = $request->only([
-        
-          'date','seater_price','sleeper_price','reason','created_by','operator_id','bus_id' 
+
+          'date','seater_price','sleeper_price','reason','created_by','operator_id','bus_id'
         ]);
         $busOwnerFareValidation = $this->busOwnerFareValidator->validate($data);
         if ($busOwnerFareValidation->fails()) {
             $errors = $busOwnerFareValidation->errors();
-            
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-          }
+
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
         try {
-           $this->busOwnerFareService->savePostData($request);
+            $this->busOwnerFareService->savePostData($request);
 
         } catch (Exception $e) {
-           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-      return $this->successResponse($data,"Bus Owner Fare Added",Response::HTTP_CREATED); 
-    } 
+        return $this->successResponse($data, "Bus Owner Fare Added", Response::HTTP_CREATED);
+    }
 
 
-    public function updateBusOwnerFare(Request $request, $id) {
-      $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by',
-      ]);
+    public function updateBusOwnerFare(Request $request, $id)
+    {
+        $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by',
+        ]);
         $busOwnerFareValidation = $this->busOwnerFareValidator->validate($data);
         if ($busOwnerFareValidation->fails()) {
             $errors = $busOwnerFareValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-          $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by','bus_id',
-          ]);
-          $this->busOwnerFareService->updatePost($data, $id);
-          return $this->successResponse($data, "Bus Owner Fare Updated",Response::HTTP_CREATED);
+            $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by','bus_id',
+            ]);
+            $this->busOwnerFareService->updatePost($data, $id);
+            return $this->successResponse($data, "Bus Owner Fare Updated", Response::HTTP_CREATED);
 
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
 
-    public function deleteBusOwnerFare($id) {
+    public function deleteBusOwnerFare($id)
+    {
         try {
             $this->busOwnerFareService->deleteById($id);
-          }
-          catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-          }
-          return $this->successResponse(null, "Bus Owner Fare Deleted", Response::HTTP_ACCEPTED);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse(null, "Bus Owner Fare Deleted", Response::HTTP_ACCEPTED);
     }
 
-    public function getBusOwnerFare($id) {
+    public function getBusOwnerFare($id)
+    {
         try {
-            $busOwnerFareID= $this->busOwnerFareService->getById($id);
-          }
-          catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-          }
-          return $this->successResponse($busOwnerFareID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    }      
-    public function changeStatus($id) {
-        try{
-          $this->busOwnerFareService->changeStatus($id);
+            $busOwnerFareID = $this->busOwnerFareService->getById($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
-        catch (Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        return $this->successResponse($busOwnerFareID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+    public function changeStatus($id)
+    {
+        try {
+            $this->busOwnerFareService->changeStatus($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Owner Fare Status Updated", Response::HTTP_ACCEPTED);
-      }
-	     
+    }
+
 }

@@ -83,7 +83,7 @@ class CustomerQueryCategoryService
      */
     public function updateCustomerQueryCategory($data, $id)
     {
-       
+
         DB::beginTransaction();
 
         try {
@@ -110,10 +110,10 @@ class CustomerQueryCategoryService
      * @return String
      */
     // public function savePostData($data)
-    // {   
+    // {
     //     $result = $this->customerQueryCategoryRepository->save($data);
     //     return $result;
     // }
-   
+
 
 }

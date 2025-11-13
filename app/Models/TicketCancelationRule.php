@@ -14,6 +14,6 @@ class TicketCancelationRule extends Model
                              'created_by'];
     public function ticketCancelation()
     {
-    	return $this->belongsTo(TicketCancellation::class);
+        return $this->belongsTo(TicketCancellation::class);
     }
 }

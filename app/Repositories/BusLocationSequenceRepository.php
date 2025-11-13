@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Repositories;
+
 use App\Models\BusLocationSequence;
 use Illuminate\Support\Facades\Log;
-class BusLocationSequenceRepository 
+
+class BusLocationSequenceRepository
 {
     protected $busLocationSequence;
     public function __construct(BusLocationSequence $busLocationSequence)
@@ -14,7 +16,7 @@ class BusLocationSequenceRepository
     {
         return $this->busLocationSequence->whereNotIn('status', [2])->get();
     }
-    
+
     public function getModel($data, BusLocationSequence $busLocationSequence)
     {
         $busLocationSequence->bus_id = $data['bus_id'];
@@ -31,8 +33,8 @@ class BusLocationSequenceRepository
      */
     public function save($data)
     {
-        $busLocationSequence = new $this->busLocationSequence;
-        $busLocationSequence=$this->getModel($data,$busLocationSequence);
+        $busLocationSequence = new $this->busLocationSequence();
+        $busLocationSequence = $this->getModel($data, $busLocationSequence);
         $busLocationSequence->save();
         return $busLocationSequence;
     }
@@ -65,7 +67,7 @@ class BusLocationSequenceRepository
 
     public function deletebyBusId($id)
     {
-        $sequence = $this->busLocationSequence->where('bus_id',$id)->update(array("status"=>"2"));
+        $sequence = $this->busLocationSequence->where('bus_id', $id)->update(array("status" => "2"));
         //$busstoppage->delete();
         return $sequence;
     }
@@ -73,7 +75,7 @@ class BusLocationSequenceRepository
 
     public function updateStatus($id)
     {
-        $sequence = $this->busLocationSequence->where('id',$id)->update(array("status"=>"2"));
+        $sequence = $this->busLocationSequence->where('id', $id)->update(array("status" => "2"));
         //$busstoppage->delete();
         return $sequence;
     }

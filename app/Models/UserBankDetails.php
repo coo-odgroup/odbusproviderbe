@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
-
 class UserBankDetails extends Model
 {
     use HasFactory;
@@ -15,7 +14,7 @@ class UserBankDetails extends Model
     protected $fillable = ['user_id', 'banking_name','bank_name	','ifsc_code','account_number','created_by'];
     public function user()
     {
-    	return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
 }

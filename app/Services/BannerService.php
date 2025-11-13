@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BannerService
 {
-   
     protected $bannerRepository;
 
     public function __construct(BannerRepository $bannerRepository)
@@ -26,7 +25,7 @@ class BannerService
     // {
     //     return $this->bannerRepository->getAllBanner();
     // }
-    
+
     // public function getData($request)
     // {
     //     return $this->bannerRepository->getData($request);
@@ -47,7 +46,7 @@ class BannerService
     //     return $this->bannerRepository->getById($id);
     // }
     // public function save($data)
-    // {   
+    // {
     //     try {
     //         $banner = $this->bannerRepository->save($data);
     //     } catch (Exception $e) {
@@ -77,5 +76,5 @@ class BannerService
     //     return $banner;
     // }
 
-    
+
 }

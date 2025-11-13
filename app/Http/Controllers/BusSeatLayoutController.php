@@ -19,34 +19,38 @@ class BusSeatLayoutController extends Controller
     use ApiResponser;
     protected $busSeatLayoutService;
     protected $busSeatLayoutValidator;
-    public function __construct(BusSeatLayoutService $busSeatLayoutService,BusSeatLayoutValidator $busSeatLayoutValidator)
+    public function __construct(BusSeatLayoutService $busSeatLayoutService, BusSeatLayoutValidator $busSeatLayoutValidator)
     {
         $this->busSeatLayoutService = $busSeatLayoutService;
         $this->busSeatLayoutValidator = $busSeatLayoutValidator;
     }
-    public function getSeatLayoutRecord($id) {
-      try {
-        $busSeatLayoutID= $this->busSeatLayoutService->getSeatLayoutRecord($id);
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse($busSeatLayoutID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    public function getSeatLayoutRecord($id)
+    {
+        try {
+            $busSeatLayoutID = $this->busSeatLayoutService->getSeatLayoutRecord($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse($busSeatLayoutID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-    public function getAll() {
+    public function getAll()
+    {
         $busSeatLayout = $this->busSeatLayoutService->getAll();
-        return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-    public function BusSeatLayoutOperator(Request $request) {
+    public function BusSeatLayoutOperator(Request $request)
+    {
         $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutOperator($request);
-        return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function BusSeatLayoutbyUser(Request $request) {
+    public function BusSeatLayoutbyUser(Request $request)
+    {
         $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutbyUser($request);
-        return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-    public function save(Request $request) {
+    public function save(Request $request)
+    {
         $data = $request->only([
           'name',
           'layout_data',
@@ -56,20 +60,20 @@ class BusSeatLayoutController extends Controller
         ]);
         $busSeatLayoutValidation = $this->busSeatLayoutValidator->validate($data);
         if ($busSeatLayoutValidation->fails()) {
-          $errors = $busSeatLayoutValidation->errors();
-          // return $errors->toJson();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            $errors = $busSeatLayoutValidation->errors();
+            // return $errors->toJson();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->busSeatLayoutService->save($data);  
+            $this->busSeatLayoutService->save($data);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
-        catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-        }  
-        return $this->successResponse($data,"Seat Layout Created",Response::HTTP_CREATED);
-    } 
-    public function update(Request $request, $id) {
-      // Log::info($id);
+        return $this->successResponse($data, "Seat Layout Created", Response::HTTP_CREATED);
+    }
+    public function update(Request $request, $id)
+    {
+        // Log::info($id);
 
         $data = $request->only([
           'name',
@@ -81,67 +85,68 @@ class BusSeatLayoutController extends Controller
         $busSeatLayoutValidation = $this->busSeatLayoutValidator->validate($data);
 
         if ($busSeatLayoutValidation->fails()) {
-          $errors = $busSeatLayoutValidation->errors();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            $errors = $busSeatLayoutValidation->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->busSeatLayoutService->update($data, $id);   
+            $this->busSeatLayoutService->update($data, $id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        return $this->successResponse($data, "Seat Layout Updated", Response::HTTP_OK);
+    }
+
+    public function deleteById($id)
+    {
+        try {
+            $this->busSeatLayoutService->deleteById($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
-        return $this->successResponse($data,"Seat Layout Updated",Response::HTTP_OK); 
+        return $this->successResponse(null, "Seat Layout Deleted", Response::HTTP_ACCEPTED);
+    }
+    public function getById($id)
+    {
+        try {
+            $busSeatLayoutID = $this->busSeatLayoutService->getById($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse($busSeatLayoutID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function deleteById($id) {
-      try {
-      $this->busSeatLayoutService->deleteById($id);
-      } 
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse(Null,"Seat Layout Deleted",Response::HTTP_ACCEPTED); 
-    }
-    public function getById($id) {
-      try {
-        $busSeatLayoutID= $this->busSeatLayoutService->getById($id);
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse($busSeatLayoutID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    }
-
-    public function getRowCol($id,$type) {
-      try {
-        $busSeatLayoutID= $this->busSeatLayoutService->getRowCol($id,$type);
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse($busSeatLayoutID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    public function getRowCol($id, $type)
+    {
+        try {
+            $busSeatLayoutID = $this->busSeatLayoutService->getRowCol($id, $type);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse($busSeatLayoutID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 
-    public function getBusSeatLayoutDT(Request $request) {      
-      $busSeatLayout = $this->busSeatLayoutService->getAllBusSeatLayoutDT($request);
-      return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    public function getBusSeatLayoutDT(Request $request)
+    {
+        $busSeatLayout = $this->busSeatLayoutService->getAllBusSeatLayoutDT($request);
+        return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function BusSeatLayoutData(Request $request) {      
-      $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutData($request);
-      return $this->successResponse($busSeatLayout,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    public function BusSeatLayoutData(Request $request)
+    {
+        $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutData($request);
+        return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    
-    public function changeStatus($id) {
-      try{
-        $this->busSeatLayoutService->changeStatus($id);
-      }
-      catch (Exception $e){
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse(null, "Seat Layout Status Updated", Response::HTTP_ACCEPTED);
+
+    public function changeStatus($id)
+    {
+        try {
+            $this->busSeatLayoutService->changeStatus($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Seat Layout Status Updated", Response::HTTP_ACCEPTED);
     }
 
 }

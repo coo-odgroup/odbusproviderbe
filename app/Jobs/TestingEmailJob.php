@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Config;
 
 class TestingEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -29,7 +32,7 @@ class TestingEmailJob implements ShouldQueue
         $this->to = $to;
         $this->name = $name;
         $this->subject = 'testing';
-        
+
     }
 
     /**
@@ -42,16 +45,16 @@ class TestingEmailJob implements ShouldQueue
         $data = [
             'name' => $this->name,
         ];
-        
+
         Mail::send('test', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });
-        
+
         // // check for failures
         // if (Mail::failures()) {
-        //     return new Error(Mail::failures()); 
+        //     return new Error(Mail::failures());
         //     //return "Email failed";
         // }else{
         //     return 'success';

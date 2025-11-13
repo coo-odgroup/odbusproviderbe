@@ -9,7 +9,6 @@ use App\Models\AgentWallet;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 /*Priyadarshi to Review*/
 
 class AgentCommissionReportRepository
@@ -19,14 +18,22 @@ class AgentCommissionReportRepository
     protected $bus;
     protected $agentWallet;
 
+<<<<<<< HEAD
     public function __construct(Booking $booking ,AgentWallet $agentWallet ,Location $location ,Bus $bus)
+=======
+    public function __construct(Booking $booking, AgentWallet $agentWallet, Location $location, Bus $bus)
+>>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     {
         $this->booking = $booking;
         $this->location = $location;
         $this->bus = $bus;
         $this->agentWallet = $agentWallet;
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     public function getData($request)
     {
         $paginate = $request->rows_number;
@@ -37,41 +44,47 @@ class AgentCommissionReportRepository
         $destination_id = $request->destination_id;
         $start_date  =  $request->rangeFromDate;
         $end_date  =  $request->rangeToDate;
-        
+
         $user_id  =  $request->user_id;
 
-        $data= $this->booking->with('BookingDetail.BusSeats.seats',
-                                    'BookingDetail.BusSeats.ticketPrice',
-                                    'Bus')
+        $data = $this->booking->with(
+            'BookingDetail.BusSeats.seats',
+            'BookingDetail.BusSeats.ticketPrice',
+            'Bus'
+        )
                              ->with('bus.busstoppage')
                              // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
+<<<<<<< HEAD
                              ->where('user_id', $user_id )
                              ->where('status','!=',0)
                              ->orderBy('id','DESC');
         if($paginate=='all')
         {
+=======
+                             ->where('user_id', $user_id)
+                             ->where('status', '!=', 0)
+                             ->orderBy('id', 'DESC');
+        if ($paginate == 'all') {
+>>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
-        if(!empty($bus_operator_id))
-        {
-           $data=$data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id );});
+        if (!empty($bus_operator_id)) {
+            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id);});
         }
 
-        if(!empty($payment_id))
-        {
-            $data=$data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id );});
+        if (!empty($payment_id)) {
+            $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id);});
         }
 
-        if(!empty($source_id) && !empty($destination_id))
-        {
-            $data=$data->where('source_id',$source_id)->where('destination_id',$destination_id);
+        if (!empty($source_id) && !empty($destination_id)) {
+            $data = $data->where('source_id', $source_id)->where('destination_id', $destination_id);
         }
 
 
+<<<<<<< HEAD
              if($date_type == 'booking' && $start_date == null && $end_date == null)
         {
             $data =$data->orderBy('created_at','DESC');
@@ -85,61 +98,73 @@ class AgentCommissionReportRepository
             }else{
                 $data =$data->whereBetween('created_at', [$start_date, $end_date])
                         ->orderBy('created_at','DESC');
-            }
-            
-        }
-        else if($date_type == 'journey' && $start_date == null && $end_date == null)
-        {
-            $data =$data->orderBy('journey_dt','DESC');
-        }
-         else if($date_type == 'journey' && $start_date != null && $end_date != null)
-        {
-             if($start_date == $end_date){
-                $data =$data->where('journey_dt', 'like','%'.$start_date.'%')
-                        ->orderBy('journey_dt','DESC');
-            }else{
-                 $data =$data-> whereBetween('journey_dt', [$start_date, $end_date])
-                        ->orderBy('journey_dt','DESC');
-            }
-        }
-        
-        $data=$data->paginate($paginate); 
-        
-        
-   
-        if($data){
-            foreach($data as $key=>$v){
-               // $v['wallet']=$this->agentWallet->where('transaction_id',$v->transaction_id)->get();
-               $v['from_location']=$this->location->where('id', $v->source_id)->get();
-               $v['to_location']=$this->location->where('id', $v->destination_id)->get();
+=======
+        if ($date_type == 'booking' && $start_date == null && $end_date == null) {
+            $data = $data->orderBy('created_at', 'DESC');
+        } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
+            if ($start_date == $end_date) {
+                $data = $data->where('created_at', 'like', '%'.$start_date.'%')
+                        ->orderBy('created_at', 'DESC');
 
-               $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-               // $v['source']=[];
-               // $v['destination']=[];
-                $stoppages['source']=[];
-                $stoppages['destination']=[]; 
-                if(count($stoppage)>0){
-                foreach ($stoppage[0]['ticketPrice'] as $k => $a) 
-                    {                          
-                        $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                        $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
+            } else {
+                $data = $data->whereBetween('created_at', [$start_date, $end_date])
+                        ->orderBy('created_at', 'DESC');
+>>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
+            }
+
+        } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
+            $data = $data->orderBy('journey_dt', 'DESC');
+        } elseif ($date_type == 'journey' && $start_date != null && $end_date != null) {
+            if ($start_date == $end_date) {
+                $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')
+                        ->orderBy('journey_dt', 'DESC');
+            } else {
+                $data = $data-> whereBetween('journey_dt', [$start_date, $end_date])
+                       ->orderBy('journey_dt', 'DESC');
+            }
+        }
+
+        $data = $data->paginate($paginate);
+
+
+
+        if ($data) {
+            foreach ($data as $key => $v) {
+                // $v['wallet']=$this->agentWallet->where('transaction_id',$v->transaction_id)->get();
+                $v['from_location'] = $this->location->where('id', $v->source_id)->get();
+                $v['to_location'] = $this->location->where('id', $v->destination_id)->get();
+
+                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
+                // $v['source']=[];
+                // $v['destination']=[];
+                $stoppages['source'] = [];
+                $stoppages['destination'] = [];
+                if (count($stoppage) > 0) {
+                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) {
+                        $stoppages['source'][$k] = $this->location->where('id', $a->source_id)->get();
+                        $stoppages['destination'][$k] = $this->location->where('id', $a->destination_id)->get();
                     }
                 }
-                $v['source']= $stoppages['source'];
-                $v['destination']= $stoppages['destination'];
+                $v['source'] = $stoppages['source'];
+                $v['destination'] = $stoppages['destination'];
             }
         }
 
-      
+
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
-           );   
+           );
 
+<<<<<<< HEAD
       
            return $response;
+=======
+
+        return $response;
+>>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
     }
-    
+
 }

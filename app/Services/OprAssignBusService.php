@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Services;
+
 use App\Repositories\OprAssignBusRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -10,27 +12,27 @@ use Illuminate\Support\Facades\Config;
 
 class OprAssignBusService
 {
-    protected $OprAssignBusRepository;    
-   
+    protected $OprAssignBusRepository;
+
     public function __construct(OprAssignBusRepository $OprAssignBusRepository)
     {
         $this->OprAssignBusRepository = $OprAssignBusRepository;
-    }    
+    }
 
     // public function getOprBuslist($request)
     // {
     //     return $this->OprAssignBusRepository->getOprBuslist($request);
-    // } 
+    // }
 
     // public function getOperatorbuslist($request)
     // {
     //     return $this->OprAssignBusRepository->getOperatorbuslist($request);
-    // }  
+    // }
 
     // public function getOprAssignBus($request)
     // {
     //     return $this->OprAssignBusRepository->getOprAssignBus($request);
-    // } 
+    // }
 
     // public function OprAssignBus($request)
     // {
@@ -40,5 +42,5 @@ class OprAssignBusService
     //   public function deleteOprAssignBus($request)
     // {
     //     return $this->OprAssignBusRepository->deleteOprAssignBus($request);
-    // }  
+    // }
 }

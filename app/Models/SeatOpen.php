@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\SeatOpenSeats;
 use App\Models\Bus;
 
-
 class SeatOpen extends Model
 {
     use HasFactory;
@@ -17,12 +16,12 @@ class SeatOpen extends Model
 
     public function seatOpenSeats()
     {
-    	 return $this->hasMany(SeatOpenSeats::class);
+        return $this->hasMany(SeatOpenSeats::class);
     }
 
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
-    
+
 }

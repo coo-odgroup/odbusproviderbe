@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Services\OprReportService;
 use Illuminate\Support\Facades\Validator;
@@ -13,26 +15,26 @@ use Symfony\Component\HttpFoundation\Response;
 class OprReportController extends Controller
 {
     use ApiResponser;
-   
+
     protected $OprReportService;
-    
-    
-    public function __construct(OprReportService $OprReportService )
+
+
+    public function __construct(OprReportService $OprReportService)
     {
-        $this->OprReportService = $OprReportService;              
+        $this->OprReportService = $OprReportService;
     }
 
 
-     public function oprBookingReport(Request $request)
-     {
-          return $this->OprReportService->oprBookingReport($request);
-            
-	 }  
+    public function oprBookingReport(Request $request)
+    {
+        return $this->OprReportService->oprBookingReport($request);
 
-	 public function oprCancelReport(Request $request)
-     {
-          return $this->OprReportService->oprCancelReport($request);
-            
-	 }  
+    }
+
+    public function oprCancelReport(Request $request)
+    {
+        return $this->OprReportService->oprCancelReport($request);
+
+    }
 
 }

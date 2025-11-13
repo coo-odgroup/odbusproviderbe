@@ -1,12 +1,14 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class BannerValidator 
-{   
-    public function validate($data) { 
+class BannerValidator
+{
+    public function validate($data)
+    {
 
         $rules = [
             'user_id' => 'required',
@@ -18,10 +20,10 @@ class BannerValidator
             'start_time' => 'required',
             'end_date' => 'required',
             'end_time' => 'required',
-        ];      
-        
+        ];
+
         $bannerValidation = Validator::make($data, $rules);
-     
+
         return $bannerValidation;
     }
 

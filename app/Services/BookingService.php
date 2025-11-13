@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class BookingService
 {
-    
     protected $bookingRepository;
 
-    
+
     public function __construct(BookingRepository $bookingRepository)
     {
         $this->bookingRepository = $bookingRepository;
     }
 
-    
+
     // public function deleteById($id)
     // {
     //     DB::beginTransaction();
@@ -42,45 +41,45 @@ class BookingService
 
     // }
 
-    
+
     // public function getAll()
     // {
     //     return $this->bookingRepository->getAll();
     // }
 
-    
+
     // public function getById($id)
     // {
     //     return $this->bookingRepository->getById($id);
     // }
 
-   
-//     public function updatePost($data, $id)
-//     {
-        
 
-//         DB::beginTransaction();
+    //     public function updatePost($data, $id)
+    //     {
 
-//         try {
-//             $post = $this->bookingRepository->update($data, $id);
 
-//         } catch (Exception $e) {
-//             DB::rollBack();
-//             // Log::info($e->getMessage());
+    //         DB::beginTransaction();
 
-//             throw new InvalidArgumentException('Unable to update post data');
-//         }
+    //         try {
+    //             $post = $this->bookingRepository->update($data, $id);
 
-//         DB::commit();
+    //         } catch (Exception $e) {
+    //             DB::rollBack();
+    //             // Log::info($e->getMessage());
 
-//         return $post;
+    //             throw new InvalidArgumentException('Unable to update post data');
+    //         }
 
-//     }
+    //         DB::commit();
 
-    
+    //         return $post;
+
+    //     }
+
+
     // public function saveBookingData($data)
     // {
-        
+
     //     $result = $this->bookingRepository->saveBooking($data);
 
     //     return $result;

@@ -63,7 +63,7 @@ class BusSeatLayoutService
     // {
     //     return $this->busSeatLayoutRepository->BusSeatLayoutbyUser($request);
     // }
-    
+
 
     /**
      * Get  by id.
@@ -103,8 +103,8 @@ class BusSeatLayoutService
     //     return $post;
 
     // }
-    
-    
+
+
     /**
      * Validate  data.
      * Store to DB if there are no errors.
@@ -125,14 +125,14 @@ class BusSeatLayoutService
     // public function getAllBusSeatLayoutDT($request)
     // {
     //     return $this->busSeatLayoutRepository->getAllBusSeatLayoutDT($request);
-    // } 
+    // }
 
     // public function BusSeatLayoutData($request)
     // {
     //     return $this->busSeatLayoutRepository->BusSeatLayoutData($request);
     // }
 
-    
+
     // public function changeStatus($id)
     // {
     //     try {

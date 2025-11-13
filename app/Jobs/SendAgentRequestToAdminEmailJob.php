@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 class SendAgentRequestToAdminEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -28,11 +30,11 @@ class SendAgentRequestToAdminEmailJob implements ShouldQueue
 
     public function __construct($to, $subject, $req)
     {
-        
+
         $this->to = $to;
         $this->subject = $subject;
-        $this->userName=$req['userName'];
-        $this->userEmail=$req['userEmail'];
+        $this->userName = $req['userName'];
+        $this->userEmail = $req['userEmail'];
     }
 
     /**
@@ -42,13 +44,13 @@ class SendAgentRequestToAdminEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'userName'=>$this->userName,
+        $data = [
+            'userName' => $this->userName,
             'userEmail' => $this->userEmail,
-        ]; 
-         // Log::info($data);
-        Mail::send('SendAgentRequestToAdminEmail', $data, function ($messageNew) {              
-            $messageNew->from(config('mail.contact.address'))           
+        ];
+        // Log::info($data);
+        Mail::send('SendAgentRequestToAdminEmail', $data, function ($messageNew) {
+            $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });

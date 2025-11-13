@@ -1,14 +1,15 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class FestivalFareValidator 
-{   
+class FestivalFareValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
         $rules = [
             // 'operator_id' => 'required',
             // 'bus_id' => 'required',
@@ -17,8 +18,8 @@ class FestivalFareValidator
             // 'sleeper_price' => 'required',
             'created_by' => 'required',
             'reason' => 'required'
-        ];      
-      
+        ];
+
         $festivalFareValidation = Validator::make($data, $rules);
         return $festivalFareValidation;
     }

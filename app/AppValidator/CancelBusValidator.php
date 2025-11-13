@@ -1,14 +1,15 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CancelBusValidator 
-{   
+class CancelBusValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
         $rules = [
             //'bus_id' => 'required',
             'bus_operator_id' => 'required',
@@ -16,8 +17,8 @@ class CancelBusValidator
             'reason' => 'required',
             'cancelled_by' => 'required',
             'reason' => 'required',
-        ];      
-        
+        ];
+
         $cancelBusvalidation = Validator::make($data, $rules);
         return $cancelBusvalidation;
     }

@@ -6,6 +6,7 @@ use App\Models\CancellationSlab;
 use App\Models\CancellationSlabInfo;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+
 class CancellationSlabRepository
 {
     protected $cancellationSlab;
@@ -17,70 +18,64 @@ class CancellationSlabRepository
     }
     public function getAll($request)
     {
-        return $this->cancellationSlab->with('SlabInfo')->where('status','1')->get();
+        return $this->cancellationSlab->with('SlabInfo')->where('status', '1')->get();
     }
     public function cancellationslabsOperator($request)
     {
-        return $this->cancellationSlab->with('SlabInfo')->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID'])->where('status','1')->get();
+        return $this->cancellationSlab->with('SlabInfo')->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID'])->where('status', '1')->get();
     }
     public function cancellationslabsUserData($request)
     {
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;
-        $data=$this->cancellationSlab->with('SlabInfo')->where('status','1');
-        if($user_role==5)
-        {
-            $data= $data->where('user_id',$user_id);   
-        } 
+        $data = $this->cancellationSlab->with('SlabInfo')->where('status', '1');
+        if ($user_role == 5) {
+            $data = $data->where('user_id', $user_id);
+        }
 
         return $data->get();
     }
 
     public function cancellationslabData($request)
-    {      
+    {
         $paginate = $request['rows_number'] ;
         $name = $request['name'];
 
         $user_role = $request['user_role'];
         $user_id = $request['user_id'];
-       
 
-        $data= $this->cancellationSlab->with('SlabInfo')->with('User')->whereNotIn('status', [2])
-                             ->orderBy('id','DESC');
+
+        $data = $this->cancellationSlab->with('SlabInfo')->with('User')->whereNotIn('status', [2])
+                             ->orderBy('id', 'DESC');
 
         // if($request['USER_BUS_OPERATOR_ID']!="")
         // {
         //     $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
-        // }                        
+        // }
 
-        if($paginate=='all') 
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
-        if($name!=null)
-        {
-            $data = $data->where('rule_name','like', '%' .$name . '%');
-        } 
-
-        if($user_role!=1)
-        {
-            $data= $data->where('user_id',$user_id);   
+        if ($name != null) {
+            $data = $data->where('rule_name', 'like', '%' .$name . '%');
         }
-      
 
-        $data=$data->paginate($paginate);
+        if ($user_role != 1) {
+            $data = $data->where('user_id', $user_id);
+        }
+
+
+        $data = $data->paginate($paginate);
 
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
-           );   
-           return $response;
+           );
+        return $response;
 
 
     }
@@ -89,9 +84,8 @@ class CancellationSlabRepository
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=10000;
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = 10000;
         }
 
         $columnIndex_arr = $request->get('order');
@@ -102,30 +96,29 @@ class CancellationSlabRepository
         $columnName = $columnName_arr[$columnIndex]['data']; // Column name
         $columnSortOrder = $order_arr[0]['dir']; // asc or desc
         $searchValue = $search_arr['value']; // Search value
-        $totalRecords = $this->cancellationSlab->where('status','!=','2')->count();
-        $totalRecordswithFilter = $this->cancellationSlab->with('SlabInfo') 
+        $totalRecords = $this->cancellationSlab->where('status', '!=', '2')->count();
+        $totalRecordswithFilter = $this->cancellationSlab->with('SlabInfo')
         ->where('rule_name', 'like', "%" .$searchValue . "%")
-        ->where('status','!=','2')
+        ->where('status', '!=', '2')
         ->count();
-        $records = $this->cancellationSlab->with('SlabInfo') 
-            ->orderBy($columnName,$columnSortOrder)
+        $records = $this->cancellationSlab->with('SlabInfo')
+            ->orderBy($columnName, $columnSortOrder)
             ->where('rule_name', "like", "%" .$searchValue . "%")
-            ->where('status','!=','2')
+            ->where('status', '!=', '2')
             ->skip($start)
             ->take($rowperpage)
             ->get();
         $data_arr = array();
-        foreach($records as $record)
-        {
-            $data_arr[]=$record->toArray();
+        foreach ($records as $record) {
+            $data_arr[] = $record->toArray();
         }
-        $api_array=array("1"=>"ODBUS");
+        $api_array = array("1" => "ODBUS");
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
+        );
         return ($response);
     }
 
@@ -138,7 +131,7 @@ class CancellationSlabRepository
     public function getById($id)
     {
         //->SlabInfo()
-        return $this->cancellationSlab->with('SlabInfo') 
+        return $this->cancellationSlab->with('SlabInfo')
             ->where('id', $id)
             ->get();
     }
@@ -150,7 +143,7 @@ class CancellationSlabRepository
         $cSlab->cancellation_policy_desc = $data['cancellation_policy_desc'];
         $cSlab->created_by = $data['created_by'];
         $cSlab->user_id = $data['user_id'];
-        $cSlab->status =0;
+        $cSlab->status = 0;
         return $cSlab;
     }
     /**
@@ -164,30 +157,29 @@ class CancellationSlabRepository
 
         // check if cancellation slab already exist for a user
 
-        $chk_exist=$this->cancellationSlab->where('user_id',$data['user_id'])->get();
+        $chk_exist = $this->cancellationSlab->where('user_id', $data['user_id'])->get();
 
 
-        if(count($chk_exist) > 0){
+        if (count($chk_exist) > 0) {
             return 'SLAB_EXIST';
         }
 
 
 
-        $cSlab = new $this->cancellationSlab;
-        $cSlab=$this->getModel($data,$cSlab);
+        $cSlab = new $this->cancellationSlab();
+        $cSlab = $this->getModel($data, $cSlab);
         $cSlab->save();
 
 
-        $cSlabDetails=[];
-        $slabs=$data['slabs'];
-        foreach($slabs as $slab_data)
-        {
-            $cSlabInfo=new CancellationSlabInfo();
-            $cSlabInfo->duration=$slab_data['duration'];
-            $cSlabInfo->deduction=$slab_data['deduction'];
+        $cSlabDetails = [];
+        $slabs = $data['slabs'];
+        foreach ($slabs as $slab_data) {
+            $cSlabInfo = new CancellationSlabInfo();
+            $cSlabInfo->duration = $slab_data['duration'];
+            $cSlabInfo->deduction = $slab_data['deduction'];
             $cSlabInfo->created_by = $data['created_by'];
-            $cSlabInfo->status='1';
-            $cSlabDetails[]=$cSlabInfo;
+            $cSlabInfo->status = '1';
+            $cSlabDetails[] = $cSlabInfo;
         }
         $cSlab->SlabInfo()->saveMany($cSlabDetails);
 
@@ -202,33 +194,32 @@ class CancellationSlabRepository
      * @return cancellationSlab
      */
     public function update($data, $id)
-    { 
+    {
 
-          // check if cancellation slab already exist for a user
+        // check if cancellation slab already exist for a user
 
-          $chk_exist=$this->cancellationSlab->where('user_id',$data['user_id'])->where('id','!=',$id)->get();
+        $chk_exist = $this->cancellationSlab->where('user_id', $data['user_id'])->where('id', '!=', $id)->get();
 
-          if(count($chk_exist) > 0){
-              return 'SLAB_EXIST';
-          }
+        if (count($chk_exist) > 0) {
+            return 'SLAB_EXIST';
+        }
 
         $cSlab = $this->cancellationSlab->findOrFail($id);
-        $cSlab=$this->getModel($data,$cSlab);
+        $cSlab = $this->getModel($data, $cSlab);
         $cSlab->update();
 
-        $cancellationSlabInforecord=$this->cancellationSlabInfo->where('cancellation_slab_id',$id);
+        $cancellationSlabInforecord = $this->cancellationSlabInfo->where('cancellation_slab_id', $id);
         $cancellationSlabInforecord->delete();
 
-        $cSlabDetails=[];
-        $slabs=$data['slabs'];
-        foreach($slabs as $slab_data)
-        {
-            $cSlabInfo=new CancellationSlabInfo();
-            $cSlabInfo->duration=$slab_data['duration'];
-            $cSlabInfo->deduction=$slab_data['deduction'];
+        $cSlabDetails = [];
+        $slabs = $data['slabs'];
+        foreach ($slabs as $slab_data) {
+            $cSlabInfo = new CancellationSlabInfo();
+            $cSlabInfo->duration = $slab_data['duration'];
+            $cSlabInfo->deduction = $slab_data['deduction'];
             $cSlabInfo->created_by = $data['created_by'];
-            $cSlabInfo->status='1';
-            $cSlabDetails[]=$cSlabInfo;
+            $cSlabInfo->status = '1';
+            $cSlabDetails[] = $cSlabInfo;
         }
         $cSlab->SlabInfo()->saveMany($cSlabDetails);
 
@@ -253,9 +244,9 @@ class CancellationSlabRepository
     public function changeStatus($id)
     {
         $cSlab = $this->cancellationSlab->find($id);
-        if($cSlab->status==0){
+        if ($cSlab->status == 0) {
             $cSlab->status = 1;
-        }elseif($cSlab->status==1){
+        } elseif ($cSlab->status == 1) {
             $cSlab->status = 0;
         }
         $cSlab->update();

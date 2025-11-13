@@ -13,16 +13,15 @@ use InvalidArgumentException;
 
 class PreBookingService
 {
-    
     protected $preBookingRepository;
 
-    
+
     public function __construct(PreBookingRepository $preBookingRepository)
     {
         $this->preBookingRepository = $preBookingRepository;
     }
 
-    
+
     // public function deleteById($id)
     // {
     //     DB::beginTransaction();
@@ -43,22 +42,22 @@ class PreBookingService
 
     // }
 
-    
+
     // public function getAll()
     // {
     //     return $this->preBookingRepository->getAll();
     // }
 
-    
+
     // public function getById($id)
     // {
     //     return $this->preBookingRepository->getById($id);
     // }
 
-   
+
     public function updatePost($data, $id)
     {
-        
+
 
         DB::beginTransaction();
 
@@ -78,19 +77,19 @@ class PreBookingService
 
     }
 
-    
+
     // public function savePreBookingData($data)
     // {
-        
+
     //     $result = $this->preBookingRepository->savePreBooking($data);
 
     //     return $result;
     // }
 
-    
+
     public function savePreBooking($data)
     {
-       
+
         $result = $this->preBookingRepository->savePreBookingPhaseOne($data);
 
         return $result;
@@ -99,7 +98,7 @@ class PreBookingService
     // public function updatePreBookingPhaseTwo($data, $transaction_id)
     // {
     //     // print_r($data);exit;
- 
+
     //     DB::beginTransaction();
 
     //     try {

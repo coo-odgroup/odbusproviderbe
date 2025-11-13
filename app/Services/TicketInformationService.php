@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Services;
+
 use App\Models\Location;
 use App\Repositories\TicketInformationRepository;
 use Exception;
@@ -27,8 +29,8 @@ class TicketInformationService
     }
 
 
-    
-       /////////////// SUBHASIS MOHANTY - GARBAGE CODE CHANGE /////////////////
+
+    /////////////// SUBHASIS MOHANTY - GARBAGE CODE CHANGE /////////////////
 
 
 
@@ -42,39 +44,39 @@ class TicketInformationService
     // public function failedticketadjustdata($request)
     // {
     //     return $this->ticketInformationRepository->failedticketadjustdata($request);
-    // } 
+    // }
 
 
-    
+
     // public function getpnrdetails($request)
     // {
     //     return $this->ticketInformationRepository->getpnrdetails($request);
-    // } 
+    // }
 
     // public function getApiPnrDetails($request)
     // {
     //     return $this->ticketInformationRepository->getApiPnrDetails($request);
-    // } 
+    // }
 
     // public function getPnrDetailsForSms($request)
     // {
     //     return $this->ticketInformationRepository->getPnrDetailsForSms($request);
-    // } 
+    // }
 
     // public function apicancelticket($request)
     // {
     //     return $this->ticketInformationRepository->apicancelticket($request);
-    // } 
+    // }
 
     //  public function sms_log($request)
     // {
     //     return $this->ticketInformationRepository->sms_log($request);
-    // } 
-    
+    // }
+
     // public function cancelticket($request)
     // {
     //     return $this->ticketInformationRepository->cancelticket($request);
-    // } 
+    // }
 
     // public function cancelticketdata($request)
     // {
@@ -93,17 +95,17 @@ class TicketInformationService
     // public function getDetailsSms($request)
     // {
     //     return $this->ticketInformationRepository->getDetailsSms($request);
-    // } 
+    // }
 
     // public function getBookingID($request)
     // {
     //     return $this->ticketInformationRepository->getBookingID($request);
-    // }  
+    // }
 
     // public function git($request)
     // {
     //     return $this->ticketInformationRepository->save_customSMS($request);
-    // } 
+    // }
 
     // public function GetCancelSmsToCustomer($request)
     // {
@@ -118,12 +120,12 @@ class TicketInformationService
     // public function save_CancelcustomSMSToCustomer($request)
     // {
     //     return $this->ticketInformationRepository->save_CancelcustomSMSToCustomer($request);
-    // } 
+    // }
 
     // public function save_CancelcustomSMSToCMO($request)
     // {
     //     return $this->ticketInformationRepository->save_CancelcustomSMSToCMO($request);
-    // } 
+    // }
 
     // public function getEmailID($request)
     // {
@@ -144,6 +146,6 @@ class TicketInformationService
     // {
     //     return $this->ticketInformationRepository->sendCancelEmailToSupport($request);
     // }
-    
-    
+
+
 }

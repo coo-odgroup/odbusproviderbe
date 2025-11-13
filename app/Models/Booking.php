@@ -12,8 +12,6 @@ use App\Models\CustomerPayment;
 use App\Models\UserBooking;
 use App\Models\ApiClientWallet;
 
-
-
 class Booking extends Model
 {
     use HasFactory;
@@ -24,44 +22,44 @@ class Booking extends Model
                             'total_fare','ownr_fare','is_coupon','coupon_code','coupon_discount',
                             'discounted_fare','origin','app_type','typ_id','created_by'];
 
-      public function Users()
-      {
-            return $this->belongsTo(Users::class);
-      } 
+    public function Users()
+    {
+        return $this->belongsTo(Users::class);
+    }
 
-      public function User()
-      {
-            return $this->belongsTo(User::class);
-      }
+    public function User()
+    {
+        return $this->belongsTo(User::class);
+    }
 
-      public function Bus()
-      {
-            return $this->belongsTo(Bus::class);
-      } 
+    public function Bus()
+    {
+        return $this->belongsTo(Bus::class);
+    }
 
-      public function BookingDetail()
-      {
-            return $this->hasMany(BookingDetail::class);
-      }
+    public function BookingDetail()
+    {
+        return $this->hasMany(BookingDetail::class);
+    }
 
-      public function ClientWallet()
-      {
-            return $this->hasMany(ApiClientWallet::class)->where('transaction_type','=','c');
-      }
-      
-      public function CustomerPayment()
-      {
-            return $this->hasOne(CustomerPayment::class)->where('razorpay_id','!=',NULL);
-      } 
+    public function ClientWallet()
+    {
+        return $this->hasMany(ApiClientWallet::class)->where('transaction_type', '=', 'c');
+    }
 
-      public function CustomerPaymentData()
-      {
-            return $this->hasOne(CustomerPayment::class);
-      }  
+    public function CustomerPayment()
+    {
+        return $this->hasOne(CustomerPayment::class)->where('razorpay_id', '!=', null);
+    }
 
-      public function UserBooking()
-      {
-            return $this->hasOne(UserBooking::class);
-      }
+    public function CustomerPaymentData()
+    {
+        return $this->hasOne(CustomerPayment::class);
+    }
+
+    public function UserBooking()
+    {
+        return $this->hasOne(UserBooking::class);
+    }
 
 }

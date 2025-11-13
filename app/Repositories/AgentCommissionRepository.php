@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Repositories;
+
 use Illuminate\Support\Facades\Log;
 use App\Models\AgentCommission;
+
 class AgentCommissionRepository
 {
     /**
@@ -20,7 +22,7 @@ class AgentCommissionRepository
         $this->agentCommission = $agentCommission;
     }
 
-    
+
     public function getAll($request)
     {
         return $this->agentCommission->get();
@@ -31,22 +33,19 @@ class AgentCommissionRepository
     {
         $paginate = $request['rows_number'] ;
 
-        $data= $this->agentCommission
+        $data = $this->agentCommission
                     ->whereNotIn('status', [2])
-                    ->orderBy('id','DESC');
+                    ->orderBy('id', 'DESC');
 
-        if($paginate=='all') 
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
-        
 
-        $data=$data->paginate($paginate);
+
+        $data = $data->paginate($paginate);
         // Log::info($data);
 
         $response = array(
@@ -54,9 +53,13 @@ class AgentCommissionRepository
              "total" => $data->total(),
             "data" => $data
            );
+<<<<<<< HEAD
            return $response;
+=======
+        return $response;
 
-       
+>>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
+
     }
     public function getModel($data, AgentCommission $agentCommission)
     {
@@ -67,16 +70,16 @@ class AgentCommissionRepository
         $agentCommission->status = 1;
         return $agentCommission;
     }
-    
+
     public function getById($id)
     {
         return $this->agentCommission->where('id', $id)->get();
     }
     public function save($data)
     {
-       
-        $agentCommission = new $this->agentCommission;
-        $agentCommission=$this->getModel($data,$agentCommission);
+
+        $agentCommission = new $this->agentCommission();
+        $agentCommission = $this->getModel($data, $agentCommission);
         $agentCommission->save();
         return $agentCommission;
     }
@@ -90,7 +93,7 @@ class AgentCommissionRepository
     public function update($data, $id)
     {
         $agentCommission = $this->agentCommission->find($id);
-        $agentCommission=$this->getModel($data,$agentCommission);
+        $agentCommission = $this->getModel($data, $agentCommission);
         $agentCommission->update();
         return $agentCommission;
     }
@@ -113,13 +116,13 @@ class AgentCommissionRepository
     public function changeStatus($id)
     {
         $post = $this->agentCommission->find($id);
-        if($post->status==0){
+        if ($post->status == 0) {
             $post->status = 1;
-        }elseif($post->status==1){
+        } elseif ($post->status == 1) {
             $post->status = 0;
         }
         $post->update();
         return $post;
     }
-    
+
 }

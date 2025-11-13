@@ -14,10 +14,10 @@ class CouponAssignedBus extends Model
     protected $fillable = ['bus_id','coupon_id','created_by'];
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
     public function coupon()
     {
-    	return $this->belongsTo(Coupon::class);
+        return $this->belongsTo(Coupon::class);
     }
 }

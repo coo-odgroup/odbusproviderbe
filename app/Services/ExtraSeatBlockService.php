@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Repositories\ExtraSeatBlockRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class ExtraSeatBlockService
         $this->extraSeatBlockRepository = $extraSeatBlockRepository;
     }
 
-   
+
     // public function deleteExtraSeatBlock($request)
     // {
     //     try {
@@ -28,19 +29,19 @@ class ExtraSeatBlockService
     //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
     //     }
     //     return $seatblock;
-    // }    
-   
+    // }
+
 
     // public function addExtraSeatBlock($request)
     // {
     //     return $this->extraSeatBlockRepository->addExtraSeatBlock($request);
-    // } 
+    // }
 
     // public function addExtraSeatBlockByOperator($request)
     // {
     //     return $this->extraSeatBlockRepository->addExtraSeatBlockByOperator($request);
     // }
-   
+
     // public function extraSeatBlockData($request)
     // {
     //     return $this->extraSeatBlockRepository->extraSeatBlockData($request);

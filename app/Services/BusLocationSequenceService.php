@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
+
 class BusLocationSequenceService
 {
     /**
@@ -101,7 +102,7 @@ class BusLocationSequenceService
 
     public function deletebyBusId($id)
     {
-         $result = $this->busLocationSequenceRepository->deletebyBusId($id);
+        $result = $this->busLocationSequenceRepository->deletebyBusId($id);
         return $result;
     }
 
@@ -111,5 +112,5 @@ class BusLocationSequenceService
     //     return $result;
     // }
 
-    
+
 }

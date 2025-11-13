@@ -14,32 +14,32 @@ use Symfony\Component\HttpFoundation\Response;
 class AgentReportController extends Controller
 {
     use ApiResponser;
-   
-    protected $agentreportService; 
- 
 
-    
+    protected $agentreportService;
+
+
+
     public function __construct(AgentReportService $agentreportService)
     {
-        $this->agentreportService = $agentreportService;        
+        $this->agentreportService = $agentreportService;
     }
 
     public function getData(Request $request)
     {
         $completeData = $this->agentreportService->getData($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function agentcancelreport(Request $request)
     {
         $completeData = $this->agentreportService->agentcancelreport($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function agentCommissionreport(Request $request)
     {
         $completeData = $this->agentreportService->agentCommissionreport($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 }

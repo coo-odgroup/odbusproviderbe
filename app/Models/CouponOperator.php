@@ -14,7 +14,7 @@ class CouponOperator extends Model
     protected $fillable = ['coupon_id','operator_id','created_by'];
     public function coupon()
     {
-    	return $this->belongsTo(Coupon::class);
+        return $this->belongsTo(Coupon::class);
     }
     public function busOperator()
     {

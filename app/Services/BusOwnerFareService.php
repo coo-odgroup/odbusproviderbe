@@ -13,10 +13,9 @@ use InvalidArgumentException;
 
 class BusOwnerFareService
 {
-    
     protected $busOwnerFareRepository;
 
-    
+
     public function __construct(BusOwnerFareRepository $busOwnerFareRepository)
     {
         $this->busOwnerFareRepository = $busOwnerFareRepository;
@@ -55,13 +54,13 @@ class BusOwnerFareService
     */
     // public function dataTable($request)
     // {
-        
+
     //     return $this->busOwnerFareRepository->getDatatable($request);
-    // } 
+    // }
 
     // public function busOwnerFareData($request)
     // {
-        
+
     //     return $this->busOwnerFareRepository->busOwnerFareData($request);
     // }
     /**
@@ -81,7 +80,7 @@ class BusOwnerFareService
      * @param array $data
      * @return String
      */
-   
+
     // public function updatePost($data, $id)
     // {
     //     try {
@@ -101,7 +100,7 @@ class BusOwnerFareService
      * @param array $data
      * @return String
      */
-    
+
     // public function savePostData($data)
     // {
     //     try {

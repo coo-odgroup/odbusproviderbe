@@ -7,9 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\BusOperator;
 use App\Models\User;
 
-
-
-
 class SeoSetting extends Model
 {
     use HasFactory;
@@ -18,14 +15,14 @@ class SeoSetting extends Model
 
 
 
-	public function BusOperator()
-	{        
-		return $this->belongsTo(BusOperator::class);        
-	} 
+    public function BusOperator()
+    {
+        return $this->belongsTo(BusOperator::class);
+    }
 
-	public function User()
-	{        
-		return $this->belongsTo(User::class);        
-	} 
+    public function User()
+    {
+        return $this->belongsTo(User::class);
+    }
 
 }

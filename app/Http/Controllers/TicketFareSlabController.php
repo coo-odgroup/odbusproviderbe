@@ -15,23 +15,23 @@ use Illuminate\Support\Facades\Log;
 
 class TicketFareSlabController extends Controller
 {
-  use ApiResponser;
+    use ApiResponser;
     /**
      * @var LocationService
      */
     protected $ticketFareSlabService;
     protected $ticketFareSlabValidator;
-    
+
     /**
      * PostController Constructor
      *
      * @param LocationService $busTypeService
      *
      */
-    public function __construct(TicketFareSlabService $ticketFareSlabService,TicketFareSlabValidator $ticketFareSlabValidator)
+    public function __construct(TicketFareSlabService $ticketFareSlabService, TicketFareSlabValidator $ticketFareSlabValidator)
     {
-      $this->ticketFareSlabService = $ticketFareSlabService;
-      $this->ticketFareSlabValidator = $ticketFareSlabValidator;
+        $this->ticketFareSlabService = $ticketFareSlabService;
+        $this->ticketFareSlabValidator = $ticketFareSlabValidator;
 
     }
     // public function getAllLocations() {
@@ -41,7 +41,7 @@ class TicketFareSlabController extends Controller
     // }
 
     // public function getlocationbyID($id) {
-    //   //print_r("hello");exit();     
+    //   //print_r("hello");exit();
     //   try {
     //     $locations = $this->locationService->getById($id);
     //   }
@@ -62,98 +62,98 @@ class TicketFareSlabController extends Controller
     //   return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
     // }
 
-    //   public function getLocationDT(Request $request) {      
+    //   public function getLocationDT(Request $request) {
 
     //     $locations = $this->locationService->getAllLocationDT($request);
     //     return $this->successResponse($locations,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
-    //   } 
+    //   }
 
-    public function ticketFareSlabData(Request $request) {      
+    public function ticketFareSlabData(Request $request)
+    {
 
-      $ticketFare = $this->ticketFareSlabService->ticketFareSlabData($request);
-      return $this->successResponse($ticketFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $ticketFare = $this->ticketFareSlabService->ticketFareSlabData($request);
+        return $this->successResponse($ticketFare, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
 
     }
-    public function changeStatusticketFareSlab($id) {
+    public function changeStatusticketFareSlab($id)
+    {
 
-      try{
-        $this->ticketFareSlabService->changeStatusticketFareSlab($id);
-      }
-      catch (Exception $e){
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse(null,"Location Status Updated", Response::HTTP_ACCEPTED);
-    } 
-    public function deleteticketFareSlab($id) {
-      
-      try{
-        $this->ticketFareSlabService->deleteticketFareSlab($id);
-      }
-      catch (Exception $e){
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse(null,"Ticket Fare Slab Deleted", Response::HTTP_ACCEPTED);
+        try {
+            $this->ticketFareSlabService->changeStatusticketFareSlab($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Location Status Updated", Response::HTTP_ACCEPTED);
+    }
+    public function deleteticketFareSlab($id)
+    {
+
+        try {
+            $this->ticketFareSlabService->deleteticketFareSlab($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Ticket Fare Slab Deleted", Response::HTTP_ACCEPTED);
     }
 
-    public function createslab(Request $request) {
+    public function createslab(Request $request)
+    {
 
-      $data = $request->all();          
-      
-
-      $response =  $this->ticketFareSlabService->createslab($data);;
-
-      if($response=='Operator Already Exist')
-      {
-        return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-      }
-      else
-      {
-       return $this->successResponse($response,"Ticket fare Slab Added Successfully", Response::HTTP_CREATED);
-     }
+        $data = $request->all();
 
 
-   } 
+        $response =  $this->ticketFareSlabService->createslab($data);
+        ;
+
+        if ($response == 'Operator Already Exist') {
+            return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+        } else {
+            return $this->successResponse($response, "Ticket fare Slab Added Successfully", Response::HTTP_CREATED);
+        }
 
 
-  // public function editLocation(Request $request, $id) {
-  //     $data = $request->only([
-  //       'name',
-  //       'synonym',
-  //       'created_by'
-  //     ]);    
-
-  //     $locationValidation = $this->LocationValidator->validate($data);;
-  //     if ($locationValidation->fails()) {
-  //       $errors = $locationValidation->errors();
-  //       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-  //     }
-  //     else
-  //       {
-  //         $response =  $this->locationService->editPost($data, $id);
-
-  //          if($response=='Location Already Exist')
-  //          {
-  //             return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-  //          }
-  //          else
-  //          {
-  //              return $this->successResponse($response,"Location Updated", Response::HTTP_CREATED);
-  //          }
-
-  //       } 
-
-  // }
+    }
 
 
+    // public function editLocation(Request $request, $id) {
+    //     $data = $request->only([
+    //       'name',
+    //       'synonym',
+    //       'created_by'
+    //     ]);
 
-  // public function filterLocation(request $request) {
-  //   $prod= $this->locationService->datafilter($request);
-  //   // $output ['status']=1;
-  //   // $output ['message']='All Data Fetched Successfully';
-  //   // $output ['result']=$prod;
-  //   // return response($prod, 200);
-  //   return $this->successResponse($prod,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-  // }
+    //     $locationValidation = $this->LocationValidator->validate($data);;
+    //     if ($locationValidation->fails()) {
+    //       $errors = $locationValidation->errors();
+    //       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    //     }
+    //     else
+    //       {
+    //         $response =  $this->locationService->editPost($data, $id);
 
- }
+    //          if($response=='Location Already Exist')
+    //          {
+    //             return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+    //          }
+    //          else
+    //          {
+    //              return $this->successResponse($response,"Location Updated", Response::HTTP_CREATED);
+    //          }
+
+    //       }
+
+    // }
+
+
+
+    // public function filterLocation(request $request) {
+    //   $prod= $this->locationService->datafilter($request);
+    //   // $output ['status']=1;
+    //   // $output ['message']='All Data Fetched Successfully';
+    //   // $output ['result']=$prod;
+    //   // return response($prod, 200);
+    //   return $this->successResponse($prod,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    // }
+
+}

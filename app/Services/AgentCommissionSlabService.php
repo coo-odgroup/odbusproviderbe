@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\BusOwnerFare;
@@ -12,17 +13,28 @@ use InvalidArgumentException;
 
 class AgentCommissionSlabService
 {
-    
     protected $agentCommissionSlabRepository;
 
-    
+
     public function __construct(AgentCommissionSlabRepository $agentCommissionSlabRepository)
     {
         $this->agentCommissionSlabRepository = $agentCommissionSlabRepository;
     }
+<<<<<<< HEAD
         
    
+=======
+
+    // public function agentcommissionslab()
+    // {
+    //       return $this->agentCommissionSlabRepository->agentcommissionslab();
+    // }
+    // public function customercommissionslab()
+    // {
+    //       return $this->agentCommissionSlabRepository->customercommissionslab();
+    // }
+
+
+>>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
 }
-
- 

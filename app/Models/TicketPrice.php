@@ -11,8 +11,6 @@ use App\Models\BusOperator;
 use App\Models\BusSeats;
 use App\Models\Location;
 
-
-
 class TicketPrice extends Model
 {
     use HasFactory;
@@ -21,11 +19,11 @@ class TicketPrice extends Model
     'base_sleeper_fare', 'dep_time','arr_time','j_day','created_by'];
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
     public function user()
     {
-    	return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
     public function stoppage()
     {
@@ -34,16 +32,16 @@ class TicketPrice extends Model
     }
     public function getBusSeats()
     {
-        return $this->hasMany(BusSeats::class)->where('status','!=',2);
+        return $this->hasMany(BusSeats::class)->where('status', '!=', 2);
     }
 
     public function source()
-    {        
-        return $this->belongsTo(Location::class,'source_id');     
+    {
+        return $this->belongsTo(Location::class, 'source_id');
     }
 
     public function destination()
-    {        
-        return $this->belongsTo(Location::class,'destination_id');     
+    {
+        return $this->belongsTo(Location::class, 'destination_id');
     }
 }

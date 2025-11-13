@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -10,10 +11,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 class SendApiClientIssueEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -31,14 +34,14 @@ class SendApiClientIssueEmailJob implements ShouldQueue
 
     public function __construct($to, $subject, $req)
     {
-        
+
         $this->to = $to;
         $this->subject = $subject;
-        $this->userName=$req['userName'];
-        $this->userEmail=$req['userEmail'];
-        $this->issueType=$req['issueType'];
-        $this->issueSubType=$req['issueSubType'];
-        $this->mesasage=$req['mesasage'];
+        $this->userName = $req['userName'];
+        $this->userEmail = $req['userEmail'];
+        $this->issueType = $req['issueType'];
+        $this->issueSubType = $req['issueSubType'];
+        $this->mesasage = $req['mesasage'];
 
     }
 
@@ -49,15 +52,15 @@ class SendApiClientIssueEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'userName'=>$this->userName,
+        $data = [
+            'userName' => $this->userName,
             'userEmail' => $this->userEmail,
             'issueType' => $this->issueType,
             'issueSubType' => $this->issueSubType,
             'mesasage' => $this->mesasage,
-        ]; 
-        Mail::send('sendApiClientIssueEmail', $data, function ($messageNew) {              
-            $messageNew->from(config('mail.contact.address'))           
+        ];
+        Mail::send('sendApiClientIssueEmail', $data, function ($messageNew) {
+            $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });

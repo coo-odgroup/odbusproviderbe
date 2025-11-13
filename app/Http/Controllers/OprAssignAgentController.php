@@ -16,32 +16,32 @@ use App\AppValidator\OprAssignAgentValidator;
 class OprAssignAgentController extends Controller
 {
     use ApiResponser;
-   
+
     protected $oprAssignAgentService;
-    protected $oprAssignAgentValidator;      
-    
+    protected $oprAssignAgentValidator;
+
     public function __construct(oprAssignAgentService $oprAssignAgentService, OprAssignAgentValidator $oprAssignAgentValidator)
     {
         $this->oprAssignAgentService = $oprAssignAgentService;
-        $this->oprAssignAgentValidator = $oprAssignAgentValidator;                
+        $this->oprAssignAgentValidator = $oprAssignAgentValidator;
     }
 
     public function getAllAssignAgent(Request $request)
     {
-        return $this->oprAssignAgentService->getAllAssignAgent($request);            
-	}   
+        return $this->oprAssignAgentService->getAllAssignAgent($request);
+    }
 
-	public function deleteOprAssignAgent(Request $request)
+    public function deleteOprAssignAgent(Request $request)
     {
-         $response= $this->oprAssignAgentService->deleteOprAssignAgent($request);
-         return $this->successResponse($response,"Delete Successful", Response::HTTP_CREATED);  
-	}   
+        $response = $this->oprAssignAgentService->deleteOprAssignAgent($request);
+        return $this->successResponse($response, "Delete Successful", Response::HTTP_CREATED);
+    }
 
-	public function addAssignAgent(Request $request)
+    public function addAssignAgent(Request $request)
     {
-         //log::info($request);
-         $response = $this->oprAssignAgentService->addAssignAgent($request);
-         return $this->successResponse($response,"Agents assigned to the Operator", Response::HTTP_CREATED);   
-	}     
+        //log::info($request);
+        $response = $this->oprAssignAgentService->addAssignAgent($request);
+        return $this->successResponse($response, "Agents assigned to the Operator", Response::HTTP_CREATED);
+    }
 
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -20,31 +21,33 @@ class BusContactsController extends Controller
     public function __construct(BusContactsService $busContactsService, BusContactsValidator $BusContactsValidator)
     {
         $this->busContactsService = $busContactsService;
-        $this->BusContactsValidator=$BusContactsValidator;
+        $this->BusContactsValidator = $BusContactsValidator;
     }
-    public function getAllBusContacts() {
+    public function getAllBusContacts()
+    {
         $busContacts = $this->busContactsService->getAll();
-        return $this->successResponse($busContacts,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($busContacts, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-    public function createBusContacts(Request $request) {
+    public function createBusContacts(Request $request)
+    {
         $data = $request->only([
             'bus_id', 'type','phone','booking_sms_send','cancel_sms_send','created_by'
           ]);
         $busContactsValidation = $this->BusContactsValidator->validate($data);
         if ($busContactsValidation->fails()) {
             $errors = $busContactsValidation->errors();
-            return $this->errorResponse($errors,Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($errors, Response::HTTP_PARTIAL_CONTENT);
         }
-        try{
+        try {
             $this->busContactsService->savePostData($data);
-        } 
-        catch (Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
-    } 
+    }
 
-    public function updateBusContacts(Request $request, $id) {
+    public function updateBusContacts(Request $request, $id)
+    {
         $data = $request->only([
             'bus_id', 'type','phone','booking_sms_send','cancel_sms_send','created_by'
         ]);
@@ -52,35 +55,37 @@ class BusContactsController extends Controller
 
         if ($busContactsValidation->fails()) {
             $errors = $busContactsValidation->errors();
-            return $this->errorResponse($errors,Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($errors, Response::HTTP_PARTIAL_CONTENT);
         }
         try {
             $this->busContactsService->updatePost($data, $id);
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
     }
 
-    public function deleteBusContacts ($id) {
+    public function deleteBusContacts($id)
+    {
         $result = ['status' => 200];
 
         try {
             $result['data'] = $this->busContactsService->deleteById($id);
-        } 
-        catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
     }
 
-    public function getBusContacts($id) {
-      $busContacts = $this->busContactsService->getById($id);
-      return $this->successResponse($busContacts,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }      
-    public function busContactsByBusId($id) {
+    public function getBusContacts($id)
+    {
+        $busContacts = $this->busContactsService->getById($id);
+        return $this->successResponse($busContacts, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+    public function busContactsByBusId($id)
+    {
         $busContacts = $this->busContactsService->getByBusId($id);
-        return $this->successResponse($busContacts,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      }  
-	     
+        return $this->successResponse($busContacts, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
 }

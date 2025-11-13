@@ -13,7 +13,6 @@ use InvalidArgumentException;
 
 class BusCancelledService
 {
-    
     protected $busCancelledRepository;
     public function __construct(BusCancelledRepository $busCancelledRepository)
     {
@@ -82,7 +81,7 @@ class BusCancelledService
      * @param array $data
      * @return String
      */
-   
+
     // public function updatePost($data, $id)
     // {
     //     try {
@@ -102,7 +101,7 @@ class BusCancelledService
      * @param array $data
      * @return String
      */
-    
+
     // public function savePostData($data)
     // {
     //     try {
@@ -126,7 +125,7 @@ class BusCancelledService
     //     }
     //     return $busCancel;
     // }
-    
+
     // public function changeStatus($id)
     // {
     //     try {

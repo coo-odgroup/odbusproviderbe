@@ -10,16 +10,15 @@ use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 
-
 class OprAssignOperatorService
 {
-    protected $OprAssignOperatorRepository;    
-   
+    protected $OprAssignOperatorRepository;
+
     public function __construct(OprAssignOperatorRepository $OprAssignOperatorRepository)
     {
         $this->OprAssignOperatorRepository = $OprAssignOperatorRepository;
     }
-    
+
     public function getAllData($request)
     {
         return $this->OprAssignOperatorRepository->getAllData($request);
@@ -33,12 +32,12 @@ class OprAssignOperatorService
     public function addusercontent($request)
     {
         return $this->OprAssignOperatorRepository->addusercontent($request);
-    }  
+    }
 
     public function getAllAssignOperator($request)
     {
         return $this->OprAssignOperatorRepository->getAllAssignOperator($request);
-    } 
+    }
 
     public function addAssignOperator($request)
     {
@@ -48,23 +47,23 @@ class OprAssignOperatorService
     public function deleteOprAssignOperator($request)
     {
         return $this->OprAssignOperatorRepository->deleteOprAssignOperator($request);
-    } 
+    }
 
-    public function updateusercontent($request,$id)
+    public function updateusercontent($request, $id)
     {
-        return $this->OprAssignOperatorRepository->updateusercontent($request,$id);
-    } 
-    public function changePassword($request,$id)
+        return $this->OprAssignOperatorRepository->updateusercontent($request, $id);
+    }
+    public function changePassword($request, $id)
     {
-        return $this->OprAssignOperatorRepository->changePassword($request,$id);
+        return $this->OprAssignOperatorRepository->changePassword($request, $id);
     }
     public function deleteusercontent($id)
     {
         return $this->OprAssignOperatorRepository->deleteusercontent($id);
-    } 
-     public function changeStatus($id)
+    }
+    public function changeStatus($id)
     {
         return $this->OprAssignOperatorRepository->changeStatus($id);
-    }   
+    }
 
 }

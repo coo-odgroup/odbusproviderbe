@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
@@ -9,7 +11,7 @@ class OprAssignBus extends Model
 {
     use HasFactory;
 
-    protected $table = 'assign_bus';    
+    protected $table = 'assign_bus';
 
     protected $fillable = ['user_id','bus_id','created_at','updated_at','created_by'];
 
@@ -24,5 +26,3 @@ class OprAssignBus extends Model
     }
 
 }
-
-

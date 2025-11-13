@@ -38,7 +38,7 @@ class BusStoppageTimingService
     //     return $post;
     // }
 
-    
+
     // public function getAll()
     // {
     //     return $this->busStoppageTimingRepository->getAll();
@@ -75,10 +75,10 @@ class BusStoppageTimingService
     //     return $result;
     // }
 
-   
-//     public function savePostData($data)
-//     {
-//         $result = $this->busStoppageTimingRepository->save($data);
-//         return $result;
-//     }
- }
+
+    //     public function savePostData($data)
+    //     {
+    //         $result = $this->busStoppageTimingRepository->save($data);
+    //         return $result;
+    //     }
+}

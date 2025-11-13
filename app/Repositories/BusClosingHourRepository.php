@@ -6,10 +6,9 @@ use App\Models\BusClosingHours;
 
 class BusClosingHourRepository
 {
-    
     protected $busClosingHour;
 
-    
+
     public function __construct(BusClosingHours $busClosingHours)
     {
         $this->busClosingHours = $busClosingHours;
@@ -23,9 +22,8 @@ class BusClosingHourRepository
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=10000;
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = 10000;
         }
         $columnIndex_arr = $request->get('order');
         $columnName_arr = $request->get('columns');
@@ -35,14 +33,14 @@ class BusClosingHourRepository
         $columnSortOrder = $order_arr[0]['dir']; // asc or desc
         $columnIndex = $columnIndex_arr[0]['column']; // Column index
         $columnName = $columnName_arr[0]['data']; // Column name
-        
+
         $searchValue = $search_arr[0]['value']; // Search value
         $totalRecords = $this->busClosingHours->select('COUNT(*) as allcount')->count();
         $totalRecordswithFilter = $this->busClosingHours
         ->where('city_id', 'like', "%" .$searchValue . "%")
         ->count();
-        
-        $records = $this->busClosingHours->orderBy($columnName,$columnSortOrder)
+
+        $records = $this->busClosingHours->orderBy($columnName, $columnSortOrder)
             ->where('city_id', "like", "%" .$searchValue . "%")
 
             ->skip($start)
@@ -50,8 +48,8 @@ class BusClosingHourRepository
             ->get();
 
         $data_arr = array();
-        $sno = $start+1;
-        foreach($records as $record){
+        $sno = $start + 1;
+        foreach ($records as $record) {
             $id = $record->id;
             $bus_id = $record->bus_id;
             $city_id = $record->city_id;
@@ -67,13 +65,13 @@ class BusClosingHourRepository
                 "closing_hours" => $closing_hours,
                 "status" => $status
             );
-        }   
+        }
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
+        );
         return ($response);
     }
     public function getById($id)
@@ -82,7 +80,7 @@ class BusClosingHourRepository
     }
     public function save($data)
     {
-        $busClosingHours = new $this->busClosingHours;
+        $busClosingHours = new $this->busClosingHours();
         $busClosingHours->bus_id = $data['bus_id'];
         $busClosingHours->city_id = $data['city_id'];
         $busClosingHours->dep_time = $data['dep_time'];
@@ -91,7 +89,7 @@ class BusClosingHourRepository
         return $busClosingHours->fresh();
     }
 
-    
+
     public function update($data, $id)
     {
         $busClosingHours = $this->busClosingHours->findOrFail($id);
@@ -105,7 +103,7 @@ class BusClosingHourRepository
         return $busClosingHours;
     }
 
-    
+
     public function delete($id)
     {
         $busClosingHours = $this->busClosingHours->whereNotIn('status', [2])->findOrFail($id);

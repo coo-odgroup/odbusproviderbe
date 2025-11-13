@@ -15,6 +15,6 @@ class BusSitting extends Model
     ];
     public function Bus()
     {
-    	return $this->hasOne(Bus::class);
+        return $this->hasOne(Bus::class);
     }
 }

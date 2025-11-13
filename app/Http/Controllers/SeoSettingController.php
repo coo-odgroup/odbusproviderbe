@@ -13,121 +13,118 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\SeoSettingValidator;
 
-
 class SeoSettingController extends Controller
 {
     use ApiResponser;
-   
+
     protected $seosettingService;
-    protected $seosettingValidator;   
-    
-    
+    protected $seosettingValidator;
+
+
     public function __construct(SeoSettingService $seosettingService, SeoSettingValidator $seosettingValidator)
     {
         $this->seosettingService = $seosettingService;
-        $this->seosettingValidator = $seosettingValidator;                
+        $this->seosettingValidator = $seosettingValidator;
     }
 
     public function getAllseosetting()
     {
 
         $seosetting = $this->seosettingService->getAll();
-        return $this->successResponse($seosetting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($seosetting, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function seosettingData(Request $request)
     {
 
         $seosetting = $this->seosettingService->seosettingData($request);
-        return $this->successResponse($seosetting,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($seosetting, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-     public function addseosetting(Request $request)
-     {
-     
-     	 $data = $request->only([
-          'page_url',
-          'seo_type',
-          'source_id',
-          'destination_id',
-          'user_id',
-          'url_description',
-          'meta_title',
-          'meta_keyword',
-          'meta_description',
-          'extra_meta',
-          'canonical_url',
-          'created_by'
+    public function addseosetting(Request $request)
+    {
+
+        $data = $request->only([
+        'page_url',
+        'seo_type',
+        'source_id',
+        'destination_id',
+        'user_id',
+        'url_description',
+        'meta_title',
+        'meta_keyword',
+        'meta_description',
+        'extra_meta',
+        'canonical_url',
+        'created_by'
         ]);
 
-    	 $seosetting = $this->seosettingValidator->validate($data);
+        $seosetting = $this->seosettingValidator->validate($data);
 
 
-      if ($seosetting->fails()) {
-        $errors = $seosetting->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      }      
-      try {
-        $this->seosettingService->addseosetting($request);
-        return $this->successResponse(null, "SEO Setting Added", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-      	// Log::info($e);
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }  
+        if ($seosetting->fails()) {
+            $errors = $seosetting->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        try {
+            $this->seosettingService->addseosetting($request);
+            return $this->successResponse(null, "SEO Setting Added", Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            // Log::info($e);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
 
-     }
-     public function updateseosetting(Request $request , $id)
-     {
+    }
+    public function updateseosetting(Request $request, $id)
+    {
 
-     	 $data = $request->only([
-          'page_url', 
-          'user_id',
-          'seo_type',
-          'source_id',
-          'destination_id',
-          'url_description',
-          'meta_title',
-          'meta_keyword',
-          'meta_description',
-          'extra_meta',
-          'canonical_url',
-          'created_by'
+        $data = $request->only([
+        'page_url',
+        'user_id',
+        'seo_type',
+        'source_id',
+        'destination_id',
+        'url_description',
+        'meta_title',
+        'meta_keyword',
+        'meta_description',
+        'extra_meta',
+        'canonical_url',
+        'created_by'
         ]);
 
-    	 $seosetting = $this->seosettingValidator->validate($data);
+        $seosetting = $this->seosettingValidator->validate($data);
 
 
-      if ($seosetting->fails()) {
-        $errors = $seosetting->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      }      
-      try {
-        $this->seosettingService->updateseosetting($request, $id);
-        return $this->successResponse(null, "SEO Setting Updated", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-      	// Log::info($e);
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }  
+        if ($seosetting->fails()) {
+            $errors = $seosetting->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        try {
+            $this->seosettingService->updateseosetting($request, $id);
+            return $this->successResponse(null, "SEO Setting Updated", Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            // Log::info($e);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
 
-     }
+    }
 
-     public function deleteseosetting($id)
-     {
-     	$seosetting = $this->seosettingService->deleteseosetting($id);
-        return $this->successResponse($seosetting,"SEO Setting Deleted",Response::HTTP_OK);
+    public function deleteseosetting($id)
+    {
+        $seosetting = $this->seosettingService->deleteseosetting($id);
+        return $this->successResponse($seosetting, "SEO Setting Deleted", Response::HTTP_OK);
 
-     }
-     public function changeStatusseosetting($id)
-     {
-      $seosetting = $this->seosettingService->changeStatusseosetting($id);
-        return $this->successResponse($seosetting,"SEO Setting Status Updated",Response::HTTP_OK);
+    }
+    public function changeStatusseosetting($id)
+    {
+        $seosetting = $this->seosettingService->changeStatusseosetting($id);
+        return $this->successResponse($seosetting, "SEO Setting Status Updated", Response::HTTP_OK);
 
-     }
+    }
 
-     
-    
-     
+
+
+
 
 }

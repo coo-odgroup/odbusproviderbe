@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Config;
 
 class SendSupportEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -31,10 +34,10 @@ class SendSupportEmailJob implements ShouldQueue
     {
         $this->to = $to;
         $this->subject = $subject;
-        $this->userName=$req['userName'];
-        $this->amount=$req['amount'];
-        $this->via=$req['via'];
-        $this->tran_id=$req['tran_id'];
+        $this->userName = $req['userName'];
+        $this->amount = $req['amount'];
+        $this->via = $req['via'];
+        $this->tran_id = $req['tran_id'];
     }
 
     /**
@@ -44,8 +47,8 @@ class SendSupportEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'userName'=>$this->userName,
+        $data = [
+            'userName' => $this->userName,
             'amount' => $this->amount,
             'via' => $this->via,
             'tran_id' => $this->tran_id

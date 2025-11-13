@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Throwable;
 use Illuminate\Support\Facades\Log;
 
-abstract class AbstractRepository 
+abstract class AbstractRepository
 //implements RepositoryInterface
 {
     /** @var string */
@@ -39,7 +39,7 @@ abstract class AbstractRepository
     }
 
     public function getById($id): ?Model
-    {        
+    {
         return $this->model->find($id);
     }
 
@@ -51,7 +51,7 @@ abstract class AbstractRepository
 
     /** @return Collection|array<Model> */
     public function getAll(): Collection
-    {        
+    {
         return $this->model->all();
     }
 
@@ -63,18 +63,18 @@ abstract class AbstractRepository
     public function getModelClass(): string
     {
         return $this->modelClass;
-    }     
-     public function create(array $data)
-     {
-         //Log::info("Model Class".$this->getModelClass());
+    }
+    public function create(array $data)
+    {
+        //Log::info("Model Class".$this->getModelClass());
         //Log::info("Inside Create".$this->model->fillable);
-       // var_dump($this->model->fillable);
+        // var_dump($this->model->fillable);
         $result = $this->model->create($data->only($this->model->fillable));
         return $result;
-     }
-     public function update(array $data, $id)
-     {
-         $record = $this->find($id);
-         return $record->update($data);
-     }
+    }
+    public function update(array $data, $id)
+    {
+        $record = $this->find($id);
+        return $record->update($data);
+    }
 }

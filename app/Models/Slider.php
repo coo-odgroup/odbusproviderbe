@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Coupon;
 
-
 class Slider extends Model
 {
     use HasFactory;
@@ -16,7 +15,7 @@ class Slider extends Model
     ];
 
     public function coupon()
-	{        
-		return $this->belongsTo(Coupon::class);        
-	}
+    {
+        return $this->belongsTo(Coupon::class);
+    }
 }

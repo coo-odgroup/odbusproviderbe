@@ -14,30 +14,30 @@ use Symfony\Component\HttpFoundation\Response;
 class AssocAssignReportController extends Controller
 {
     use ApiResponser;
-   
-    protected $AssocAssignReportService; 
- 
 
-    
+    protected $AssocAssignReportService;
+
+
+
     public function __construct(AssocAssignReportService $AssocAssignReportService)
     {
-        $this->AssocAssignReportService = $AssocAssignReportService;        
+        $this->AssocAssignReportService = $AssocAssignReportService;
     }
 
     public function getAssignBusData(Request $request)
     {
         $completeData = $this->AssocAssignReportService->getAssignBusData($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     public function getAssignAgentData(Request $request)
     {
         $completeData = $this->AssocAssignReportService->getAssignAgentData($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     public function getAssignOperatorData(Request $request)
     {
         $completeData = $this->AssocAssignReportService->getAssignOperatorData($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 }

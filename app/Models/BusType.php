@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
 use App\Models\BusClass;
 
-
 class BusType extends Model
 {
     use HasFactory;
@@ -19,7 +18,7 @@ class BusType extends Model
 
     public function Bus()
     {
-    	return $this->hasOne(Bus::class);
+        return $this->hasOne(Bus::class);
     }
     public function BusClass()
     {
@@ -28,6 +27,6 @@ class BusType extends Model
     public function busOperator()
     {
         return $this->belongsTo(BusOperator::class);
-        
-    } 
+
+    }
 }

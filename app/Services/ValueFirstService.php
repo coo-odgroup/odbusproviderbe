@@ -21,13 +21,13 @@ class ValueFirstService
     {
         $numbers = array_filter(explode(',', $to));
 
-        $addrs=[];
+        $addrs = [];
 
-        foreach( $numbers as $k => $n){
-            $addrs[]=[
+        foreach ($numbers as $k => $n) {
+            $addrs[] = [
                     "from" => "ODBUUS",
                     "to" => $n,
-                    "seq" => $k+1,
+                    "seq" => $k + 1,
                     "tag" => ""
                 ];
         }
@@ -62,7 +62,7 @@ class ValueFirstService
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>json_encode($payload),
+        CURLOPT_POSTFIELDS => json_encode($payload),
         CURLOPT_HTTPHEADER => array(
             'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJJbmZpbml0byIsImlhdCI6MTc1MzM0OTIxOSwic3ViIjoiT0RCVVNpNG1xb2plZDZreXJtNnY5dWNiIn0._-DrotVj12RNZ6Y8swdprw4rGC115IhwQ4kREvFpRt0',
             'Content-Type: application/json'
@@ -73,11 +73,11 @@ class ValueFirstService
 
         curl_close($curl);
 
-        $sms_log['phone']=$to;
-        $sms_log['sms_body']=$message;
-        $sms_log['req_body']=json_encode($payload);
-        $sms_log['response']=$response;
-        $sms_log['via']="Admin";
+        $sms_log['phone'] = $to;
+        $sms_log['sms_body'] = $message;
+        $sms_log['req_body'] = json_encode($payload);
+        $sms_log['response'] = $response;
+        $sms_log['via'] = "Admin";
         DB::table("sms_log")->insert($sms_log);
 
         return $response;

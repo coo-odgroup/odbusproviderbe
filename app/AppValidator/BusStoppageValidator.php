@@ -1,14 +1,15 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class BusStoppageValidator 
-{   
+class BusStoppageValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
         $rules = [
             'bus_id' => 'required|exists:bus,id',
             'user_id' => 'required',
@@ -20,8 +21,8 @@ class BusStoppageValidator
             'arr_time' => 'required',
             'j_day' => 'required',
             'created_by' => 'required',
-        ];      
-      
+        ];
+
         $BusStoppageValidation = Validator::make($data, $rules);
         return $BusStoppageValidation;
     }

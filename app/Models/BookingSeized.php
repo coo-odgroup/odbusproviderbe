@@ -8,7 +8,6 @@ use App\Models\Location;
 use App\Models\TicketPrice;
 use App\Models\Bus;
 
-
 class BookingSeized extends Model
 {
     use HasFactory;
@@ -18,12 +17,12 @@ class BookingSeized extends Model
 
     public function ticketPrice()
     {
-    	 return $this->belongsTo(TicketPrice::class);
+        return $this->belongsTo(TicketPrice::class);
     }
 
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
-    
+
 }

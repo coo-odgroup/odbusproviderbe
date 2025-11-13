@@ -11,6 +11,6 @@ class TicketFareSlab extends Model
     protected $table = 'ticket_fare_slab';
     //public $timestamps = false;
     protected $fillable = ['bus_operator_id ','starting_fare','upto_fare','odbus_commision'];
- 
-    
+
+
 }

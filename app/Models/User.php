@@ -27,50 +27,48 @@ class User extends Model
      *
      * @var array
      */
-    protected $table = 'user';    
+    protected $table = 'user';
 
     protected $fillable = ['name','phone','user_type','alternate_email'];
-    
+
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
 
     public function odbusCharges()
-    {        
-        return $this->hasOne(OdbusCharges::class);        
-    } 
+    {
+        return $this->hasOne(OdbusCharges::class);
+    }
 
     public function UserBusOperator()
-    {        
-        return $this->hasOne(UserBusOperator::class);        
-    } 
+    {
+        return $this->hasOne(UserBusOperator::class);
+    }
 
     public function Cancellationslabs()
-    {        
-        return $this->hasOne(Cancellationslabs::class);        
-    } 
+    {
+        return $this->hasOne(Cancellationslabs::class);
+    }
     public function agentWallet()
     {
-        return $this->hasMany(AgentWallet::class);        
-    } 
+        return $this->hasMany(AgentWallet::class);
+    }
 
-     public function busOperator()
+    public function busOperator()
     {
-        return $this->belongsTo(BusOperator::class);        
-    } 
+        return $this->belongsTo(BusOperator::class);
+    }
 
 
     // public function assocAssignOperator()
     // {
-    //     return $this->hasMany(AssocAssignOperator::class);        
-    // } 
+    //     return $this->hasMany(AssocAssignOperator::class);
+    // }
 
     // public function assocAssignBus()
     // {
-    //     return $this->hasMany(AssocAssignBus::class);        
-    // } 
+    //     return $this->hasMany(AssocAssignBus::class);
+    // }
 
 }
-
-

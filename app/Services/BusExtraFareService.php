@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class BusExtraFareService
 {
-    
     protected $busExtraFareRepository;
 
-    
+
     public function __construct(busExtraFareRepository $busExtraFareRepository)
     {
         $this->busExtraFareRepository = $busExtraFareRepository;
     }
 
-    
+
     // public function deleteById($id)
     // {
     //     DB::beginTransaction();
@@ -42,22 +41,22 @@ class BusExtraFareService
 
     // }
 
-    
+
     // public function getAll()
     // {
     //     return $this->busExtraFareRepository->getAll();
     // }
 
-    
+
     // public function getById($id)
     // {
     //     return $this->busExtraFareRepository->getById($id);
     // }
 
-   
+
     // public function updatePost($data, $id)
     // {
-        
+
 
     //     DB::beginTransaction();
 
@@ -77,10 +76,10 @@ class BusExtraFareService
 
     // }
 
-    
+
     public function savePostData($data)
     {
-        
+
 
         $result = $this->busExtraFareRepository->save($data);
 

@@ -80,7 +80,7 @@ class BusOperatorService
 
     /**
      * Get all Data.
-    
+
      * @return String
      */
     // public function getAll()
@@ -94,7 +94,7 @@ class BusOperatorService
     public function datafilter($request)
     {
         return $this->busOperatorRepository->filter($request);
-    } 
+    }
 
     // public function BusbyOperatorData($request)
     // {

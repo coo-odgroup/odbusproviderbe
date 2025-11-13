@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Log;
 
 class SendCancelEmailToSupportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -41,11 +44,11 @@ class SendCancelEmailToSupportJob implements ShouldQueue
         $this->contactNo = $request['contactNo'];
         $this->route = $request['route'];
         $this->deductionPercentage = $request['deductionPercentage'];
-        $this->refundAmount = number_format($request['refundAmount'],2);
+        $this->refundAmount = number_format($request['refundAmount'], 2);
         $this->seat_no = $request['seat_no'];
         $this->totalfare = $request['totalfare'];
         $this->cancellationDateTime = $request['cancellationDateTime'];
-        $this->subject ='';
+        $this->subject = '';
     }
 
     /**
@@ -59,29 +62,29 @@ class SendCancelEmailToSupportJob implements ShouldQueue
         $data = [
             'email' => $this->email,
             'pnr' => $this->pnr,
-            'contactNo'=> $this->contactNo,
+            'contactNo' => $this->contactNo,
             'journeydate' => $this->journeydate ,
-            'route'=> $this->route,
+            'route' => $this->route,
             'seat_no' => $this->seat_no,
-            'totalfare'=> $this->totalfare,
-            'deductionPercentage'=> $this->deductionPercentage,
-            'refundAmount'=> $this->refundAmount,
-            'cancellationDateTime'=> $this->cancellationDateTime           
+            'totalfare' => $this->totalfare,
+            'deductionPercentage' => $this->deductionPercentage,
+            'refundAmount' => $this->refundAmount,
+            'cancellationDateTime' => $this->cancellationDateTime
         ];
 
         $this->subject = config('services.email.subjectTicketCancel');
-        $this->subject = str_replace("<PNR>",$this->pnr,$this->subject);
+        $this->subject = str_replace("<PNR>", $this->pnr, $this->subject);
 
         Mail::send('CancelEmailToSupport', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
              ->to($this->to)
             ->subject($this->subject);
             return 'Email Sent To support@odbus.in';
-        });  
-        
+        });
+
         // check for failures
         // if (Mail::failures()) {
-        //     return new Error(Mail::failures()); 
+        //     return new Error(Mail::failures());
         //     return "Email failed";
         // }
     }

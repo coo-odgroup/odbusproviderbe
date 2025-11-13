@@ -20,99 +20,104 @@ class FestivalFareController extends Controller
     use ApiResponser;
     protected $festivalFareService;
     protected $festivalFareValidator;
-    
+
     public function __construct(FestivalFareService $festivalFareService, FestivalFareValidator $festivalFareValidator)
     {
         $this->festivalFareService = $festivalFareService;
         $this->festivalFareValidator = $festivalFareValidator;
     }
 
-    public function getAllFestivalFare() {
+    public function getAllFestivalFare()
+    {
 
         $busOwnerFare = $this->festivalFareService->getAll();
-        return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($busOwnerFare, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-    public function getFestivalFareDT(Request $request) {      
+    public function getFestivalFareDT(Request $request)
+    {
 
         $busOwnerFare = $this->festivalFareService->dataTable($request);
-        return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($busOwnerFare, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function festivalFareData(Request $request) {      
+    public function festivalFareData(Request $request)
+    {
 
         $busOwnerFare = $this->festivalFareService->festivalFareData($request);
-        return $this->successResponse($busOwnerFare,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      }
+        return $this->successResponse($busOwnerFare, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-      public function createFestivalFare(Request $request) {
+    public function createFestivalFare(Request $request)
+    {
 
         $data = $request->only([
-        
-          'date','seater_price','sleeper_price','reason','created_by','operator_id','bus_id' 
+
+          'date','seater_price','sleeper_price','reason','created_by','operator_id','bus_id'
         ]);
 
         $busOwnerFareValidation = $this->festivalFareValidator->validate($data);
         if ($busOwnerFareValidation->fails()) {
             $errors = $busOwnerFareValidation->errors();
-            
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-          }
+
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
         try {
-           $this->festivalFareService->savePostData($request);
+            $this->festivalFareService->savePostData($request);
 
         } catch (Exception $e) {
-           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-      return $this->successResponse($data,"Bus Festival Fare Added",Response::HTTP_CREATED); 
-    } 
+        return $this->successResponse($data, "Bus Festival Fare Added", Response::HTTP_CREATED);
+    }
 
 
-    public function updateFestivalFare(Request $request, $id) {
-      $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by',
-      ]);
+    public function updateFestivalFare(Request $request, $id)
+    {
+        $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by',
+        ]);
         $busOwnerFareValidation = $this->festivalFareValidator->validate($data);
         if ($busOwnerFareValidation->fails()) {
             $errors = $busOwnerFareValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-          $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by','bus_id',
-          ]);
-          $this->festivalFareService->updatePost($data, $id);
-          return $this->successResponse($data, "Bus Festival Fare Updated",Response::HTTP_CREATED);
+            $data = $request->only(['date','bus_operator_id','source_id','destination_id','seater_price','sleeper_price','reason','created_by','bus_id',
+            ]);
+            $this->festivalFareService->updatePost($data, $id);
+            return $this->successResponse($data, "Bus Festival Fare Updated", Response::HTTP_CREATED);
 
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
 
-    public function deleteFestivalFare($id) {
+    public function deleteFestivalFare($id)
+    {
         try {
             $this->festivalFareService->deleteById($id);
-          }
-          catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-          }
-          return $this->successResponse(null, "Bus Festival Fare Deleted", Response::HTTP_ACCEPTED);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse(null, "Bus Festival Fare Deleted", Response::HTTP_ACCEPTED);
     }
 
-    public function getFestivalFare($id) {
+    public function getFestivalFare($id)
+    {
         try {
-            $busOwnerFareID= $this->festivalFareService->getById($id);
-          }
-          catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-          }
-          return $this->successResponse($busOwnerFareID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    }      
-    public function changeStatus($id) {
-        try{
-          $this->festivalFareService->changeStatus($id);
+            $busOwnerFareID = $this->festivalFareService->getById($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
-        catch (Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        return $this->successResponse($busOwnerFareID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+    public function changeStatus($id)
+    {
+        try {
+            $this->festivalFareService->changeStatus($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Festival Fare Status Updated", Response::HTTP_ACCEPTED);
-      }
-	     
+    }
+
 }

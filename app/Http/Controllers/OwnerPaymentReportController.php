@@ -13,19 +13,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OwnerPaymentReportController extends Controller
 {
-    use ApiResponser;   
-   
-    protected $ownerpaymentreportService;    
-    
+    use ApiResponser;
+
+    protected $ownerpaymentreportService;
+
     public function __construct(OwnerPaymentReportService $ownerpaymentreportService)
     {
-        $this->ownerpaymentreportService = $ownerpaymentreportService;        
+        $this->ownerpaymentreportService = $ownerpaymentreportService;
     }
 
     public function getData(Request $request)
     {
         $ownerpayment = $this->ownerpaymentreportService->getData($request);
-        return $this->successResponse($ownerpayment,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($ownerpayment, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 }

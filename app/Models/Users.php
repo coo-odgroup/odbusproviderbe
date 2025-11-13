@@ -7,25 +7,26 @@ use Illuminate\Database\Eloquent\Model;
 // use App\Models\User;
 use App\Models\Bus;
 use App\Models\Booking;
+
 class Users extends Model
 {
     use HasFactory;
     protected $table = 'users';
     protected $fillable = [];
 
-     // public function User()
-     //  {
-     //        return $this->belongsTo(User::class);
-     //  }
+    // public function User()
+    //  {
+    //        return $this->belongsTo(User::class);
+    //  }
 
-      public function Bus()
-      {
-            return $this->belongsTo(Bus::class);
-      }
+    public function Bus()
+    {
+        return $this->belongsTo(Bus::class);
+    }
 
-      public function booking()
-      {
-            return $this->hasMany(Booking::class);   
-      } 
+    public function booking()
+    {
+        return $this->hasMany(Booking::class);
+    }
 
 }

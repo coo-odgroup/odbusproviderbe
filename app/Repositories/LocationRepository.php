@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Repositories;
+
 use App\Models\Location;
 use App\Models\Locationcode;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+
 class LocationRepository
 {
     /**
@@ -24,7 +27,7 @@ class LocationRepository
     }
     public function getAll()
     {
-        return $this->location::with('locationcode')->orderBy('name','ASC')->where('status','1')->get();
+        return $this->location::with('locationcode')->orderBy('name', 'ASC')->where('status', '1')->get();
     }
     public function getById($id)
     {
@@ -38,65 +41,57 @@ class LocationRepository
         return $location;
     }
     public function getModel($data, Location $location)
-    { 
-                   
-       
-        if(isset($data['url']) && $data['url'] !=""){
-             $url = $data['url'];
+    {
+
+
+        if (isset($data['url']) && $data['url'] != "") {
+            $url = $data['url'];
+        } else {
+            $trim = trim($data['name']);
+            $remove_space = str_replace(' ', '', $trim);
+            $remove_special_char = preg_replace('/[^A-Za-z0-9\-]/', '', $remove_space);
+            $url = strtolower($remove_special_char);
         }
-        else
-        {
-             $trim = trim( $data['name']); 
-             $remove_space= str_replace(' ', '', $trim);  
-             $remove_special_char = preg_replace('/[^A-Za-z0-9\-]/', '',$remove_space); 
-             $url = strtolower($remove_special_char);
-        }
- 
-      $location->name = $data['name'];
-      $location->url = $url;
-      $location->synonym = $data['synonym'];
-      $location->state_id = $data['state_id'];
-      $location->created_by = $data['created_by'];
-      return $location;
+
+        $location->name = $data['name'];
+        $location->url = $url;
+        $location->synonym = $data['synonym'];
+        $location->state_id = $data['state_id'];
+        $location->created_by = $data['created_by'];
+        return $location;
     }
     public function add($data)
-    {    
+    {
         $existingLocation = $this->location
-                                 ->where('name',$data['name']) 
-                                 ->where('status','!=',2)
+                                 ->where('name', $data['name'])
+                                 ->where('status', '!=', 2)
                                  ->get();
-        if(count($existingLocation) == 0)
-        {
-              $location = new $this->location;
-              $location=$this->getModel($data,$location);
-              $location->save();
-              return $location;
-        }  
-        else
-        {
+        if (count($existingLocation) == 0) {
+            $location = new $this->location();
+            $location = $this->getModel($data, $location);
+            $location->save();
+            return $location;
+        } else {
             return 'Location Already Exist';
-        }        
+        }
     }
 
     public function edit($data, $id)
-    {    
+    {
         $duplicate_data = $this->location
-                               ->where('name','like', $data['name'])
-                               ->where('id','!=',$id )
-                               ->where('status','!=',2)
+                               ->where('name', 'like', $data['name'])
+                               ->where('id', '!=', $id)
+                               ->where('status', '!=', 2)
                                ->get();
-        if(count($duplicate_data)==0)
-        { 
+        if (count($duplicate_data) == 0) {
             $location = $this->location->find($id);
-            $location=$this->getModel($data,$location);
+            $location = $this->getModel($data, $location);
             $location->update();
             return $location;
-        }  
-        else
-        {
+        } else {
             return 'Location Already Exist';
-        } 
-    } 
+        }
+    }
 
 
 
@@ -105,48 +100,44 @@ class LocationRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
 
-        $data= $this->location->whereNotIn('status', [2])->orderBy('status','ASC')->orderBy('name','ASC');
+        $data = $this->location->whereNotIn('status', [2])->orderBy('status', 'ASC')->orderBy('name', 'ASC');
 
 
-        if($paginate=='all') 
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
-        if($name!=null)
-        {
+        if ($name != null) {
 
             $data = $data->where(
-                function($query) use ($name) {
-                    $data = $query->where(function($query) use ($name) {
-                        $query->where('name','like', '%' .$name . '%')
-                        ->orWhere('synonym','like', '%' .$name . '%')
-                        ->orWhere('created_by','like', '%' .$name . '%');
+                function ($query) use ($name) {
+                    $data = $query->where(function ($query) use ($name) {
+                        $query->where('name', 'like', '%' .$name . '%')
+                        ->orWhere('synonym', 'like', '%' .$name . '%')
+                        ->orWhere('created_by', 'like', '%' .$name . '%');
                     });
-            });                            
-        }     
-        $data=$data->paginate($paginate);
-        
+                }
+            );
+        }
+        $data = $data->paginate($paginate);
+
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
              "test" => "hello",
             "data" => $data
-           );   
-           return $response; 
+           );
+        return $response;
     }
-    public function getAllLocationDT( $request)
+    public function getAllLocationDT($request)
     {
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = Config::get('constants.ALL_RECORDS');
         }
         $columnIndex_arr = $request->get('order');
         $columnName_arr = $request->get('columns');
@@ -163,36 +154,35 @@ class LocationRepository
         $totalRecordswithFilter = $this->location->select('count(*) as allcount')->where('name', 'like', '%' .$searchValue . '%')->whereNotIn('status', [2])->count();
 
         // Fetch records
-        $records = $this->location->orderBy($columnName,$columnSortOrder)
-            ->where(function($query) use ($searchValue){
-              $query->where('name', 'like', '%' .$searchValue . '%');
-               $query->orWhere('synonym', 'like', '%' .$searchValue . '%');
-              })
-            ->where('status','!=', 2)
+        $records = $this->location->orderBy($columnName, $columnSortOrder)
+            ->where(function ($query) use ($searchValue) {
+                $query->where('name', 'like', '%' .$searchValue . '%');
+                $query->orWhere('synonym', 'like', '%' .$searchValue . '%');
+            })
+            ->where('status', '!=', 2)
             ->skip($start)
             ->take($rowperpage)
             ->get();
         $data_arr = array();
-        foreach($records as $key=>$record)
-        {
-            $data_arr[]=$record->toArray();
-            $data_arr[$key]['created_at']=date('j M Y h:i a',strtotime($record->created_at));
-            $data_arr[$key]['updated_at']=date('j M Y h:i a',strtotime($record->updated_at));
-        } 
+        foreach ($records as $key => $record) {
+            $data_arr[] = $record->toArray();
+            $data_arr[$key]['created_at'] = date('j M Y h:i a', strtotime($record->created_at));
+            $data_arr[$key]['updated_at'] = date('j M Y h:i a', strtotime($record->updated_at));
+        }
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
+        );
         return $response;
     }
     public function changeStatus($id)
     {
         $location = $this->location->find($id);
-        if($location->status==0){
+        if ($location->status == 0) {
             $location->status = 1;
-        }elseif($location->status==1){
+        } elseif ($location->status == 1) {
             $location->status = 0;
         }
         $location->update();

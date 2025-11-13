@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Log;
 
 class SendEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -31,9 +34,9 @@ class SendEmailJob implements ShouldQueue
         // Log::info($req);
         $this->to = $to;
         $this->subject = $subject;
-        $this->message= "Good Morning";
-        $this->name=$req['name'];
-        $this->Age=$req['Age'];
+        $this->message = "Good Morning";
+        $this->name = $req['name'];
+        $this->Age = $req['Age'];
     }
     /**
      * Execute the job.
@@ -42,8 +45,8 @@ class SendEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'content'=>$this->to,
+        $data = [
+            'content' => $this->to,
             'name' => $this->name,
             'Age' => $this->Age
         ];

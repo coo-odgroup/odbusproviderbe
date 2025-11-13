@@ -18,7 +18,7 @@ class CouponRoute extends Model
     protected $fillable = ['coupon_id','source_id','destination_id','created_by'];
     public function coupon()
     {
-    	return $this->belongsTo(Coupon::class);
+        return $this->belongsTo(Coupon::class);
     }
     public function from_location()
     {

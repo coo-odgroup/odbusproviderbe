@@ -13,19 +13,18 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\UserContentValidator;
 
-
 class UserContentController extends Controller
 {
     use ApiResponser;
-   
+
     protected $userContentService;
-    protected $userContentValidator;   
-    
-    
+    protected $userContentValidator;
+
+
     public function __construct(UserContentService $userContentService, UserContentValidator $userContentValidator)
     {
         $this->userContentService = $userContentService;
-        $this->userContentValidator = $userContentValidator;                
+        $this->userContentValidator = $userContentValidator;
     }
 
 
@@ -33,126 +32,112 @@ class UserContentController extends Controller
     {
 
         $usercontent = $this->userContentService->getAllData($request);
-        return $this->successResponse($usercontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($usercontent, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-     public function adduser(Request $request)
-     {
-     	// Log::info($request);exit;
-     	 $data = $request->only([
-          'name',
-          'bus_operator_id',
-          'email',
-          'phone',
-          'password'
+    public function adduser(Request $request)
+    {
+        // Log::info($request);exit;
+        $data = $request->only([
+        'name',
+        'bus_operator_id',
+        'email',
+        'phone',
+        'password'
         ]);
 
-    	 $usercontent = $this->userContentValidator->validate($data);
+        $usercontent = $this->userContentValidator->validate($data);
 
 
-      if ($usercontent->fails()) {
-        $errors = $usercontent->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      }      
-      else
-        {
-          $response = $this->userContentService->addusercontent($request);
+        if ($usercontent->fails()) {
+            $errors = $usercontent->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        } else {
+            $response = $this->userContentService->addusercontent($request);
 
-           if($response=='Phone Number Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           elseif($response=='Email Id Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           elseif($response=='Bus Operator Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           else
-           {
-               return $this->successResponse($response,"USER ADDED", Response::HTTP_CREATED);
-           }
+            if ($response == 'Phone Number Exist') {
+                return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+            } elseif ($response == 'Email Id Exist') {
+                return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+            } elseif ($response == 'Bus Operator Exist') {
+                return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+            } else {
+                return $this->successResponse($response, "USER ADDED", Response::HTTP_CREATED);
+            }
         }
 
-     }
-     public function updateuser(Request $request , $id)
-     {
-     	// Log::info($id);exit;
+    }
+    public function updateuser(Request $request, $id)
+    {
+        // Log::info($id);exit;
 
-     	 $data = $request->only([
-          'name',
-          'email',
-          'phone',
+        $data = $request->only([
+        'name',
+        'email',
+        'phone',
         ]);
 
 
-     	 // $this->userContentService->updateusercontent($request, $id);
-       //  return $this->successResponse(null,'USER DATA UPDATED' , Response::HTTP_CREATED);
+        // $this->userContentService->updateusercontent($request, $id);
+        //  return $this->successResponse(null,'USER DATA UPDATED' , Response::HTTP_CREATED);
 
 
-          $response = $this->userContentService->updateusercontent($request, $id);
+        $response = $this->userContentService->updateusercontent($request, $id);
 
-           if($response=='Phone Number Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           elseif($response=='Email Id Exist')
-           {
-              return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-           }
-           else
-           {
-               return $this->successResponse($response,"USER DATA UPDATED", Response::HTTP_CREATED);
-           }
- 
-    	 // $usercontent = $this->userContentValidator->validate($data);
+        if ($response == 'Phone Number Exist') {
+            return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+        } elseif ($response == 'Email Id Exist') {
+            return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+        } else {
+            return $this->successResponse($response, "USER DATA UPDATED", Response::HTTP_CREATED);
+        }
+
+        // $usercontent = $this->userContentValidator->validate($data);
 
 
-      // if ($usercontent->fails()) {
-      //   $errors = $usercontent->errors();
-      //   return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      // }      
-      // try {
-      //   $this->userContentService->updateusercontent($request, $id);
-      //   return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
-      // }
-      // catch(Exception $e){
-      // 	// Log::info($e);
-      //   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      // }  
+        // if ($usercontent->fails()) {
+        //   $errors = $usercontent->errors();
+        //   return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        // }
+        // try {
+        //   $this->userContentService->updateusercontent($request, $id);
+        //   return $this->successResponse(null, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+        // }
+        // catch(Exception $e){
+        // 	// Log::info($e);
+        //   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        // }
 
-     }
+    }
 
-     public function changePassword(Request $request , $id)
-     {
-     	// Log::info($request);exit;
+    public function changePassword(Request $request, $id)
+    {
+        // Log::info($request);exit;
 
-     	 $data = $request->only([
-          'password'          
+        $data = $request->only([
+        'password'
         ]);
-     	 $this->userContentService->changePassword($request, $id);
-        return $this->successResponse(null,"USER PASSWORD UPDATED", Response::HTTP_CREATED);
-     }
+        $this->userContentService->changePassword($request, $id);
+        return $this->successResponse(null, "USER PASSWORD UPDATED", Response::HTTP_CREATED);
+    }
 
 
-     public function changeStatus($id)
-     {
-      $usercontent = $this->userContentService->changeStatus($id);
-        return $this->successResponse($usercontent,'USER STATUS UPDATED',Response::HTTP_OK);
+    public function changeStatus($id)
+    {
+        $usercontent = $this->userContentService->changeStatus($id);
+        return $this->successResponse($usercontent, 'USER STATUS UPDATED', Response::HTTP_OK);
 
-     }
+    }
 
-     public function deleteuser($id)
-     {
-     	$usercontent = $this->userContentService->deleteusercontent($id);
-        return $this->successResponse($usercontent,'USER DELETED',Response::HTTP_OK);
+    public function deleteuser($id)
+    {
+        $usercontent = $this->userContentService->deleteusercontent($id);
+        return $this->successResponse($usercontent, 'USER DELETED', Response::HTTP_OK);
 
-     }
+    }
 
-     
-    
-     
+
+
+
 
 }

@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 
-
 class SafetyService
 {
     /**
@@ -46,7 +45,7 @@ class SafetyService
         return $safety;
     }
 
-    public function changeStatus($data,$id)
+    public function changeStatus($data, $id)
     {
         try {
             $safety = $this->safetyRepository->changeStatus($data, $id);
@@ -65,7 +64,7 @@ class SafetyService
     // {
     //     return $this->safetyRepository->getAll();
     // }
-    
+
     // public function dataTable($request)
     // {
     //     return $this->safetyRepository->getDatatable($request);
@@ -119,7 +118,7 @@ class SafetyService
      * @return String
      */
     // public function savePostData($data)
-    // {   
+    // {
     //     try {
     //         $safety = $this->safetyRepository->save($data);
     //     } catch (Exception $e) {

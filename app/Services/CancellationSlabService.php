@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Services;
+
 use App\Repositories\CancellationSlabRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +15,7 @@ class CancellationSlabService
     protected $cancellationSlabRepository;
     public function __construct(CancellationSlabRepository $cancellationSlabRepository)
     {
-        $this->cancellationSlabRepository = $cancellationSlabRepository; 
+        $this->cancellationSlabRepository = $cancellationSlabRepository;
     }
     /**
      * Delete Data by ID.
@@ -49,15 +51,15 @@ class CancellationSlabService
     //     return $this->cancellationSlabRepository->cancellationslabsOperator($request);
     // }
 
-     /**
-     * Get all Data in Datatable Format.
-     *
-     * @return String
-     */
+    /**
+    * Get all Data in Datatable Format.
+    *
+    * @return String
+    */
     // public function getCancellationSlabDT($request)
     // {
     //     return $this->cancellationSlabRepository->getCancellationSlabDT($request);
-    // } 
+    // }
 
     // public function cancellationslabData($request)
     // {
