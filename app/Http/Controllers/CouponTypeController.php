@@ -65,13 +65,14 @@ class CouponTypeController extends Controller
     }
 
     public function updateCouponType(Request $request, $id)
-    {
-        $data = $request->only([
-          'coupon_type_name','created_by'
-        ]);
+{
+    $data = $request->only([
+        'coupon_type_name', 'created_by'
+    ]);
 
-        $CouponTypeValidation =   $this->couponTypeValidator->validate($data);
+    $CouponTypeValidation = $this->couponTypeValidator->validate($data);
 
+<<<<<<< Updated upstream
         if ($CouponTypeValidation->fails()) {
             $errors = $CouponTypeValidation->errors();
             // return $errors->toJson();
@@ -85,7 +86,21 @@ class CouponTypeController extends Controller
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse($data, "Coupon Type Updated", Response::HTTP_CREATED);
+=======
+    if ($CouponTypeValidation->fails()) {
+        $errors = $CouponTypeValidation->errors();
+        return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+>>>>>>> Stashed changes
     }
+
+    try {
+        $this->couponTypeRepository->update($data, $id);
+        return $this->successResponse($data, "Coupon Type Updated", Response::HTTP_CREATED);
+    } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
 
     public function deleteCouponType($id)
     {
