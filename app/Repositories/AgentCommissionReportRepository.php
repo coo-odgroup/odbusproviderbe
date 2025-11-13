@@ -20,12 +20,12 @@ class AgentCommissionReportRepository
     protected $agentWallet;
 
     public function __construct(Booking $booking ,AgentWallet $agentWallet ,Location $location ,Bus $bus)
-    {       
-        $this->booking = $booking;       
-        $this->location = $location;       
-        $this->bus = $bus;       
-        $this->agentWallet = $agentWallet;       
-    }    
+    {
+        $this->booking = $booking;
+        $this->location = $location;
+        $this->bus = $bus;
+        $this->agentWallet = $agentWallet;
+    }
     
     public function getData($request)
     {
@@ -48,7 +48,7 @@ class AgentCommissionReportRepository
                              ->where('user_id', $user_id )
                              ->where('status','!=',0)
                              ->orderBy('id','DESC');
-        if($paginate=='all') 
+        if($paginate=='all')
         {
             $paginate = Config::get('constants.ALL_RECORDS');
         }
@@ -77,7 +77,7 @@ class AgentCommissionReportRepository
             $data =$data->orderBy('created_at','DESC');
         }
         else if($date_type == 'booking' && $start_date != null && $end_date != null)
-        {         
+        {
             if($start_date == $end_date){
                 $data =$data->where('created_at','like','%'.$start_date.'%')
                         ->orderBy('created_at','DESC');
@@ -138,7 +138,7 @@ class AgentCommissionReportRepository
            );   
 
       
-           return $response;      
+           return $response;
 
     }
     

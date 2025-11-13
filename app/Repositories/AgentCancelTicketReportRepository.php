@@ -16,12 +16,11 @@ class AgentCancelTicketReportRepository
     protected $location;
     protected $bus;
 
-    public function __construct(Booking $booking ,Location $location ,Bus $bus)
-    {       
-        $this->booking = $booking;       
-        $this->location = $location;       
-        $this->bus = $bus;       
-    }    
+    public function __construct(Booking $booking ,Location $location ,Bus $bus){
+        $this->booking = $booking;
+        $this->location = $location;
+        $this->bus = $bus;
+    }
     
     public function getData($request)
     {
@@ -102,7 +101,7 @@ class AgentCancelTicketReportRepository
             }
         }
         
-        $data=$data->paginate($paginate); 
+        $data=$data->paginate($paginate);
         
         
    
@@ -134,13 +133,12 @@ class AgentCancelTicketReportRepository
 
       
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
-           );   
+           );
 
-        // Log::info($response);
-           return $response;      
+           return $response;
 
     }
     

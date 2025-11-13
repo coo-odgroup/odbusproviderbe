@@ -154,25 +154,25 @@ class UserService
         $agent = $this->userRepository->verifyOtp($data);
         return $agent;
     }
-    // public function login($data)
-    // {
-    //     return $this->userRepository->login($data);
-    //  }
-    // public function getRoles()
-    // {
-    //     return $this->userRepository->getRoles();
-    // }
-    // public function agentRegister($data)
-    // {   
-    //     $agent = $this->userRepository->agentRegister($data);
-    //     return $agent;
-    // }
+    public function login($data)
+    {
+        return $this->userRepository->login($data);
+     }
+    public function getRoles()
+    {
+        return $this->userRepository->getRoles();
+    }
+    public function agentRegister($data)
+    {   
+        $agent = $this->userRepository->agentRegister($data);
+        return $agent;
+    }
 
-    // public function AllUser()
-    // {
-    //    $list = $this->userRepository->AllUser();
-    //     return $list;
-    // }
+    public function AllUser()
+    {
+       $list = $this->userRepository->AllUser();
+        return $list;
+    }
 
     // public function AgentForgetPasswordOtp($request){
 

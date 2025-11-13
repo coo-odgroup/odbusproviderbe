@@ -16,12 +16,11 @@ class AgentCompleteReportRepository
     protected $location;
     protected $bus;
 
-    public function __construct(Booking $booking ,Location $location ,Bus $bus)
-    {       
-        $this->booking = $booking;       
-        $this->location = $location;       
-        $this->bus = $bus;       
-    }    
+    public function __construct(Booking $booking ,Location $location ,Bus $bus){
+        $this->booking = $booking;
+        $this->location = $location;
+        $this->bus = $bus;
+    }
     
     public function getData($request)
     {
@@ -37,19 +36,18 @@ class AgentCompleteReportRepository
         $user_id  =  $request->user_id;
 
 
-        $data= $this->booking->with('BookingDetail.BusSeats.seats',
-                                    'BookingDetail.BusSeats.ticketPrice','Users','User')
+        $data= $this->booking->with('BookingDetail.BusSeats.seats','BookingDetail.BusSeats.ticketPrice','Users','User')
                                  ->with(["Bus" => function($bs){
                                         $bs->with('cancellationslabs.cancellationSlabInfo');
-                                        $bs->with('busstoppage');                
+                                        $bs->with('busstoppage');
                                         $bs->with('busContacts');
-                                      } ] )  
+                                      } ] )
 
                             // ->with('bus.busstoppage','bus.busContacts','bus.cancellationslabs.cancellationSlabInfo')
                              ->where('user_id', $user_id )
                              ->where('status', 1 )
                              ->orderBy('id','DESC');
-        if($paginate=='all') 
+        if($paginate=='all')
         {
             $paginate = Config::get('constants.ALL_RECORDS');
         }
@@ -78,7 +76,7 @@ class AgentCompleteReportRepository
             $data =$data->orderBy('created_at','DESC');
         }
         else if($date_type == 'booking' && $start_date != null && $end_date != null)
-        {         
+        {
             if($start_date == $end_date){
                 $data =$data->where('created_at','like','%'.$start_date.'%')
                         ->orderBy('created_at','DESC');
@@ -104,10 +102,7 @@ class AgentCompleteReportRepository
             }
         }
         
-        $data=$data->paginate($paginate); 
-        
-        // Log::info($data);
-   
+        $data=$data->paginate($paginate);
         if($data){
             foreach($data as $key=>$v){
 
@@ -144,7 +139,7 @@ class AgentCompleteReportRepository
            );   
 
       
-           return $response;      
+           return $response;
 
     }
     

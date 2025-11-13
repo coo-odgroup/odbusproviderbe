@@ -5,14 +5,18 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Agent;
 use App\Jobs\SendAgentCreationEmailJob;
 use App\Repositories\ChannelRepository;
+use Illuminate\Support\Facades\Config;
+use Exception;
+use App\Traits\ApiResponser;
 
 class AgentRepository
 {
+    use ApiResponser;
     /**
      * @var Agent
      */
     protected $agent;
-       protected $channelRepository;
+    protected $channelRepository;
 
     /**
      * AgentRepository constructor.
@@ -21,59 +25,55 @@ class AgentRepository
      */
     public function __construct(Agent $agent,ChannelRepository $channelRepository)
     {
-        $this->agent = $agent;  
+        $this->agent = $agent;
         $this->channelRepository = $channelRepository;
     }
 
     
-    public function getAll($request)
+    public function getAll()
     {
         return $this->agent->get();
-
     }
 
     public function updateAgentProfile($request)
     {
-        // log::info($request);
-        // exit;
-        $agent=$this->agent->find($request['user_id']);
+        try {
+            $agent=$this->agent->find($request['user_id']);
    
-        
-        $agent->name = $request['name'];
-        $agent->email = $request['email'];    
-        $agent->phone = $request['phone'];
-        if($request['pwd_check']==true && $request['password']!='')
-        {
-            $agent->password = bcrypt($request['password']);
+            $agent->name = $request['name'];
+            $agent->email = $request['email'];
+            $agent->phone = $request['phone'];
+            if($request['pwd_check']=="true" && $request['password']!='')
+            {
+                $agent->password = bcrypt($request['password']);
+            }
+            $agent->location = $request['location'];
+            $agent->adhar_no = $request['adhar_no'];
+            $agent->pancard_no = $request['pancard_no'];
+            $agent->organization_name = $request['organization_name'];
+            $agent->address = $request['address'];
+            $agent->street = $request['street'];
+            $agent->city = $request['city'];
+            $agent->landmark = $request['landmark'];
+            $agent->pincode = $request['pincode'];
+            $agent->name_on_bank_account = $request['name_on_bank_account'];
+            $agent->branch_name = $request['branch_name'];
+            $agent->bank_name = $request['bank_name'];
+            $agent->ifsc_code = $request['ifsc_code'];
+            $agent->bank_account_no = $request['bank_account_no'];
+            $agent->upi_id = $request['upi_id'];
+            $agent->update();
+            return $agent;
+            
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }
-        $agent->location = $request['location'];
-        $agent->adhar_no = $request['adhar_no'];
-        $agent->pancard_no = $request['pancard_no'];
-        $agent->organization_name = $request['organization_name'];
-        $agent->address = $request['address'];
-        $agent->street = $request['street'];
-        $agent->city = $request['city'];
-        $agent->landmark = $request['landmark'];
-        $agent->pincode = $request['pincode'];
-        $agent->name_on_bank_account = $request['name_on_bank_account'];
-        $agent->branch_name = $request['branch_name'];
-        $agent->bank_name = $request['bank_name'];
-        $agent->ifsc_code = $request['ifsc_code'];
-        $agent->bank_account_no = $request['bank_account_no'];
-        $agent->upi_id = $request['upi_id'];
-        $agent->update();
-        // log::info($agent);
-        return $agent;
 
     }
 
      public function agentprofile($request)
     {
-       
-        $data= $this->agent->where('id',$request['user_id'])->get();
-        // log::info($data);
-         return $data;
-
+        return $this->agent->where('id',$request['user_id'])->get();
     }
 
     public function getAllAgentData($request)
@@ -88,14 +88,14 @@ class AgentRepository
         $data= $this->agent
                     ->where('status', 0)
                     ->where('role_id',3)
-                    ->where('email','!=',NULL)
+                    ->where('email','!=',null)
                     ->orderBy('updated_at','DESC');
 
-        if($paginate=='all') 
+        if($paginate=='all')
         {
             $paginate = Config::get('constants.ALL_RECORDS');
         }
-        elseif ($paginate == null) 
+        elseif ($paginate == null)
         {
             $paginate = 10 ;
         }
@@ -121,7 +121,7 @@ class AgentRepository
                          ->orWhere('bank_account_no', 'like', '%' .$name . '%')
                          ->orWhere('ifsc_code', 'like', '%' .$name . '%')
                          ->orWhere('organization_name', 'like', '%' .$name . '%')
-                         ->where('status', $status);                        
+                         ->where('status', $status);
         }
         elseif($name!=null && $status==null)
         {
@@ -130,11 +130,11 @@ class AgentRepository
                          ->orWhere('phone', 'like', '%' .$name . '%')
                          ->orWhere('bank_account_no', 'like', '%' .$name . '%')
                          ->orWhere('ifsc_code', 'like', '%' .$name . '%')
-                         ->orWhere('organization_name', 'like', '%' .$name . '%');                        
+                         ->orWhere('organization_name', 'like', '%' .$name . '%');
         }
         elseif($name==null && $status!=null)
         {
-            $data = $data->where('status', $status);                        
+            $data = $data->where('status', $status);
         }
         
 
@@ -152,13 +152,12 @@ class AgentRepository
         
 
         $data=$data->paginate($paginate);
-        // Log::info($data);
 
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
             "data" => $data
-           );   
+           );
            return $response;
 
        
@@ -167,8 +166,6 @@ class AgentRepository
 
     public function ourAgentData($request)
     {
-        // log::info($request);
-        
          $paginate = $request['rows_number'] ;
          $name = $request['name'] ;
          $status = $request['status'];
@@ -177,11 +174,11 @@ class AgentRepository
                     ->wherenotIn('status',[0,2  ])
                     ->orderBy('id','DESC');
 
-        if($paginate=='all') 
+        if($paginate=='all')
         {
             $paginate = Config::get('constants.ALL_RECORDS');
         }
-        elseif ($paginate == null) 
+        elseif ($paginate == null)
         {
             $paginate = 10 ;
         }
@@ -204,7 +201,7 @@ class AgentRepository
                          ->orWhere('bank_account_no', 'like', '%' .$name . '%')
                          ->orWhere('ifsc_code', 'like', '%' .$name . '%')
                          ->orWhere('organization_name', 'like', '%' .$name . '%')
-                         ->where('status', $status);                        
+                         ->where('status', $status);
         }
         elseif($name!=null && $status==null)
         {
@@ -213,24 +210,23 @@ class AgentRepository
                          ->orWhere('phone', 'like', '%' .$name . '%')
                          ->orWhere('bank_account_no', 'like', '%' .$name . '%')
                          ->orWhere('ifsc_code', 'like', '%' .$name . '%')
-                         ->orWhere('organization_name', 'like', '%' .$name . '%');                        
+                         ->orWhere('organization_name', 'like', '%' .$name . '%');
         }
         elseif($name==null && $status!=null)
         {
-            $data = $data->where('status', $status);                        
+            $data = $data->where('status', $status);
         }
         
 
         
 
         $data=$data->paginate($paginate);
-        // Log::info($data);
 
         $response = array(
              "count" => $data->count(), 
              "total" => $data->total(),
             "data" => $data
-           );   
+           );
            return $response;
 
        
@@ -238,8 +234,8 @@ class AgentRepository
     public function getModel($data, Agent $agent)
     {
         $agent->name = $data['name'];
-        $agent->email = $data['email'];    
-        $agent->phone = $data['phone'];    
+        $agent->email = $data['email'];
+        $agent->phone = $data['phone'];
         $agent->password = bcrypt($data['password']);
         $agent->user_type = "Agent";
         $agent->role_id = "3";
@@ -266,7 +262,7 @@ class AgentRepository
     {
         return $this->agent->where('id', $id)->get();
     }
-    public function save($data)
+    public function savePostData($data)
     {
     
         $email = $this->agent->where('email',$data['email'])->where('status','!=',2)->get();
@@ -282,12 +278,12 @@ class AgentRepository
                 {
                     if(count($pancard)==0)
                     {
-                            $agent = new $this->agent;
-                            $agent=$this->getModel($data,$agent);
-                            $agent->save();
+                        $agent = new $this->agent;
+                        $agent=$this->getModel($data,$agent);
+                        $agent->save();
 
 
-                            $smsData = array(
+                        $smsData = array(
                             'phone' => $data->phone,
                             'agentName' => $data->name,
                             'url' => 'https://agent.odbus.in/#/login', 
@@ -298,22 +294,21 @@ class AgentRepository
                         // $this->channelRepository->SendAgentCreationSms($smsData);
 
 
-                               $to_user = $data->email;
-                               $subject = "Agent Creation Email";
-                               $agentData= [
-                                        'userName'=>$data->name,
-                                        'userEmail'=> $data->email,
-                                        'userPassword'=> $data->password,
-                                        'loginUrl'=>'https://agent.odbus.in/#/login',
-                                    
-                                       ] ;
-                                SendAgentCreationEmailJob::dispatch($to_user, $subject, $agentData);
-                          
-                            return $agent;
+                        $to_user = $data->email;
+                        $subject = "Agent Creation Email";
+                        $agentData= [
+                            'userName'=>$data->name,
+                            'userEmail'=> $data->email,
+                            'userPassword'=> $data->password,
+                            'loginUrl'=>'https://agent.odbus.in/#/login',
+                        ] ;
+                        SendAgentCreationEmailJob::dispatch($to_user, $subject, $agentData);
+                        
+                        return $agent;
                    
 
                     }
-                    else 
+                    else
                     {
                         return 'Pan Card Already Exist';
                     }
@@ -322,7 +317,6 @@ class AgentRepository
                 {
                     return 'Aadhaar Card Already Exist';
                 }
-
             }
             else
             {
@@ -343,8 +337,6 @@ class AgentRepository
      */
     public function update($data, $id)
     {
-        // log::info($data);exit;
-        
         $email = $this->agent->where('email',$data['email'])->where('id','!=',$id )->where('status','!=',2)->get();
         $phone = $this->agent->where('phone',$data['phone'])->where('id','!=',$id )->where('status','!=',2)->get();
         $aadhaar = $this->agent->where('adhar_no',$data['adhar_no'])->where('id','!=',$id )->where('status','!=',2)->get();
@@ -357,31 +349,31 @@ class AgentRepository
                 {
                     if(count($pancard)==0)
                     {
-                            $agent = $this->agent->find($id);
-                            if($agent->password != $data['password'])
-                            {
-                                 $agent->password = bcrypt($data['password']);
-                            }                        
-                            $agent->name = $data['name'];
-                            $agent->email = $data['email'];    
-                            $agent->phone = $data['phone'];   
-                            $agent->user_type = "Agent";
-                            $agent->role_id = "3";
-                            $agent->location = $data['location'];
-                            $agent->agent_type = $data['agentType'];
-                            $agent->adhar_no = $data['adhar_no'];
-                            $agent->pancard_no = $data['pancard_no'];
-                            $agent->organization_name = $data['organization_name'];
-                            $agent->address = $data['address'];
-                            $agent->landmark = $data['landmark'];
-                            $agent->pincode = $data['pincode'];
-                            $agent->name_on_bank_account = $data['name_on_bank_account'];
-                            $agent->bank_name = $data['bank_name'];
-                            $agent->ifsc_code = $data['ifsc_code'];
-                            $agent->bank_account_no = $data['bank_account_no'];
-                            $agent->created_by = $data['created_by'];
-                            $agent->update();
-                            return $agent;
+                        $agent = $this->agent->find($id);
+                        if($agent->password != $data['password'])
+                        {
+                            $agent->password = bcrypt($data['password']);
+                        }
+                        $agent->name = $data['name'];
+                        $agent->email = $data['email'];
+                        $agent->phone = $data['phone'];
+                        $agent->user_type = "Agent";
+                        $agent->role_id = "3";
+                        $agent->location = $data['location'];
+                        $agent->agent_type = $data['agentType'];
+                        $agent->adhar_no = $data['adhar_no'];
+                        $agent->pancard_no = $data['pancard_no'];
+                        $agent->organization_name = $data['organization_name'];
+                        $agent->address = $data['address'];
+                        $agent->landmark = $data['landmark'];
+                        $agent->pincode = $data['pincode'];
+                        $agent->name_on_bank_account = $data['name_on_bank_account'];
+                        $agent->bank_name = $data['bank_name'];
+                        $agent->ifsc_code = $data['ifsc_code'];
+                        $agent->bank_account_no = $data['bank_account_no'];
+                        $agent->created_by = $data['created_by'];
+                        $agent->update();
+                        return $agent;
                     }
                     else
                     {
@@ -410,7 +402,7 @@ class AgentRepository
      * @param $data
      * @return Post
      */
-    public function delete($id)
+    public function deleteById($id)
     {
         $post = $this->agent->find($id);
         $post->status = 2;
@@ -422,8 +414,6 @@ class AgentRepository
     {
         $agent_id =random_int(100000, 999999);
         $post = $this->agent->find($request->id);
-     // log::info($agent_id);
-     // exit;
         if($post->status==0){
             $post->status = 1;
             $post->created_by = $request->created_by;
@@ -447,7 +437,7 @@ class AgentRepository
             $post->status = 1;
             $post->reason ="";
         }
-        if($request->reason!= NULL)
+        if($request->reason!= null)
         {
              $post->reason =$request->reason;
         }

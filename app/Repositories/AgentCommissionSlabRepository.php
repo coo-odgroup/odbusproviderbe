@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class AgentCommissionSlabRepository
 {
   
-    protected $agentFee; 
+    protected $agentFee;
     protected $agentCommission;
     
     public function __construct(AgentFee $agentFee,AgentCommission $agentCommission)
@@ -22,13 +22,13 @@ class AgentCommissionSlabRepository
 
     public function agentcommissionslab()
     {
-          return $this->agentCommission->get();      
+        return $this->agentCommission->get();
     }
 
 
     public function customercommissionslab()
     {
-            return $this->agentFee->get();  
+        return $this->agentFee->get();
     }
    
     

@@ -445,10 +445,10 @@ Route::put('/changeStatusBanner/{id}', [BannerController::class, 'changeStatus']
 
 Route::post('/test/Dummy/{dummy}', [DummyController::class, 'save']);
 
-Route::get('api/test/{dummy}', function (App\Dummy $dummy) {
+//Route::get('api/test/{dummy}', function (App\Dummy $dummy) {
 //calling the UserController@functionUser
 // DummyController@save
-});
+// });
 
 Route::post('/customerQuery', [CustomerQueryController::class, 'createCustomerQuery']);
 Route::get('/customerQuery', [CustomerQueryController::class, 'getAllCustomerQuery']);
@@ -946,7 +946,7 @@ Route::post('/AgentResetPassword', [UserController::class, 'AgentResetPassword']
 Route::get('/GetAllRoles', [UserController::class, 'getRoles']);
 Route::post('/AgentRgestration', [UserController::class, 'agentRegister']);
 
-Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
+// Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
 
 
 Route::post('/login', [UserController::class, 'login']);

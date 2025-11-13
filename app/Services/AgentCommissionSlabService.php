@@ -19,16 +19,7 @@ class AgentCommissionSlabService
     public function __construct(AgentCommissionSlabRepository $agentCommissionSlabRepository)
     {
         $this->agentCommissionSlabRepository = $agentCommissionSlabRepository;
-    } 
-
-    // public function agentcommissionslab()
-    // {
-    //       return $this->agentCommissionSlabRepository->agentcommissionslab();      
-    // }
-    // public function customercommissionslab()
-    // {
-    //       return $this->agentCommissionSlabRepository->customercommissionslab();   
-    // }
+    }
         
    
 

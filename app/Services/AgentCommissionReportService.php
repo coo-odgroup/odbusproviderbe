@@ -20,10 +20,5 @@ class AgentCommissionReportService
     {
         $this->agentcommissionreportRepository = $agentcommissionreportRepository;
     }
-    
-    // public function getalldata($request)
-    // {
-    //     return $this->agentcommissionreportRepository->getData($request);
-    // }
 
 }

@@ -48,10 +48,10 @@ class AgentService
     // {
     //     return $this->agentRepository->agentprofile($request);
     // }
-    //  public function updateAgentProfile($request)
-    // {
-    //     return $this->agentRepository->updateAgentProfile($request);
-    // }
+     public function updateAgentProfile($request)
+    {
+        return $this->agentRepository->updateAgentProfile($request);
+    }
 
    
     /**
