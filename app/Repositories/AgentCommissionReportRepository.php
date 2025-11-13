@@ -18,22 +18,14 @@ class AgentCommissionReportRepository
     protected $bus;
     protected $agentWallet;
 
-<<<<<<< HEAD
     public function __construct(Booking $booking ,AgentWallet $agentWallet ,Location $location ,Bus $bus)
-=======
-    public function __construct(Booking $booking, AgentWallet $agentWallet, Location $location, Bus $bus)
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     {
         $this->booking = $booking;
         $this->location = $location;
         $this->bus = $bus;
         $this->agentWallet = $agentWallet;
     }
-<<<<<<< HEAD
     
-=======
-
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     public function getData($request)
     {
         $paginate = $request->rows_number;
@@ -54,18 +46,11 @@ class AgentCommissionReportRepository
         )
                              ->with('bus.busstoppage')
                              // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
-<<<<<<< HEAD
                              ->where('user_id', $user_id )
                              ->where('status','!=',0)
                              ->orderBy('id','DESC');
         if($paginate=='all')
         {
-=======
-                             ->where('user_id', $user_id)
-                             ->where('status', '!=', 0)
-                             ->orderBy('id', 'DESC');
-        if ($paginate == 'all') {
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
             $paginate = 10 ;
@@ -84,21 +69,6 @@ class AgentCommissionReportRepository
         }
 
 
-<<<<<<< HEAD
-             if($date_type == 'booking' && $start_date == null && $end_date == null)
-        {
-            $data =$data->orderBy('created_at','DESC');
-        }
-        else if($date_type == 'booking' && $start_date != null && $end_date != null)
-        {
-            if($start_date == $end_date){
-                $data =$data->where('created_at','like','%'.$start_date.'%')
-                        ->orderBy('created_at','DESC');
-                       
-            }else{
-                $data =$data->whereBetween('created_at', [$start_date, $end_date])
-                        ->orderBy('created_at','DESC');
-=======
         if ($date_type == 'booking' && $start_date == null && $end_date == null) {
             $data = $data->orderBy('created_at', 'DESC');
         } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
@@ -109,7 +79,6 @@ class AgentCommissionReportRepository
             } else {
                 $data = $data->whereBetween('created_at', [$start_date, $end_date])
                         ->orderBy('created_at', 'DESC');
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
             }
 
         } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
@@ -156,14 +125,7 @@ class AgentCommissionReportRepository
              "total" => $data->total(),
             "data" => $data
            );
-
-<<<<<<< HEAD
-      
-           return $response;
-=======
-
         return $response;
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
     }
 

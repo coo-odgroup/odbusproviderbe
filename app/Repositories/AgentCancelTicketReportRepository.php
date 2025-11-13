@@ -15,21 +15,12 @@ class AgentCancelTicketReportRepository
     protected $location;
     protected $bus;
 
-<<<<<<< HEAD
     public function __construct(Booking $booking ,Location $location ,Bus $bus){
-=======
-    public function __construct(Booking $booking, Location $location, Bus $bus)
-    {
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
         $this->booking = $booking;
         $this->location = $location;
         $this->bus = $bus;
     }
-<<<<<<< HEAD
     
-=======
-
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     public function getData($request)
     {
         $paginate = $request->rows_number;
@@ -98,7 +89,6 @@ class AgentCancelTicketReportRepository
                        ->orderBy('journey_dt', 'DESC');
             }
         }
-<<<<<<< HEAD
         
         $data=$data->paginate($paginate);
         
@@ -106,10 +96,9 @@ class AgentCancelTicketReportRepository
    
         if($data){
             foreach($data as $key=>$v){
-=======
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
-
-        $data = $data->paginate($paginate);
+                $data = $data->paginate($paginate);
+            }
+        }
 
 
 
@@ -145,12 +134,7 @@ class AgentCancelTicketReportRepository
             "data" => $data
            );
 
-<<<<<<< HEAD
            return $response;
-=======
-        // Log::info($response);
-        return $response;
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
     }
 

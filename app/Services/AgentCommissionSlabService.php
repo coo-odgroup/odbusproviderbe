@@ -20,10 +20,8 @@ class AgentCommissionSlabService
     {
         $this->agentCommissionSlabRepository = $agentCommissionSlabRepository;
     }
-<<<<<<< HEAD
         
    
-=======
 
     // public function agentcommissionslab()
     // {
@@ -35,6 +33,5 @@ class AgentCommissionSlabService
     // }
 
 
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
 }

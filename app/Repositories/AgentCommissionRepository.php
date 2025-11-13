@@ -46,19 +46,14 @@ class AgentCommissionRepository
 
 
         $data = $data->paginate($paginate);
-        // Log::info($data);
 
         $response = array(
              "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
            );
-<<<<<<< HEAD
-           return $response;
-=======
         return $response;
 
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
     }
     public function getModel($data, AgentCommission $agentCommission)

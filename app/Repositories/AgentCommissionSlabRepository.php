@@ -9,10 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class AgentCommissionSlabRepository
 {
-<<<<<<< HEAD
   
-=======
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     protected $agentFee;
     protected $agentCommission;
 
