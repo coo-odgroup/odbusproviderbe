@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Config;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\LocationValidator;
+use App\Repositories\LocationRepository;
 
 class LocationController extends Controller
 {
@@ -22,6 +23,7 @@ class LocationController extends Controller
      */
     protected $locationService;
     protected $locationValidator;
+      protected $locationRepository;
 
     /**
      * PostController Constructor
@@ -29,10 +31,11 @@ class LocationController extends Controller
      * @param LocationService $busTypeService
      *
      */
-    public function __construct(LocationService $locationService, LocationValidator $locationValidator)
+    public function __construct(LocationService $locationService,LocationRepository $locationRepository, LocationValidator $locationValidator)
     {
         $this->locationService = $locationService;
         $this->locationValidator = $locationValidator;
+        $this->LocationRepository = $locationRepository;
 
     }
     public function getAllLocations()
