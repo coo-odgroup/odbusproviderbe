@@ -50,12 +50,6 @@ class UserController extends Controller
         $this->userRepository = $userRepository;
     }
 
-    // public function login(Request $request) {    
-
-    //   $user = $this->usersService->login($request);
-    //   return $this->successResponse($user,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    // } 
-
 /////////////////////////Agent Registration//////////////////////////////////////////////////////////
     public function Register(Request $request) {  
       $data = $request->only('phone'); 
@@ -113,8 +107,7 @@ class UserController extends Controller
     }
     try {
 
-      //$response = $this->userService->login($request);
-      $response = $this->userRepository->login($data);
+      $response = $this->userRepository->login($request);
       switch($response){
           case('un_registered_agent'):   //Agent is not registered
               return $this->errorResponse(Config::get('constants.UNREGISTERED'),Response::HTTP_OK);
@@ -134,7 +127,7 @@ class UserController extends Controller
       catch (Exception $e) {
        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       } 
-    } 
+   } 
 
     public function getRoles() {
       //$roles = $this->userService->getRoles();
