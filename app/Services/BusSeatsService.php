@@ -33,13 +33,13 @@ class BusSeatsService
     //     return $this->busSeatsRepository->getAll();
     // }
 
-
+    
 
     // public function getAllFare($busId)
     // {
     //     return $this->busSeatsRepository->getAllFare($busId);
     // }
-
+    
     // public function getById($id)
     // {
     //     return $this->busSeatsRepository->getById($id);
@@ -53,7 +53,7 @@ class BusSeatsService
     // {
     //     return $this->busSeatsRepository->busextraSeatsByBus($id);
     // }
-
+    
     // public function updatePost($data, $id)
     // {
     //     try {
@@ -87,7 +87,7 @@ class BusSeatsService
     //     return $data;
 
     // }
-
+    
     // public function savePostData($data)
     // {
     //     $result = $this->busSeatsRepository->save($data);

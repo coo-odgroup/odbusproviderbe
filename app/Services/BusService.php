@@ -75,15 +75,15 @@ class BusService
         return $post;
     }
 
-    public function updateSequncePost($data, $id)
-    {
-        try {
-            $post = $this->busRepository->updatesequence($data, $id);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $post;
-    }
+    // public function updateSequncePost($data, $id)
+    // {
+    //     try {
+    //         $post = $this->busRepository->updatesequence($data, $id);
+    //     } catch (Exception $e) {
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $post;
+    // }
     // public function updatePost($data, $id)
     // {
     //     try {

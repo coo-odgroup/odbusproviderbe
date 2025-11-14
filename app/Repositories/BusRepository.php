@@ -532,140 +532,140 @@ class BusRepository
     }
 
 
-    public function BusData($request)
-    {
-        // Log::info($request);
+        public function BusData($request)
+        {
+            // Log::info($request);
 
-        $paginate = $request['rows_number'] ;
-        $name = $request['name'] ;
-        $user_role = $request['user_role'] ;
-        // $user_id = $request['user_id'] ;
-        $operator = $request['operator'];
-        $status = $request['status'];
-        $source_id = $request['source_id'];
-        $destination_id = $request['destination_id'];
+            $paginate = $request['rows_number'] ;
+            $name = $request['name'] ;
+            $user_role = $request['user_role'] ;
+            // $user_id = $request['user_id'] ;
+            $operator = $request['operator'];
+            $status = $request['status'];
+            $source_id = $request['source_id'];
+            $destination_id = $request['destination_id'];
 
-        $data = $this->bus->with('busOperator', 'busstoppage', 'BusType', 'busAmenities.amenities', 'busSafety.safety', 'busContacts', 'busSeats.seats')
-            ->with(['ticketPrice.getBusSeats' => function ($query) {
-                $query->where('status', '!=', 2)->with('seats');
-            }])
-            ->whereHas('ticketPrice', function ($query) {$query->where('status', '!=', 2);})
-            ->whereNotIn('status', [2])->orderBy('id', 'DESC');
+            $data = $this->bus->with('busOperator', 'busstoppage', 'BusType', 'busAmenities.amenities', 'busSafety.safety', 'busContacts', 'busSeats.seats')
+                ->with(['ticketPrice.getBusSeats' => function ($query) {
+                    $query->where('status', '!=', 2)->with('seats');
+                }])
+                ->whereHas('ticketPrice', function ($query) {$query->where('status', '!=', 2);})
+                ->whereNotIn('status', [2])->orderBy('id', 'DESC');
 
 
-        if ($request['USER_BUS_OPERATOR_ID'] != "") {
-            $data = $data->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);
-        }
-        if ($paginate == 'all') {
-            $paginate = Config::get('constants.ALL_RECORDS');
-        } elseif ($paginate == null) {
-            $paginate = 10 ;
-        }
-        // if($user_role!=null && $user_role==4)
-        // {
-        //     $data = $data->where('user_id',$user_id) ;
-        // }
-        if ($operator != null) {
-            $data = $data->where(
-                function ($query) use ($operator) {
-                    $data = $query->orwhereHas('busOperator', function ($query) use ($operator) {
-                        $query->where('id', $operator);
-                    });
+            if ($request['USER_BUS_OPERATOR_ID'] != "") {
+                $data = $data->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);
+            }
+            if ($paginate == 'all') {
+                $paginate = Config::get('constants.ALL_RECORDS');
+            } elseif ($paginate == null) {
+                $paginate = 10 ;
+            }
+            // if($user_role!=null && $user_role==4)
+            // {
+            //     $data = $data->where('user_id',$user_id) ;
+            // }
+            if ($operator != null) {
+                $data = $data->where(
+                    function ($query) use ($operator) {
+                        $data = $query->orwhereHas('busOperator', function ($query) use ($operator) {
+                            $query->where('id', $operator);
+                        });
+                    }
+                )  ;
+            }
+            if ($source_id != null && $destination_id != null) {
+                $loc = [];
+                $loc[1] = $source_id;
+                $loc[2] = $destination_id;
+
+                $data = $data->whereHas('ticketPrice', function ($query) use ($loc) {
+                    $query->where('source_id', $loc[1])
+                        ->where('destination_id', $loc[2]);
+                });
+
+            }
+            if ($status != null) {
+                if ($status == 1) {
+                    $data = $data->where(
+                        function ($query) use ($name) {
+                            $data = $query->where('status', 1);
+                        }
+                    );
                 }
-            )  ;
-        }
-        if ($source_id != null && $destination_id != null) {
-            $loc = [];
-            $loc[1] = $source_id;
-            $loc[2] = $destination_id;
+                if ($status == 0) {
+                    $data = $data->where(
+                        function ($query) use ($name) {
+                            $data = $query->where('status', 0);
+                        }
+                    );
+                }
 
-            $data = $data->whereHas('ticketPrice', function ($query) use ($loc) {
-                $query->where('source_id', $loc[1])
-                       ->where('destination_id', $loc[2]);
-            });
+            }
 
-        }
-        if ($status != null) {
-            if ($status == 1) {
+            if ($name != null && $request['USER_BUS_OPERATOR_ID'] == "") {
                 $data = $data->where(
                     function ($query) use ($name) {
-                        $data = $query->where('status', 1);
+                        $data = $query->where('name', 'like', '%' .$name . '%')
+                        ->orWhere('bus_number', 'like', '%' .$name . '%')
+                        ->orWhere('via', 'like', '%' .$name . '%')
+                        ->orWhere('created_by', 'like', '%' .$name . '%')
+                        ->orwhereHas('busOperator', function ($query) use ($name) {$query->where('organisation_name', 'like', '%' .$name . '%');})
+                    ->orwhereHas('busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%');});
+                    }
+                );
+            } elseif ($name != null && $request['USER_BUS_OPERATOR_ID'] != "") {
+                $data = $data->where(
+                    function ($query) use ($name) {
+                        $data = $query->orWhere('bus_number', 'like', '%' .$name . '%');
                     }
                 );
             }
-            if ($status == 0) {
-                $data = $data->where(
-                    function ($query) use ($name) {
-                        $data = $query->where('status', 0);
+
+            if ($user_role == 5) {
+                $data = $data->where('user_id', $user_id);
+            }
+
+
+            // if($name!=null)
+            // {
+
+            //     $data = $data->where('name', 'like', '%' .$name . '%')
+            //                  ->orWhere('bus_number', 'like', '%' .$name . '%')
+            //                  ->orWhere('via', 'like', '%' .$name . '%')
+            //                  ->orWhere('created_by', 'like', '%' .$name . '%')
+            //                  ->orwhereHas('busOperator', function ($query) use ($name)
+            //                              {$query->where('organisation_name','like', '%' .$name . '%' );})
+            //                 ->orwhereHas('busOperator', function ($query) use ($name)
+            //                             {$query->where('operator_name', 'like', '%' .$name . '%');});
+            // }
+
+            $data = $data->paginate($paginate);
+            ;
+
+            // Log::info($data);
+
+            if ($data) {
+                foreach ($data as $v) {
+                    foreach ($v->ticketPrice as $k => $a) {
+                        $a['from_location'] = $this->location->where('id', $a->source_id)->get();
+                        $a['to_location'] = $this->location->where('id', $a->destination_id)->get();
                     }
-                );
-            }
-
-        }
-
-        if ($name != null && $request['USER_BUS_OPERATOR_ID'] == "") {
-            $data = $data->where(
-                function ($query) use ($name) {
-                    $data = $query->where('name', 'like', '%' .$name . '%')
-                    ->orWhere('bus_number', 'like', '%' .$name . '%')
-                    ->orWhere('via', 'like', '%' .$name . '%')
-                    ->orWhere('created_by', 'like', '%' .$name . '%')
-                    ->orwhereHas('busOperator', function ($query) use ($name) {$query->where('organisation_name', 'like', '%' .$name . '%');})
-                   ->orwhereHas('busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%');});
-                }
-            );
-        } elseif ($name != null && $request['USER_BUS_OPERATOR_ID'] != "") {
-            $data = $data->where(
-                function ($query) use ($name) {
-                    $data = $query->orWhere('bus_number', 'like', '%' .$name . '%');
-                }
-            );
-        }
-
-        if ($user_role == 5) {
-            $data = $data->where('user_id', $user_id);
-        }
-
-
-        // if($name!=null)
-        // {
-
-        //     $data = $data->where('name', 'like', '%' .$name . '%')
-        //                  ->orWhere('bus_number', 'like', '%' .$name . '%')
-        //                  ->orWhere('via', 'like', '%' .$name . '%')
-        //                  ->orWhere('created_by', 'like', '%' .$name . '%')
-        //                  ->orwhereHas('busOperator', function ($query) use ($name)
-        //                              {$query->where('organisation_name','like', '%' .$name . '%' );})
-        //                 ->orwhereHas('busOperator', function ($query) use ($name)
-        //                             {$query->where('operator_name', 'like', '%' .$name . '%');});
-        // }
-
-        $data = $data->paginate($paginate);
-        ;
-
-        // Log::info($data);
-
-        if ($data) {
-            foreach ($data as $v) {
-                foreach ($v->ticketPrice as $k => $a) {
-                    $a['from_location'] = $this->location->where('id', $a->source_id)->get();
-                    $a['to_location'] = $this->location->where('id', $a->destination_id)->get();
                 }
             }
+
+
+
+
+            $response = array(
+                "count" => $data->count(),
+                "total" => $data->total(),
+                "data" => $data
+            );
+            return $response;
+
+
         }
-
-
-
-
-        $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
-            "data" => $data
-           );
-        return $response;
-
-
-    }
 
 
     public function changeStatus($id)

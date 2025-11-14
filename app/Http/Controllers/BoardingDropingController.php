@@ -8,7 +8,7 @@ use App\Models\Location;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
-use App\Services\BoardingDropingService;
+use App\Repositories\BoardingDropingRepository;
 use Exception;
 use InvalidArgumentException;
 use App\AppValidator\BoardingDropingValidator;
@@ -18,31 +18,30 @@ use Illuminate\Support\Facades\Log;
 class BoardingDropingController extends Controller
 {
     use ApiResponser;
-    protected $boardingDropingService;
+
+    protected $boardingDropingRepository;
     protected $boardingDropingValidator;
 
-    public function __construct(BoardingDropingService $boardingDropingService, BoardingDropingValidator $boardingDropingValidator)
+    public function __construct(BoardingDropingRepository $boardingDropingRepository, BoardingDropingValidator $boardingDropingValidator)
     {
-        $this->boardingDropingService = $boardingDropingService;
+        $this->boardingDropingRepository = $boardingDropingRepository;
         $this->boardingDropingValidator = $boardingDropingValidator;
     }
 
     public function getAllBoardingDroping()
     {
-
-        $boardingdroping = $this->boardingDropingService->getAll();
+        $boardingdroping = $this->boardingDropingRepository->getAll();
         return $this->successResponse($boardingdroping, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function createBoardingDroping(Request $request)
     {
-        //   log::info($request);
-        // exit();
         $data = $request->only([
-          'location_id',
-          'boarding_point',
-          'created_by',
+            'location_id',
+            'boarding_point',
+            'created_by',
         ]);
+
         $boardingdropingValidation = $this->boardingDropingValidator->validate($data);
 
         if ($boardingdropingValidation->fails()) {
@@ -51,9 +50,10 @@ class BoardingDropingController extends Controller
         }
 
         try {
-            $response = $this->boardingDropingService->savePostData($data);
-            return $this->successResponse($response, "Bus Stoppage Added ", Response::HTTP_CREATED);
+            $response = $this->boardingDropingRepository->save($data);
+            return $this->successResponse($response, "Bus Stoppage Added", Response::HTTP_CREATED);
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
     }
@@ -63,7 +63,6 @@ class BoardingDropingController extends Controller
         $data = $request->only([
             'location_id',
             'boarding_point',
-           // 'dropping_point',
             'created_by'
         ]);
 
@@ -73,11 +72,12 @@ class BoardingDropingController extends Controller
             $errors = $boardingdropingValidation->errors();
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
-        try {
-            $response = $this->boardingDropingService->updatePost($data, $id);
-            return $this->successResponse($response, "Bus Stoppage Updated", Response::HTTP_CREATED);
 
+        try {
+            $response = $this->boardingDropingRepository->update($data, $id);
+            return $this->successResponse($response, "Bus Stoppage Updated", Response::HTTP_CREATED);
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
     }
@@ -85,9 +85,10 @@ class BoardingDropingController extends Controller
     public function deleteBoardingDroping($id)
     {
         try {
-            $response = $this->boardingDropingService->deleteById($id);
+            $response = $this->boardingDropingRepository->delete($id);
             return $this->successResponse($response, "Bus Stoppage Deleted", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
     }
@@ -95,72 +96,70 @@ class BoardingDropingController extends Controller
     public function getBoardingDroping($id)
     {
         try {
-            $boardingDropingID = $this->boardingDropingService->getById($id);
+            $boardingDropingID = $this->boardingDropingRepository->getById($id);
+            return $this->successResponse($boardingDropingID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($boardingDropingID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-
     }
 
     public function getBoardingDropingbyLoacationId($id)
     {
         try {
-            $boardingDropingID = $this->boardingDropingService->getByLocationId($id);
+            $boardingDropingID = $this->boardingDropingRepository->getByLocationId($id);
+            return $this->successResponse($boardingDropingID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($boardingDropingID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-
     }
-    ////data table//////
+
     public function getBoardingDropingDT(Request $request)
     {
-
-        $boardingDroping = $this->boardingDropingService->getBoardingDropingDT($request);
+        $boardingDroping = $this->boardingDropingRepository->getBoardingDropingDT($request);
         return $this->successResponse($boardingDroping, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function boardingData(Request $request)
     {
-
-        $boardingDroping = $this->boardingDropingService->boardingData($request);
+        $boardingDroping = $this->boardingDropingRepository->boardingData($request);
         return $this->successResponse($boardingDroping, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function createBoarding(Request $request)
     {
-
         $data = $request->only([
-          'location_id',
-          'name',
-          'type',
-          'created_by',
+            'location_id',
+            'name',
+            'type',
+            'created_by',
         ]);
+
         $boardingdropingValidation = $this->boardingDropingValidator->validate($data);
 
         if ($boardingdropingValidation->fails()) {
             $errors = $boardingdropingValidation->errors();
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
+
         try {
-            $this->boardingDropingService->createBordingDroping($data);
+            $this->boardingDropingRepository->create($data);
+            return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
-        return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
     }
-
 
     public function changeStatus($locationId)
     {
-
         try {
-            $response = $this->boardingDropingService->changeStatus($locationId);
-
-            return $this->successResponse($response, "Bus Stoppage  Status Updated", Response::HTTP_ACCEPTED);
+            $response = $this->boardingDropingRepository->changeStatus($locationId);
+            return $this->successResponse($response, "Bus Stoppage Status Updated", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+            Log::error($e->getMessage());
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
     }
 }
