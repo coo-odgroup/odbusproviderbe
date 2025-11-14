@@ -162,10 +162,8 @@ class AgentWalletRepository
 
 
 
-    public function balance($id)
-    {
-        $agentWallet = $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get();
-        return $agentWallet;
+    public function balance($id){
+        return $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get();
     }
 
 

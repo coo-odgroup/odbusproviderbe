@@ -22,10 +22,13 @@ class AgentWalletReportController extends Controller
         $this->agentwalletreportService = $agentwalletreportService;
     }
 
-    public function getalldata(Request $request)
-    {
-        $completeData = $this->agentwalletreportService->getalldata($request);
-        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    public function getalldata(Request $request){
+        try {
+            $completeData = $this->agentwalletreportService->getalldata($request);
+            return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
     }
 
 }

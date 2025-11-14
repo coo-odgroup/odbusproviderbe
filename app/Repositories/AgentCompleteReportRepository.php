@@ -70,23 +70,18 @@ class AgentCompleteReportRepository
             $data = $data->orderBy('created_at', 'DESC');
         } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
             if ($start_date == $end_date) {
-                $data = $data->where('created_at', 'like', '%'.$start_date.'%')
-                        ->orderBy('created_at', 'DESC');
-
+                $data = $data->where('created_at', 'like', '%'.$start_date.'%')->orderBy('created_at', 'DESC');
             } else {
-                $data = $data->whereBetween('created_at', [$start_date, $end_date])
-                        ->orderBy('created_at', 'DESC');
+                $data = $data->whereBetween('created_at', [$start_date, $end_date])->orderBy('created_at', 'DESC');
             }
 
         } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
             $data = $data->orderBy('journey_dt', 'DESC');
         } elseif ($date_type == 'journey' && $start_date != null && $end_date != null) {
             if ($start_date == $end_date) {
-                $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')
-                        ->orderBy('journey_dt', 'DESC');
+                $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')->orderBy('journey_dt', 'DESC');
             } else {
-                $data = $data-> whereBetween('journey_dt', [$start_date, $end_date])
-                       ->orderBy('journey_dt', 'DESC');
+                $data = $data-> whereBetween('journey_dt', [$start_date, $end_date])->orderBy('journey_dt', 'DESC');
             }
         }
 

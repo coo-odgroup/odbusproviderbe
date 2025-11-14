@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Config;
 use App\Services\AgentNotificationService;
 use App\Repositories\AgentNotificationRepository;
 use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use App\AppValidator\AgentNotificationValidator;
 use InvalidArgumentException;
@@ -34,17 +35,26 @@ class AgentNotificationController extends Controller
     }
 
 
-    public function getData(Request $request)
-    {
-        $data = $this->agentnotificationService->getData($request);
-        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    public function getData(Request $request){
+        try {
+            $data = $this->agentnotificationService->getData($request);
+            return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        
     }
 
 
     public function allPushNotification(Request $request)
     {
-        $data = $this->agentNotificationRepository->allPushNotification($request);
-        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        try {
+            $data = $this->agentNotificationRepository->allPushNotification($request);
+            return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        
     }
 
     public function addNotification(Request $request)
@@ -74,18 +84,15 @@ class AgentNotificationController extends Controller
 
     public function deleteNotification($id)
     {
+        DB::beginTransaction();
         try {
             $this->agentNotificationRepository->delete($id);
+
+            DB::commit();
+            return $this->successResponse(null, "Notification Deleted", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
+            DB::rollBack();
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Notification Deleted", Response::HTTP_ACCEPTED);
     }
-
-    // public function getNotification(Request $request)
-    // {
-
-    // }
-
-
 }

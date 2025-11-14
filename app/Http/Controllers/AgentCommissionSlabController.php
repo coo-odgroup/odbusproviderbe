@@ -26,13 +26,21 @@ class AgentCommissionSlabController extends Controller
   
 
     public function agentcommissionslab(){
-        $wallet = $this->agentCommissionSlabRepository->agentcommissionslab();
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        try {
+            $wallet = $this->agentCommissionSlabRepository->agentcommissionslab();
+            return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
     }
 
     public function customercommissionslab(){
-        $wallet = $this->agentCommissionSlabRepository->customercommissionslab();
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        try {
+            $wallet = $this->agentCommissionSlabRepository->customercommissionslab();
+            return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
     }
 
 

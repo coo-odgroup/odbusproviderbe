@@ -95,7 +95,7 @@ class AgentCancelTicketReportRepository
         
    
         if($data){
-            foreach($data as $key=>$v){
+            foreach($data as $v){
                 $data = $data->paginate($paginate);
             }
         }
@@ -128,13 +128,7 @@ class AgentCancelTicketReportRepository
         }
 
 
-        $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
-            "data" => $data
-           );
-
-           return $response;
+            return array("count" => $data->count(),"total" => $data->total(),"data" => $data);
 
     }
 

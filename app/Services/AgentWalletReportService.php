@@ -21,7 +21,6 @@ class AgentWalletReportService
 
     public function getalldata($request)
     {
-        // Log:info($request);
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
         $user_id = $request['user_id'];

@@ -252,7 +252,7 @@ class AgentRepository
                         $smsData = array(
                             'phone' => $data->phone,
                             'agentName' => $data->name,
-                            'url' => 'https://agent.odbus.in/#/login', 
+                            'url' => 'https://agent.odbus.in/#/login',
                             'agentEmail' => $data->email,
                             'agentPassword' => $data->password
                         );

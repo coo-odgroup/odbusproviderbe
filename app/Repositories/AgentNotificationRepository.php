@@ -61,8 +61,6 @@ class AgentNotificationRepository
         $notification = $this->getModel($data, $notification) ;
         $notification->save();
 
-
-        // Log::info($data['user_id']);
         foreach ($data['user_id'] as $k => $v) {
             $userNotificationRecords = new UserNotification();
             $userNotificationRecords['user_id'] = $v;
@@ -99,10 +97,6 @@ class AgentNotificationRepository
                        ->orWhere('notification_details', 'like', '%' .$name . '%');
         }
         $data = $data->paginate($paginate);
-
-        // Log::info($data);
-
-
 
         $response = array(
              "count" => $data->count(),

@@ -147,9 +147,6 @@ class AgentWalletService
     public function changeStatus($data, $id)
     {
         $otp_status = $this->agentWalletRepository->Otp($id, $data);
-        // log::info($otp_status);
-        // exit;
-
         if (sizeof($otp_status) > 0) {
 
             return $post = $this->agentWalletRepository->update_Status($id, $otp_status[0], $data);
