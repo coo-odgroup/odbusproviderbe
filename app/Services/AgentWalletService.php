@@ -21,19 +21,7 @@ class AgentWalletService
         $this->agentWalletRepository = $agentWalletRepository;
     }
 
-<<<<<<< HEAD
      public function getAllData($request){
-=======
-    public function getAllData($request)
-    {
-
-        $paginate = $request['rows_number'] ;
-        $name = $request['name'] ;
-        $user_id = $request['user_id'] ;
-        $start_date  =  $request['rangeFromDate'];
-        $end_date  =  $request['rangeToDate'];
-        $reqs_status  =  $request['status'];
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
@@ -42,7 +30,6 @@ class AgentWalletService
         $end_date  =  $request['rangeToDate'];
         $reqs_status  =  $request['status'];
 
-<<<<<<< HEAD
         $data= $this->agentWalletRepository->getAllWalletRecord();
 
         if($paginate=='all'){
@@ -84,45 +71,6 @@ class AgentWalletService
         }
 
         $data= $this->agentWalletRepository->Pagination($data,$paginate);
-=======
-        $data = $this->agentWalletRepository->getAllWalletRecord();
-
-        if ($paginate == 'all') {
-            $paginate = Config::get('constants.ALL_RECORDS');
-        } elseif ($paginate == null) {
-            $paginate = 10 ;
-        }
-
-        if ($name != null) {
-            $data = $this->agentWalletRepository->Filter($data, $name);
-        }
-
-        if (!empty($user_id)) {
-            $data = $this->agentWalletRepository->Filter_user($data, $user_id);
-        }
-
-        if ($start_date != null && $end_date != null) {
-            $data = $this->agentWalletRepository->FilterDate($data, $start_date, $end_date);
-
-        }
-        if ($reqs_status != null) {
-            if ($reqs_status == 0) {
-                $data = $data->where('status', 0)
-                             ->orderBy('created_at', 'DESC');
-            }
-            if ($reqs_status == 1) {
-                $data = $data->where('status', 1)
-                             ->orderBy('created_at', 'DESC');
-            }
-
-            if ($reqs_status == 3) {
-                $data = $data->where('status', 3)
-                             ->orderBy('created_at', 'DESC');
-            }
-        }
-
-        $data = $this->agentWalletRepository->Pagination($data, $paginate);
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
         $response = array(
              "count" => $data->count(),
@@ -131,20 +79,11 @@ class AgentWalletService
            );
 
         return $response;
-<<<<<<< HEAD
-=======
-
-        //return $this->agentWalletRepository->getData($request);
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     }
 
 
     public function getData($request)
     {
-<<<<<<< HEAD
-=======
-        // Log::info($request);
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
         $payment_via = $request['payment_via'] ;
@@ -152,7 +91,6 @@ class AgentWalletService
 
         $data= $this->agentWalletRepository->getWalletRequestRecord($user_id);
 
-<<<<<<< HEAD
       if($paginate=='all')
         {
             $paginate = Config::get('constants.ALL_RECORDS');
@@ -181,34 +119,6 @@ class AgentWalletService
             "data" => $data
         );
 
-=======
-        $data = $this->agentWalletRepository->getWalletRequestRecord($user_id);
-
-        if ($paginate == 'all') {
-            $paginate = Config::get('constants.ALL_RECORDS');
-        } elseif ($paginate == null) {
-            $paginate = 10 ;
-        }
-
-        if ($name != null) {
-            $data = $this->agentWalletRepository->Filter($data, $name);
-        }
-
-        if ($payment_via != null) {
-            $data = $this->agentWalletRepository->payViaFilter($data, $payment_via);
-        }
-
-
-        $data = $this->agentWalletRepository->Pagination($data, $paginate);
-
-        $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
-            "data" => $data
-           );
-
-        // Log::info($response);
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
         return $response;
 
     }
@@ -218,22 +128,7 @@ class AgentWalletService
         return $this->agentWalletRepository->balance($id);
     }
 
-<<<<<<< HEAD
         
-=======
-    // public function agentAllTransaction($id)
-    // {
-
-    //   return $this->agentWalletRepository->agentAllTransaction($id);
-    // }
-
-    // public function agentWalletBalancedetails($request)
-    // {
-
-    //   return $this->agentWalletRepository->agentWalletBalancedetails($request);
-    // }
-
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     public function savePostData($data)
     {
         try {
@@ -244,17 +139,10 @@ class AgentWalletService
         }
         return $post;
     }
-<<<<<<< HEAD
-   
-   public function changeStatus($data,$id)
-   {
-        $otp_status= $this->agentWalletRepository->Otp($id,$data);
-=======
     public function agentTransByAdmin($data)
     {
         return $this->agentWalletRepository->agentTransByAdmin($data);
     }
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
     public function changeStatus($data, $id)
     {

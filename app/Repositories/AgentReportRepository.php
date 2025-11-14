@@ -94,8 +94,6 @@ class AgentReportRepository
                 $v['to_location'] = $this->location->where('id', $v->destination_id)->get();
 
                 $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-                // $v['source']=[];
-                // $v['destination']=[];
 
                 $stoppages['source'] = [];
                 $stoppages['destination'] = [];

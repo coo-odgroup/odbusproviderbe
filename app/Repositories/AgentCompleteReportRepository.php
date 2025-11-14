@@ -15,21 +15,12 @@ class AgentCompleteReportRepository
     protected $location;
     protected $bus;
 
-<<<<<<< HEAD
     public function __construct(Booking $booking ,Location $location ,Bus $bus){
-=======
-    public function __construct(Booking $booking, Location $location, Bus $bus)
-    {
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
         $this->booking = $booking;
         $this->location = $location;
         $this->bus = $bus;
     }
-<<<<<<< HEAD
     
-=======
-
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
     public function getData($request)
     {
         $paginate = $request->rows_number;
@@ -44,7 +35,6 @@ class AgentCompleteReportRepository
         $user_id  =  $request->user_id;
 
 
-<<<<<<< HEAD
         $data= $this->booking->with('BookingDetail.BusSeats.seats','BookingDetail.BusSeats.ticketPrice','Users','User')
                                  ->with(["Bus" => function($bs){
                                         $bs->with('cancellationslabs.cancellationSlabInfo');
@@ -58,25 +48,6 @@ class AgentCompleteReportRepository
                              ->orderBy('id','DESC');
         if($paginate=='all')
         {
-=======
-        $data = $this->booking->with(
-            'BookingDetail.BusSeats.seats',
-            'BookingDetail.BusSeats.ticketPrice',
-            'Users',
-            'User'
-        )
-                                 ->with(["Bus" => function ($bs) {
-                                     $bs->with('cancellationslabs.cancellationSlabInfo');
-                                     $bs->with('busstoppage');
-                                     $bs->with('busContacts');
-                                 } ])
-
-                            // ->with('bus.busstoppage','bus.busContacts','bus.cancellationslabs.cancellationSlabInfo')
-                             ->where('user_id', $user_id)
-                             ->where('status', 1)
-                             ->orderBy('id', 'DESC');
-        if ($paginate == 'all') {
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
             $paginate = 10 ;
@@ -95,21 +66,6 @@ class AgentCompleteReportRepository
         }
 
 
-<<<<<<< HEAD
-            if($date_type == 'booking' && $start_date == null && $end_date == null)
-        {
-            $data =$data->orderBy('created_at','DESC');
-        }
-        else if($date_type == 'booking' && $start_date != null && $end_date != null)
-        {
-            if($start_date == $end_date){
-                $data =$data->where('created_at','like','%'.$start_date.'%')
-                        ->orderBy('created_at','DESC');
-                       
-            }else{
-                $data =$data->whereBetween('created_at', [$start_date, $end_date])
-                        ->orderBy('created_at','DESC');
-=======
         if ($date_type == 'booking' && $start_date == null && $end_date == null) {
             $data = $data->orderBy('created_at', 'DESC');
         } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
@@ -120,7 +76,6 @@ class AgentCompleteReportRepository
             } else {
                 $data = $data->whereBetween('created_at', [$start_date, $end_date])
                         ->orderBy('created_at', 'DESC');
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
             }
 
         } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
@@ -134,17 +89,8 @@ class AgentCompleteReportRepository
                        ->orderBy('journey_dt', 'DESC');
             }
         }
-<<<<<<< HEAD
-        
-        $data=$data->paginate($paginate);
-        if($data){
-            foreach($data as $key=>$v){
-=======
 
         $data = $data->paginate($paginate);
-
-        // Log::info($data);
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
         if ($data) {
             foreach ($data as $key => $v) {
@@ -175,18 +121,13 @@ class AgentCompleteReportRepository
 
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
 
-<<<<<<< HEAD
       
-           return $response;
-=======
-
         return $response;
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
     }
 

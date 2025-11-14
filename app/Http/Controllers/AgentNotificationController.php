@@ -7,6 +7,7 @@ use App\Models\Bus;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Services\AgentNotificationService;
+use App\Repositories\AgentNotificationRepository;
 use App\Traits\ApiResponser;
 use Exception;
 use App\AppValidator\AgentNotificationValidator;
@@ -19,12 +20,17 @@ class AgentNotificationController extends Controller
     use ApiResponser;
     protected $agentnotificationService;
     protected $agentnotificationValidator;
+    protected $agentNotificationRepository;
 
 
-    public function __construct(AgentNotificationService $agentnotificationService, AgentNotificationValidator $agentnotificationValidator)
-    {
+    public function __construct(
+        AgentNotificationService $agentnotificationService,
+        AgentNotificationValidator $agentnotificationValidator,
+        AgentNotificationRepository $agentNotificationRepository
+    ){
         $this->agentnotificationService = $agentnotificationService;
         $this->agentnotificationValidator = $agentnotificationValidator;
+        $this->agentNotificationRepository = $agentNotificationRepository;
     }
 
 
@@ -37,7 +43,7 @@ class AgentNotificationController extends Controller
 
     public function allPushNotification(Request $request)
     {
-        $data = $this->agentnotificationService->allPushNotification($request);
+        $data = $this->agentNotificationRepository->allPushNotification($request);
         return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -51,10 +57,14 @@ class AgentNotificationController extends Controller
 
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
+
+        DB::beginTransaction();
         try {
-            $result = $this->agentnotificationService->savePostData($data);
+            $result = $this->agentNotificationRepository->save($data);
+            DB::commit();
             return $this->successResponse($result, "Notification Added", Response::HTTP_CREATED);
         } catch (Exception $e) {
+            DB::rollBack();
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
 
@@ -65,17 +75,17 @@ class AgentNotificationController extends Controller
     public function deleteNotification($id)
     {
         try {
-            $this->agentnotificationService->deleteById($id);
+            $this->agentNotificationRepository->delete($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Notification Deleted", Response::HTTP_ACCEPTED);
     }
 
-    public function getNotification(Request $request)
-    {
+    // public function getNotification(Request $request)
+    // {
 
-    }
+    // }
 
 
 }

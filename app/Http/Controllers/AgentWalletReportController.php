@@ -17,8 +17,6 @@ class AgentWalletReportController extends Controller
 
     protected $agentwalletreportService;
 
-
-
     public function __construct(AgentWalletReportService $agentwalletreportService)
     {
         $this->agentwalletreportService = $agentwalletreportService;

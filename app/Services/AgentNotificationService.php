@@ -22,7 +22,6 @@ class AgentNotificationService
 
     public function getData($request)
     {
-        // Log::info($request);
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
         $user_id = $request['user_id'] ;
@@ -78,7 +77,7 @@ class AgentNotificationService
             "total" => $data->total(),
             "data" => $data
         );
-        // Log::info($response);
+        
         return $response;
     }
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Services\AgentService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
@@ -19,13 +18,11 @@ class AgentController extends Controller
 {
     use ApiResponser;
     
-    protected $agentService;
     protected $agentValidator;
 
-    public function __construct(AgentService $agentService, AgentValidator $agentValidator,AgentRepository $agentRepository)
+    public function __construct(AgentValidator $agentValidator,AgentRepository $agentRepository)
     {
       $this->agentValidator = $agentValidator;
-      $this->agentService = $agentService;
       $this->agentRepository = $agentRepository;
     }
 
@@ -119,153 +116,6 @@ class AgentController extends Controller
         );
       }
     }
-    // public function agentprofile(Request $request)
-    // {
-
-    //     $agents = $this->agentService->agentprofile($request);
-    //     return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-    // }
-
-    // public function updateAgentProfile(Request $request)
-    // {
-
-    //     $agents = $this->agentService->updateAgentProfile($request);
-    //     return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-    // }
-
-    // public function getAllAgent(Request $request)
-    // {
-
-    //     $agents = $this->agentService->getAll($request);
-    //     return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-    // }
-
-
-    // public function getAllAgentData(Request $request)
-    // {
-
-    //     $agents = $this->agentService->getAllAgentData($request);
-    //     return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-    // }
-
-    // public function ourAgentData(Request $request)
-    // {
-
-    //     $agents = $this->agentService->ourAgentData($request);
-    //     return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-    // }
-
-    // public function createAgent(Request $request)
-    // {
-    //     // Log::info($request);
-    //     // exit;
-    //     $data = $request->only([
-    //       'name',
-    //       'email',
-    //       'phone',
-    //       'password',
-    //       'user_type',
-    //       'otp',
-    //       'city',
-    //       'street',
-    //       'location',
-    //       'adhar_no',
-    //       'pancard_no',
-    //       'organization_name',
-    //       'address',
-    //       'landmark',
-    //       'pincode',
-    //       'name_on_bank_account',
-    //       'bank_name',
-    //       'ifsc_code',
-    //       'bank_account_no',
-    //       'agentType',
-    //       'created_by'
-    //     ]);
-    //     $agentValidation = $this->agentValidator->validate($data);
-
-    //     if ($agentValidation->fails()) {
-    //         $errors = $agentValidation->errors();
-    //         return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
-    //     } else {
-    //         $response =  $this->agentService->savePostData($request);
-
-    //         if ($response == 'Email Already Exist') {
-    //             return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
-    //         } elseif ($response == 'Phone Already Exist') {
-    //             return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
-    //         } elseif ($response == 'Pan Card Already Exist') {
-    //             return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
-    //         } elseif ($response == 'Aadhaar Card Already Exist') {
-    //             return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
-    //         } else {
-    //             return $this->successResponse($response, "Agent Added", Response::HTTP_CREATED);
-    //         }
-    //     }
-    //     // try {
-    //     //     $this->agentService->savePostData($data);
-
-    //     // }
-    //     // catch (Exception $e) {
-    //     //   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-    //     // }
-    //     // return $this->successResponse($data,"Agent Created Successfully",Response::HTTP_CREATED);
-    // }
-
-    // public function updateAgent(Request $request, $id)
-    // {
-    //     $data = $request->only([
-    //       'name',
-    //       'email',
-    //       'phone',
-    //       'password',
-    //       'user_type',
-    //       'otp',
-    //       'city',
-    //       'street',
-    //       'location',
-    //       'adhar_no',
-    //       'pancard_no',
-    //       'organization_name',
-    //       'address',
-    //       'landmark',
-    //       'pincode',
-    //       'name_on_bank_account',
-    //       'bank_name',
-    //       'ifsc_code',
-    //       'bank_account_no',
-    //       'agentType',
-    //       'created_by'
-    //     ]);
-    //     $agentValidation = $this->agentValidator->validate($data);
-        
-    //     if ($agentValidation->fails()) {
-    //       $errors = $agentValidation->errors();
-    //       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-    //     }
-
-    //     $response =  $this->agentRepository->savePostData($request);
-
-    //     if (in_array($response, [
-    //         'Email Already Exist',
-    //         'Phone Already Exist',
-    //         'Pan Card Already Exist',
-    //         'Aadhaar Card Already Exist'
-    //     ])) {
-    //         DB::rollBack();
-    //         return $this->errorResponse($response, \Symfony\Component\HttpFoundation\Response::HTTP_PARTIAL_CONTENT);
-    //     }
-
-    //     DB::commit();
-
-    //   } catch (\Throwable $th) {
-    //     DB::rollBack();
-    //     return $this->errorResponse(
-    //         'Something went wrong while creating agent: ' . $th->getMessage(),
-    //         \Symfony\Component\HttpFoundation\Response::HTTP_INTERNAL_SERVER_ERROR
-    //     );
-    //   }
-    // }
 
     public function updateAgent(Request $request, $id)
     {
@@ -319,9 +169,9 @@ class AgentController extends Controller
       }
     }
 
-    public function deleteAgent ($id) {
+    public function deleteAgent($id) {
       try {
-        $this->agentRepository->deleteById($id);
+        $this->agentRepository->delete($id);
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

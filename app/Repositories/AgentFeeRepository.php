@@ -46,7 +46,6 @@ class AgentFeeRepository
 
 
         $data = $data->paginate($paginate);
-        // Log::info($data);
 
         $response = array(
              "count" => $data->count(),
