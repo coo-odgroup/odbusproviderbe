@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 //use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
-class BusContactsService
+class BookingSeizedService
 {
     protected $busContactsRepository;
 

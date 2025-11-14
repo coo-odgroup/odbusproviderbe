@@ -22,7 +22,7 @@ class BusContactsService
 
     // public function deleteByBusId($id)
     // {
-    //     $post = $this->busContactsRepository->deletebyBusid($id);
+    //     $this->busContactsRepository->deletebyBusid($id);
     // }
     // public function deleteById($id)
     // {

@@ -128,6 +128,12 @@ class UserController extends Controller
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
     }
+    public function getallAgent()
+    {
+        // $data = $this->userService->getallAgent();
+        $data = $this->userRepository->getAllAgent();  
+        return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    }
 
     /**
      * Get user details by ID

@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\AssociationValidator;
+use App\Repositories\AssociationRepository;
 
 class AssociationController extends Controller
 {
@@ -19,37 +20,43 @@ class AssociationController extends Controller
 
     protected $AssociationService;
     protected $AssociationValidator;
+    protected $AssociationRepository;
 
 
-    public function __construct(AssociationService $AssociationService, AssociationValidator $AssociationValidator)
+    public function __construct(AssociationService $AssociationService,AssociationRepository $AssociationRepository, AssociationValidator $AssociationValidator)
     {
         $this->AssociationService = $AssociationService;
         $this->AssociationValidator = $AssociationValidator;
+        $this->AssociationRepository = $AssociationRepository;
     }
 
 
     public function getAllData(Request $request)
     {
 
-        $usercontent = $this->AssociationService->getAllData($request);
+        //$usercontent = $this->AssociationService->getAllData($request);
+        $usercontent = $this->AssociationRepository->getAllData($request);
         return $this->successResponse($usercontent, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getAllAssoc()
     {
-        $usercontent = $this->AssociationService->getAllAssoc();
+        //$usercontent = $this->AssociationService->getAllAssoc();
+        $usercontent = $this->AssociationRepository->getAllAssoc();
         return $this->successResponse($usercontent, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getAllAgent()
     {
-        $usercontent = $this->AssociationService->getAllAgent();
+        // $usercontent = $this->AssociationService->getAllAgent();
+        $usercontent = $this->AssociationRepository->getAllAgent();
         return $this->successResponse($usercontent, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getAllUserOperator()
     {
-        $usercontent = $this->AssociationService->getAllUserOperator();
+        // $usercontent = $this->AssociationService->getAllUserOperator();
+        $usercontent = $this->AssociationRepository->getAllUserOperator();
         return $this->successResponse($usercontent, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -78,7 +85,8 @@ class AssociationController extends Controller
             $errors = $usercontent->errors();
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         } else {
-            $response = $this->AssociationService->addusercontent($request);
+            //$response = $this->AssociationService->addusercontent($request);
+            $response = $this->AssociationRepository->addusercontent($request);
 
             if ($response == 'Association Already Exist') {
                 return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
@@ -106,8 +114,8 @@ class AssociationController extends Controller
         'general_secretary_phone'
         ]);
 
-        $response = $this->AssociationService->updateusercontent($request, $id);
-        ;
+        // $response = $this->AssociationService->updateusercontent($request, $id);
+        $response = $this->AssociationRepository->updateusercontent($request,$id);
 
         if ($response == 'Association Already Exist') {
             return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
@@ -125,21 +133,24 @@ class AssociationController extends Controller
         $data = $request->only([
         'password'
         ]);
-        $this->AssociationService->changePassword($request, $id);
+        // $this->AssociationService->changePassword($request, $id);
+        $this->AssociationRepository->changePassword($request,$id);
         return $this->successResponse(null, "USER PASSWORD UPDATED", Response::HTTP_CREATED);
     }
 
 
     public function changeStatus($id)
     {
-        $usercontent = $this->AssociationService->changeStatus($id);
+        //$usercontent = $this->AssociationService->changeStatus($id);
+        $usercontent = $this->AssociationRepository->changeStatus($id);
         return $this->successResponse($usercontent, 'USER STATUS UPDATED', Response::HTTP_OK);
 
     }
 
     public function deleteuser($id)
     {
-        $usercontent = $this->AssociationService->deleteusercontent($id);
+        // $usercontent = $this->AssociationService->deleteusercontent($id);
+        $usercontent = $this->AssociationRepository->deleteusercontent($id);
         return $this->successResponse($usercontent,'USER DELETED',Response::HTTP_OK);
 
     }

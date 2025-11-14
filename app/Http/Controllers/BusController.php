@@ -60,7 +60,7 @@ class BusController extends Controller
       BusSafetyService $busSafetyService, 
       BookingSeizedService $bookingSeizedService,
       BusLocationSequenceService $busLocationSequenceService,
-      BusRepository $busRepository)
+      BusRepository $busRepository )
     {
         $this->busService = $busService;
         $this->busValidator = $busValidator;
@@ -248,11 +248,13 @@ class BusController extends Controller
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    public function BusData(Request $request) {      
+    public function BusData(Request $request) {
         
-      
+      Log::info("BUS DATA API");
         $buses = $this->busRepository->BusData($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+    Log::info();
     }
     public function busContactInfo(Request $request)
     {
@@ -261,7 +263,8 @@ class BusController extends Controller
         $data=$request;
         //$bus_name=$data['bus_number'];
         // $this->busService->updateBusName($data,$data['id']);
-        $this->busContactsService->deleteByBusId($data['id']);
+        //$this->busContactsService->deleteByBusId($data['id']);
+        $this->busContactsRepository->deletebyBusid($id);
         if(isset($data['conductor_no']))
         {
             $cond['bus_id']=$data['id'];
@@ -271,7 +274,8 @@ class BusController extends Controller
             $cond['cancel_sms_send']=($data['c_sms_cancel']=="0")?"0":"1";
             $cond['created_by']=$data['created_by'];
             try {
-                $this->busContactsService->savePostData($cond);
+                // $this->busContactsService->savePostData($cond);
+                $this->busContactsRepository->save($data);
             } 
             catch (Exception $e) {
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -288,7 +292,8 @@ class BusController extends Controller
             $mng['created_by']=$data['created_by'];
 
             try {
-                $this->busContactsService->savePostData($mng);
+                // $this->busContactsService->savePostData($mng);
+                $this->busContactsRepository->save($data);
             } 
             catch (Exception $e) {
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -306,7 +311,8 @@ class BusController extends Controller
             $own['created_by']=$data['created_by'];
 
             try {
-                $this->busContactsService->savePostData($own);
+                // $this->busContactsService->savePostData($own);
+                $this->busContactsRepository->save($data);
             } 
             catch (Exception $e) {
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -325,9 +331,11 @@ class BusController extends Controller
 
     public function busDisplayInfo(){
 
+     Log::info("busDisplay");
         
         $buses = $this->busRepository->busDisplayInfo();
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        
 
     }
 
@@ -430,7 +438,8 @@ class BusController extends Controller
                     $cond['booking_sms_send']=($data['c_sms_ticket']=="true" || $data['c_sms_ticket']==1 )?"1":"0";
                     $cond['cancel_sms_send']=($data['c_sms_cancel']=="true" || $data['c_sms_cancel']==1 )?"1":"0";
                     $cond['created_by']=$data['created_by'];
-                    $this->busContactsService->savePostData($cond);
+                    //$this->busContactsService->savePostData($cond);
+                    $this->busContactsRepository->save($data);
                 }
                 ////////// manager no
                 if(isset($data['manager_no']) && $data['manager_no']!=''){
@@ -441,7 +450,8 @@ class BusController extends Controller
                     $mng['cancel_sms_send']=($data['m_sms_cancel']=="true" || $data['m_sms_cancel']==1 )?"1":"0";
                     $mng['created_by']=$data['created_by'];
                 
-                    $this->busContactsService->savePostData($mng);
+                    //$this->busContactsService->savePostData($mng);
+                    $this->busContactsRepository->save($data);
                 }
                     /////////// owner no////////////                   
                     if(isset($data['owner_no']) && $data['owner_no']!=''){
@@ -453,7 +463,8 @@ class BusController extends Controller
                     $own['cancel_sms_send']=($data['o_sms_cancel']=="true" || $data['o_sms_cancel']==1 )?"1":"0";
                     $own['created_by']=$data['created_by'];
                 
-                    $this->busContactsService->savePostData($own);
+                    //$this->busContactsService->savePostData($own);
+                     $this->busContactsRepository->save($data);
                 }
 
 
