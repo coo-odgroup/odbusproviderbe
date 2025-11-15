@@ -31,19 +31,25 @@ class AgentFeeController extends Controller
     }
 
 
-    public function getAllAgentFee(Request $request)
-    {
-
-        $agentFees = $this->agentFeeRepository->getAll($request);
-        return $this->successResponse($agentFees, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    public function getAllAgentFee(Request $request){
+        try {
+            $agentFees = $this->agentFeeRepository->getAll($request);
+            return $this->successResponse($agentFees, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        
     }
 
 
-    public function getAllAgentFeeData(Request $request)
-    {
-
-        $agentFees = $this->agentFeeRepository->getAllAgentFeeData($request);
-        return $this->successResponse($agentFees, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    public function getAllAgentFeeData(Request $request){
+        try {
+            $agentFees = $this->agentFeeRepository->getAllAgentFeeData($request);
+            return $this->successResponse($agentFees, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        
     }
 
     public function createAgentFee(Request $request)
@@ -106,25 +112,26 @@ class AgentFeeController extends Controller
 
     public function deleteAgentFee($id)
     {
-
+        DB::beginTransaction();
         try {
             $this->agentFeeRepository->delete($id);
+
+            DB::commit();
+            return $this->successResponse(null, "Agent Fee Slab Deleted", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
+            DB::rollBack();
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Agent Fee Slab Deleted", Response::HTTP_ACCEPTED);
-
     }
 
     public function getAgentFee($id)
     {
         try {
-            $AgentFeeID = $this->agentFeeRepository->getById($id);
+            $agentFeeID = $this->agentFeeRepository->getById($id);
+            return $this->successResponse($agentFeeID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
-        return $this->successResponse($AgentFeeID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-
     }
 
 }

@@ -30,32 +30,43 @@ class AgentWalletController extends Controller
         $this->agentWalletRepository = $agentWalletRepository;
     }
 
-    public function getAllData(Request $request)
-    {
-        $wallet = $this->agentWalletService->getAllData($request);
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    public function getAllData(Request $request){
+        try {
+            $wallet = $this->agentWalletService->getAllData($request);
+            return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
     }
 
-    public function agentWalletBalancedetails(Request $request)
-    {
-        $wallet = $this->agentWalletRepository->agentWalletBalancedetails($request);
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    public function agentWalletBalancedetails(Request $request){
+        try {
+            $wallet = $this->agentWalletRepository->agentWalletBalancedetails($request);
+            return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
     }
 
-    public function agentAllTransaction(Request $request)
-    {
-        $wallet = $this->agentWalletRepository->agentAllTransaction($request);
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    public function agentAllTransaction(Request $request){
+        try {
+            $wallet = $this->agentWalletRepository->agentAllTransaction($request);
+            return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
     }
 
-    public function getData(Request $request)
-    {
-        $wallet = $this->agentWalletService->getData($request);
-        return $this->successResponse($wallet, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    public function getData(Request $request){
+        try {
+            $wallet = $this->agentWalletService->getData($request);
+            return $this->successResponse($wallet, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
     }
 
-    public function addAgentWallet(Request $request) 
-    {
+    public function addAgentWallet(Request $request){
         $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
         $agentWalletValidator = $this->agentWalletValidator->validate($data);
 
@@ -68,8 +79,8 @@ class AgentWalletController extends Controller
         try {
            $this->agentWalletRepository->save($request);
 
-           return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
            DB::commit();
+           return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
         } catch (Exception $e) {
            DB::rollBack();
            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -78,8 +89,12 @@ class AgentWalletController extends Controller
     }
 
     public function agentTransByAdmin(Request $request){
-        $data= $this->agentWalletRepository->agentTransByAdmin($request);
-        return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
+        try {
+            $data= $this->agentWalletRepository->agentTransByAdmin($request);
+            return $this->successResponse($data,"Wallet request Added",Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
         // $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
 
         // $agentWalletValidator = $this->agentWalletValidator->validate($data);
@@ -121,8 +136,12 @@ class AgentWalletController extends Controller
     
 	   
     public function agentWalletBalance($id){
-        $wallet = $this->agentWalletRepository->balance($id);
-        return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        try {
+            $wallet = $this->agentWalletRepository->balance($id);
+            return $this->successResponse($wallet,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
         
     }
          

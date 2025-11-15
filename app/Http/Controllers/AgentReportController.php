@@ -24,22 +24,34 @@ class AgentReportController extends Controller
         $this->agentreportRepository = $agentreportRepository;
     }
 
-    public function getData(Request $request)
-    {
-        $completeData = $this->agentreportRepository->getData($request);
-        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    public function getData(Request $request){
+        try {
+            $completeData = $this->agentreportRepository->getData($request);
+            return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        
     }
 
-    public function agentcancelreport(Request $request)
-    {
-        $completeData = $this->agentreportRepository->agentcancelreport($request);
-        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    public function agentcancelreport(Request $request){
+        try {
+            $completeData = $this->agentreportRepository->agentcancelreport($request);
+            return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        
     }
 
-    public function agentCommissionreport(Request $request)
-    {
-        $completeData = $this->agentreportRepository->agentCommissionreport($request);
-        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    public function agentCommissionreport(Request $request){
+        try {
+            $completeData = $this->agentreportRepository->agentCommissionreport($request);
+            return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        
     }
 
 }

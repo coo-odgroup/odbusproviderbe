@@ -37,28 +37,40 @@ class AgentController extends Controller
     }
 
     public function updateAgentProfile(Request $request) {
-
-      $agents = $this->agentRepository->updateAgentProfile($request);
-      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      try {
+        $agents = $this->agentRepository->updateAgentProfile($request);
+        return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+      }
     }
 
     public function getAllAgent(Request $request) {
-
-      $agents = $this->agentRepository->getAll($request);
-      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      try {
+        $agents = $this->agentRepository->getAll($request);
+        return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+      }
     }
 
 
     public function getAllAgentData(Request $request) {
-
-      $agents = $this->agentRepository->getAllAgentData($request);
-      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      try {
+        $agents = $this->agentRepository->getAllAgentData($request);
+        return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+      }
     }
 
     public function ourAgentData(Request $request) {
-
-      $agents = $this->agentRepository->ourAgentData($request);
-      return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      try {
+        $agents = $this->agentRepository->ourAgentData($request);
+        return $this->successResponse($agents,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+      }
     }
 
     public function createAgent(Request $request) {
@@ -95,7 +107,7 @@ class AgentController extends Controller
         }
 
         $response =  $this->agentRepository->savePostData($request);
-
+        
         if (in_array($response, [
             'Email Already Exist',
             'Phone Already Exist',
@@ -107,6 +119,7 @@ class AgentController extends Controller
         }
 
         DB::commit();
+        return $this->successResponse($response, "Agent Create", Response::HTTP_CREATED);
 
       } catch (\Throwable $th) {
         DB::rollBack();
@@ -117,67 +130,67 @@ class AgentController extends Controller
       }
     }
 
-    public function updateAgent(Request $request, $id)
-    {
+    public function updateAgent(Request $request, $id){
       DB::beginTransaction();
 
       try {
-          $data = $request->only([
-              'name',
-              'email',
-              'phone',
-              'password',
-              'user_type',
-              'otp',
-              'location',
-              'adhar_no',
-              'pancard_no',
-              'organization_name',
-              'address',
-              'landmark',
-              'pincode',
-              'name_on_bank_account',
-              'bank_name',
-              'ifsc_code',
-              'bank_account_no',
-              'agentType',
-              'created_by'
-          ]);
+        $data = $request->only([
+            'name',
+            'email',
+            'phone',
+            'password',
+            'user_type',
+            'otp',
+            'location',
+            'adhar_no',
+            'pancard_no',
+            'organization_name',
+            'address',
+            'landmark',
+            'pincode',
+            'name_on_bank_account',
+            'bank_name',
+            'ifsc_code',
+            'bank_account_no',
+            'agentType',
+            'created_by'
+        ]);
 
-          $response = $this->agentRepository->update($data, $id);
+        $response = $this->agentRepository->update($data, $id);
 
-          if (in_array($response, [
-              'Email Already Exist',
-              'Phone Already Exist',
-              'Pan Card Already Exist',
-              'Aadhaar Card Already Exist'
-          ])) {
-              DB::rollBack();
-              return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
-          }
+        if (in_array($response, [
+          'Email Already Exist',
+          'Phone Already Exist',
+          'Pan Card Already Exist',
+          'Aadhaar Card Already Exist'
+        ])) {
+          DB::rollBack();
+          return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
+        }
 
-          DB::commit();
-          return $this->successResponse($response, "Agent Updated", Response::HTTP_CREATED);
+        DB::commit();
+        return $this->successResponse($response, "Agent Updated", Response::HTTP_CREATED);
 
       } catch (\Throwable $th) {
-          DB::rollBack();
-          \Log::error('Agent update failed: '.$th->getMessage());
-          return $this->errorResponse(
-              'Something went wrong: ' . $th->getMessage(),
-              Response::HTTP_INTERNAL_SERVER_ERROR
-          );
+        DB::rollBack();
+        \Log::error('Agent update failed: '.$th->getMessage());
+        return $this->errorResponse('Something went wrong: ' . $th->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR
+        );
       }
     }
 
     public function deleteAgent($id) {
+      DB::beginTransaction();
       try {
         $this->agentRepository->delete($id);
+
+        DB::commit();
+        return $this->successResponse('Null',"Agent has been deleted Successfully",Response::HTTP_ACCEPTED);
       }
       catch (Exception $e) {
+        DB::rollBack();
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse('Null',"Agent has been deleted Successfully",Response::HTTP_ACCEPTED);
-     
     }
 
     public function getAgent($id) {
@@ -192,23 +205,32 @@ class AgentController extends Controller
     }
 
     public function changeStatus(Request $request) {
+      DB::beginTransaction();
       try{
         $this->agentRepository->changeStatus($request);
+
+        DB::commit();
+        return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
+        DB::rollBack();
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
+      
     }
 
     public function blockAgent(Request $request) {
+      DB::beginTransaction();
       try{
         $this->agentRepository->blockAgent($request);
+
+        DB::commit();
+        return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
       }
       catch (Exception $e){
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+        DB::rollBack();
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse(null, "Agent Status Updated", Response::HTTP_ACCEPTED);
     }
     
 }

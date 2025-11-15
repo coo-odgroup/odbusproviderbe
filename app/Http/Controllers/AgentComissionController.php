@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\AgentCommissionService;
 use App\Repositories\AgentCommissionRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
@@ -19,15 +18,12 @@ class AgentComissionController extends Controller
 {
     use ApiResponser;
 
-
-    protected $agentCommissionService;
     protected $agentCommissionValidator;
     
-    public function __construct(AgentCommissionService $agentCommissionService,AgentCommissionValidator $agentCommissionValidator,AgentCommissionRepository $agentCommissionRepository)
+    public function __construct(AgentCommissionValidator $agentCommissionValidator,AgentCommissionRepository $agentCommissionRepository)
     {
-        $this->agentCommissionService = $agentCommissionService;
-        $this->agentCommissionValidator = $agentCommissionValidator;
-        $this->agentCommissionRepository = $agentCommissionRepository;
+      $this->agentCommissionValidator = $agentCommissionValidator;
+      $this->agentCommissionRepository = $agentCommissionRepository;
     }
 
 
@@ -112,7 +108,7 @@ class AgentComissionController extends Controller
     {
       DB::beginTransaction();
       try {
-        $this->agentCommissionService->delete($id);
+        $this->agentCommissionRepository->delete($id);
         DB::commit();
         return $this->successResponse(null, "Agent Commission Slab Deleted", Response::HTTP_ACCEPTED);
       } catch (Exception $e) {
@@ -126,8 +122,8 @@ class AgentComissionController extends Controller
     public function getAgentCommission($id)
     {
       try {
-        $AgentCommissionID = $this->agentCommissionRepository->getById($id);
-        return $this->successResponse($AgentCommissionID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        $agentCommissionID = $this->agentCommissionRepository->getById($id);
+        return $this->successResponse($agentCommissionID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
       } catch (Exception $e) {
         return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
       }
