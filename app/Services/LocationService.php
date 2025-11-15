@@ -24,7 +24,7 @@ class LocationService
      */
     public function __construct(LocationRepository $locationRepository)
     {
-        $this->LocationRepository = $locationRepository;
+        $this->locationRepository = $locationRepository;
     }
 
     /**
@@ -77,30 +77,30 @@ class LocationService
      * @param array $data
      * @return String
      */
-    public function updateLocation($data, $id)
-    {
-        /*$validator = Validator::make($data, [
-            // 'type' => 'bail|min:2',
-            'name' => 'bail|max:50'
-        ]);
+    // public function updateLocation($data, $id)
+    // {
+    //     /*$validator = Validator::make($data, [
+    //         // 'type' => 'bail|min:2',
+    //         'name' => 'bail|max:50'
+    //     ]);
 
-        if ($validator->fails()) {
-            throw new InvalidArgumentException($validator->errors()->first());
-        }*/
+    //     if ($validator->fails()) {
+    //         throw new InvalidArgumentException($validator->errors()->first());
+    //     }*/
 
-        try {
-            $location = $this->LocationRepository->update($data, $id);
+    //     try {
+    //         $location = $this->LocationRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
 
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
 
-        return $location;
+    //     return $location;
 
-    }
+    // }
 
     /**
      * Validate post data.
@@ -111,7 +111,7 @@ class LocationService
      */
     public function savePostData($data)
     {
-        $result = $this->LocationRepository->save($data);
+        $result = $this->locationRepository->save($data);
         return $result;
     }
 
@@ -129,7 +129,7 @@ class LocationService
 
 
         try {
-            $post = $this->LocationRepository->edit($data, $id);
+            $post = $this->locationRepository->edit($data, $id);
 
         } catch (Exception $e) {
             DB::rollBack();
@@ -149,7 +149,7 @@ class LocationService
     // }
     public function search($search)
     {
-        return $this->LocationRepository->search($search);
+        return $this->locationRepository->search($search);
     }
 
     // public function getAllLocationDT($request)

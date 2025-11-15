@@ -2,63 +2,83 @@
 
 namespace App\Services;
 
-use App\Models\BusContacts;
-use App\Repositories\BusContactsRepository;
+
+use App\Repositories\BookingSeizedRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-//use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Config;
+
 
 class BookingSeizedService
 {
-    protected $busContactsRepository;
+    protected $bookingseizedRepository;
 
+    
 
-    public function __construct(busContactsRepository $busContactsRepository)
+    public function __construct(BookingSeizedRepository $bookingseizedRepository)
     {
-        $this->busContactsRepository = $busContactsRepository;
+        $this->bookingseizedRepository = $bookingseizedRepository;
     }
 
-    // public function deleteByBusId($id)
-    // {
-    //     $post = $this->busContactsRepository->deletebyBusid($id);
-    // }
-    // public function deleteById($id)
-    // {
-    //     try {
-    //         $post = $this->busContactsRepository->delete($id);
-    //     } catch (Exception $e) {
-    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-    //     }
-    //     return $post;
-    // }
-    // public function getAll()
-    // {
-    //     return $this->busContactsRepository->getAll();
-    // }
-    // public function getById($id)
-    // {
-    //     return $this->busContactsRepository->getById($id);
-    // }
-    // public function getByBusId($id)
-    // {
-    //     return $this->busContactsRepository->getByBusId($id);
-    // }
-    // public function updatePost($data, $id)
-    // {
-    //     try {
-    //         $post = $this->busContactsRepository->update($data, $id);
-    //     } catch (Exception $e) {
-    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-    //     }
-    //     return $post;
 
-    // }
-    // public function savePostData($data)
-    // {
-    //     $result = $this->busContactsRepository->save($data);
-    //     return $result;
-    // }
+    
+    
+//     public function getAll()
+//     {
+//         return $this->bookingseizedRepository->getAll();
+//     }
+
+//     public function bookingseizedById($id)
+//     {
+//         return $this->bookingseizedRepository->bookingseizedById($id);
+//     }
+
+
+    
+//     public function updateSeized($data)
+//     { 
+//         try {
+//             $seized = $this->bookingseizedRepository->update($data);
+//         } catch (Exception $e) {
+//             // Log::info($e->getMessage());
+//             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+//         }
+//         return $seized;
+//     }
+
+
+//     public function bookingseizedData($data)
+//     { 
+
+//        return $seized = $this->bookingseizedRepository->bookingseizedData($data);
+//    }  
+
+//    public function deletebookingseized($id)
+//     { 
+
+//        return $seized = $this->bookingseizedRepository->deletebookingseized($id);
+//    }
+
+
+
+//    public function changeStatus($id)
+//    {
+//     try {
+//         $post = $this->bookingseizedRepository->changeStatus($id);
+
+//     } catch (Exception $e) {
+//         throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+//     }
+//     return $post;
+// }
+
+
+// public function saveSeized($data)
+// {   
+//     return  $seized = $this->bookingseizedRepository->save($data);
+// }
 
 }

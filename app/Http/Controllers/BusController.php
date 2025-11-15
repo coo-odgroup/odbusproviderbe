@@ -6,10 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\TicketCancelation;
 use App\Models\BusType;
-use App\Models\BusSitting;
-use App\Models\BusSeatLayout;
-use App\Services\BusService;
-use App\Services\BusSafetyService;
+
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
@@ -18,19 +15,23 @@ use Exception;
 use App\AppValidator\BusValidator;
 use App\AppValidator\BusSequenceValidator;
 use Symfony\Component\HttpFoundation\Response;
-use App\Services\BusAmenitiesService;
-use App\Services\BusContactsService;
-use App\Services\BookingSeizedService;
 use App\Models\BusStoppage;
-use App\Services\BusStoppageService;
-use App\Services\BusLocationSequenceService;
 use App\Models\BusStoppageTiming;
-use App\Services\BusStoppageTimingService;
 use App\Jobs\TestingEmailJob;
 use App\Models\BusSeats;
 use App\Services\BusSeatsService;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\BusRepository;
+use App\Repositories\BusLocationSequenceRepository;
+use App\Repositories\BusStoppageTimingRepository;
+use App\Repositories\BusSeatsRepository;
+use App\Repositories\BusStoppageRepository;
+use App\Repositories\BusSafetyRepository;
+use App\Repositories\BusAmenitiesRepository;
+use App\Repositories\BusContactsRepository;
+
+
+
 /*Priyadarshi Need to Review*/
 class BusController extends Controller
 {
@@ -39,77 +40,79 @@ class BusController extends Controller
     protected $busService;
     protected $busValidator;
     protected $BusSequenceValidator;
-    protected $busAmenitiesService;
-    protected $busContactsService;
-    protected $BusStoppageService;
-    protected $busLocationSequenceService;
-    protected $BusStoppageTimingService;
-    protected $busSeatsService;
-    protected $busSafetyService;
-    protected $bookingSeizedService;
     protected $busRepository;
+    protected $busLocationSequenceRepository;
+    protected $busStoppageTimingRepository;
+    protected $busSeatsRepository;
+    protected $busStoppageRepository;
+    protected $busSafety;
+    protected $busAmenitiesRepository;
+    protected $busContactsRepository;
+    
+    
+    
+  
 
-    public function __construct(BusContactsService $busContactsService,
-    BusAmenitiesService $busAmenitiesService,
-    BusService $busService,
+    public function __construct(
     BusValidator $busValidator, 
-    BusSequenceValidator $BusSequenceValidator,
-     BusStoppageService $BusStoppageService,
-      BusStoppageTimingService $BusStoppageTimingService, 
-      BusSeatsService $busSeatsService, 
-      BusSafetyService $busSafetyService, 
-      BookingSeizedService $bookingSeizedService,
-      BusLocationSequenceService $busLocationSequenceService,
-      BusRepository $busRepository )
+    BusSequenceValidator $BusSequenceValidator, 
+      BusRepository $busRepository,
+      BusLocationSequenceRepository $busLocationSequenceRepository,
+      busStoppageTimingRepository $busStoppageTimingRepository,
+      busSeatsRepository $busSeatsRepository,
+      BusSafetyRepository $busSafetyRepository,
+      busStoppageRepository $busStoppageRepository,
+      busAmenitiesRepository $busAmenitiesRepository,
+      busContactsRepository $busContactsRepository) 
     {
-        $this->busService = $busService;
+      
         $this->busValidator = $busValidator;
         $this->BusSequenceValidator = $BusSequenceValidator;
-        $this->busAmenitiesService = $busAmenitiesService;
-        $this->busContactsService = $busContactsService;
-        $this->BusStoppageService=$BusStoppageService;
-        $this->BusStoppageTimingService=$BusStoppageTimingService;
-        $this->busSeatsService=$busSeatsService;
-        $this->busSafetyService=$busSafetyService;
-        $this->bookingSeizedService=$bookingSeizedService;
-        $this->busLocationSequenceService=$busLocationSequenceService;
         $this->busRepository = $busRepository;
+        $this->busLocationSequenceRepository = $busLocationSequenceRepository;
+        $this->busStoppageTimingRepository = $busStoppageTimingRepository;
+        $this->busSeatsRepository = $busSeatsRepository;
+        $this->busStoppageRepository = $busStoppageRepository;
+        $this->busSafetyRepository = $busSafetyRepository;
+        $this->busAmenitiesRepository = $busAmenitiesRepository;
+        $this->busContactsRepository = $busContactsRepository;
+        
 
         
     }
     public function seatsBus(Request $request) {
         
         $buses = $this->busRepository->seatsBus($request);
-        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function getAll() {
      
         $buses = $this->busRepository->getAll();
-        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     public function getByOperaor($id) {
        
         $buses = $this->busRepository->getByOperaor($id);
-        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function getLocationBus($source_id,$destination_id)
     {
         
         $buses = $this->busRepository->getLocationBus($source_id,$destination_id);
-        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     
-    public function locationBusss(Request $request) {       
+    public function locationBusss(Request $request) {
     
         $buses = $this->busRepository->locationBusss($request);
-        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+        return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
       
     public function createBuses(Request $request) {
 
-        // Log::info($request);exit;
+       
         $data = $request->only([
             'bus_operator_id','user_id', 'bus_description','cancelation_points', 'name', 'via','bus_number','bus_type_id',
             'bus_sitting_id','amenities_id','cancellationslabs_id','bus_seat_layout_id','running_cycle','has_return_bus','created_by'
@@ -186,7 +189,7 @@ class BusController extends Controller
         }
 
         try {
-            //$this->busService->updateSequncePost($data, $id);
+            
             $this->busRepository->updatesequence($data, $id);
         }
          catch (Exception $e) {
@@ -218,9 +221,9 @@ class BusController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }
         return $this->successResponse($busID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }   
+    }
     
-    public function getBusDT(Request $request) {      
+    public function getBusDT(Request $request) {
         
         
         $buses = $this->busRepository->getAllBusDT($request);
@@ -228,21 +231,21 @@ class BusController extends Controller
     }
 
     
-    public function busSeatsFareData(Request $request) {      
+    public function busSeatsFareData(Request $request) {
         
      
         $buses = $this->busRepository->busSeatsFareData($request);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    } 
+    }
 
-    public function busseatfarereport(Request $request) {      
+    public function busseatfarereport(Request $request) {
         
 
-        $busesData = $$this->busRepository->busseatfarereport($request);
+        $busesData = $this->busRepository->busseatfarereport($request);
         return $this->successResponse($busesData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    } 
+    }
 
-    public function busupdatesequenceData(Request $request) {      
+    public function busupdatesequenceData(Request $request) {
         
         
         $buses = $this->busRepository->busupdatesequenceData($request);
@@ -259,13 +262,10 @@ class BusController extends Controller
     }
     public function busContactInfo(Request $request)
     {
-        // log::info($request);
-        // exit;
+        
         $data=$request;
-        //$bus_name=$data['bus_number'];
-        // $this->busService->updateBusName($data,$data['id']);
-        //$this->busContactsService->deleteByBusId($data['id']);
-        $this->busContactsRepository->deletebyBusid($id);
+        
+        $this->busContactsRepository->deletebyBusid($data);
         if(isset($data['conductor_no']))
         {
             $cond['bus_id']=$data['id'];
@@ -275,8 +275,8 @@ class BusController extends Controller
             $cond['cancel_sms_send']=($data['c_sms_cancel']=="0")?"0":"1";
             $cond['created_by']=$data['created_by'];
             try {
-                // $this->busContactsService->savePostData($cond);
-                $this->busContactsRepository->save($data);
+                
+                $this->busContactsRepository->save($cond);
             } 
             catch (Exception $e) {
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -293,8 +293,8 @@ class BusController extends Controller
             $mng['created_by']=$data['created_by'];
 
             try {
-                // $this->busContactsService->savePostData($mng);
-                $this->busContactsRepository->save($data);
+               
+                $this->busContactsRepository->save($mng);
             } 
             catch (Exception $e) {
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -312,8 +312,8 @@ class BusController extends Controller
             $own['created_by']=$data['created_by'];
 
             try {
-                // $this->busContactsService->savePostData($own);
-                $this->busContactsRepository->save($data);
+     
+                $this->busContactsRepository->save($own);
             } 
             catch (Exception $e) {
                 return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -325,7 +325,7 @@ class BusController extends Controller
 
     public function allCouponBusList($id){
 
-        //$buses = $this->busService->allCouponBusList($id);
+   
         $buses = $this->busRepository->allCouponBusList($id);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
@@ -430,7 +430,7 @@ class BusController extends Controller
                 /////////////// add safety 
                 $safetydata['bus_id']=$bus_last_insert_id;
                 $safetydata['safety']=$data['safety'];
-                $this->busSafetyService->savePostData($safetydata);
+                $this->busSafetyRepository->save($safetydata);
             
                 ///////////////// add ///////////
                 if(isset($data['conductor_no']) && $data['conductor_no']!=''){
@@ -440,8 +440,8 @@ class BusController extends Controller
                     $cond['booking_sms_send']=($data['c_sms_ticket']=="true" || $data['c_sms_ticket']==1 )?"1":"0";
                     $cond['cancel_sms_send']=($data['c_sms_cancel']=="true" || $data['c_sms_cancel']==1 )?"1":"0";
                     $cond['created_by']=$data['created_by'];
-                    //$this->busContactsService->savePostData($cond);
-                    $this->busContactsRepository->save($data);
+                    
+                    $this->busContactsRepository->save($cond);
                 }
                 ////////// manager no
                 if(isset($data['manager_no']) && $data['manager_no']!=''){
@@ -452,8 +452,8 @@ class BusController extends Controller
                     $mng['cancel_sms_send']=($data['m_sms_cancel']=="true" || $data['m_sms_cancel']==1 )?"1":"0";
                     $mng['created_by']=$data['created_by'];
                 
-                    //$this->busContactsService->savePostData($mng);
-                    $this->busContactsRepository->save($data);
+                    
+                    $this->busContactsRepository->save($mng);
                 }
                     /////////// owner no////////////                   
                     if(isset($data['owner_no']) && $data['owner_no']!=''){
@@ -465,8 +465,8 @@ class BusController extends Controller
                     $own['cancel_sms_send']=($data['o_sms_cancel']=="true" || $data['o_sms_cancel']==1 )?"1":"0";
                     $own['created_by']=$data['created_by'];
                 
-                    //$this->busContactsService->savePostData($own);
-                     $this->busContactsRepository->save($data);
+                    
+                     $this->busContactsRepository->save($own);
                 }
 
 
@@ -485,8 +485,7 @@ class BusController extends Controller
                             $bus_location_sequence['location_id']=$timing_grp['location_id']=$routeValue['source_id'];
                             $bus_location_sequence['sequence']=$routeValue['sequence'];
                             $bus_location_sequence['location_time']=$routeValue['location_time'];
-
-                            $this->busLocationSequenceService->savePostData($bus_location_sequence);
+                            $this->busLocationSequenceRepository->save($bus_location_sequence);
 
                             $found_arrival=0;
                             $depature_time="";
@@ -503,7 +502,7 @@ class BusController extends Controller
                                     $timing_grp['stoppage_name']=$destinations['sourceLocation'];
                                     $timing_grp['boarding_droping_id']=$destinations['boarding_droping_id'];
                                     $timing_grp['stoppage_time']=$destinations['sourceTime'];
-                                    $this->BusStoppageTimingService->savePostData($timing_grp);
+                                    $this->busStoppageTimingRepository->save($timing_grp);
                                 }
                             }
                             if( $timing_grp['location_id']!="")
@@ -519,7 +518,7 @@ class BusController extends Controller
                         if($busRoutesInfo){
 
                         foreach($busRoutesInfo as $routeinfoKey=>$routeinfoVal)
-                        {                          
+                        {
                             $booking_seized_array['bus_id']=$routeinfoData['bus_id']=$bus_last_insert_id; //get it from return id
                             //CHECK DUPLICATE ROUTES
                             $recordArray=array(
@@ -528,15 +527,13 @@ class BusController extends Controller
                                 "destination_id"=>$routeinfoVal['to_location'],
 
                             );
-                            $old_data=$this->BusStoppageService->checkDuplicate($recordArray);
+                            
+                            $old_data = $this->busStoppageRepository->checkDuplicate($recordArray);
                             if(count($old_data)>0)
                             {
                                 continue;
                             }
-                            // $booking_seized_array['location_id']=$routeinfoVal['from_location'];
-                            // $booking_seized_array['seize_booking_minute']=$routeinfoVal['booking_seized'];
-                            // $booking_seized_array['created_by']=$data['created_by'];                           
-                            // $this->bookingSeizedService->savePostData($booking_seized_array);
+                           
 
                             
                             $routeinfoData['bus_operator_id']=$data['bus_operator_id'];
@@ -562,7 +559,8 @@ class BusController extends Controller
                                 $routeinfoData['status']="0";
                             }
                             
-                            $stoppage_id=$this->BusStoppageService->savePostData($routeinfoData);
+                            
+                            $stoppage_id = $this->busStoppageRepository->save($routeinfoData);
 
                             if(isset($data['bus_seat_layout_data']))
                             {
@@ -572,7 +570,8 @@ class BusController extends Controller
                                 $seatLayoutData['duration']="0";
                                 $seatLayoutData['ticket_price_id']=$stoppage_id;
                                 $seatLayoutData['bus_seat_layout_data']=$data['bus_seat_layout_data'];
-                                $this->busSeatsService->savePostData($seatLayoutData);
+                                
+                                $this->busSeatsRepository->save($seatLayoutData);
                             }
                             
                             //ADD TO STOPPAGE THEN TO TIMING
@@ -584,9 +583,6 @@ class BusController extends Controller
 
                          return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_ACCEPTED);
 
-            // }else{
-            //     return $this->errorResponse("Some mandatory fileds are missing.Please verify and try again.",Response::HTTP_PARTIAL_CONTENT);
-            // }
 
         } 
         catch (Exception $e) {
@@ -611,7 +607,7 @@ class BusController extends Controller
 
       public function getBusbyBuschedule($id) {
         try {
-          //$buses= $this->busService->getBusbyBuschedule($id);
+          
           $buses = $this->busRepository->getBusbyBuschedule($id);
         }
         catch (Exception $e) {
@@ -622,7 +618,7 @@ class BusController extends Controller
 
       public function getBusScheduleEntryDates($busId) {
         try {
-          //$buses= $this->busService->getBusScheduleEntryDates($busId);
+        
           $buses = $this->busRepository->getBusScheduleEntryDates($busId);
         }
         catch (Exception $e) {
@@ -633,24 +629,24 @@ class BusController extends Controller
 
       public function getBusScheduleEntryDatesFilter(Request $request) {
 
-      //$bus = $this->busService->getBusScheduleEntryDatesFilter($request);
-      $bus = $this->busRepository->getBusScheduleEntryDatesFilter($data);
+      
+      $bus = $this->busRepository->getBusScheduleEntryDatesFilter($request);
       return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     
       }
 
       public function getBusScheduleEntry(Request $request) {
 
-      //$bus = $this->busService->getBusScheduleEntry($request);
-      $bus = $this->busRepository->getBusScheduleEntry($data);
+      
+      $bus = $this->busRepository->getBusScheduleEntry($request);
       return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     
       }
 
       public function getBusScheduleEntryforOperator(Request $request) {
 
-      //$bus = $this->busService->getBusScheduleEntryforOperator($request);
-      $bus = $this->busRepository->getBusScheduleEntryforOperator($data);
+      
+      $bus = $this->busRepository->getBusScheduleEntryforOperator($request);
       return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     
       }
@@ -670,7 +666,7 @@ class BusController extends Controller
      public function GetBusList(Request $request){
 
         
-        $bus = $this->busRepository->GetBusList($data);
+        $bus = $this->busRepository->GetBusList($request);
         return $this->successResponse($bus,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
      } 
