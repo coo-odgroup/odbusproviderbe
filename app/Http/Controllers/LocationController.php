@@ -71,18 +71,8 @@ class LocationController extends Controller
         return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
     }
 
-<<<<<<< HEAD
-      public function locationsData(Request $request) {      
-        
-        $locations = $this->locationService->locationsData($request);
-        // dd($locations);
-        return $this->successResponse($locations,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-        
-      }
-=======
     public function getLocationDT(Request $request)
     {
->>>>>>> 114ea55211b248e60ed9698f8c4023bf06b9735c
 
         //$locations = $this->locationService->getAllLocationDT($request);
         $locations = $this->LocationRepository->getAllLocationDT($request);

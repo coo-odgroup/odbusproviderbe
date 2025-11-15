@@ -13,6 +13,8 @@ use InvalidArgumentException;
 use App\AppValidator\SafetyValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\SafetyRepository;
+
 
 class SafetyController extends Controller
 {
@@ -22,27 +24,32 @@ class SafetyController extends Controller
      */
     protected $safetyService;
     protected $safetyValidator;
+    protected $safetyRepository;
+
     /**
      * PostController Constructor
      *
      * @param SafetyService $busTypeService
      *
      */
-    public function __construct(SafetyService $safetyService, SafetyValidator $safetyValidator)
+    public function __construct(SafetyService $safetyService, SafetyValidator $safetyValidator,SafetyRepository $safetyRepository)
     {
         $this->safetyService = $safetyService;
         $this->safetyValidator = $safetyValidator;
+        $this->safetyRepository = $safetyRepository;
     }
     public function getAll()
     {
-        $result = $this->safetyService->getAll();
-        ;
+        
+        $result = $this->safetyRepository->getAll();
+        
         return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     public function getByBusId($id)
     {
         try {
-            $result = $this->safetyService->getByBusId($id);
+            
+            $result = $this->safetyRepository->getByBusId($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -50,19 +57,22 @@ class SafetyController extends Controller
     }
     public function getSafetyDT(Request $request)
     {
-        $result = $this->safetyService->dataTable($request);
+        
+        $result = $this->safetyRepository->getDatatable($request);
         return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     public function safetyByUser(Request $request)
     {
-        $result = $this->safetyService->safetyByUser($request);
+        
+        $result = $this->safetyRepository->safetyByUser($request);
         return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 
     public function getAllData(Request $request)
     {
-        $result = $this->safetyService->getAllData($request);
+       
+        $result = $this->safetyRepository->getAllData($request);
         return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -77,7 +87,8 @@ class SafetyController extends Controller
             $errors = $safetyValidation->errors();
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         } else {
-            $response =  $this->safetyService->savePostData($request);
+            
+            $response =  $this->safetyRepository->save($request);
 
             if ($response == 'Safety Already Exist') {
                 return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
@@ -99,7 +110,8 @@ class SafetyController extends Controller
             $errors = $safetyValidation->errors();
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         } else {
-            $response =  $this->safetyService->updatePost($data);
+            
+            $response =  $this->safetyRepository->update($data);
 
             if ($response == 'Safety Already Exist') {
                 return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
@@ -114,7 +126,8 @@ class SafetyController extends Controller
     {
 
         try {
-            $response = $this->safetyService->deleteById($id);
+            
+            $response = $this->safetyRepository->delete($id);
             return $this->successResponse($response, "Safety Deleted", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -124,7 +137,8 @@ class SafetyController extends Controller
     public function getById($id)
     {
         try {
-            $result = $this->safetyService->getById($id);
+    
+            $result = $this->safetyRepository->getById($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -135,7 +149,8 @@ class SafetyController extends Controller
     {
 
         try {
-            $response = $this->safetyService->changeStatus($request, $id);
+           
+            $response = $this->safetyRepository->changeStatus($request, $id);
             return $this->successResponse($response, "Safety Status Updated", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

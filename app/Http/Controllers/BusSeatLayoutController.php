@@ -13,21 +13,25 @@ use InvalidArgumentException;
 use App\AppValidator\BusSeatLayoutValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\BusSeatLayoutRepository;
 
 class BusSeatLayoutController extends Controller
 {
     use ApiResponser;
     protected $busSeatLayoutService;
     protected $busSeatLayoutValidator;
-    public function __construct(BusSeatLayoutService $busSeatLayoutService, BusSeatLayoutValidator $busSeatLayoutValidator)
+    protected $busSeatLayoutRepository;
+    public function __construct(BusSeatLayoutService $busSeatLayoutService,BusSeatLayoutRepository $busSeatLayoutRepository, BusSeatLayoutValidator $busSeatLayoutValidator)
     {
         $this->busSeatLayoutService = $busSeatLayoutService;
         $this->busSeatLayoutValidator = $busSeatLayoutValidator;
+        $this->busSeatLayoutRepository = $busSeatLayoutRepository;
     }
     public function getSeatLayoutRecord($id)
     {
         try {
-            $busSeatLayoutID = $this->busSeatLayoutService->getSeatLayoutRecord($id);
+            //$busSeatLayoutID = $this->busSeatLayoutService->getSeatLayoutRecord($id);
+            $busSeatLayoutID = $this->busSeatLayoutRepository->getSeatLayoutRecord($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
@@ -35,18 +39,21 @@ class BusSeatLayoutController extends Controller
     }
     public function getAll()
     {
-        $busSeatLayout = $this->busSeatLayoutService->getAll();
+        //$busSeatLayout = $this->busSeatLayoutService->getAll();
+        $busSeatLayout = $this->busSeatLayoutRepository->getAll();
         return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     public function BusSeatLayoutOperator(Request $request)
     {
-        $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutOperator($request);
+        //$busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutOperator($request);
+        $busSeatLayout = $this->busSeatLayoutRepository->BusSeatLayoutOperator($request);
         return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function BusSeatLayoutbyUser(Request $request)
     {
-        $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutbyUser($request);
+        //$busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutbyUser($request);
+        $busSeatLayout = $this->busSeatLayoutRepository->BusSeatLayoutbyUser($request);
         return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     public function save(Request $request)
@@ -65,7 +72,8 @@ class BusSeatLayoutController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->busSeatLayoutService->save($data);
+            //$this->busSeatLayoutService->save($data);
+            $this->busSeatLayoutRepository->save($data);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
@@ -99,7 +107,8 @@ class BusSeatLayoutController extends Controller
     public function deleteById($id)
     {
         try {
-            $this->busSeatLayoutService->deleteById($id);
+            //$this->busSeatLayoutService->deleteById($id);
+            $this->busSeatLayoutRepository->delete($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
@@ -108,7 +117,8 @@ class BusSeatLayoutController extends Controller
     public function getById($id)
     {
         try {
-            $busSeatLayoutID = $this->busSeatLayoutService->getById($id);
+            //$busSeatLayoutID = $this->busSeatLayoutService->getById($id);
+            $busSeatLayoutID = $this->busSeatLayoutRepository->delete($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
@@ -118,7 +128,8 @@ class BusSeatLayoutController extends Controller
     public function getRowCol($id, $type)
     {
         try {
-            $busSeatLayoutID = $this->busSeatLayoutService->getRowCol($id, $type);
+            //$busSeatLayoutID = $this->busSeatLayoutService->getRowCol($id, $type);
+            $busSeatLayoutID = $this->busSeatLayoutRepository->getRowCol($id,$type);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
@@ -128,13 +139,15 @@ class BusSeatLayoutController extends Controller
 
     public function getBusSeatLayoutDT(Request $request)
     {
-        $busSeatLayout = $this->busSeatLayoutService->getAllBusSeatLayoutDT($request);
+        //$busSeatLayout = $this->busSeatLayoutService->getAllBusSeatLayoutDT($request);
+        $busSeatLayout = $this->busSeatLayoutRepository->getAllBusSeatLayoutDT($request);
         return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function BusSeatLayoutData(Request $request)
     {
-        $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutData($request);
+       // $busSeatLayout = $this->busSeatLayoutService->BusSeatLayoutData($request);
+       $busSeatLayout = $this->busSeatLayoutRepository->BusSeatLayoutData($request);
         return $this->successResponse($busSeatLayout, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -142,7 +155,8 @@ class BusSeatLayoutController extends Controller
     public function changeStatus($id)
     {
         try {
-            $this->busSeatLayoutService->changeStatus($id);
+            //$this->busSeatLayoutService->changeStatus($id);
+            $this->busSeatLayoutRepository->changeStatus($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }

@@ -186,7 +186,8 @@ class BusController extends Controller
         }
 
         try {
-            $this->busService->updateSequncePost($data, $id);
+            //$this->busService->updateSequncePost($data, $id);
+            $this->busRepository->updatesequence($data, $id);
         }
          catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -324,7 +325,8 @@ class BusController extends Controller
 
     public function allCouponBusList($id){
 
-        $buses = $this->busService->allCouponBusList($id);
+        //$buses = $this->busService->allCouponBusList($id);
+        $buses = $this->busRepository->allCouponBusList($id);
         return $this->successResponse($buses,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
     }

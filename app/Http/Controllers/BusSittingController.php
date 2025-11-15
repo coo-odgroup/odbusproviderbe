@@ -12,35 +12,42 @@ use App\Traits\ApiResponser;
 use InvalidArgumentException;
 use App\AppValidator\BusSittingValidator;
 use Symfony\Component\HttpFoundation\Response;
+use App\Repositories\BusSittingRepository;
 
 class BusSittingController extends Controller
 {
     use ApiResponser;
     protected $busSittingService;
     protected $busSittingValidator;
+    protected $busSittingRepository;
+    
+    
     /**
      * PostController Constructor
      *
      * @param BusSittingService $busSittingService
      *
      */
-    public function __construct(BusSittingService $busSittingService, BusSittingValidator $busSittingValidator)
+    public function __construct(BusSittingService $busSittingService,BusSittingRepository $busSittingRepository, BusSittingValidator $busSittingValidator)
     {
         $this->busSittingService = $busSittingService;
         $this->busSittingValidator = $busSittingValidator;
+        $this->busSittingRepository = $busSittingRepository;
     }
 
 
 
     public function getAllBusSitting(Request $request)
     {
-        $busSitting = $this->busSittingService->getAll($request);
+        //$busSitting = $this->busSittingService->getAll($request);
+        $busSitting = $this->busSittingRepository->getAll();
         return $this->successResponse($busSitting, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function BusSittingData(Request $request)
     {
-        $busSitting = $this->busSittingService->BusSittingData($request);
+        //$busSitting = $this->busSittingService->BusSittingData($request);
+        $busSitting = $this->busSittingRepository->BusSittingData($request);
         return $this->successResponse($busSitting, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -59,7 +66,8 @@ class BusSittingController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->busSittingService->savePostData($data);
+            //$this->busSittingService->savePostData($data);
+            $this->busSittingRepository->save($data);
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -83,6 +91,7 @@ class BusSittingController extends Controller
         }
 
         try {
+            //$this->busSittingRepository->update($data, $id);
             $this->busSittingService->update($data, $id);
 
         } catch (Exception $e) {
@@ -94,7 +103,8 @@ class BusSittingController extends Controller
     public function deleteBusSitting($id)
     {
         try {
-            $this->busSittingService->deleteById($id);
+            //$this->busSittingService->deleteById($id);
+            $this->busSittingRepository->delete($id);
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), "404");
@@ -105,7 +115,8 @@ class BusSittingController extends Controller
     public function getBusSitting($id)
     {
         try {
-            $busSittingID = $this->busSittingService->getById($id);
+            //$busSittingID = $this->busSittingService->getById($id);
+            $busSittingID = $this->busSittingRepository->getById($id);
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
@@ -116,7 +127,8 @@ class BusSittingController extends Controller
     public function getBusSittingDT(Request $request)
     {
 
-        $busSitting = $this->busSittingService->getAllBusSittingDT($request);
+        //$busSitting = $this->busSittingService->getAllBusSittingDT($request);
+        $busSitting = $this->busSittingRepository->getAllBusSittingDT($request);
         return $this->successResponse($busSitting, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
 
     }
@@ -124,7 +136,8 @@ class BusSittingController extends Controller
     public function changeStatus($id)
     {
         try {
-            $this->busSittingService->changeStatus($id);
+            //$this->busSittingService->changeStatus($id);
+            $this->busSittingRepository->changeStatus($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
