@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Banner;
-use App\Services\BannerService;
+use App\Repositories\BannerRepository;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponser;
@@ -17,24 +17,24 @@ use Illuminate\Support\Facades\Log;
 class BannerController extends Controller
 {
     use ApiResponser;
-    protected $bannerService;
+     protected $bannerRepository;
     protected $bannerValidator;
 
-    public function __construct(BannerService $bannerService, BannerValidator $bannerValidator)
+    public function __construct(BannerRepository $bannerRepository, BannerValidator $bannerValidator)
     {
-        $this->bannerService = $bannerService;
+        $this->bannerRepository = $bannerRepository;
         $this->bannerValidator = $bannerValidator;
     }
 
     public function getAllBanner()
     {
-        $banner = $this->sliderService->getAllBanner();
+        $banner = $this->bannerRepository->getAllBanner();
         return $this->successResponse($banner, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getData(Request $request)
     {
-        $bannerData = $this->bannerService->getData($request);
+        $bannerData = $this->bannerRepository->getData($request);
         return $this->successResponse($bannerData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -48,7 +48,7 @@ class BannerController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $response = $this->bannerService->save($data);
+            $response = $this->bannerRepository->save($data);
             return $this->successResponse($response, "Banner Added", Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -65,7 +65,7 @@ class BannerController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $response = $this->bannerService->update($data);
+            $response = $this->bannerRepository->update($data);
             return $this->successResponse($response, "Banner Updated", Response::HTTP_CREATED);
 
         } catch (Exception $e) {
@@ -75,7 +75,7 @@ class BannerController extends Controller
     public function deleteBanner($id)
     {
         try {
-            $response = $this->bannerService->deleteById($id);
+            $response = $this->bannerRepository->delete($id);
             return $this->successResponse($response, "Banner Deleted", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -84,7 +84,7 @@ class BannerController extends Controller
     public function getBanner($id)
     {
         try {
-            $banner = $this->bannerService->getById($id);
+            $banner = $this->bannerRepository->getById($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -93,7 +93,7 @@ class BannerController extends Controller
     public function changeStatus($id)
     {
         try {
-            $response = $this->bannerService->changeStatus($id);
+            $response = $this->bannerRepository->changeStatus($id);
             return $this->successResponse($response, "Banner Status Updated", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);

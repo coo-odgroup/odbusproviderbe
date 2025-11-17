@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\ApiUserManageOperatorService;
+use App\Repositories\ApiUserManageOperatorRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
@@ -18,12 +18,12 @@ class ApiUserManageOperatorController extends Controller
     use ApiResponser;
 
 
-    protected $ApiUserManageOperatorService;
+    protected $ApiUserManageOperatorRepository;
     protected $agentValidator;
 
-    public function __construct(ApiUserManageOperatorService $ApiUserManageOperatorService, AgentValidator $agentValidator)
+    public function __construct(ApiUserManageOperatorRepository $ApiUserManageOperatorRepository, AgentValidator $agentValidator)
     {
-        $this->ApiUserManageOperatorService = $ApiUserManageOperatorService;
+        $this->ApiUserManageOperatorRepository = $ApiUserManageOperatorRepository;
         $this->agentValidator = $agentValidator;
     }
 
@@ -34,7 +34,7 @@ class ApiUserManageOperatorController extends Controller
     public function manageClientOperatorData(Request $request)
     {
 
-        $agents = $this->ApiUserManageOperatorService->manageClientOperatorData($request);
+        $agents = $this->ApiUserManageOperatorRepository->manageClientOperatorData($request);
         return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -43,12 +43,12 @@ class ApiUserManageOperatorController extends Controller
     {
 
         try {
-            $this->ApiUserManageOperatorService->manageClientOperator($request);
+            $this->ApiUserManageOperatorRepository->manageClientOperatorData($request);
+            // }
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Data Added Successfully", Response::HTTP_ACCEPTED);
-
     }
 
 
@@ -56,15 +56,10 @@ class ApiUserManageOperatorController extends Controller
     {
 
         try {
-            $this->ApiUserManageOperatorService->deletemanageClientOperator($id);
-
+            $this->ApiUserManageOperatorRepository->deletemanageClientOperator($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
         return $this->successResponse(null, "Agent has been deleted Successfully", Response::HTTP_ACCEPTED);
-
     }
-
-
-
 }

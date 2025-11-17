@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\ApiUserService;
+use App\Repositories\ApiUserRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
@@ -17,36 +17,36 @@ class ApiUserController extends Controller
 {
     use ApiResponser;
 
-    protected $apiUserService;
+    protected $apiUserRepository;
     protected $apiUserValidator;
 
-    public function __construct(ApiUserService $apiUserService, ApiUserValidator $apiUserValidator)
+    public function __construct(ApiUserRepository $apiUserRepository, ApiUserValidator $apiUserValidator)
     {
-        $this->apiUserService = $apiUserService;
+        $this->apiUserRepository = $apiUserRepository;
         $this->apiUserValidator = $apiUserValidator;
     }
 
     public function createApiUser(Request $request)
     {
         $data = $request->only([
-                                'name',
-                                'email',
-                                'alternate_email',
-                                'phone',
-                                'client_id',
-                                'password',
-                                'user_type',
-                                'city',
-                                'street',
-                                'location',
-                                'pancard_no',
-                                'organization_name',
-                                'has_gst',
-                                'address',
-                                'landmark',
-                                'pincode',
-                                'created_by'
-                              ]);
+            'name',
+            'email',
+            'alternate_email',
+            'phone',
+            'client_id',
+            'password',
+            'user_type',
+            'city',
+            'street',
+            'location',
+            'pancard_no',
+            'organization_name',
+            'has_gst',
+            'address',
+            'landmark',
+            'pincode',
+            'created_by'
+        ]);
 
         $apiUserValidation = $this->apiUserValidator->validate($data);
 
@@ -54,7 +54,7 @@ class ApiUserController extends Controller
             $errors = $apiUserValidation->errors();
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         } else {
-            $response =  $this->apiUserService->savePostData($request);
+            $response =  $this->apiUserRepository->save($data);
 
             if ($response == 'Email Already Exist') {
                 return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
@@ -66,48 +66,40 @@ class ApiUserController extends Controller
                 return $this->successResponse($response, "API User Added", Response::HTTP_CREATED);
             }
         }
-        // try {
-        //     $this->apiUserService->savePostData($data);
-
-        // }
-        // catch (Exception $e) {
-        //   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        // }
-        // return $this->successResponse($data,"Agent Created Successfully",Response::HTTP_CREATED);
     }
 
 
     public function getAllApiUserData(Request $request)
     {
-        $agents = $this->apiUserService->getAllApiUserData($request);
+        $agents = $this->apiUserRepository->getAllApiUserData($request);
         return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function updateApiUser(Request $request, $id)
     {
         $data = $request->only([
-                          'name',
-                          'email',
-                          'alternate_email',
-                          'phone',
-                          'password',
-                          'user_type',
-                          'location',
-                          'pancard_no',
-                          'organization_name',
-                          'has_gst',
-                          'city',
-                          'street',
-                          'location',
-                          'address',
-                          'landmark',
-                          'pincode',
-                          'created_by'
-               ]);
+            'name',
+            'email',
+            'alternate_email',
+            'phone',
+            'password',
+            'user_type',
+            'location',
+            'pancard_no',
+            'organization_name',
+            'has_gst',
+            'city',
+            'street',
+            'location',
+            'address',
+            'landmark',
+            'pincode',
+            'created_by'
+        ]);
 
         //log::info($data);
 
-        $response =  $this->apiUserService->update($data, $id);
+        $response =  $this->apiUserRepository->updateapiclient($request);
 
         if ($response == 'Email Already Exist') {
             return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
@@ -123,7 +115,7 @@ class ApiUserController extends Controller
     public function changeStatus(Request $request)
     {
         try {
-            $this->apiUserService->changeStatus($request);
+            $this->apiUserRepository->changeStatus($request);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -132,13 +124,13 @@ class ApiUserController extends Controller
 
     public function apiclientprofile(Request $request)
     {
-        $agents = $this->apiUserService->apiclientprofile($request);
+        $agents = $this->apiUserRepository->apiclientprofile($request);
         return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function updateapiclient(Request $request)
     {
-        $agents = $this->apiUserService->updateapiclient($request);
+        $agents = $this->apiUserRepository->updateapiclient($request);
         return $this->successResponse($agents, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 }

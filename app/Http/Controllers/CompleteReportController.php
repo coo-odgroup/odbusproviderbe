@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\CompleteReportService;
+use App\Repositories\CompleteReportRepository;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -15,37 +15,39 @@ class CompleteReportController extends Controller
 {
     use ApiResponser;
 
-    protected $completereportService;
+
+    protected $completereportRepository;
 
 
-    public function __construct(CompleteReportService $completereportService)
+
+
+    public function __construct(CompleteReportRepository $completereportRepository)
     {
-        $this->completereportService = $completereportService;
+
+        $this->completereportRepository = $completereportRepository;
     }
 
     public function getData(Request $request)
     {
-        // Log::info($request);
-        // exit;
 
-        $completeData = $this->completereportService->getData($request);
+        $completeData = $this->completereportRepository->getData($request);
         return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    //Created By Chakra 26-04-2022 11:56 AM
+
     public function getPendingPNR(Request $request)
     {
-        // Log::info($request);
-        // exit;
 
-        $completeData = $this->completereportService->getPendingPNR($request);
+
+
+        $completeData = $this->completereportRepository->getPendingPNR($request);
         return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getLessBookingUrls()
     {
-        $result = $this->completereportService->getLessBookingUrls();
+
+        $result = $this->completereportRepository->getLessBookingUrls();
         return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-
 }

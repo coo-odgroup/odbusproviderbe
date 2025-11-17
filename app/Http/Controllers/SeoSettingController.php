@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\SeoSettingService;
+use App\Repositories\SeoSettingRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -17,27 +17,27 @@ class SeoSettingController extends Controller
 {
     use ApiResponser;
 
-    protected $seosettingService;
+    protected $seosettingRepository;
     protected $seosettingValidator;
 
 
-    public function __construct(SeoSettingService $seosettingService, SeoSettingValidator $seosettingValidator)
+    public function __construct(SeoSettingRepository $seosettingRepository, SeoSettingValidator $seosettingValidator)
     {
-        $this->seosettingService = $seosettingService;
+        $this->seosettingRepository = $seosettingRepository;
         $this->seosettingValidator = $seosettingValidator;
     }
 
     public function getAllseosetting()
     {
 
-        $seosetting = $this->seosettingService->getAll();
+        $seosetting = $this->seosettingRepository->getAll();
         return $this->successResponse($seosetting, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function seosettingData(Request $request)
     {
 
-        $seosetting = $this->seosettingService->seosettingData($request);
+        $seosetting = $this->seosettingRepository->seosettingData($request);
         return $this->successResponse($seosetting, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -67,10 +67,10 @@ class SeoSettingController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->seosettingService->addseosetting($request);
+            $this->seosettingRepository->addseosetting($request);
             return $this->successResponse(null, "SEO Setting Added", Response::HTTP_CREATED);
         } catch (Exception $e) {
-            // Log::info($e);
+           
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
 
@@ -101,7 +101,7 @@ class SeoSettingController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->seosettingService->updateseosetting($request, $id);
+            $this->seosettingRepository->updateseosetting($request, $id);
             return $this->successResponse(null, "SEO Setting Updated", Response::HTTP_CREATED);
         } catch (Exception $e) {
             // Log::info($e);
@@ -112,13 +112,13 @@ class SeoSettingController extends Controller
 
     public function deleteseosetting($id)
     {
-        $seosetting = $this->seosettingService->deleteseosetting($id);
+        $seosetting = $this->seosettingRepository->deleteseosetting($id);
         return $this->successResponse($seosetting, "SEO Setting Deleted", Response::HTTP_OK);
 
     }
     public function changeStatusseosetting($id)
     {
-        $seosetting = $this->seosettingService->changeStatusseosetting($id);
+        $seosetting = $this->seosettingRepository->changeStatusseosetting($id);
         return $this->successResponse($seosetting, "SEO Setting Status Updated", Response::HTTP_OK);
 
     }

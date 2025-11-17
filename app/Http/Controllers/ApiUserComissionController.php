@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\ApiUserCommissionService;
+use App\Repositories\ApiUserCommissionRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
@@ -17,24 +17,24 @@ class ApiUserComissionController extends Controller
 {
     use ApiResponser;
 
-    protected $apiuserCommissionService;
+  protected $apiUserCommissionRepository;
     protected $apiuserCommissionValidator;
 
-    public function __construct(ApiUserCommissionService $apiuserCommissionService, ApiUserCommissionValidator $apiuserCommissionValidator)
+    public function __construct(ApiUserCommissionRepository $apiUserCommissionRepository, ApiUserCommissionValidator $apiuserCommissionValidator)
     {
-        $this->apiuserCommissionService = $apiuserCommissionService;
+         $this->apiUserCommissionRepository = $apiUserCommissionRepository;
         $this->apiuserCommissionValidator = $apiuserCommissionValidator;
     }
 
     public function getAllApiUserCommission(Request $request)
     {
-        $ApiUserCommissions = $this->apiuserCommissionService->getAll($request);
+        $ApiUserCommissions = $this->apiUserCommissionRepository->getAll($request);
         return $this->successResponse($ApiUserCommissions, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getAllApiUserCommissionData(Request $request)
     {
-        $ApiUserCommissions = $this->apiuserCommissionService->getAllApiUserCommissionData($request);
+        $ApiUserCommissions = $this->apiUserCommissionRepository->getAllApiUserCommissionData($request);
         return $this->successResponse($ApiUserCommissions, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -58,7 +58,7 @@ class ApiUserComissionController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->apiuserCommissionService->savePostData($data);
+            $this->apiUserCommissionRepository->save($data);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -85,7 +85,7 @@ class ApiUserComissionController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->apiuserCommissionService->update($data, $id);
+            $this->apiUserCommissionRepository->update($data, $id);
             return $this->successResponse(null, "API User Commission Slab Updated", Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -95,7 +95,7 @@ class ApiUserComissionController extends Controller
     public function deleteApiUserCommission($id)
     {
         try {
-            $this->apiuserCommissionService->deleteById($id);
+            $this->apiUserCommissionRepository->delete($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -105,11 +105,11 @@ class ApiUserComissionController extends Controller
     public function getApiUserCommission($id)
     {
         try {
-            $ApiUserCommissionID = $this->apiuserCommissionService->getById($id);
+            $ApiUserCommissionID = $this->apiUserCommissionRepository->getById($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
-        return $this->successResponse($AgentCommissionID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        return $this->successResponse($ApiUserCommissionID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
 }

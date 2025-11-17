@@ -203,7 +203,7 @@ class ApiClientWalletService
 
     //  public function declineWlletReqStatus($data,$id)
     //  {
-    //      return $this->ApiClientWalletRepository->declineWalletReq($data,$id);
+    //      return c
     //  }
 
     // public function clientTransByAdmin($data)
