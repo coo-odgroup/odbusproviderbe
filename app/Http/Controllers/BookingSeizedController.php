@@ -50,7 +50,7 @@ class BookingSeizedController extends Controller
     {
 
     
-        $bookingseized = $$this->bookingseizedRepository->save($request);
+        $bookingseized = $this->bookingseizedRepository->save($request);
         return $this->successResponse($bookingseized, "Booking Seized Updated", Response::HTTP_OK);
     }
 

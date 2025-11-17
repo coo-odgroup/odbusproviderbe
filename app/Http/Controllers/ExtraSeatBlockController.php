@@ -15,7 +15,7 @@ use App\Repositories\ExtraSeatBlockRepository;
 class ExtraSeatBlockController extends Controller
 {
     use ApiResponser;
-    protected $extraseatblockService;
+  
     protected $extraSeatBlockRepository;
 
     public function __construct(

@@ -21,7 +21,7 @@ class BusSpecialFareController extends Controller
 {
     use ApiResponser;
 
-    protected $BusSpecialFareValidator;
+    protected $busSpecialFareValidator;
     protected $busSpecialFareRepository;
 
     public function __construct(BusSpecialFareRepository $busSpecialFareRepository, BusSpecialFareValidator $busSpecialFareValidator)
@@ -64,7 +64,8 @@ class BusSpecialFareController extends Controller
             'seater_price',
             'sleeper_price',
             'reason',
-            'created_by'
+            'created_by',
+
         ]);
         $busSpecialFareValidation = $this->busSpecialFareValidator->validate($data);
 
@@ -74,7 +75,7 @@ class BusSpecialFareController extends Controller
         }
         try {
 
-            $response = $this->busSpecialFareRepository->save($data);
+            $response = $this->busSpecialFareRepository->save($request);
             return $this->successResponse($response, "Bus Special Fare Added", Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);

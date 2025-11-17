@@ -61,16 +61,17 @@ class SeatBlockService
     {
         return $this->seatblockRepository->addseatBlockByOperator($request);
     }
-    public function updateseatblock($request, $id)
-    {
-        try {
-            $seatblock = $this->seatblockRepository->updateseatblock($request, $id);
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $seatblock;
-    }
+    // public function updateseatblock($request, $id)
+    // {
+    //     try {
+    //         $seatblock = $this->seatblockRepository->updateseatblock($request, $id);
+    //     } catch (Exception $e) {
+    //         Log::info($e->getMessage());
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+    //     }
+    //     return $seatblock;
+    // }
+    
 
     public function getseatblockDT($request)
     {

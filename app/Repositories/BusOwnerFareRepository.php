@@ -37,35 +37,34 @@ class BusOwnerFareRepository
     public function busOwnerFareData($request)
     {
 
-        $paginate = $request['rows_number'] ;
-        $name = $request['name'] ;
-        $fromDate = $request['fromDate'] ;
-        $toDate = $request['toDate'] ;
-        $bus_operator_id = $request['bus_operator_id'] ;
+        $paginate = $request['rows_number'];
+        $name = $request['name'];
+        $fromDate = $request['fromDate'];
+        $toDate = $request['toDate'];
+        $bus_operator_id = $request['bus_operator_id'];
 
         $data = $this->ownerFare->with('bus', 'bus.busOperator')->orderBy('id', 'DESC');
 
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         if ($request['USER_BUS_OPERATOR_ID'] != "") {
             $data = $data->whereHas('bus', function ($query) use ($request) {
                 $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);
             });
-
         }
 
         if ($name != null) {
-            $data = $data->where('date', 'like', '%' .$name . '%')
-                         ->orWhereHas('bus', function ($query) use ($name) {
-                             $query->where('name', 'like', '%' .$name . '%');
-                         })
-                         ->orWhereHas('bus.busOperator', function ($query) use ($name) {
-                             $query->where('operator_name', 'like', '%' .$name . '%');
-                         });
+            $data = $data->where('date', 'like', '%' . $name . '%')
+                ->orWhereHas('bus', function ($query) use ($name) {
+                    $query->where('name', 'like', '%' . $name . '%');
+                })
+                ->orWhereHas('bus.busOperator', function ($query) use ($name) {
+                    $query->where('operator_name', 'like', '%' . $name . '%');
+                });
         }
 
         if ($bus_operator_id != null) {
@@ -106,12 +105,11 @@ class BusOwnerFareRepository
         }
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
         return $response;
-
     }
 
     public function getDatatable($request)
@@ -139,25 +137,25 @@ class BusOwnerFareRepository
 
 
         $totalRecordswithFilter = $this->ownerFare->with('bus')
-        ->whereHas('bus', function ($query) use ($searchValue) {
-            $query->where('name', 'like', '%' .$searchValue . '%');
-        })->whereNotIn('status', [2])->count();
+            ->whereHas('bus', function ($query) use ($searchValue) {
+                $query->where('name', 'like', '%' . $searchValue . '%');
+            })->whereNotIn('status', [2])->count();
 
         $records =  $this->ownerFare->with('bus')
-        ->orderBy($columnName, $columnSortOrder)
-        ->whereHas('bus', function ($query) use ($searchValue) {
-            $query->where('name', 'like', '%' .$searchValue . '%');
-        })
-           ->skip($start)
-           ->take($rowperpage)
-           ->whereNotIn('status', [2])
-           ->get();
+            ->orderBy($columnName, $columnSortOrder)
+            ->whereHas('bus', function ($query) use ($searchValue) {
+                $query->where('name', 'like', '%' . $searchValue . '%');
+            })
+            ->skip($start)
+            ->take($rowperpage)
+            ->whereNotIn('status', [2])
+            ->get();
         $data_arr = array();
         foreach ($records as $key => $record) {
             $buses = $record->bus;
             $busNames = "";
             foreach ($buses as $bus) {
-                $busNames .=  ($busNames == "") ? $bus->name : ",".$bus->name;
+                $busNames .=  ($busNames == "") ? $bus->name : "," . $bus->name;
             }
             $data_arr[] = $record->toArray();
             $data_arr[$key]['name'] = $busNames;
@@ -171,7 +169,6 @@ class BusOwnerFareRepository
             "aaData" => $data_arr
         );
         return ($response);
-
     }
 
     /**
@@ -210,21 +207,21 @@ class BusOwnerFareRepository
         foreach ($data['date'] as $d) {
             $date = $d['day'];
             if ($d['day'] < 10) {
-                $date = '0'.$d['day'];
+                $date = '0' . $d['day'];
             }
             $month = $d['month'];
             if ($d['month'] < 10) {
-                $month = '0'.$d['month'];
+                $month = '0' . $d['month'];
             }
 
-            $dt = $d['year'].'-'.$month.'-'.$date;
+            $dt = $d['year'] . '-' . $month . '-' . $date;
 
 
             $ownerFare = new $this->ownerFare();
             $ownerFare->bus_operator_id = $data['bus_operator_id'];
             $ownerFare->source_id = $data['source_id'];
             $ownerFare->destination_id = $data['destination_id'];
-            $ownerFare->date = $dt ;
+            $ownerFare->date = $dt;
             $ownerFare->seater_price = $data['seater_price'];
             $ownerFare->sleeper_price = $data['sleeper_price'];
             $ownerFare->reason = $data['reason'];
@@ -233,8 +230,6 @@ class BusOwnerFareRepository
             $ownerFare->save();
             $bus_id = $this->bus::find($data['bus_id']);
             $ownerFare->bus()->attach($data['bus_id']);
-
-
         }
         return 'Data Added Successfully';
         // log::info($dt);
@@ -263,7 +258,7 @@ class BusOwnerFareRepository
      *
      * @param $data
      * @return busownerFare
-    */
+     */
     public function delete($id)
     {
         $busownerFare = $this->ownerFare->find($id);
@@ -283,6 +278,4 @@ class BusOwnerFareRepository
         $post->update();
         return $post;
     }
-
-
 }

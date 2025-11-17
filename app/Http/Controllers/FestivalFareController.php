@@ -14,23 +14,28 @@ use InvalidArgumentException;
 use App\AppValidator\FestivalFareValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\FestivalFareRepository;
 
 class FestivalFareController extends Controller
 {
     use ApiResponser;
     protected $festivalFareService;
     protected $festivalFareValidator;
+    protected $festivalFareRepository;
 
-    public function __construct(FestivalFareService $festivalFareService, FestivalFareValidator $festivalFareValidator)
+    public function __construct(FestivalFareService $festivalFareService,FestivalFareRepository $festivalFareRepository, FestivalFareValidator $festivalFareValidator)
     {
         $this->festivalFareService = $festivalFareService;
         $this->festivalFareValidator = $festivalFareValidator;
+        $this->festivalFareRepository = $festivalFareRepository;
     }
 
     public function getAllFestivalFare()
     {
 
-        $busOwnerFare = $this->festivalFareService->getAll();
+        //$busOwnerFare = $this->festivalFareService->getAll();
+        $busOwnerFare = $this->festivalFareRepository->getAll();
+    // }
         return $this->successResponse($busOwnerFare, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     public function getFestivalFareDT(Request $request)
