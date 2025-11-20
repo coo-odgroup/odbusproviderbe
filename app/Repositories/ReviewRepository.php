@@ -28,9 +28,14 @@ class ReviewRepository
 
     public function getAll()
     {
-        $data = $this->review->where('status', 1)->orderBy('id', "DESC")->get() ;
+        $data = $this->review->where('status', 1)->orderBy('id', "DESC")->get();
 
         return $data;
+    }
+
+    public function getById($id)
+    {
+        return $this->review->find($id);
     }
 
 
@@ -38,25 +43,25 @@ class ReviewRepository
     {
         // Log::info($request);
 
-        $operator_id = $request->bus_operator_id ;
+        $operator_id = $request->bus_operator_id;
         $paginate = $request->rows_number;
         $start_date  =  $request->rangeFromDate;
         $end_date  =  $request->rangeToDate;
-        $user_id = $request['user_id'] ;
-        $role_id = $request['role_id'] ;
+        $user_id = $request['user_id'];
+        $role_id = $request['role_id'];
 
 
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         $data = $this->review->with('bus.busOperator')->where('status', '!=', 2)
-                            ->orderBy('id', "DESC");
+            ->orderBy('id', "DESC");
         if (!empty($start_date) && !empty($end_date)) {
             if ($start_date == $end_date) {
-                $data = $data->where('created_at', 'like', '%'.$start_date.'%');
+                $data = $data->where('created_at', 'like', '%' . $start_date . '%');
             } else {
                 $data = $data->whereBetween('created_at', [$start_date, $end_date]);
             }
@@ -71,7 +76,6 @@ class ReviewRepository
 
         $data = $data->paginate($paginate);
         return $data;
-
     }
 
     public function deleteData($id)
@@ -81,7 +85,6 @@ class ReviewRepository
         $review->update();
 
         return $review;
-
     }
 
     public function changeStatus($id)
@@ -95,6 +98,4 @@ class ReviewRepository
         $post->update();
         return $post;
     }
-
-
 }

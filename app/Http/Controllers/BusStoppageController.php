@@ -365,6 +365,7 @@ class BusStoppageController extends Controller
     {
         try {
 
+
             $result = $this->busStoppageRepository->getBusStoppagebyBusId($busid);
 
 
@@ -374,14 +375,18 @@ class BusStoppageController extends Controller
                 ->select('location_id')
                 ->get();
 
+
             foreach ($locations as $loc) {
                 $loc->location_name = $this->location
                     ->where('id', $loc->location_id)
-                    ->value('name');
+                    ->value('name') ?? '';
             }
 
             return $this->successResponse(
-                ['result' => $result, 'locations' => $locations],
+                [
+                    'result'    => $result,
+                    'locations' => $locations
+                ],
                 Config::get('constants.RECORD_FETCHED'),
                 Response::HTTP_OK
             );
@@ -390,6 +395,7 @@ class BusStoppageController extends Controller
             return $this->errorResponse("Unable to fetch bus stoppage", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 
