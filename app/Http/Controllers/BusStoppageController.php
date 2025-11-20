@@ -364,36 +364,33 @@ class BusStoppageController extends Controller
     public function getBusStoppagebyBusId($busid)
     {
         try {
+
             $result = $this->busStoppageRepository->getBusStoppagebyBusId($busid);
 
-            // Fetch all location_ids from bus_location_sequence
+
             $locations = $this->busLocationSequence
                 ->where('status', 1)
                 ->where('bus_id', $busid)
                 ->select('location_id')
                 ->get();
 
-
-            if ($locations->count() > 0) {
-                foreach ($locations as $loc) {
-                    $loc->location_name = $this->location
-                        ->where('id', $loc->location_id)
-                        ->value('location_name');
-                }
+            foreach ($locations as $loc) {
+                $loc->location_name = $this->location
+                    ->where('id', $loc->location_id)
+                    ->value('name');
             }
 
-
-            $data = [
-                'result'    => $result,
-                'locations' => $locations
-            ];
-
-            return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+            return $this->successResponse(
+                ['result' => $result, 'locations' => $locations],
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
         } catch (Exception $e) {
-            Log::error($e->getMessage());
+            Log::error("Bus Stoppage Error: " . $e->getMessage() . " LINE: " . $e->getLine());
             return $this->errorResponse("Unable to fetch bus stoppage", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
     public function getBusByOperator($operator_id)
