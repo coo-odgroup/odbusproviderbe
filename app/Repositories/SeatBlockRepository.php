@@ -1336,9 +1336,11 @@ class SeatBlockRepository
             $query->select('id', 'bus_operator_id', 'name', 'bus_number')
             ->with(['busOperator' => function ($quer) {
                 $quer->select('id', 'operator_name', 'organisation_name');
-            }]);
-            $query ->with(['ticketPrice' => function ($quer) {
-                $quer->select('id', 'bus_id', 'source_id', 'destination_id');
+            }])
+           ->with(['ticketPrice' => function($quer) {
+                $quer->select('id','bus_id','source_id','destination_id')
+                ->orderBy('id', 'asc')
+                ->where('status', 1);
             }]);
         }])
 
@@ -1413,7 +1415,10 @@ class SeatBlockRepository
 
                     foreach ($route as $kk => $seatOp) {
 
-                        foreach ($seatOp as $SingleseatOp) {
+                        foreach ($seatOp as $k=>$SingleseatOp) {
+                            if($k ==1){
+                                continue;
+                            }
                             // $SingleseatOp['source']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->source_id)->get();
                             // $SingleseatOp['destination']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->destination_id)->get();
                             $SingleseatOp['bus_source'] = $this->location->select('name')->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
