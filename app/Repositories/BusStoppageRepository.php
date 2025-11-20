@@ -11,11 +11,11 @@ use DB;
 class BusStoppageRepository
 {
     protected $busStoppage;
+    protected $location;
     public function __construct(BusStoppage $busStoppage, Location $location)
     {
         $this->busStoppage = $busStoppage;
         $this->location = $location;
-
     }
     public function getAll()
     {
@@ -23,7 +23,7 @@ class BusStoppageRepository
     }
     public function getById($id)
     {
-        return $this->busStoppage ->where('id', $id)->get();
+        return $this->busStoppage->where('id', $id)->get();
     }
     public function getBusByOperator($operatorId)
     {
@@ -46,20 +46,20 @@ class BusStoppageRepository
             $a['destination'] = $this->location->where('id', $a->destination_id)->get();
         }
 
-        return $data
-        ;
+        return $data;
     }
+
 
     public function getModel(BusStoppage $busStoppage, $data)
     {
-        $dt0 = date('Y-m-d')." ".$data['arr_time'];
-        $dt1 = date('Y-m-d')." ".$data['dep_time'];
+        $dt0 = date('Y-m-d') . " " . $data['arr_time'];
+        $dt1 = date('Y-m-d') . " " . $data['dep_time'];
 
         $start_journey_day = $data['start_j_days'] - 1;
         $end_journey_day = $data['j_day'] - 1;
 
-        $day0 = date('Y-m-d H:i:s', strtotime('+'.$start_journey_day.' days', strtotime($dt0))); //DEP TIME
-        $day1 = date('Y-m-d H:i:s', strtotime('+'.$end_journey_day.' days', strtotime($dt1))); //ARR TIME
+        $day0 = date('Y-m-d H:i:s', strtotime('+' . $start_journey_day . ' days', strtotime($dt0))); //DEP TIME
+        $day1 = date('Y-m-d H:i:s', strtotime('+' . $end_journey_day . ' days', strtotime($dt1))); //ARR TIME
 
         $busStoppage->bus_id = $data['bus_id'];
         $busStoppage->user_id = $data['user_id'];
@@ -82,9 +82,9 @@ class BusStoppageRepository
     public function checkDuplicate($data)
     {
         return $this->busStoppage->where('bus_id', $data['bus_id'])
-                                  ->where('source_id', $data['source_id'])
-                                  ->where('destination_id', $data['destination_id'])
-                                  ->get();
+            ->where('source_id', $data['source_id'])
+            ->where('destination_id', $data['destination_id'])
+            ->get();
     }
     public function save($data)
     {
@@ -134,7 +134,7 @@ class BusStoppageRepository
         $allRoutes = array();
 
         $routenames = $this->busStoppage
-        ->select('source_id', 'destination_id');
+            ->select('source_id', 'destination_id');
 
 
         if (isset($data->USER_BUS_OPERATOR_ID) && $data->USER_BUS_OPERATOR_ID != '') {
@@ -143,7 +143,7 @@ class BusStoppageRepository
         }
 
         $routenames =  $routenames->groupBy('source_id', 'destination_id')
-        ->get();
+            ->get();
 
 
 
@@ -157,17 +157,11 @@ class BusStoppageRepository
             if ($src && isset($src[0]) && $dest && isset($dest[0])) {
 
                 $allRoutes[] = array(
-                    "route" => $src[0]->name.' - '.$dest[0]->name,
-                    "id" => $src[0]->id.'-'.$dest[0]->id,
+                    "route" => $src[0]->name . ' - ' . $dest[0]->name,
+                    "id" => $src[0]->id . '-' . $dest[0]->id,
                 );
             }
-
         }
         return $allRoutes;
     }
-
-
-
-
-
 }

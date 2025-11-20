@@ -21,7 +21,7 @@ class BusSeatsController extends Controller
     protected $busSeatsRepository;
 
 
-    public function __construct(BusSeatsService $busSeatsService,busSeatsRepository $busSeatsRepository)
+    public function __construct(BusSeatsService $busSeatsService, busSeatsRepository $busSeatsRepository)
     {
         $this->busSeatsService = $busSeatsService;
         $this->busSeatsRepository = $busSeatsRepository;
@@ -33,9 +33,9 @@ class BusSeatsController extends Controller
 
         //$busSeats = $this->busSeatsService->getAll();
         $busSeats = $this->busSeatsRepository->getAll();
-        $output ['status'] = 1;
-        $output ['message'] = 'All Data Fetched Successfully';
-        $output ['result'] = $busSeats;
+        $output['status'] = 1;
+        $output['message'] = 'All Data Fetched Successfully';
+        $output['result'] = $busSeats;
         return response($output, 200);
     }
     public function getAllBusSeatsFare($busId)
@@ -43,9 +43,9 @@ class BusSeatsController extends Controller
 
         //$busSeats = $this->busSeatsService->getAllFare($busId);
         $busSeats = $this->busSeatsRepository->getAllFare($busId);
-        $output ['status'] = 1;
-        $output ['message'] = 'All Data Fetched Successfully';
-        $output ['result'] = $busSeats;
+        $output['status'] = 1;
+        $output['message'] = 'All Data Fetched Successfully';
+        $output['result'] = $busSeats;
         return response($output, 200);
     }
 
@@ -70,17 +70,22 @@ class BusSeatsController extends Controller
     {
         $data = $request->only([
 
-            'bus_id', 'category','seat_type','seat_number','duration','created_by'
+            'bus_id',
+            'category',
+            'seat_type',
+            'seat_number',
+            'duration',
+            'created_by'
 
-          ]);
+        ]);
 
         $busSeatsRules = [
-          'bus_id' => 'required',
-          'category' => 'required',
-          'seat_type' => 'required',
-          'seat_number' => 'required',
-          'duration' => 'required',
-          'created_by' => 'required',
+            'bus_id' => 'required',
+            'category' => 'required',
+            'seat_type' => 'required',
+            'seat_number' => 'required',
+            'duration' => 'required',
+            'created_by' => 'required',
 
         ];
 
@@ -104,7 +109,6 @@ class BusSeatsController extends Controller
         }
 
         return response()->json($result, $result['status']);
-
     }
 
     public function updateBusSeats(Request $request, $id)
@@ -132,7 +136,7 @@ class BusSeatsController extends Controller
         // Log::info($request);exit;
         try {
             //$result = $this->busSeatsService->busSeatsExtra($request, $id);
-            $result = $this->busSeatsRepository->updateBusSeatsExtra($data, $id);
+            $result = $this->busSeatsRepository->updateBusSeatsExtra($request, $id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -161,9 +165,9 @@ class BusSeatsController extends Controller
     {
         //$busSeats = $this->busSeatsService->getById($id);
         $busSeats = $this->busSeatsRepository->getById($id);
-        $output ['status'] = 1;
-        $output ['message'] = 'Single Data Fetched Successfully';
-        $output ['result'] = $busSeats;
+        $output['status'] = 1;
+        $output['message'] = 'Single Data Fetched Successfully';
+        $output['result'] = $busSeats;
         return response($output, 200);
     }
 
@@ -174,5 +178,4 @@ class BusSeatsController extends Controller
         //$busSeats = $this->busSeatsService->cronjob_cleanbusseat();
         $busSeats = $this->busSeatsRepository->cronjob_cleanbusseat();
     }
-
 }
