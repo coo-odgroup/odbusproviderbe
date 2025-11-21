@@ -13,6 +13,8 @@ use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\LocationValidator;
 use App\Repositories\LocationRepository;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LocationController extends Controller
 {
@@ -24,17 +26,17 @@ class LocationController extends Controller
     protected $locationValidator;
     protected $locationRepository;
 
-    
-    public function __construct( LocationRepository $locationRepository, LocationValidator $locationValidator)
+
+    public function __construct(LocationRepository $locationRepository, LocationValidator $locationValidator)
     {
-        
+
         $this->locationValidator = $locationValidator;
         $this->locationRepository = $locationRepository;
     }
     public function getAllLocations()
     {
 
-       
+
         $locations = $this->locationRepository->getAll();
 
         return $this->successResponse($locations, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
@@ -44,7 +46,7 @@ class LocationController extends Controller
     {
 
         try {
-            
+
             $locations = $this->locationRepository->getById($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -55,7 +57,7 @@ class LocationController extends Controller
     public function deletelocation($id)
     {
         try {
-            
+
             $this->locationRepository->delete($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -66,7 +68,7 @@ class LocationController extends Controller
     public function getLocationDT(Request $request)
     {
 
-       
+
         $locations = $this->locationRepository->getAllLocationDT($request);
         return $this->successResponse($locations, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
@@ -74,7 +76,7 @@ class LocationController extends Controller
     public function locationsData(Request $request)
     {
 
-       
+
         $locations = $this->locationRepository->locationsData($request);
         return $this->successResponse($locations, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
@@ -108,20 +110,36 @@ class LocationController extends Controller
             'created_by'
         ]);
 
-        $locationValidation = $this->locationValidator->validate($data);;
+        $locationValidation = $this->locationValidator->validate($data);
         if ($locationValidation->fails()) {
             $errors = $locationValidation->errors();
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
-        } else {
-            $response =  $this->locationService->editPost($data, $id);
+        }
 
-            if ($response == 'Location Already Exist') {
-                return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
-            } else {
-                return $this->successResponse($response, "Location Updated", Response::HTTP_CREATED);
+        DB::beginTransaction();
+        try {
+
+            $response = $this->locationRepository->edit($data, $id);
+
+
+            if ($response === 'Location Already Exist') {
+                DB::rollBack();
+                return $this->errorResponse($response, Response::HTTP_CONFLICT);
             }
+
+            DB::commit();
+            return $this->successResponse($response, "Location Updated", Response::HTTP_OK);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('editLocation error: ' . $e->getMessage(), [
+                'id' => $id,
+                'data' => $data,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return $this->errorResponse('Unable to update location', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     public function changeStatus($id)
     {
@@ -136,7 +154,7 @@ class LocationController extends Controller
 
     public function filterLocation(request $request)
     {
-        
+
         $prod = $this->locationRepository->filter($request);
         // $output ['status']=1;
         // $output ['message']='All Data Fetched Successfully';

@@ -16,14 +16,12 @@ class ReviewController extends Controller
 {
     use ApiResponser;
 
-   protected $reviewRepository;
+    protected $reviewRepository;
 
 
     public function __construct(ReviewRepository $reviewRepository)
     {
         $this->reviewRepository = $reviewRepository;
-
-
     }
 
 
@@ -40,15 +38,23 @@ class ReviewController extends Controller
     }
     public function deleteData($id)
     {
-        // Log::info($request);exit;
-        $reviewData = $this->reviewRepository->getData($id);
-        return $this->successResponse($reviewData, "User Review Deleted", Response::HTTP_OK);
+        $reviewData = $this->reviewRepository->getById($id);
+
+
+        if (!$reviewData) {
+            return $this->errorResponse("Review not found", Response::HTTP_NOT_FOUND);
+        }
+
+        $this->reviewRepository->deleteData($id);
+
+        return $this->successResponse([], "User Review Deleted", Response::HTTP_OK);
     }
+
+
 
     public function changeStatus($id)
     {
         $reviewData = $this->reviewRepository->changeStatus($id);
         return $this->successResponse($reviewData, "User Review Status Updated", Response::HTTP_OK);
     }
-
 }

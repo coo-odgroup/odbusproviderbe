@@ -823,10 +823,11 @@ class SeatOpenRepository
         // exit;
 
         $data = $this->busSeats->with('bus.busOperator', 'bus.ticketPrice', 'seats', 'ticketPrice')
-                                // ->with(["ticketPrice" => function($t){
-                                //     $t->with("source");
-                                //     $t->with("destination");
-                                // }])
+                               ->with(['ticketPrice' => function($quer) {
+                                    $quer->select('id','bus_id','source_id','destination_id')
+                                    ->orderBy('id', 'asc')
+                                    ->where('status', 1);
+                                    }])
                               ->where('type', 1)
                               ->whereNotIn('status', [2]);
 

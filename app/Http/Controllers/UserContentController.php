@@ -25,10 +25,10 @@ class UserContentController extends Controller
 
 
     public function __construct(
-    UserContentRepository $userContentRepository,
-    UserContentValidator $userContentValidator)
-    {
-       
+        UserContentRepository $userContentRepository,
+        UserContentValidator $userContentValidator
+    ) {
+
         $this->userContentValidator = $userContentValidator;
         $this->userContentRepository = $userContentRepository;
     }
@@ -37,20 +37,20 @@ class UserContentController extends Controller
     public function getAllData(Request $request)
     {
 
-        
+
         $usercontent = $this->userContentRepository->getAllData($request);
         return $this->successResponse($usercontent, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function adduser(Request $request)
     {
-        
+
         $data = $request->only([
-        'name',
-        'bus_operator_id',
-        'email',
-        'phone',
-        'password'
+            'name',
+            'bus_operator_id',
+            'email',
+            'phone',
+            'password'
         ]);
 
         $usercontent = $this->userContentValidator->validate($data);
@@ -60,7 +60,7 @@ class UserContentController extends Controller
             $errors = $usercontent->errors();
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         } else {
-            $response = $this->userContentService->addusercontent($request);
+            $response = $this->userContentRepository->addusercontent($request);
 
             if ($response == 'Phone Number Exist') {
                 return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
@@ -72,21 +72,20 @@ class UserContentController extends Controller
                 return $this->successResponse($response, "USER ADDED", Response::HTTP_CREATED);
             }
         }
-
     }
     public function updateuser(Request $request, $id)
     {
-       
+
 
         $data = $request->only([
-        'name',
-        'email',
-        'phone',
+            'name',
+            'email',
+            'phone',
         ]);
 
 
-       
-        $response = $this->userContentRepository->updateusercontent($request,$id);
+
+        $response = $this->userContentRepository->updateusercontent($request, $id);
 
         if ($response == 'Phone Number Exist') {
             return $this->errorResponse($response, Response::HTTP_PARTIAL_CONTENT);
@@ -95,40 +94,32 @@ class UserContentController extends Controller
         } else {
             return $this->successResponse($response, "USER DATA UPDATED", Response::HTTP_CREATED);
         }
-
     }
 
     public function changePassword(Request $request, $id)
     {
-       
+
 
         $data = $request->only([
-        'password'
+            'password'
         ]);
-        
-        $this->userContentRepository->changePassword($request,$id);
+
+        $this->userContentRepository->changePassword($request, $id);
         return $this->successResponse(null, "USER PASSWORD UPDATED", Response::HTTP_CREATED);
     }
 
 
     public function changeStatus($id)
     {
-        
+
         $usercontent = $this->userContentRepository->changeStatus($id);
         return $this->successResponse($usercontent, 'USER STATUS UPDATED', Response::HTTP_OK);
-
     }
 
     public function deleteuser($id)
     {
-        
+
         $usercontent = $this->userContentRepository->deleteusercontent($id);
         return $this->successResponse($usercontent, 'USER DELETED', Response::HTTP_OK);
-
     }
-
-
-
-
-
 }

@@ -44,13 +44,13 @@ class BusLocationSequenceRepository
      * @param $data
      * @return safety
      */
-    // public function update($data, $id)
-    // {
-    //     $busLocationSequence = $this->busLocationSequence->find($id);
-    //     $busLocationSequence=$this->getModel($data,$busLocationSequence);
-    //     $busLocationSequence->update();
-    //     return $busLocationSequence;
-    // }
+    public function update($data, $id)
+    {
+        $busLocationSequence = $this->busLocationSequence->find($id);
+        $busLocationSequence = $this->getModel($data, $busLocationSequence);
+        $busLocationSequence->update();
+        return $busLocationSequence;
+    }
     /**
      * Update safety
      *
@@ -79,5 +79,4 @@ class BusLocationSequenceRepository
         //$busstoppage->delete();
         return $sequence;
     }
-
 }

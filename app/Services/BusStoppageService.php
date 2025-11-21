@@ -19,6 +19,8 @@ class BusStoppageService
     protected $busStoppageTiming;
     protected $location;
     protected $busLocationSequence;
+
+
     public function __construct(busStoppageRepository $busStoppageRepository, BusStoppageTiming $busStoppageTiming, Location $location, BusLocationSequence $busLocationSequence)
     {
         $this->busStoppageRepository = $busStoppageRepository;

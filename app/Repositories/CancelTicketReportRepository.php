@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
 
 /*Priyadarshi to Review*/
 class CancelTicketReportRepository
@@ -87,6 +88,7 @@ class CancelTicketReportRepository
         if (!empty($source_id) && !empty($destination_id)) {
             $data = $data->where('source_id', $source_id)->where('destination_id', $destination_id);
         }
+
         if ($date_type == 'booking' && $start_date == null && $end_date == null) {
             $data = $data->orderBy('created_at', 'DESC');
         } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
@@ -95,7 +97,9 @@ class CancelTicketReportRepository
                         ->orderBy('created_at', 'DESC');
 
             } else {
-                $data = $data->whereBetween('created_at', [$start_date, $end_date])
+                $start_dt = Carbon::parse($start_date)->startOfDay()->toDateTimeString();
+                $end_dt = Carbon::parse($end_date)->endOfDay()->toDateTimeString();
+                $data = $data->whereBetween('created_at', [$start_dt, $end_dt])
                         ->orderBy('created_at', 'DESC');
             }
 
@@ -106,8 +110,27 @@ class CancelTicketReportRepository
                 $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')
                         ->orderBy('journey_dt', 'DESC');
             } else {
-                $data = $data-> whereBetween('journey_dt', [$start_date, $end_date])
+                $start_dt = Carbon::parse($start_date)->startOfDay()->toDateTimeString();
+                $start_dt = date('Y-m-d', strtotime($start_dt));
+                $end_dt = Carbon::parse($end_date)->endOfDay()->toDateTimeString();
+                $end_dt = date('Y-m-d', strtotime($end_dt));
+                // dd($end_dt);
+                $data = $data->whereBetween('journey_dt', [$start_dt, $end_dt])
                        ->orderBy('journey_dt', 'DESC');
+            }
+        } elseif ($date_type == 'cancel' && $start_date == null && $end_date == null) {
+            $data = $data->where('updated_at', date('Y-m-d'))->orderBy('updated_at', 'DESC');
+        } elseif ($date_type == 'cancel' && $start_date != null && $end_date != null) {
+            if ($start_date == $end_date) {
+                $data = $data->where('updated_at', 'like', '%'.$start_date.'%')
+                             ->orderBy('updated_at', 'DESC');
+            } else {
+                $start_dt = Carbon::parse($start_date)->startOfDay()->toDateTimeString();
+                $start_dt = date('Y-m-d', strtotime($start_dt));
+                $end_dt = Carbon::parse($end_date)->endOfDay()->toDateTimeString();
+                $end_dt = date('Y-m-d', strtotime($end_dt));
+                $data = $data->whereBetween('updated_at', [$start_dt, $end_dt])
+                             ->orderBy('updated_at', 'DESC');
             }
         }
 
