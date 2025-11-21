@@ -121,12 +121,9 @@ class AgentController extends Controller
         DB::commit();
         return $this->successResponse($response, "Agent Create", Response::HTTP_CREATED);
 
-      } catch (\Throwable $th) {
+      } catch (Exception $e) {
         DB::rollBack();
-        return $this->errorResponse(
-            'Something went wrong while creating agent: ' . $th->getMessage(),
-            \Symfony\Component\HttpFoundation\Response::HTTP_INTERNAL_SERVER_ERROR
-        );
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
     }
 
@@ -171,11 +168,9 @@ class AgentController extends Controller
         DB::commit();
         return $this->successResponse($response, "Agent Updated", Response::HTTP_CREATED);
 
-      } catch (\Throwable $th) {
+      } catch (Exception $e) {
         DB::rollBack();
-        \Log::error('Agent update failed: '.$th->getMessage());
-        return $this->errorResponse('Something went wrong: ' . $th->getMessage(),Response::HTTP_INTERNAL_SERVER_ERROR
-        );
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
     }
 
