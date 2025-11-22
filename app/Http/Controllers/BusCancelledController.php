@@ -18,7 +18,6 @@ use App\Repositories\BusCancelledRepository;
 class BusCancelledController extends Controller
 {
     use ApiResponser;
-    protected $busCancelledService;
     protected $cancelBusValidator;
     protected $busCancelledRepository;
 
@@ -116,7 +115,7 @@ class BusCancelledController extends Controller
                 $message = $response['msg'] . ' ' . $response['dt'] . 'for cancellation of bus plz contact ODBUS Support team';
                 return $this->errorResponse($message, Response::HTTP_PARTIAL_CONTENT);
             } else {
-                return $this->successResponse($response['msg'], Response::HTTP_CREATED);
+                return $this->successResponse($response['msg'], "Bus Cancelled Successfully", Response::HTTP_CREATED);
             }
         }
     }
