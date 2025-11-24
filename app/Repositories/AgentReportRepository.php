@@ -88,7 +88,7 @@ class AgentReportRepository
 
 
         if ($data) {
-            foreach ($data as $key => $v) {
+            foreach ($data as $v) {
 
                 $v['from_location'] = $this->location->where('id', $v->source_id)->get();
                 $v['to_location'] = $this->location->where('id', $v->destination_id)->get();
@@ -97,7 +97,7 @@ class AgentReportRepository
 
                 $stoppages['source'] = [];
                 $stoppages['destination'] = [];
-                if (count($stoppage) > 0) {
+                if (!empty($stoppage)) {
                     foreach ($stoppage[0]['ticketPrice'] as $k => $a) {
                         $stoppages['source'][$k] = $this->location->where('id', $a->source_id)->get();
                         $stoppages['destination'][$k] = $this->location->where('id', $a->destination_id)->get();
@@ -109,18 +109,16 @@ class AgentReportRepository
         }
 
 
-        $response = array(
+        return array(
              "count" => $data->count(),
              "total" => $data->total(),
-            "data" => $data
+             "data" => $data
            );
-        return $response;
 
     }
 
     public function agentcancelreport($request)
     {
-
         $paginate = $request->rows_number;
         $user_id = $request->user_id;
         $pnr = $request->pnr;
@@ -163,7 +161,9 @@ class AgentReportRepository
                         ->orderBy('created_at', 'DESC');
 
             } else {
-                $data = $data->whereBetween('created_at', [$start_date, $end_date])
+                $start_dt = Carbon::parse($start_date)->startOfDay()->toDateTimeString();
+                $end_dt = Carbon::parse($end_date)->endOfDay()->toDateTimeString();
+                $data = $data->whereBetween('created_at', [$start_dt, $end_dt])
                         ->orderBy('created_at', 'DESC');
             }
 
@@ -174,16 +174,35 @@ class AgentReportRepository
                 $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')
                         ->orderBy('journey_dt', 'DESC');
             } else {
-                $data = $data-> whereBetween('journey_dt', [$start_date, $end_date])
+                $start_dt = Carbon::parse($start_date)->startOfDay()->toDateTimeString();
+                $start_dt = date('Y-m-d', strtotime($start_dt));
+                $end_dt = Carbon::parse($end_date)->endOfDay()->toDateTimeString();
+                $end_dt = date('Y-m-d', strtotime($end_dt));
+                $data = $data-> whereBetween('journey_dt', [$start_dt, $end_dt])
                        ->orderBy('journey_dt', 'DESC');
             }
+        } elseif ($date_type == 'cancel' && $start_date == null && $end_date == null) {
+            $data = $data->where('updated_at', date('Y-m-d'))->orderBy('updated_at', 'DESC');
+        } elseif ($date_type == 'cancel' && $start_date != null && $end_date != null) {
+            if ($start_date == $end_date) {
+                $data = $data->where('updated_at', 'like', '%'.$start_date.'%')
+                             ->orderBy('updated_at', 'DESC');
+            } else {
+                $start_dt = Carbon::parse($start_date)->startOfDay()->toDateTimeString();
+                $start_dt = date('Y-m-d', strtotime($start_dt));
+                $end_dt = Carbon::parse($end_date)->endOfDay()->toDateTimeString();
+                $end_dt = date('Y-m-d', strtotime($end_dt));
+                $data = $data->whereBetween('updated_at', [$start_dt, $end_dt])
+                             ->orderBy('updated_at', 'DESC');
+            }
         }
+
 
         $data = $data->paginate($paginate);
 
 
         if ($data) {
-            foreach ($data as $key => $v) {
+            foreach ($data as $v) {
 
                 $v['from_location'] = $this->location->where('id', $v->source_id)->get();
                 $v['to_location'] = $this->location->where('id', $v->destination_id)->get();
@@ -191,7 +210,7 @@ class AgentReportRepository
                 $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
                 $stoppages['source'] = [];
                 $stoppages['destination'] = [];
-                if (count($stoppage) > 0) {
+                if (!empty($stoppage)) {
                     foreach ($stoppage[0]['ticketPrice'] as $k => $a) {
                         $stoppages['source'][$k] = $this->location->where('id', $a->source_id)->get();
                         $stoppages['destination'][$k] = $this->location->where('id', $a->destination_id)->get();
@@ -203,12 +222,11 @@ class AgentReportRepository
         }
 
 
-        $response = array(
+        return array(
              "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
            );
-        return $response;
 
     }
 
@@ -271,7 +289,7 @@ class AgentReportRepository
 
 
         if ($data) {
-            foreach ($data as $key => $v) {
+            foreach ($data as $v) {
 
                 $v['from_location'] = $this->location->where('id', $v->source_id)->get();
                 $v['to_location'] = $this->location->where('id', $v->destination_id)->get();
@@ -279,7 +297,7 @@ class AgentReportRepository
                 $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
                 $stoppages['source'] = [];
                 $stoppages['destination'] = [];
-                if (count($stoppage) > 0) {
+                if (!empty($stoppage)) {
                     foreach ($stoppage[0]['ticketPrice'] as $k => $a) {
                         $stoppages['source'][$k] = $this->location->where('id', $a->source_id)->get();
                         $stoppages['destination'][$k] = $this->location->where('id', $a->destination_id)->get();
@@ -291,13 +309,11 @@ class AgentReportRepository
         }
 
 
-        $response = array(
+        return array(
              "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
            );
-        return $response;
-
     }
 
 }
