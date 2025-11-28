@@ -132,6 +132,9 @@ use App\Http\Controllers\ApiUserCompleteReportController;
 use App\Http\Controllers\ApiUserCancelTicketReportController;
 use App\Http\Controllers\ApiUserManageOperatorController;
 
+// Scheduler
+use App\Http\Controllers\SchedulerController;
+
 
 Route::post('/emailtest', [TestEmailController::class, 'emailtest']);
 
@@ -1087,3 +1090,6 @@ Route::delete('deletemanageClientOperator/{id}', [ApiUserManageOperatorControlle
 
 Route::get('/getLessBookingUrls', [CompleteReportController::class, 'getLessBookingUrls']);
 Route::get('/PaytmBookingCancel/{pnr}', [TicketInformationController::class, 'PaytmBookingCancel']);
+
+Route::post('scheduleRecords', [SchedulerController::class, 'scheduleRecords']);
+Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
