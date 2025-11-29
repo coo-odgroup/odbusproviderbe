@@ -18,7 +18,8 @@ class CouponService
         $this->couponRepository = $couponRepository;
     }
     public function delete($id)
-    { return $this->couponRepository->delete($id);
+    {
+        return $this->couponRepository->delete($id);
     }
     public function getAll()
     {
@@ -30,7 +31,7 @@ class CouponService
         return $this->couponRepository->getAllCouponType();
     }
 
-     public function getData($request)
+    public function getData($request)
     {
         return $this->couponRepository->getData($request);
     }
@@ -42,7 +43,6 @@ class CouponService
     {
         try {
             $post = $this->couponRepository->update($data, $id);
-
         } catch (Exception $e) {
             throw new InvalidArgumentException($e->getMessage());
         }
@@ -54,7 +54,6 @@ class CouponService
         return $result;
     }
 
-    COUPON ADD FOR BUS, ROUTE AND OPERATOR STARTS
     public function saveBusCouponData($data)
     {
         $result = $this->couponRepository->saveCouponBus($data);
@@ -75,6 +74,6 @@ class CouponService
         $result = $this->couponRepository->changeStatus($data);
         return $result;
     }
-   // COUPON ADD FOR BUS, ROUTE AND OPERATOR ENDS HERE
+    // COUPON ADD FOR BUS, ROUTE AND OPERATOR ENDS HERE
 
 }
