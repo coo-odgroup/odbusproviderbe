@@ -48,7 +48,7 @@ class BusContactsController extends Controller
         }
         try {
 
-            $this->busContactsRepository->save($data);
+            $this->busContactsRepository->save($request);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
@@ -73,7 +73,7 @@ class BusContactsController extends Controller
         }
         try {
 
-            $this->busContactsRepository->update($data, $id);
+            $this->busContactsRepository->update($request, $id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }

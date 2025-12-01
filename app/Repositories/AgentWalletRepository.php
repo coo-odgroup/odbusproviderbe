@@ -11,9 +11,11 @@ use App\Jobs\SendSuperAdminEmailJob;
 use App\Jobs\SendSupportEmailJob;
 use App\Jobs\SendWalletEmailJob;
 use App\Jobs\SendWalletApproveEmailJob;
+use App\Models\PhonePayToken;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
-use DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class AgentWalletRepository
 {
@@ -47,12 +49,76 @@ class AgentWalletRepository
         return $AgentWalletRequest;
     }
 
+    public function phonpeToken(){
+        $token = PhonePayToken::first();
+        return $token;
+    }
+
     public function save($data)
     {
+        $transactionId = $data["transaction_id"];
+        // return $transactionId;
         $user = $this->user->find($data['user_id']);
+        $user_id = $data['user_id'];
+        // return $user_id;
         // $balance = $this->agentWallet->where('user_id',$data['user_id'])->where('status',1)->orderBy('id','DESC')->limit(1)->get();
         $AgentWalletRequest = new $this->AgentWalletRequest();
         $AgentWalletRequest = $this->getModel($data, $AgentWalletRequest);
+
+        $phonpe_url = Config('constants.PHONPE_API_URL');
+        $getToken = $this->phonpeToken();
+
+        // return $getToken->token_type;
+
+
+        $url = $phonpe_url."checkout/v2/order/{$transactionId}/status";
+        // dd( 'Authorization'. $getToken->token_type . " " . $getToken->access_token);
+        $response = Http::withHeaders([
+            'Authorization' => $getToken->token_type . " " . $getToken->access_token,
+            'Content-Type' => 'application/json'
+        ])->get($url);
+
+        // Convert to array if needed
+        $datas = $response->json();
+
+        // return $data;
+
+
+        if($datas['state'] == "COMPLETED"){
+            // return $data['amount'];
+            // $AgentWalletRequest->save();
+            $balance = 0 ;
+
+            $agentWallet = $this->agentWallet->where('user_id',$user_id)->where('status', 1)->orderBy('id', 'DESC')->limit(1)->get();
+            // return $agentWallet;
+            // $user = $this->user->find($ext_data->user_id);
+
+            // $AgentWalletRequest = $this->AgentWalletRequest->find($id);
+
+            if (count($agentWallet) > 0) {
+                $balance = $agentWallet[0]->balance + $data['amount'];
+            } else {
+                $balance = $data['amount'];
+            }
+
+            $agentWallet = new $this->agentWallet();
+            $agentWallet->transaction_id = $transactionId;
+            $agentWallet->reference_id = $data['reference_id'];
+            $agentWallet->amount = $data['amount'];
+            $agentWallet->balance = $balance;
+            $agentWallet->payment_via = $data['payment_via'];
+            $agentWallet->remarks = $data['remarks'];
+            $agentWallet->user_id = $user_id;
+            $agentWallet->transaction_type = $data['transaction_type'];
+            $agentWallet->created_by = "ODBUS";
+            $agentWallet->status = 1;
+            $agentWallet->otp = "";
+
+
+            $agentWallet->save();
+            // $AgentWalletRequest->delete();
+        }
+
         // if(count($balance)==0)
         // {
         //     $agentWallet->balance = 0;
@@ -60,7 +126,7 @@ class AgentWalletRepository
         // {
         //      $agentWallet->balance =  $balance[0]->balance; 
         // } 
-        $AgentWalletRequest->save();
+        
 
         $notification = new $this->notification();
         $notification->notification_heading = "Wallet Recharge of Rs.".$data['amount']." Request";
@@ -343,15 +409,15 @@ class AgentWalletRepository
 
     }
     public function Filter_user($data,$user_id){
-        return  $data->where('user_id', $user_id);   
-     }
+        return  $data->where('user_id', $user_id);
+    }
     public function payViaFilter($data,$name){
        return  $data->Where('payment_via', 'like', '%' .$name . '%');   
     }
 
     public function Otp($id,$data)
     {
-        return  $data->where('transaction_id', 'like', '%' .$name . '%')
+        return  $data->where('id', 'like', '%' .$name . '%')
                           // ->orWhere('reference_id', 'like', '%' .$name . '%')
                           // ->orWhere('amount', 'like', '%' .$name . '%')
                           // ->orWhere('remarks', 'like', '%' .$name . '%')
@@ -392,6 +458,7 @@ class AgentWalletRepository
 
     public function update_Status($id, $ext_data, $data)
     {
+        // return $id;
         $balance = 0 ;
 
         $agentWallet = $this->agentWallet->where('user_id', $ext_data->user_id)->where('status', 1)->orderBy('id', 'DESC')->limit(1)->get();
@@ -422,31 +489,31 @@ class AgentWalletRepository
         $agentWallet->save();
         $AgentWalletRequest->delete();
 
-        $notification = new $this->notification();
-        // $notification->notification_heading = "Wallet Recharge of Rs.".$ext_data->amount." Approved";
-        $notification->notification_heading = "New Balance is Rs ".$balance." After recharge sucessfull of Rs ".$ext_data->amount." for Transaction ID ".$ext_data->transaction_id ;
+        // $notification = new $this->notification();
+        // // $notification->notification_heading = "Wallet Recharge of Rs.".$ext_data->amount." Approved";
+        // $notification->notification_heading = "New Balance is Rs ".$balance." After recharge sucessfull of Rs ".$ext_data->amount." for Transaction ID ".$ext_data->transaction_id ;
 
-        $notification->notification_details = " Dear ".$user->name.", Your Request of Rs.".$ext_data->amount.
-        " through ".$ext_data->payment_via." with transaction.id-".$ext_data->transaction_id." has been approved.Your Current balance is ".$balance ;
-        $notification->created_by = $data->user_name ;
-        $notification->save();
+        // $notification->notification_details = " Dear ".$user->name.", Your Request of Rs.".$ext_data->amount.
+        // " through ".$ext_data->payment_via." with transaction.id-".$ext_data->transaction_id." has been approved.Your Current balance is ".$balance ;
+        // $notification->created_by = $data->user_name ;
+        // $notification->save();
 
-        $userNotification[0] = new UserNotification();
-        $userNotification[0]['user_id'] = $ext_data->user_id;
-        $userNotification[0]['created_by'] = $data->user_name ;
+        // $userNotification[0] = new UserNotification();
+        // $userNotification[0]['user_id'] = $ext_data->user_id;
+        // $userNotification[0]['created_by'] = $data->user_name ;
 
-        $notification->userNotification()->saveMany($userNotification);
+        // $notification->userNotification()->saveMany($userNotification);
 
-        $to_user = $user->email;
-        $subject = "Wallet recharge request Approved";
-        $superAdminData = [
-                 'userName' => $user->name,
-                 'amount' => $ext_data->amount,
-                 'via' => $ext_data->payment_via,
-                 'tran_id' => $ext_data->transaction_id,
-                 'balance' => $balance
-                ] ;
-        SendWalletApproveEmailJob::dispatch($to_user, $subject, $superAdminData);
+        // $to_user = $user->email;
+        // $subject = "Wallet recharge request Approved";
+        // $superAdminData = [
+        //          'userName' => $user->name,
+        //          'amount' => $ext_data->amount,
+        //          'via' => $ext_data->payment_via,
+        //          'tran_id' => $ext_data->transaction_id,
+        //          'balance' => $balance
+        //         ] ;
+        // SendWalletApproveEmailJob::dispatch($to_user, $subject, $superAdminData);
 
         return $agentWallet;
 

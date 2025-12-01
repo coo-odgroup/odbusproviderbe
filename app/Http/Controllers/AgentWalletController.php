@@ -58,6 +58,7 @@ class AgentWalletController extends Controller
     }
 
     public function getData(Request $request){
+        // return $request->all();
         try {
             $wallet = $this->agentWalletService->getData($request);
             return $this->successResponse($wallet, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
@@ -67,6 +68,8 @@ class AgentWalletController extends Controller
     }
 
     public function addAgentWallet(Request $request){
+
+        // return $request->all();
         $data = $request->only(['transaction_id','reference_id','payment_via','amount','remarks','user_id']);
         $agentWalletValidator = $this->agentWalletValidator->validate($data);
 
@@ -114,6 +117,7 @@ class AgentWalletController extends Controller
 
 
     public function changeStatus(Request $request, $id){
+        // return $request->all();
         $data=$this->agentWalletService->changeStatus($request,$id);
         if($data=='Invalid OTP'){
             return $this->errorResponse($data,Response::HTTP_PARTIAL_CONTENT);

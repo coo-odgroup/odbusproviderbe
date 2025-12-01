@@ -22,34 +22,34 @@ class BusScheduleController extends Controller
 
     public function __construct(busScheduleRepository $busScheduleRepository, BusScheduleValidator $busScheduleValidator)
     {
-        
+
         $this->busScheduleValidator = $busScheduleValidator;
         $this->busScheduleRepository = $busScheduleRepository;
     }
     public function getAllBusSchedule(Request $request)
     {
-       
+
         $busSchedule = $this->busScheduleRepository->getAll();
         return $this->successResponse($busSchedule, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function scheduleCronJob()
     {
-        
+
         $busSchedule = $this->busScheduleRepository->scheduleCronJob();
         return $this->successResponse($busSchedule, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function removeOldBusScheduleCronjob()
     {
-        
+
         $busSchedule = $this->busScheduleRepository->removeOldBusScheduleCronjob();
         return $this->successResponse($busSchedule, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getAllBusScheduleDT(Request $request)
     {
-        
+
         $busSchedule = $this->busScheduleRepository->getDatatable($request);
         return $this->successResponse($busSchedule, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
@@ -69,14 +69,17 @@ class BusScheduleController extends Controller
     public function createBusSchedule(Request $request)
     {
         $data = $request->only([
-            'bus_id','created_by','running_cycle', 'entry_date'
+            'bus_id',
+            'created_by',
+            'running_cycle',
+            'entry_date'
         ]);
         $busScheduleValidation = $this->busScheduleValidator->validate($data);
         if ($busScheduleValidation->fails()) {
             $errors = $busScheduleValidation->errors();
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         } else {
-            
+
             $response = $this->busScheduleRepository->save($data);
 
             if ($response == 'Bus Schedule Already Exist') {
@@ -87,16 +90,18 @@ class BusScheduleController extends Controller
                 return $this->successResponse($response, "Bus Schedule Added", Response::HTTP_CREATED);
             }
         }
-        
     }
 
     public function updateBusSchedule(Request $request, $id)
     {
         $data = $request->only([
-            'bus_id','entry_date','created_by','running_cycle'
+            'bus_id',
+            'entry_date',
+            'created_by',
+            'running_cycle'
         ]);
 
-      
+
         $response = $this->busScheduleRepository->update($data, $id);
 
         if ($response == 'Can Not Add Old Date') {
@@ -104,15 +109,12 @@ class BusScheduleController extends Controller
         } else {
             return $this->successResponse($response, "Bus Schedule Updated", Response::HTTP_CREATED);
         }
-
-
-        
     }
 
     public function deleteBusSchedule($id)
     {
         try {
-            
+
             $response = $this->busScheduleRepository->delete($id);
             return $this->successResponse($response, "Bus Schedule Deleted", Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
@@ -123,17 +125,17 @@ class BusScheduleController extends Controller
     public function getBusSchedule($id)
     {
         try {
-            
-            $this->busScheduleRepository->getById($id);
+            $busSchedule = $this->busScheduleRepository->getById($id);
+            return $this->successResponse($busSchedule, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
-        return $this->successResponse($busschedule, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
+
     public function changeStatus($id)
     {
         try {
-        
+
             $response = $this->busScheduleRepository->changeStatus($id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
@@ -145,11 +147,11 @@ class BusScheduleController extends Controller
     public function unscheduledbuslist()
     {
         try {
-          
+
             $response = $this->busScheduleRepository->unscheduledbuslist();
             return $this->successResponse($response, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
     }
 }

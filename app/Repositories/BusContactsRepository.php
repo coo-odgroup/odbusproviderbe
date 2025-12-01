@@ -19,11 +19,11 @@ class BusContactsRepository
     }
     public function getById($id)
     {
-        return $this->busContacts ->where('id', $id)->get();
+        return $this->busContacts->where('id', $id)->get();
     }
     public function getByBusId($id)
     {
-        return $this->busContacts ->where('bus_id', $id)->get();
+        return $this->busContacts->where('bus_id', $id)->get();
     }
     public function getModel($data, BusContacts $busContacts)
     {
@@ -58,8 +58,7 @@ class BusContactsRepository
     }
     public function deletebyBusid($id)
     {
-        $busContacts = $this->busContacts->where("bus_id", $id);
-        $busContacts->delete();
+        $busContacts = $this->busContacts->where("bus_id", $id)->delete();
         return $busContacts;
     }
 }

@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\BusOwnerFare;
-use App\Repositories\FestivalFareRepository;
 use Exception;
+use App\Models\BusOwnerFare;
+use InvalidArgumentException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
-use InvalidArgumentException;
+use App\Repositories\FestivalFareRepository;
 
 class FestivalFareService
 {
@@ -32,13 +32,11 @@ class FestivalFareService
     {
         try {
             $post = $this->festivalFareRepository->delete($id);
-
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $post;
-
     }
     /**
      * Get all Data.
@@ -50,10 +48,10 @@ class FestivalFareService
         return $this->festivalFareRepository->getAll();
     }
     /**
-    * Get all Data in Datatable Format.
-    *
-    * @return String
-    */
+     * Get all Data in Datatable Format.
+     *
+     * @return String
+     */
     public function dataTable($request)
     {
 
@@ -71,10 +69,10 @@ class FestivalFareService
      * @param $id
      * @return String
      */
-    public function getById($id)
-    {
-        return c
-    }
+    //public function getById($id)
+    // {
+    //     return c
+    // }
     /**
      * Update  data
      * Store to DB if there are no errors.
@@ -93,7 +91,6 @@ class FestivalFareService
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $post;
-
     }
     /**
      * Validate  data.
@@ -107,7 +104,6 @@ class FestivalFareService
     {
         try {
             $post = $this->festivalFareRepository->save($data);
-
         } catch (Exception $e) {
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
@@ -117,7 +113,6 @@ class FestivalFareService
     {
         try {
             $post = $this->festivalFareRepository->changeStatus($id);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::info($e->getMessage());
@@ -125,8 +120,5 @@ class FestivalFareService
             throw new InvalidArgumentException('Unable to change status');
         }
         return $post;
-
     }
-
-
 }
