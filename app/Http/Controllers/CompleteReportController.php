@@ -14,22 +14,15 @@ use Symfony\Component\HttpFoundation\Response;
 class CompleteReportController extends Controller
 {
     use ApiResponser;
-
-
     protected $completereportRepository;
-
-
-
 
     public function __construct(CompleteReportRepository $completereportRepository)
     {
-
         $this->completereportRepository = $completereportRepository;
     }
 
     public function getData(Request $request)
     {
-
         $completeData = $this->completereportRepository->getData($request);
         return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
@@ -37,16 +30,12 @@ class CompleteReportController extends Controller
 
     public function getPendingPNR(Request $request)
     {
-
-
-
         $completeData = $this->completereportRepository->getPendingPNR($request);
         return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getLessBookingUrls()
     {
-
         $result = $this->completereportRepository->getLessBookingUrls();
         return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }

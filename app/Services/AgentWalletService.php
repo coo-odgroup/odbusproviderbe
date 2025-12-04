@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\AgentWallet;
+use App\Models\AgentWalletRequest;
 use App\Models\BusOwnerFare;
 use App\Repositories\AgentWalletRepository;
 use Exception;
@@ -146,7 +148,9 @@ class AgentWalletService
 
     public function changeStatus($data, $id)
     {
-        $otp_status = $this->agentWalletRepository->Otp($id, $data);
+        $otp_status =  AgentWalletRequest::where("id",$id)->get();
+
+        // return $otp_status = $this->agentWalletRepository->Otp($id, $data);
         if (sizeof($otp_status) > 0) {
 
             return $post = $this->agentWalletRepository->update_Status($id, $otp_status[0], $data);
