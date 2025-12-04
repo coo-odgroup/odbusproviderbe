@@ -8,9 +8,11 @@ use App\Models\User;
 
 class AppNotificationController extends Controller
 {
+
     public function list(Request $request)
     {
-        $query = AppNotification::query();
+        $query = AppNotification::whereNull('deleted_at')
+            ->with(['creator', 'updater', 'deleter']);
 
         if ($request->name) {
             $query->where('title', 'LIKE', '%' . $request->name . '%');
@@ -27,30 +29,6 @@ class AppNotificationController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, $id)
-{
-    $notification = AppNotification::find($id);
-
-    if (!$notification) {
-        return response()->json(['status' => 0, 'message' => 'Record not found']);
-    }
-
-    $status = $request->status;
-
-    if (!in_array($status, [0, 1])) {
-        return response()->json(['status' => 0, 'message' => 'Invalid status value']);
-    }
-
-    $notification->status = $status;
-    $notification->save();
-
-    return response()->json([
-        'status' => 1,
-        'message' => 'Status updated successfully',
-        'data' => $notification
-    ]);
-}
-
 
     public function create(Request $request)
     {
@@ -61,20 +39,14 @@ class AppNotificationController extends Controller
             'user_id'     => 'required|integer'
         ]);
 
-
-        $userId = $request->user_id;
-
-        $user = User::find($userId);
-        $userName = $user ? $user->name : 'System';
-
-        $validated['created_by'] = $userName;
+        $validated['created_by'] = $request->user_id;
 
         $notification = AppNotification::create($validated);
 
         return response()->json([
             'status' => 1,
             'message' => 'Notification created successfully',
-            'data' => $notification
+            'data' => $notification->load(['creator'])
         ]);
     }
 
@@ -94,18 +66,14 @@ class AppNotificationController extends Controller
             'user_id'     => 'required|integer'
         ]);
 
-        $userId = $request->user_id;
-        $user = User::find($userId);
-        $userName = $user ? $user->name : 'System';
-
-        $validated['updated_by'] = $userName;
+        $validated['updated_by'] = $request->user_id;
 
         $notification->update($validated);
 
         return response()->json([
             'status' => 1,
             'message' => 'Notification updated successfully',
-            'data' => $notification
+            'data' => $notification->load(['creator', 'updater'])
         ]);
     }
 
@@ -121,20 +89,15 @@ class AppNotificationController extends Controller
             ]);
         }
 
-        $userId = $request->user_id;
-
-        $user = User::find($userId);
-        $deletedBy = $user ? $user->name : 'System';
-
-        $notification->updated_by = $deletedBy;
+        $notification->deleted_by = $request->user_id;
+        $notification->status = 0;
         $notification->save();
-
         $notification->delete();
 
         return response()->json([
             'status' => 1,
-            'message' => "Notification deleted by $deletedBy",
-            'deleted_by' => $deletedBy
+            'message' => 'Notification deleted and set to inactive',
+            'deleted_by' => $request->user_id
         ]);
     }
 }
