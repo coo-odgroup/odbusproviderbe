@@ -135,6 +135,9 @@ use App\Http\Controllers\ApiUserManageOperatorController;
 // Scheduler
 use App\Http\Controllers\SchedulerController;
 
+//AppNotification
+use App\Http\Controllers\AppNotificationController;
+
 
 Route::post('/emailtest', [TestEmailController::class, 'emailtest']);
 
@@ -1093,3 +1096,14 @@ Route::get('/PaytmBookingCancel/{pnr}', [TicketInformationController::class, 'Pa
 
 Route::post('scheduleRecords', [SchedulerController::class, 'scheduleRecords']);
 Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
+
+//////////////////////////////////////////    AppNotification \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//Added By Subhasis on 03 Dec 2025
+
+use App\Http\Controllers\NotificationController;
+
+Route::post('/list', [AppNotificationController::class, 'list']);
+Route::post('/create', [AppNotificationController::class, 'create']);
+Route::put('/update/{id}', [AppNotificationController::class, 'update']);
+Route::delete('/delete/{id}', [AppNotificationController::class, 'delete']);
+Route::post('/status/{id}', [AppNotificationController::class, 'updateStatus']);
