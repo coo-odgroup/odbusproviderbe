@@ -10,7 +10,7 @@ class AppNotification extends Model
     use SoftDeletes;
 
     protected $connection = 'mysql_scheduler';
-    protected $table = 'push_notification';
+    protected $table = 'push_notification_template';
 
     protected $fillable = [
         'title',
@@ -22,7 +22,7 @@ class AppNotification extends Model
         'status'
     ];
 
-   
+
     public $timestamps = true;
 
     public function creator()
