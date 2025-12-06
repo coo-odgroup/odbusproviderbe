@@ -59,6 +59,8 @@ use App\Http\Controllers\OdbusChargesController;
 use App\Http\Controllers\ExtraSeatBlockController;
 use App\Http\Controllers\AgentReportController;
 use App\Http\Controllers\OffersController;
+use App\Http\Controllers\ChartController;
+
 
 
 use App\Http\Controllers\DashboardController;
@@ -1093,3 +1095,8 @@ Route::get('/PaytmBookingCancel/{pnr}', [TicketInformationController::class, 'Pa
 
 Route::post('scheduleRecords', [SchedulerController::class, 'scheduleRecords']);
 Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
+
+//add by sahil for chats
+Route::post('top-route',[ChartController::class,"topRoutes"]);
+Route::post('top-city',[ChartController::class,"topCity"]);
+Route::post('day-wise',[ChartController::class,"bookingReport"]);
