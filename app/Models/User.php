@@ -27,9 +27,10 @@ class User extends Model
      *
      * @var array
      */
+    protected $connection = 'mysql';
     protected $table = 'user';
 
-    protected $fillable = ['name','phone','user_type','alternate_email'];
+    protected $fillable = ['name', 'phone', 'user_type', 'alternate_email'];
 
     public function role()
     {

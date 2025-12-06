@@ -137,6 +137,9 @@ use App\Http\Controllers\ApiUserManageOperatorController;
 // Scheduler
 use App\Http\Controllers\SchedulerController;
 
+//AppNotification
+use App\Http\Controllers\AppNotificationController;
+
 
 Route::post('/emailtest', [TestEmailController::class, 'emailtest']);
 
@@ -1100,3 +1103,13 @@ Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
 Route::post('top-route',[ChartController::class,"topRoutes"]);
 Route::post('top-city',[ChartController::class,"topCity"]);
 Route::post('day-wise',[ChartController::class,"bookingReport"]);
+//////////////////////////////////////////    AppNotification \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//Added By Subhasis on 03 Dec 2025
+
+use App\Http\Controllers\NotificationController;
+
+Route::post('/list', [AppNotificationController::class, 'list']);
+Route::post('/create', [AppNotificationController::class, 'create']);
+Route::put('/update/{id}', [AppNotificationController::class, 'update']);
+Route::delete('/delete/{id}', [AppNotificationController::class, 'delete']);
+Route::post('/status/{id}', [AppNotificationController::class, 'updateStatus']);
