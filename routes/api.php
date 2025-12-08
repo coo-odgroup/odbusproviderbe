@@ -59,7 +59,7 @@ use App\Http\Controllers\OdbusChargesController;
 use App\Http\Controllers\ExtraSeatBlockController;
 use App\Http\Controllers\AgentReportController;
 use App\Http\Controllers\OffersController;
-
+use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\DashboardController;
 
@@ -137,6 +137,12 @@ use App\Http\Controllers\SchedulerController;
 
 //AppNotification
 use App\Http\Controllers\AppNotificationController;
+use App\Http\Controllers\NotificationMasterController;
+
+
+Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
+Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);
+
 
 
 Route::post('/emailtest', [TestEmailController::class, 'emailtest']);
@@ -1100,10 +1106,13 @@ Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
 //////////////////////////////////////////    AppNotification \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //Added By Subhasis on 03 Dec 2025
 
-use App\Http\Controllers\NotificationController;
+
 
 Route::post('/list', [AppNotificationController::class, 'list']);
 Route::post('/create', [AppNotificationController::class, 'create']);
 Route::put('/update/{id}', [AppNotificationController::class, 'update']);
 Route::delete('/delete/{id}', [AppNotificationController::class, 'delete']);
 Route::post('/status/{id}', [AppNotificationController::class, 'updateStatus']);
+
+Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
+Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);

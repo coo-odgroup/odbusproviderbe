@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\AppNotification;
-use App\Models\User;
 
 class AppNotificationController extends Controller
 {
-
     public function list(Request $request)
     {
-        $query = AppNotification::whereNull('deleted_at')
-            ->with(['creator', 'updater', 'deleter']);
+        $query = AppNotification::with([
+            'creator',
+            'updater',
+            'deleter',
+            'type',           
+            'templateKey'     
+        ])->whereNull('deleted_at');
 
         if ($request->name) {
             $query->where('title', 'LIKE', '%' . $request->name . '%');
@@ -31,51 +34,60 @@ class AppNotificationController extends Controller
 
 
     public function create(Request $request)
-    {
-        $validated = $request->validate([
-            'title'       => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'message'     => 'nullable|string',
-            'user_id'     => 'required|integer'
-        ]);
+{
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'message' => 'required|string',
+        'type_id' => 'required|integer|exists:mysql_scheduler.ms_notification_type,id',
+        'template_key_id' => 'required|integer|exists:mysql_scheduler.ms_template_key,id',
+        'user_id' => 'required|integer'
+    ]);
 
-        $validated['created_by'] = $request->user_id;
+    $validated['created_by'] = $request->user_id;
+    $validated['status'] = 1;
 
-        $notification = AppNotification::create($validated);
+    unset($validated['user_id']); 
 
-        return response()->json([
-            'status' => 1,
-            'message' => 'Notification created successfully',
-            'data' => $notification->load(['creator'])
-        ]);
+    $notification = AppNotification::create($validated);
+
+    return response()->json([
+        'status' => 1,
+        'message' => 'Notification created successfully',
+        'data' => $notification->load(['creator', 'type', 'templateKey'])
+    ]);
+}
+
+
+public function update(Request $request, $id)
+{
+    $notification = AppNotification::find($id);
+
+    if (!$notification) {
+        return response()->json(['status' => 0, 'message' => 'Record not found']);
     }
 
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'message' => 'required|string',
+        'type_id' => 'required|integer|exists:mysql_scheduler.ms_notification_type,id',
+        'template_key_id' => 'required|integer|exists:mysql_scheduler.ms_template_key,id',
+        'user_id' => 'required|integer'
+    ]);
 
-    public function update(Request $request, $id)
-    {
-        $notification = AppNotification::find($id);
+    $validated['updated_by'] = $request->user_id;
+    unset($validated['user_id']);
 
-        if (!$notification) {
-            return response()->json(['status' => 0, 'message' => 'Record not found']);
-        }
+    $notification->update($validated);
 
-        $validated = $request->validate([
-            'title'       => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'message'     => 'nullable|string',
-            'user_id'     => 'required|integer'
-        ]);
+    return response()->json([
+        'status' => 1,
+        'message' => 'Notification updated successfully',
+        'data' => $notification->load(['creator', 'updater', 'type', 'templateKey'])
+    ]);
+}
 
-        $validated['updated_by'] = $request->user_id;
-
-        $notification->update($validated);
-
-        return response()->json([
-            'status' => 1,
-            'message' => 'Notification updated successfully',
-            'data' => $notification->load(['creator', 'updater'])
-        ]);
-    }
 
 
     public function delete(Request $request, $id)
