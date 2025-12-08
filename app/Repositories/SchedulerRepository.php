@@ -8,6 +8,9 @@ use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
+use App\Models\PhonePayToken;
+use App\Models\CustomerPayment;
+use Illuminate\Support\Facades\Http;
 
 class SchedulerRepository
 {
@@ -22,23 +25,9 @@ class SchedulerRepository
         $this->bus = $bus;
     }
 
-    public function scheduleRecords($request) {
-        // Log:: info($request);
-
+    function scheduleRefund($request) {
         $paginate = $request->rows_number;
-        $bus_operator_id = $request->bus_operator_id;
-        $pnr = $request->pnr;
-        $date_range = $request->date_range;
-        $payment_id = $request->payment_id;
-        $date_type = $request->date_type;
-        $source_id = $request->source_id;
-        $destination_id = $request->destination_id;
-        $apiUser = $request->apiUser;
-
-        $start_date  =  $request->rangeFromDate;
-        $end_date  =  $request->rangeToDate;
-
-
+        $cancel_by = $request->cancel_by;
 
         $data = $this->booking->with(
             'BookingDetail.BusSeats.seats',
@@ -46,147 +35,90 @@ class SchedulerRepository
             'Bus',
             'Users',
             'User',
-            'CustomerPayment'
+            'CustomerPayment',
+            'source',
+            'destination'
         )
-                             ->with('bus.busstoppage')
-                             ->with('ClientWallet')
-                             ->where('status', 2);
-
-        if ($request['USER_BUS_OPERATOR_ID'] != "") {
-            $data = $data->whereHas('bus', function ($query) use ($request) {
-                $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);
-            });
-        }
-
-        if ($paginate == 'all') {
-            $paginate = Config::get('constants.ALL_RECORDS');
-        } elseif ($paginate == null) {
-            $paginate = 10 ;
-        }
-
-        if (!empty($pnr)) {
-            $data = $data->where('pnr', $pnr);
-        }
-
-        if (!empty($apiUser)) {
-            $data = $data->where('origin', $apiUser);
-        }
-
-        if (!empty($bus_operator_id)) {
-            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id);});
-        }
+        ->with('bus.busstoppage')
+        ->with('ClientWallet')
+        ->where('status', 2)
+        ->whereHas('CustomerPayment', function ($q) {
+            $q->whereNotNull('pp_orderId')->where('payment_done', 1);
+        });
 
 
-        if (!empty($payment_id)) {
-            $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id);});
-
-            // ->whereHas('CustomerPayment', function ($query) use ($payment_id)        {$query->where('razorpay_id', $payment_id );})
-        }
-
-        if (!empty($source_id) && !empty($destination_id)) {
-            $data = $data->where('source_id', $source_id)->where('destination_id', $destination_id);
-        }
-
-        if ($date_type == 'booking' && $start_date == null && $end_date == null) {
-            $data = $data->orderBy('created_at', 'DESC');
-        } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
-            if ($start_date == $end_date) {
-                $data = $data->where('created_at', 'like', '%'.$start_date.'%')
-                        ->orderBy('created_at', 'DESC');
-
-            } else {
-                $start_dt = Carbon::parse($start_date)->startOfDay()->toDateTimeString();
-                $end_dt = Carbon::parse($end_date)->endOfDay()->toDateTimeString();
-                $data = $data->whereBetween('created_at', [$start_dt, $end_dt])
-                        ->orderBy('created_at', 'DESC');
-            }
-
-        } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
-            $data = $data->where('journey_dt', date('Y-m-d'))->orderBy('journey_dt', 'DESC');
-        } elseif ($date_type == 'journey' && $start_date != null && $end_date != null) {
-            if ($start_date == $end_date) {
-                $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')
-                        ->orderBy('journey_dt', 'DESC');
-            } else {
-                $start_dt = Carbon::parse($start_date)->startOfDay()->toDateTimeString();
-                $start_dt = date('Y-m-d', strtotime($start_dt));
-                $end_dt = Carbon::parse($end_date)->endOfDay()->toDateTimeString();
-                $end_dt = date('Y-m-d', strtotime($end_dt));
-                // dd($end_dt);
-                $data = $data->whereBetween('journey_dt', [$start_dt, $end_dt])
-                       ->orderBy('journey_dt', 'DESC');
-            }
-        } elseif ($date_type == 'cancel' && $start_date == null && $end_date == null) {
-            $data = $data->where('updated_at', date('Y-m-d'))->orderBy('updated_at', 'DESC');
-        } elseif ($date_type == 'cancel' && $start_date != null && $end_date != null) {
-            if ($start_date == $end_date) {
-                $data = $data->where('updated_at', 'like', '%'.$start_date.'%')
-                             ->orderBy('updated_at', 'DESC');
-            } else {
-                $start_dt = Carbon::parse($start_date)->startOfDay()->toDateTimeString();
-                $start_dt = date('Y-m-d', strtotime($start_dt));
-                $end_dt = Carbon::parse($end_date)->endOfDay()->toDateTimeString();
-                $end_dt = date('Y-m-d', strtotime($end_dt));
-                $data = $data->whereBetween('updated_at', [$start_dt, $end_dt])
-                             ->orderBy('updated_at', 'DESC');
-            }
+        if (!empty($cancel_by)) {
+            $data = $data->where('cancel_by', $cancel_by);
         }
 
         $data = $data->paginate($paginate);
 
-        return $data;
-
-        if ($data) {
-            foreach ($data as $key => $v) {
-
-                $v['from_location'] = $this->location->where('id', $v->source_id)->get();
-                $v['to_location'] = $this->location->where('id', $v->destination_id)->get();
-
-                $stoppages['source'] = [];
-                $stoppages['destination'] = [];
-
-                $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
-                if (count($stoppage) > 0) {
-                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) {
-                        $stoppages['source'][$k] = $this->location->where('id', $a->source_id)->get();
-                        $stoppages['destination'][$k] = $this->location->where('id', $a->destination_id)->get();
-                    }
-                }
-
-                $v['source'] = $stoppages['source'];
-                $v['destination'] = $stoppages['destination'];
-            }
-        }
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
 
         return $response;
     }
 
-    function scheduleRefund($request) {
-        $paginate = $request->rows_number;
-        $bus_operator_id = $request->bus_operator_id;
-        $pnr = $request->pnr;
-        $date_range = $request->date_range;
-        $payment_id = $request->payment_id;
-        $date_type = $request->date_type;
-        $source_id = $request->source_id;
-        $destination_id = $request->destination_id;
-        $apiUser = $request->apiUser;
-        $start_date  =  $request->rangeFromDate;
-        $end_date  =  $request->rangeToDate;
+    function scheduleRefundSelected($request) {
+        $booking_ids = $request->booking_ids;
 
-        $data = $this->booking->with(
-            'BookingDetail.BusSeats.seats',
-            'BookingDetail.BusSeats.ticketPrice',
-            'Bus',
-            'Users',
-            'User',
-            'CustomerPayment'
-        )->with('bus.busstoppage')->with('ClientWallet')->where('status', 2);
-        return $request;
+        $data = $this->booking::with('CustomerPayment')
+        ->where('status', 2)
+        ->whereIn('id', $booking_ids)
+        ->get();
+
+        foreach ($data as $booking) {
+            $customerId = $booking->CustomerPayment->id;
+            $orderId = $booking->CustomerPayment->order_id; // TX123456
+            $amount = $booking->CustomerPayment->amount;
+
+            $this->initiateRefund($amount, $orderId, $customerId);
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Record Fetched Successfully"
+            ]);
+        }
+    }
+
+    public function phonpeToken() {
+        return PhonePayToken::first();
+    }
+
+    public function initiateRefund($amount, $orderId, $customerId) {
+        $amountInPaise = $amount * 100;
+
+        $merchantRefundId = "REFUND_" . time();
+
+        $payload = [
+            "merchantRefundId" => $merchantRefundId,
+            "originalMerchantOrderId" => $orderId, // TX123456
+            "amount" => $amountInPaise
+        ];
+
+        $phonpe_url = Config('constants.PHONPE_API_URL');
+        $url = $phonpe_url . "payments/v2/refund";
+
+        $getToken = $this->phonpeToken();
+
+        // Make API call
+        $resp = Http::withHeaders([
+            'Authorization' => $getToken->token_type . " " . $getToken->access_token,
+            'Content-Type' => 'application/json'
+        ])->post($url, $payload);
+
+        $rfJsonResp = $resp->json();
+
+        if ($rfJsonResp["refundId"]) {
+            CustomerPayment::where('id', $customerId)->update([
+                'payment_done' => 2,
+                'refund_id' => $rfJsonResp["refundId"]
+            ]);
+        }
+
+        return $resp->json();
     }
 }

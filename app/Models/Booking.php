@@ -11,7 +11,7 @@ use App\Models\BookingDetail;
 use App\Models\CustomerPayment;
 use App\Models\UserBooking;
 use App\Models\ApiClientWallet;
-
+use App\Models\Location;
 class Booking extends Model
 {
     use HasFactory;
@@ -62,4 +62,13 @@ class Booking extends Model
         return $this->hasOne(UserBooking::class);
     }
 
+    public function Source()
+    {
+        return $this->belongsTo(Location::class, 'source_id');
+    }
+
+    public function Destination()
+    {
+        return $this->belongsTo(Location::class, 'destination_id');
+    }
 }
