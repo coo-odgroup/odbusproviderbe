@@ -60,6 +60,9 @@ use App\Http\Controllers\ExtraSeatBlockController;
 use App\Http\Controllers\AgentReportController;
 use App\Http\Controllers\OffersController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ChartController;
+
+
 
 use App\Http\Controllers\DashboardController;
 
@@ -1103,16 +1106,21 @@ Route::get('/PaytmBookingCancel/{pnr}', [TicketInformationController::class, 'Pa
 Route::post('scheduleRecords', [SchedulerController::class, 'scheduleRecords']);
 Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
 
+//add by sahil for chats
+Route::post('top-route',[ChartController::class,"topRoutes"]);
+Route::post('top-city',[ChartController::class,"topCity"]);
+Route::post('day-wise',[ChartController::class,"bookingReport"]);
 //////////////////////////////////////////    AppNotification \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //Added By Subhasis on 03 Dec 2025
-
-
 
 Route::post('/list', [AppNotificationController::class, 'list']);
 Route::post('/create', [AppNotificationController::class, 'create']);
 Route::put('/update/{id}', [AppNotificationController::class, 'update']);
 Route::delete('/delete/{id}', [AppNotificationController::class, 'delete']);
 Route::post('/status/{id}', [AppNotificationController::class, 'updateStatus']);
+Route::post('/notification/status/{id}', [AppNotificationController::class, 'updateStatus']);
+
 
 Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
 Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);
+      

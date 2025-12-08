@@ -58,6 +58,53 @@ class AppNotificationController extends Controller
     ]);
 }
 
+public function toggleStatus($id)
+{
+    $notification = AppNotification::find($id);
+
+    if (!$notification) {
+        return response()->json([
+            'status' => 0,
+            'message' => 'Record not found'
+        ]);
+    }
+
+    
+    $notification->status = $notification->status == 1 ? 0 : 1;
+    $notification->updated_by = request()->user_id ?? null;
+    
+    $notification->save();
+
+    return response()->json([
+        'status' => 1,
+        'message' => 'Status updated successfully',
+        'new_status' => $notification->status,
+    ]);
+}
+public function updateStatus(Request $request, $id)
+{
+    $notification = AppNotification::find($id);
+
+    if (!$notification) {
+        return response()->json([
+            'status' => 0,
+            'message' => 'Record not found'
+        ]);
+    }
+
+ 
+    $notification->status = $request->status;
+    $notification->updated_by = $request->user_id ?? null;
+
+    $notification->save();
+
+    return response()->json([
+        'status' => 1,
+        'message' => 'Status updated successfully',
+        'new_status' => $notification->status
+    ]);
+}
+
 
 public function update(Request $request, $id)
 {
