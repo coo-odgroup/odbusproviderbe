@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Models\PhonePayToken;
 use App\Models\CustomerPayment;
 use Illuminate\Support\Facades\Http;
+use App\Jobs\ScheduleRefundJob;
 
 class SchedulerRepository
 {
@@ -59,6 +60,8 @@ class SchedulerRepository
             "data" => $data
         );
 
+        // ScheduleRefundJob::dispatch();
+
         return $response;
     }
 
@@ -73,14 +76,9 @@ class SchedulerRepository
         foreach ($data as $booking) {
             $customerId = $booking->CustomerPayment->id;
             $orderId = $booking->CustomerPayment->order_id; // TX123456
-            $amount = $booking->CustomerPayment->amount;
-
-            $this->initiateRefund($amount, $orderId, $customerId);
-
-            return response()->json([
-                "status" => 1,
-                "message" => "Record Fetched Successfully"
-            ]);
+            $amount = $booking->refund_amount;
+            ScheduleRefundJob::dispatch($amount, $orderId, $customerId);
+            // ScheduleRefundJob::dispatch($amount, $orderId, $customerId)->delay(now()->addSeconds(5));
         }
     }
 
@@ -115,6 +113,7 @@ class SchedulerRepository
         if ($rfJsonResp["refundId"]) {
             CustomerPayment::where('id', $customerId)->update([
                 'payment_done' => 2,
+                'refund_mode' => 2,
                 'refund_id' => $rfJsonResp["refundId"]
             ]);
         }
