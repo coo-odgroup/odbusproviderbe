@@ -10,7 +10,7 @@ class CustomerPayment extends Model
 {
     use HasFactory;
     protected $table = 'customer_payment';
-    protected $fillable = ['name','amount','payment_id','razorpay_id','payment_done'];
+    protected $fillable = ['name','amount','payment_id','razorpay_id','payment_done','refund_mode'];
 
     public function booking()
     {
