@@ -1110,6 +1110,8 @@ Route::post('scheduleRefundSelected', [SchedulerController::class, 'scheduleRefu
 Route::post('top-route',[ChartController::class,"topRoutes"]);
 Route::post('top-city',[ChartController::class,"topCity"]);
 Route::post('day-wise',[ChartController::class,"bookingReport"]);
+
+
 //////////////////////////////////////////    AppNotification \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //Added By Subhasis on 03 Dec 2025
 
@@ -1119,6 +1121,7 @@ Route::put('/update/{id}', [AppNotificationController::class, 'update']);
 Route::delete('/delete/{id}', [AppNotificationController::class, 'delete']);
 Route::post('/status/{id}', [AppNotificationController::class, 'updateStatus']);
 Route::post('/notification/status/{id}', [AppNotificationController::class, 'updateStatus']);
+Route::post('/sendNotification',[AppNotificationController::class,'sendNotification']);
 
 
 Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
