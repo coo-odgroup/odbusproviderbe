@@ -62,7 +62,242 @@ class SeatBlockRepository
     //     return $data ;
     // }
 
-    public function addseatBlock($data)
+ public function addseatBlock($data)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            // 1️⃣ Prepare dates
+            $dates = collect($data->date ?? [])
+                ->map(fn($d) => date('Y-m-d', strtotime($d)))
+                ->toArray();
+
+            // 2️⃣ Collect selected seats (upper + lower)
+            $selectedSeats = [];
+
+            foreach ($data['bus_seat_layout_data'] as $layout) {
+                foreach (['upperBerth', 'lowerBerth'] as $berth) {
+                    if (!empty($layout[$berth])) {
+                        foreach ($layout[$berth] as $seat) {
+                            if (($seat['seatChecked'] ?? false) === true) {
+                                    $selectedSeats[] = $seat;
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            if (empty($selectedSeats)) {
+                return ['status' => 'error', 'message' => 'No seats selected'];
+            }
+
+            // 3️⃣ Load ticket routes once
+            $routes = $this->ticketPrice
+                ->whereIn('id', $data['busRoute'])
+                ->get()
+                ->keyBy('id');
+
+            // 4️⃣ Validation: blocked / booked check
+            foreach ($selectedSeats as $seat) {
+                foreach ($data['busRoute'] as $ticketPriceId) {
+                    foreach ($dates as $dt) {
+
+                        // Already blocked?
+                        $isBlocked = $this->busSeats
+                            ->where([
+                                'bus_id' => $data['bus_id'],
+                                'seats_id' => $seat['seatId'],
+                                'ticket_price_id' => $ticketPriceId,
+                                'operation_date' => $dt,
+                                'type' => $data['type'],
+                                'status' => 1,
+                            ])->exists();
+
+                        if ($isBlocked) {
+                            return [
+                                'status' => 'error',
+                                'message' => "Seat no {$seat['seatText']} is already blocked for date - {$dt}"
+                            ];
+                        }
+
+                        // Already booked?
+                        $route = $routes[$ticketPriceId];
+
+                        $isBooked = $this->bookingDetail
+                            ->whereHas('booking', function ($q) use ($data, $dt, $route) {
+                                $q->where([
+                                    'bus_id' => $data['bus_id'],
+                                    'journey_dt' => $dt,
+                                    'source_id' => $route->source_id,
+                                    'destination_id' => $route->destination_id,
+                                ])->whereIn('status', [1, 4]);
+                            })
+                            ->whereHas('BusSeats', function ($q) use ($seat) {
+                                $q->where('seats_id', $seat['seatId']);
+                            })
+                            ->exists();
+
+                        if ($isBooked) {
+                            return [
+                                'status' => 'error',
+                                'message' => "Seat no {$seat['seatText']} is already booked"
+                            ];
+                        }
+                    }
+                }
+            }
+
+            // 5️⃣ Insert blocked seats
+            foreach ($selectedSeats as $seat) {
+                foreach ($data['busRoute'] as $ticketPriceId) {
+                    foreach ($dates as $dt) {
+                        $ins=[
+                            'bus_id' => $data['bus_id'],
+                            'category' => 0,
+                            'seats_id' => $seat['seatId'],
+                            'ticket_price_id' => $ticketPriceId,
+                            'operation_date' => $dt,
+                            'status' => 1,
+                            'type' => $data['type'],
+                            'created_by' => $data['created_by'],
+                            'reason' => $data['reason'],
+                            'other_reason' => $data['other_reson'],
+                        ];
+                        $this->busSeats->create($ins);
+                    }
+                }
+            }
+
+            DB::commit();
+            return ['status' => 'success'];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+             Log::info("rollback");
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+
+    public function addseatBlockByOperator($data)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            /* 1️⃣ Prepare dates */
+            $dates = collect($data->date ?? [])
+                ->map(fn($d) => date('Y-m-d', strtotime($d)))
+                ->toArray();
+
+            /* 2️⃣ Collect selected seats (upper + lower) */
+            $selectedSeats = [];
+
+            foreach ($data['bus_seat_layout_data'] as $layout) {
+                foreach (['upperBerth', 'lowerBerth'] as $berth) {
+                    if (!empty($layout[$berth])) {
+                        foreach ($layout[$berth] as $seat) {
+                            if (($seat['seatChecked'] ?? false) === true) {
+                                $selectedSeats[] = $seat;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (empty($selectedSeats)) {
+                return ['status' => 'error', 'message' => 'No seats selected'];
+            }
+
+            /* 3️⃣ Load routes once */
+            $routes = $this->ticketPrice
+                ->whereIn('id', $data['busRoute'])
+                ->get()
+                ->keyBy('id');
+
+            /* 4️⃣ Validation: blocked / booked check */
+            foreach ($selectedSeats as $seat) {
+                foreach ($data['busRoute'] as $ticketPriceId) {
+                    foreach ($dates as $dt) {
+
+                        // Already blocked?
+                        $isBlocked = $this->busSeats
+                            ->where([
+                                'bus_id' => $data['bus_id'],
+                                'seats_id' => $seat['seatId'],
+                                'ticket_price_id' => $ticketPriceId,
+                                'operation_date' => $dt,
+                                'type' => $data['type'],
+                                'status' => 1,
+                            ])->exists();
+
+                        if ($isBlocked) {
+                            return [
+                                'status' => 'error',
+                                'message' => "Seat no {$seat['seatText']} is already blocked for date - {$dt}"
+                            ];
+                        }
+
+                        // Already booked?
+                        $route = $routes[$ticketPriceId];
+
+                        $isBooked = $this->booking
+                            ->where([
+                                'bus_id' => $data['bus_id'],
+                                'journey_dt' => $dt,
+                                'source_id' => $route->source_id,
+                                'destination_id' => $route->destination_id,
+                            ])
+                            ->whereIn('status', [1, 4])
+                            ->whereHas('bookingDetails.BusSeats', function ($q) use ($seat) {
+                                $q->where('seats_id', $seat['seatId']);
+                            })
+                            ->exists();
+
+                        if ($isBooked) {
+                            return [
+                                'status' => 'error',
+                                'message' => "Seat no {$seat['seatText']} is already booked"
+                            ];
+                        }
+                    }
+                }
+            }
+
+            /* 5️⃣ Insert blocked seats */
+            foreach ($selectedSeats as $seat) {
+                foreach ($data['busRoute'] as $ticketPriceId) {
+                    foreach ($dates as $dt) {
+
+                        $this->busSeats->create([
+                            'bus_id' => $data['bus_id'],
+                            'category' => 0,
+                            'seats_id' => $seat['seatId'],
+                            'ticket_price_id' => $ticketPriceId,
+                            'operation_date' => $dt,
+                            'status' => 1,
+                            'type' => $data['type'],
+                            'created_by' => $data['created_by'],
+                            'reason' => $data['reason'],
+                            'other_reason' => $data['other_reson'],
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+            return ['status' => 'success'];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error($e);
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function addseatBlock_old($data)
     {
         // $date= $data->date;
         // $all_date=[];
@@ -470,7 +705,7 @@ class SeatBlockRepository
         return $data;
     }
 
-    public function addseatBlockByOperator($data)
+    public function addseatBlockByOperator_old($data)
     {
         $date = $data->date;
         $all_date = [];

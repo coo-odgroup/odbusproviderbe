@@ -33,4 +33,9 @@ class SchedulerController extends Controller
         $scheduleRefundData = $this->schedulerRepository->scheduleRefund($request);
         return $this->successResponse($scheduleRefundData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
+
+    public function scheduleRefundSelected(Request $request) {
+        $scheduleRefundSelectedData = $this->schedulerRepository->scheduleRefundSelected($request);
+        return $this->successResponse($scheduleRefundSelectedData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 }

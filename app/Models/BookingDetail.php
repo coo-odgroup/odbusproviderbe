@@ -25,6 +25,7 @@ class BookingDetail extends Model
         return $this->belongsTo(BusSeats::class);
     }
 
+<<<<<<< HEAD
     public function seat()
     {
         return $this->belongsTo(Seats::class, 'bus_seats_id','id');
@@ -34,5 +35,11 @@ class BookingDetail extends Model
     // {
     //       return $this->belongsTo(Booking::class);
     // }
+=======
+>>>>>>> 49d1c5472d5caae73b23306acfcb1f82dea1fcbb
 
+      public function booking()
+      {
+            return $this->belongsTo(Booking::class, 'booking_id');
+      }
 }

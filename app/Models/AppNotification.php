@@ -19,7 +19,8 @@ class AppNotification extends Model
         'created_by',
         'updated_by',
         'deleted_by',
-        'status'
+        'status','type_id',         
+        'template_key_id' 
     ];
 
 
@@ -38,5 +39,14 @@ class AppNotification extends Model
     public function deleter()
     {
         return $this->belongsTo(\App\Models\User::class, 'deleted_by');
+    }
+     public function type()
+    {
+        return $this->belongsTo(MsNotificationType::class, 'type_id');
+    }
+
+    public function templateKey()
+    {
+        return $this->belongsTo(MsTemplateKey::class, 'template_key_id');
     }
 }
