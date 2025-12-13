@@ -62,4 +62,21 @@ class Booking extends Model
         return $this->hasOne(UserBooking::class);
     }
 
+    // public function bookingDetails()
+    // {
+    //     return $this->hasMany(BookingDetail::class, 'booking_id', 'id');
+    // }
+
+    public function booking_details()
+    {
+        return $this->hasMany(BookingDetail::class, 'booking_id')->with('seat:id,berthType,seatText');
+    }
+
+    public function usersData()
+    {
+        return $this->belongsTo(Users::class, 'users_id','id');
+    }
+
+
+
 }

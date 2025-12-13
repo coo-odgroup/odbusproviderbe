@@ -139,7 +139,7 @@ use App\Http\Controllers\SchedulerController;
 
 //AppNotification
 use App\Http\Controllers\AppNotificationController;
-
+use App\Http\Controllers\RouteWiseBookingController;
 
 Route::post('/emailtest', [TestEmailController::class, 'emailtest']);
 
@@ -1099,10 +1099,21 @@ Route::get('/PaytmBookingCancel/{pnr}', [TicketInformationController::class, 'Pa
 Route::post('scheduleRecords', [SchedulerController::class, 'scheduleRecords']);
 Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
 
-//add by sahil for chats
+//Added by sahil 
+//For chats
 Route::post('top-route',[ChartController::class,"topRoutes"]);
 Route::post('top-city',[ChartController::class,"topCity"]);
 Route::post('day-wise',[ChartController::class,"bookingReport"]);
+Route::post('total-bus-seat',[ChartController::class,"TotalBusSeat"]);
+
+//Route wise booking 
+Route::post('route-wise-booking',[RouteWiseBookingController::class,"routewiseBooking"]);
+Route::post('route-wise-search',[RouteWiseBookingController::class,'allData']);
+
+
+
+
+
 //////////////////////////////////////////    AppNotification \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //Added By Subhasis on 03 Dec 2025
 

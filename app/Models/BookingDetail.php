@@ -25,6 +25,11 @@ class BookingDetail extends Model
         return $this->belongsTo(BusSeats::class);
     }
 
+    public function seat()
+    {
+        return $this->belongsTo(Seats::class, 'bus_seats_id','id');
+    }
+
     // public function Booking()
     // {
     //       return $this->belongsTo(Booking::class);
