@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 class SendSuperAdminEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -33,11 +35,11 @@ class SendSuperAdminEmailJob implements ShouldQueue
     {
         $this->to = $to;
         $this->subject = $subject;
-        $this->userName=$req['userName'];
-        $this->amount=$req['amount'];
-        $this->via=$req['via'];
-        $this->tran_id=$req['tran_id'];
-        $this->otp=$req['otp'];
+        $this->userName = $req['userName'];
+        $this->amount = $req['amount'];
+        $this->via = $req['via'];
+        $this->tran_id = $req['tran_id'];
+        $this->otp = $req['otp'];
     }
 
     /**
@@ -47,12 +49,12 @@ class SendSuperAdminEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'userName'=>$this->userName,
+        $data = [
+            'userName' => $this->userName,
             'amount' => $this->amount,
             'via' => $this->via,
             'tran_id' => $this->tran_id,
-            'otp' =>$this->otp,
+            'otp' => $this->otp,
         ];
         Mail::send('agentWalletRequestSuperAdmin', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))

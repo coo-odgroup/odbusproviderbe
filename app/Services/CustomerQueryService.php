@@ -83,7 +83,7 @@ class CustomerQueryService
      */
     // public function updatePost($data, $id)
     // {
-        
+
 
     //     DB::beginTransaction();
 
@@ -112,7 +112,7 @@ class CustomerQueryService
      */
     // public function savePostData($data)
     // {
-        
+
 
     //     $result = $this->customerQueryRepository->save($data);
 

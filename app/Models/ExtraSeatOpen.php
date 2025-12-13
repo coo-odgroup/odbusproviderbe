@@ -10,6 +10,6 @@ class ExtraSeatOpen extends Model
     use HasFactory;
     protected $table = 'bus_seats_extra';
     protected $fillable = [  ];
- 
+
 
 }

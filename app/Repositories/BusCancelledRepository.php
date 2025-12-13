@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+
 use App\Models\Bus;
 use App\Models\BusCancelled;
 use App\Models\BusCancelledDate;
@@ -12,10 +13,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendOwnerCancelBusEmailJob;
 
-
 class BusCancelledRepository
 {
-    
     protected $busCancelled;
     protected $busCancelledDate;
     protected $bus;
@@ -23,7 +22,7 @@ class BusCancelledRepository
     protected $busStoppage;
     protected $location;
     protected $Booking;
-    public function __construct(BusCancelled $busCancelled,Bus $bus,BusOperator $busOperator,BusStoppage $busStoppage,Location $location,BusCancelledDate $busCancelledDate,Booking $Booking)
+    public function __construct(BusCancelled $busCancelled, Bus $bus, BusOperator $busOperator, BusStoppage $busStoppage, Location $location, BusCancelledDate $busCancelledDate, Booking $Booking)
     {
         $this->busCancelled = $busCancelled;
         $this->bus = $bus;
@@ -47,17 +46,18 @@ class BusCancelledRepository
 
     public function removeOldBusCancelledCronjob()
     {
-        $today=date('Y-m-d');
-        $checkdate =date('Y-m-d', strtotime($today. '-35 days'));
-        
-        $dltBusCancelDate=$this->busCancelledDate->where('created_at','<',$checkdate)->delete();;
-        if($dltBusCancelDate){
-        $dltData= $this->busCancelled->where('created_at','<',$checkdate)->delete();     
+        $today = date('Y-m-d');
+        $checkdate = date('Y-m-d', strtotime($today. '-35 days'));
+
+        $dltBusCancelDate = $this->busCancelledDate->where('created_at', '<', $checkdate)->delete();
+        ;
+        if ($dltBusCancelDate) {
+            $dltData = $this->busCancelled->where('created_at', '<', $checkdate)->delete();
         }
-        
-        
+
+
         $msg = $dltBusCancelDate." Record deleted from ".$checkdate." of bus cancel" ;
-        
+
         log::info($msg);
         return $msg;
 
@@ -74,9 +74,8 @@ class BusCancelledRepository
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = Config::get('constants.ALL_RECORDS');
         }
         $columnIndex_arr = $request->get('order');
         $columnName_arr = $request->get('columns');
@@ -89,46 +88,45 @@ class BusCancelledRepository
         $searchValue = $search_arr['value']; // Search value
 
         // Total records
-        $totalRecords=$this->busCancelled->whereNotIn('status', [2])->count();
-        
-        $totalRecordswithFilter=$this->busCancelled->with('bus.busOperator','bus.busstoppage')  
-        ->whereHas('bus', function ($query) use ($searchValue){
-               $query->where('name', 'like', '%' .$searchValue . '%');               
-           })->whereNotIn('status', [2])->count();
-       // Fetch records
-    
-       $busRecords =  $this->busCancelled->with('busCancelledDate')->with('bus.busOperator','bus.busstoppage')
-        ->orderBy($columnName,$columnSortOrder)
-        ->whereHas('bus', function ($query) use ($searchValue){
-            $query->where('name', 'like', '%' .$searchValue . '%');                   
-        })
-       ->skip($start)
-       ->take($rowperpage)
-       ->whereNotIn('status', [2])
-       ->get();
-       
+        $totalRecords = $this->busCancelled->whereNotIn('status', [2])->count();
+
+        $totalRecordswithFilter = $this->busCancelled->with('bus.busOperator', 'bus.busstoppage')
+        ->whereHas('bus', function ($query) use ($searchValue) {
+            $query->where('name', 'like', '%' .$searchValue . '%');
+        })->whereNotIn('status', [2])->count();
+        // Fetch records
+
+        $busRecords =  $this->busCancelled->with('busCancelledDate')->with('bus.busOperator', 'bus.busstoppage')
+         ->orderBy($columnName, $columnSortOrder)
+         ->whereHas('bus', function ($query) use ($searchValue) {
+             $query->where('name', 'like', '%' .$searchValue . '%');
+         })
+        ->skip($start)
+        ->take($rowperpage)
+        ->whereNotIn('status', [2])
+        ->get();
+
         $data_arr = array();
         $bus_stoppage = array();
         $cancel_dates = array();
-        foreach($busRecords as $key=>$busRecord)
-        {
-             $dateRecord = $busRecord->busCancelledDate;
-             $name = $busRecord->bus->name;
-             $name = $name." >> ".$busRecord->bus->bus_number;
-             $operatorName = $busRecord->bus->busOperator->operator_name;
-             $bStoppages = $busRecord->bus->busstoppage;
-                $data_arr[]=$busRecord->toArray();
-                $data_arr[$key]['name']=$name;
-                $data_arr[$key]['operatorName']=$operatorName;
-                $stoppageName="";   
-                $routesdata="";  
-                $cancel_dates = array();
-                foreach($dateRecord as $cdate){
-                    $cancelledDates = $cdate->cancelled_date; 
-                    $cancel_dates[] = array(date('j M Y ',strtotime($cancelledDates)));
-                }
-                $data_arr[$key]['cancelledDates']=$cancel_dates;
-            foreach($bStoppages as $bStoppage){                          
+        foreach ($busRecords as $key => $busRecord) {
+            $dateRecord = $busRecord->busCancelledDate;
+            $name = $busRecord->bus->name;
+            $name = $name." >> ".$busRecord->bus->bus_number;
+            $operatorName = $busRecord->bus->busOperator->operator_name;
+            $bStoppages = $busRecord->bus->busstoppage;
+            $data_arr[] = $busRecord->toArray();
+            $data_arr[$key]['name'] = $name;
+            $data_arr[$key]['operatorName'] = $operatorName;
+            $stoppageName = "";
+            $routesdata = "";
+            $cancel_dates = array();
+            foreach ($dateRecord as $cdate) {
+                $cancelledDates = $cdate->cancelled_date;
+                $cancel_dates[] = array(date('j M Y ', strtotime($cancelledDates)));
+            }
+            $data_arr[$key]['cancelledDates'] = $cancel_dates;
+            foreach ($bStoppages as $bStoppage) {
                 $sourceId = $bStoppage->source_id;
                 $destinationId = $bStoppage->destination_id;
                 $stoppageName = $this->location->whereIn('id', array($sourceId, $destinationId))->get('name');
@@ -137,15 +135,15 @@ class BusCancelledRepository
                     "destinationName" => $stoppageName,
                 );
                 $routesdata =  $stoppageName[0]['name']."-".$stoppageName[1]['name'];
-            } 
-            $data_arr[$key]['routes']=$routesdata;       
+            }
+            $data_arr[$key]['routes'] = $routesdata;
         }
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
+        );
         return ($response);
     }
 
@@ -154,110 +152,100 @@ class BusCancelledRepository
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
         $bus_id = $request['bus_id'] ;
-        $source_id= $request['source_id'];      
-        $destination_id= $request['destination_id'];      
-        $toDate= $request['toDate'];      
-        $fromDate= $request['fromDate'];      
-        $bus_operator_id= $request['bus_operator_id'];  
+        $source_id = $request['source_id'];
+        $destination_id = $request['destination_id'];
+        $toDate = $request['toDate'];
+        $fromDate = $request['fromDate'];
+        $bus_operator_id = $request['bus_operator_id'];
 
-        $data= $this->busCancelled->with('bus.busOperator','bus.busstoppage','busCancelledDate')
+        $data = $this->busCancelled->with('bus.busOperator', 'bus.busstoppage', 'busCancelledDate')
                                   ->with('bus.ticketPrice')
-                                  ->orderBy('id','DESC')
+                                  ->orderBy('id', 'DESC')
                                   ->whereNotIn('status', [2]);
 
-        if($request['USER_BUS_OPERATOR_ID']!="")
-        {
-            $data=$data->where('bus_operator_id',$request['USER_BUS_OPERATOR_ID']);
+        if ($request['USER_BUS_OPERATOR_ID'] != "") {
+            $data = $data->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);
         }
 
-        if($paginate=='all') 
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
-        if($bus_operator_id!= null)
-        {
-            $data = $data->where('bus_operator_id',$bus_operator_id);
+        if ($bus_operator_id != null) {
+            $data = $data->where('bus_operator_id', $bus_operator_id);
         }
 
-        if($bus_id!= null)
-        {
-            $data = $data->where('bus_id',$bus_id);
+        if ($bus_id != null) {
+            $data = $data->where('bus_id', $bus_id);
         }
 
-       
 
-        if($toDate!= null && $fromDate!=null)
-        {            
-            $dt =[];
-            $dt[1]= $fromDate ;
-            $dt[2]=$toDate;
-            if($fromDate==$toDate){
-                    $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
-                            {$query->where('cancelled_date', $dt[1]);
-                            });
-            }else{
-                $data = $data->whereHas('busCancelledDate', function ($query) use ($dt )
-                            {$query->whereBetween('cancelled_date', [$dt[1], $dt[2]]);
-                            });
-            }            
-        }
-        else
-        {
+
+        if ($toDate != null && $fromDate != null) {
+            $dt = [];
+            $dt[1] = $fromDate ;
+            $dt[2] = $toDate;
+            if ($fromDate == $toDate) {
+                $data = $data->whereHas('busCancelledDate', function ($query) use ($dt) {
+                    $query->where('cancelled_date', $dt[1]);
+                });
+            } else {
+                $data = $data->whereHas('busCancelledDate', function ($query) use ($dt) {
+                    $query->whereBetween('cancelled_date', [$dt[1], $dt[2]]);
+                });
+            }
+        } else {
             $c_dt = [];
             $c_dt[1] = date('Y-m-d');
-            $data = $data->whereHas('busCancelledDate', function ($query) use ($c_dt)
-                                    {$query->where('cancelled_date', $c_dt[1]);
-                                    });
+            $data = $data->whereHas('busCancelledDate', function ($query) use ($c_dt) {
+                $query->where('cancelled_date', $c_dt[1]);
+            });
         }
 
-        if($source_id!=null && $destination_id!=null )
-        {
+        if ($source_id != null && $destination_id != null) {
             $loc = [];
-            $loc[1]=$source_id;
-            $loc[2]=$destination_id;
+            $loc[1] = $source_id;
+            $loc[2] = $destination_id;
 
-             $data = $data->whereHas('bus.ticketPrice', function ($query) use ($loc)
-                         {$query->where('source_id',$loc[1] )
-                                ->where('destination_id',$loc[2] );});
-            
-        } 
-        
-        $data = $data->paginate($paginate);        
-        if($data){
-            foreach($data as $v){ 
-               foreach($v->bus->ticketPrice as $k => $a)
-               {             
+            $data = $data->whereHas('bus.ticketPrice', function ($query) use ($loc) {
+                $query->where('source_id', $loc[1])
+                       ->where('destination_id', $loc[2]);
+            });
 
-                $stoppages['source'][$k]=$this->location->where('id', $a->source_id)->get();
-                $stoppages['destination'][$k]=$this->location->where('id', $a->destination_id)->get(); 
-            }
-            $v['from_location']=$stoppages['source'][0];
-            $v['to_location']=$stoppages['destination'][0];
         }
-    }
+
+        $data = $data->paginate($paginate);
+        if ($data) {
+            foreach ($data as $v) {
+                foreach ($v->bus->ticketPrice as $k => $a) {
+
+                    $stoppages['source'][$k] = $this->location->where('id', $a->source_id)->get();
+                    $stoppages['destination'][$k] = $this->location->where('id', $a->destination_id)->get();
+                }
+                $v['from_location'] = $stoppages['source'][0];
+                $v['to_location'] = $stoppages['destination'][0];
+            }
+        }
 
 
-        
+
 
 
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
-           );   
-           return $response;  
+           );
+        return $response;
     }
 
     public function getByBusId($id)
     {
         $data =  $this->busCancelled
-                      ->with(['busCancelledDate'=> function($b){$b->orderBy('id','DESC')->limit(30);}])
-                      ->whereHas('busCancelledDate', function ($query) {$query->where('cancelled_date','>=',date('Y-m-d') );})
-                      ->where('bus_id', $id)->get();                    
+                      ->with(['busCancelledDate' => function ($b) {$b->orderBy('id', 'DESC')->limit(30);}])
+                      ->whereHas('busCancelledDate', function ($query) {$query->where('cancelled_date', '>=', date('Y-m-d'));})
+                      ->where('bus_id', $id)->get();
         return $data;
     }
 
@@ -267,14 +255,13 @@ class BusCancelledRepository
      * @param $data
      * @return busCancelled
      */
-   
+
     public function save($data)
-    { 
+    {
         $buses = $data['buses'];
-        foreach ($buses as $bus)         
-        {          
+        foreach ($buses as $bus) {
             $this->busCancelled = new BusCancelled();
-            $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
+            $this->busCancelled->bus_operator_id = $data['bus_operator_id'];
             $this->busCancelled->created_by = $data['cancelled_by'];
             $this->busCancelled->status = 1;
             $this->busCancelled->month = $data['month'];
@@ -282,85 +269,76 @@ class BusCancelledRepository
             $this->busCancelled->reason = $data['reason'];
             $this->busCancelled->other_reson = $data['other_reson'];
             $this->busCancelled->bus_id = $bus['bus_id'];
-           // $this->busCancelled = (Object) $bus;
+            // $this->busCancelled = (Object) $bus;
             $this->busCancelled->save();
 
             $busCanceledDateModels = [];
-            foreach ($bus['dateLists'] as $busDateLists)   
-            {
-                    if(isset($busDateLists['datechecked']) && $busDateLists['datechecked'] == true)
-                    {
-                        $busCanceledDate = new BusCancelledDate();
-                        $busCanceledDate->cancelled_date = date('Y-m-d',strtotime($busDateLists['entryDates'])) ;
-                        $busCanceledDate->created_by = $data['cancelled_by'] ;
-                        $busCanceledDateModels[] =  $busCanceledDate;
-                    }
+            foreach ($bus['dateLists'] as $busDateLists) {
+                if (isset($busDateLists['datechecked']) && $busDateLists['datechecked'] == true) {
+                    $busCanceledDate = new BusCancelledDate();
+                    $busCanceledDate->cancelled_date = date('Y-m-d', strtotime($busDateLists['entryDates'])) ;
+                    $busCanceledDate->created_by = $data['cancelled_by'] ;
+                    $busCanceledDateModels[] =  $busCanceledDate;
+                }
 
             }
-            
+
             $this->busCancelled->busCancelledDate()->saveMany($busCanceledDateModels);
         }
         return $buses;
-       
-    } 
+
+    }
 
     public function busCancelledbyowner($data)
-    { 
+    {
         // log::info($data->buses[0]['busName']);
-   
+
         $buses = $data['buses'];
-        $message=[];
-        $dates="";
-        foreach ($buses as $k) 
-        {
-            foreach ($k['dateLists'] as $i => $DateLists)   
-            {
-                if(isset($DateLists['datechecked']) && $DateLists['datechecked'] == true)
-                {
-                     $dates=$dates.date("Y-m-d", strtotime($DateLists['entryDates'])).',' ;
+        $message = [];
+        $dates = "";
+        foreach ($buses as $k) {
+            foreach ($k['dateLists'] as $i => $DateLists) {
+                if (isset($DateLists['datechecked']) && $DateLists['datechecked'] == true) {
+                    $dates = $dates.date("Y-m-d", strtotime($DateLists['entryDates'])).',' ;
                 }
             }
         }
-      
 
-        foreach ($buses as $k) 
-        {
-            foreach ($k['dateLists'] as $i => $DateLists)   
-            {
-                if(isset($DateLists['datechecked']) && $DateLists['datechecked'] == true)
-                {
+
+        foreach ($buses as $k) {
+            foreach ($k['dateLists'] as $i => $DateLists) {
+                if (isset($DateLists['datechecked']) && $DateLists['datechecked'] == true) {
                     $newDt = date("Y-m-d", strtotime($DateLists['entryDates']));
-                    $checkDt = $this->Booking->where('bus_id',$k['bus_id'])
-                                        ->where('journey_dt',$newDt)
-                                        ->where('status',1)
+                    $checkDt = $this->Booking->where('bus_id', $k['bus_id'])
+                                        ->where('journey_dt', $newDt)
+                                        ->where('status', 1)
                                         ->get();
 
-                  if(count($checkDt) > 0){
-                    $message['msg'] = 'Some seat already booked on';
-                    $message['dt'] = $DateLists['entryDates'];
+                    if (count($checkDt) > 0) {
+                        $message['msg'] = 'Some seat already booked on';
+                        $message['dt'] = $DateLists['entryDates'];
 
-                   $to_user = 'support@odbus.in';
-                   $subject = "Owner Trying To Cancel This Bus";
-                   $agentData= [
-                            'month'=>$data->month,
-                            'year'=>$data->year,
-                            'cancelled_by'=> $data->cancelled_by,
-                            'reason'=> $data->reason,
-                            'other_reson'=> $data->other_reson,
-                            'busName'=> $data->buses[0]['busName'],
-                            'dates'=> $dates,
-                           ] ;
-                    SendOwnerCancelBusEmailJob::dispatch($to_user, $subject, $agentData);
-                    return $message;
-                  }
+                        $to_user = 'support@odbus.in';
+                        $subject = "Owner Trying To Cancel This Bus";
+                        $agentData = [
+                                 'month' => $data->month,
+                                 'year' => $data->year,
+                                 'cancelled_by' => $data->cancelled_by,
+                                 'reason' => $data->reason,
+                                 'other_reson' => $data->other_reson,
+                                 'busName' => $data->buses[0]['busName'],
+                                 'dates' => $dates,
+                                ] ;
+                        SendOwnerCancelBusEmailJob::dispatch($to_user, $subject, $agentData);
+                        return $message;
+                    }
                 }
             }
         }
-     
-        foreach ($buses as $bus)         
-        {          
+
+        foreach ($buses as $bus) {
             $this->busCancelled = new BusCancelled();
-            $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
+            $this->busCancelled->bus_operator_id = $data['bus_operator_id'];
             $this->busCancelled->created_by = $data['cancelled_by'];
             $this->busCancelled->status = 1;
             $this->busCancelled->month = $data['month'];
@@ -371,25 +349,23 @@ class BusCancelledRepository
             $this->busCancelled->save();
 
             $busCanceledDateModels = [];
-            foreach ($bus['dateLists'] as $busDateLists)   
-            {
-                    if(isset($busDateLists['datechecked']) && $busDateLists['datechecked'] == true)
-                    {
-                        $busCanceledDate = new BusCancelledDate();
-                        $busCanceledDate->cancelled_date = date('Y-m-d',strtotime($busDateLists['entryDates'])) ;
-                        $busCanceledDate->created_by = $data['cancelled_by'] ;
-                        $busCanceledDateModels[] =  $busCanceledDate;
-                    }
+            foreach ($bus['dateLists'] as $busDateLists) {
+                if (isset($busDateLists['datechecked']) && $busDateLists['datechecked'] == true) {
+                    $busCanceledDate = new BusCancelledDate();
+                    $busCanceledDate->cancelled_date = date('Y-m-d', strtotime($busDateLists['entryDates'])) ;
+                    $busCanceledDate->created_by = $data['cancelled_by'] ;
+                    $busCanceledDateModels[] =  $busCanceledDate;
+                }
 
             }
-            
+
             $this->busCancelled->busCancelledDate()->saveMany($busCanceledDateModels);
             $message['msg']  = 'Bus Cancellation Record Added';
         }
         return $message;
-     
-       
-       
+
+
+
     }
     /**
      * Update Cancelled Bus
@@ -399,35 +375,32 @@ class BusCancelledRepository
      *///////
     public function update($data, $id)
     {
-            $buses = $data['buses'];
-            foreach ($buses as $bus)         
-            { 
-                $this->busCancelled = $this->busCancelled->find($id);
-        
-                $this->busCancelled->bus_operator_id = $data['bus_operator_id'];   
-                $this->busCancelled->created_by = $data['cancelled_by'];
-                $this->busCancelled->status = 1;
-                $this->busCancelled->reason = $data['reason'];
-                $this->busCancelled->other_reson = $data['other_reson'];
-                $this->busCancelled->bus_id = $bus['bus_id'];
-                $this->busCancelled->update();
-                $this->busCancelledDate->where('bus_cancelled_id',$id)->delete();
-                $busCanceledDateModels = [];
-                foreach ($bus['dateLists'] as $busDateLists)   
-                {
-                    if($busDateLists['datechecked'])
-                    {
-                        $busCanceledDate = new BusCancelledDate();
-                        $busCanceledDate->cancelled_date = date('Y-m-d',strtotime($busDateLists['entryDates'])) ;
-                        $busCanceledDate->created_by = $data['cancelled_by'] ;
-                        $busCanceledDateModels[] =  $busCanceledDate;
-                    }
+        $buses = $data['buses'];
+        foreach ($buses as $bus) {
+            $this->busCancelled = $this->busCancelled->find($id);
+
+            $this->busCancelled->bus_operator_id = $data['bus_operator_id'];
+            $this->busCancelled->created_by = $data['cancelled_by'];
+            $this->busCancelled->status = 1;
+            $this->busCancelled->reason = $data['reason'];
+            $this->busCancelled->other_reson = $data['other_reson'];
+            $this->busCancelled->bus_id = $bus['bus_id'];
+            $this->busCancelled->update();
+            $this->busCancelledDate->where('bus_cancelled_id', $id)->delete();
+            $busCanceledDateModels = [];
+            foreach ($bus['dateLists'] as $busDateLists) {
+                if ($busDateLists['datechecked']) {
+                    $busCanceledDate = new BusCancelledDate();
+                    $busCanceledDate->cancelled_date = date('Y-m-d', strtotime($busDateLists['entryDates'])) ;
+                    $busCanceledDate->created_by = $data['cancelled_by'] ;
+                    $busCanceledDateModels[] =  $busCanceledDate;
                 }
-                $this->busCancelled->busCancelledDate()->saveMany($busCanceledDateModels);
             }
-        
-        
-            return $buses;
+            $this->busCancelled->busCancelledDate()->saveMany($busCanceledDateModels);
+        }
+
+
+        return $buses;
 
     }
     /**
@@ -438,10 +411,9 @@ class BusCancelledRepository
     */
     public function delete($id)
     {
-        if($this->busCancelled->where('id', $id)->exists()) 
-        {
+        if ($this->busCancelled->where('id', $id)->exists()) {
             $this->busCancelledDate->where("bus_cancelled_id", $id)->delete();
-            $buscancel = $this->busCancelled->find($id); 
+            $buscancel = $this->busCancelled->find($id);
             $buscancel->status = 2;
             $buscancel->update();
             return $buscancel;
@@ -451,13 +423,13 @@ class BusCancelledRepository
     public function changeStatus($id)
     {
         $buscancel = $this->busCancelled->find($id);
-        if($buscancel->status==0){
+        if ($buscancel->status == 0) {
             $buscancel->status = 1;
-        }elseif($buscancel->status==1){
+        } elseif ($buscancel->status == 1) {
             $buscancel->status = 0;
         }
         $buscancel->update();
         return $buscancel;
     }
-    
+
 }

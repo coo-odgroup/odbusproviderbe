@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use App\Models\Bus;
 
 class BusSlots extends Model
@@ -14,6 +13,6 @@ class BusSlots extends Model
     protected $fillable = ['bus_id', 'name','type','created_by'];
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
 }

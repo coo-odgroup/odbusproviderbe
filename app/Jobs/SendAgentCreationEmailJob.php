@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 class SendAgentCreationEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -30,13 +32,13 @@ class SendAgentCreationEmailJob implements ShouldQueue
     protected $loginUrl;
     public function __construct($to, $subject, $req)
     {
-        
+
         $this->to = $to;
         $this->subject = $subject;
-        $this->userName=$req['userName'];
-        $this->userEmail=$req['userEmail'];
-        $this->userPassword=$req['userPassword'];
-        $this->loginUrl=$req['loginUrl'];
+        $this->userName = $req['userName'];
+        $this->userEmail = $req['userEmail'];
+        $this->userPassword = $req['userPassword'];
+        $this->loginUrl = $req['loginUrl'];
 
     }
 
@@ -47,14 +49,14 @@ class SendAgentCreationEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'userName'=>$this->userName,
+        $data = [
+            'userName' => $this->userName,
             'userEmail' => $this->userEmail,
             'userPassword' => $this->userPassword,
             'loginUrl' => $this->loginUrl
-        ]; 
-        Mail::send('sendAgentCreationEmail', $data, function ($messageNew) {              
-            $messageNew->from(config('mail.contact.address'))           
+        ];
+        Mail::send('sendAgentCreationEmail', $data, function ($messageNew) {
+            $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
         });

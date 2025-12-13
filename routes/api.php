@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -58,6 +59,9 @@ use App\Http\Controllers\OdbusChargesController;
 use App\Http\Controllers\ExtraSeatBlockController;
 use App\Http\Controllers\AgentReportController;
 use App\Http\Controllers\OffersController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ChartController;
+
 
 
 use App\Http\Controllers\DashboardController;
@@ -131,10 +135,24 @@ use App\Http\Controllers\ApiUserCompleteReportController;
 use App\Http\Controllers\ApiUserCancelTicketReportController;
 use App\Http\Controllers\ApiUserManageOperatorController;
 
+// Scheduler
+use App\Http\Controllers\SchedulerController;
+// Api Log Report
+use App\Http\Controllers\ApiLogReportController;
 
-Route::post('/emailtest', [TestEmailController::class,'emailtest']);
+//AppNotification
+use App\Http\Controllers\AppNotificationController;
+use App\Http\Controllers\NotificationMasterController;
 
-	Route::middleware('auth:api')->group( function () {
+
+Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
+Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);
+
+
+
+Route::post('/emailtest', [TestEmailController::class, 'emailtest']);
+
+Route::middleware('auth:api')->group(function () {
     Route::get('/userAuth', [UserController::class, 'userDetail']);
     Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
@@ -143,68 +161,68 @@ Route::post('/assocAssignAgentreport', [AssocAssignReportController::class, 'get
 Route::post('/assocAssignBusreport', [AssocAssignReportController::class, 'getAssignBusData']);
 Route::post('/assocAssignOperatorreport', [AssocAssignReportController::class, 'getAssignOperatorData']);
 
-            ///////////////// Api Client ////////////////////
-Route::get('/apiClientWalletBalance/{id}',[ApiClientWalletController::class,'agentWalletBalance']);
-Route::post('/apiClientWallet',[ApiClientWalletController::class,'addAgentWallet']);
-Route::post('/apiClientWalletData',[ApiClientWalletController::class,'getData']);
-Route::post('/apiClientWalletAllData',[ApiClientWalletController::class,'getAllData']);
-Route::post('/apiClientWalletBalance',[ApiClientWalletController::class,'agentWalletBalancedetails']);
-Route::post('/apiClientAllTransaction',[ApiClientWalletController::class,'agentAllTransaction']);
-Route::put('/changeapiClientWalletStatus/{id}',[ApiClientWalletController::class,'changeStatus']);
-Route::put('/declineWlletReqStatus/{id}',[ApiClientWalletController::class,'declineWlletReqStatus']);
-Route::post('/allTransactionData',[ApiClientWalletController::class,'allTransactionData']);
-Route::post('/clientTransByAdmin',[ApiClientWalletController::class,'clientTransByAdmin']);
+///////////////// Api Client ////////////////////
+Route::get('/apiClientWalletBalance/{id}', [ApiClientWalletController::class, 'agentWalletBalance']);
+Route::post('/apiClientWallet', [ApiClientWalletController::class, 'addAgentWallet']);
+Route::post('/apiClientWalletData', [ApiClientWalletController::class, 'getData']);
+Route::post('/apiClientWalletAllData', [ApiClientWalletController::class, 'getAllData']);
+Route::post('/apiClientWalletBalance', [ApiClientWalletController::class, 'agentWalletBalancedetails']);
+Route::post('/apiClientAllTransaction', [ApiClientWalletController::class, 'agentAllTransaction']);
+Route::put('/changeapiClientWalletStatus/{id}', [ApiClientWalletController::class, 'changeStatus']);
+Route::put('/declineWlletReqStatus/{id}', [ApiClientWalletController::class, 'declineWlletReqStatus']);
+Route::post('/allTransactionData', [ApiClientWalletController::class, 'allTransactionData']);
+Route::post('/clientTransByAdmin', [ApiClientWalletController::class, 'clientTransByAdmin']);
 
-Route::post('/clientTransUpdateByAdmin',[ApiClientWalletController::class,'clientTransUpdateByAdmin']);
+Route::post('/clientTransUpdateByAdmin', [ApiClientWalletController::class, 'clientTransUpdateByAdmin']);
 
-Route::post('/apiClientTotalTransactions',[ApiClientWalletController::class,'apiClientTotalTransactions']);
+Route::post('/apiClientTotalTransactions', [ApiClientWalletController::class, 'apiClientTotalTransactions']);
 
 
 // api client report
-Route::post('/apiclientbookingreport',[ApiClientReportController::class,'getAllData']);
-Route::post('/apiclientcancelreport',[ApiClientReportController::class,'getAllCancelData']);
-Route::post('/datewiseroute',[ApiClientReportController::class,'datewiseroute']);
+Route::post('/apiclientbookingreport', [ApiClientReportController::class, 'getAllData']);
+Route::post('/apiclientcancelreport', [ApiClientReportController::class, 'getAllCancelData']);
+Route::post('/datewiseroute', [ApiClientReportController::class, 'datewiseroute']);
 ///////////////////////api client issue ///////////////////////
-Route::post('/apiclientissuetype',[ApiClientIssueController::class,'apiclientissuetype']);
-Route::post('/apiclientissuesubtype',[ApiClientIssueController::class,'apiclientissuesubtype']);
-Route::post('/addapiclientissue',[ApiClientIssueController::class,'addapiclientissue']);
-Route::post('/apiclientissuedata',[ApiClientIssueController::class,'apiclientissuedata']);
-Route::post('/allapiclientissuedata',[ApiClientIssueController::class,'allapiclientissuedata']);
-Route::post('/apiclientissuestatue',[ApiClientIssueController::class,'apiclientissuestatue']);
+Route::post('/apiclientissuetype', [ApiClientIssueController::class, 'apiclientissuetype']);
+Route::post('/apiclientissuesubtype', [ApiClientIssueController::class, 'apiclientissuesubtype']);
+Route::post('/addapiclientissue', [ApiClientIssueController::class, 'addapiclientissue']);
+Route::post('/apiclientissuedata', [ApiClientIssueController::class, 'apiclientissuedata']);
+Route::post('/allapiclientissuedata', [ApiClientIssueController::class, 'allapiclientissuedata']);
+Route::post('/apiclientissuestatue', [ApiClientIssueController::class, 'apiclientissuestatue']);
 
 
 //Ticket Information 
 
-Route::post('/getPnrDetailsForSms',[TicketInformationController::class,'getPnrDetailsForSms']);
-Route::post('/getApiPnrDetails',[TicketInformationController::class,'getApiPnrDetails']);
-Route::post('/getpnrdetails',[TicketInformationController::class,'getpnrdetails']);
-Route::post('/apicancelticket',[TicketInformationController::class,'apicancelticket']);
-Route::post('/cancelticket',[TicketInformationController::class,'cancelticket']);
-Route::post('/cancelticketdata',[TicketInformationController::class,'cancelticketdata']);
-Route::post('/adjustticket',[TicketInformationController::class,'adjustticket']);
-Route::post('/adjustticketdata',[TicketInformationController::class,'adjustticketdata']);
+Route::post('/getPnrDetailsForSms', [TicketInformationController::class, 'getPnrDetailsForSms']);
+Route::post('/getApiPnrDetails', [TicketInformationController::class, 'getApiPnrDetails']);
+Route::post('/getpnrdetails', [TicketInformationController::class, 'getpnrdetails']);
+Route::post('/apicancelticket', [TicketInformationController::class, 'apicancelticket']);
+Route::post('/cancelticket', [TicketInformationController::class, 'cancelticket']);
+Route::post('/cancelticketdata', [TicketInformationController::class, 'cancelticketdata']);
+Route::post('/adjustticket', [TicketInformationController::class, 'adjustticket']);
+Route::post('/adjustticketdata', [TicketInformationController::class, 'adjustticketdata']);
 
 //Added on 29th April, -- Chakra
-Route::post('/getDetailsSms',[TicketInformationController::class,'getDetailsSms']);
-Route::post('/getBookingID',[TicketInformationController::class,'getBookingID']);
-Route::post('/getEmailID',[TicketInformationController::class,'getEmailID']);
-Route::post('/save_customSMS',[TicketInformationController::class,'save_customSMS']);
-Route::post('/sms_log',[TicketInformationController::class,'sms_log']);// added on 7-sep-2025
-Route::post('/GetCancelSmsToCustomer',[TicketInformationController::class,'GetCancelSmsToCustomer']);
-Route::post('/GetCancelSmsToCMO',[TicketInformationController::class,'GetCancelSmsToCMO']);
-Route::post('/save_CancelcustomSMSToCustomer',[TicketInformationController::class,'save_CancelcustomSMSToCustomer']);
-Route::post('/save_CancelcustomSMSToCMO',[TicketInformationController::class,'save_CancelcustomSMSToCMO']);
-Route::post('/sendEmailToBooking',[TicketInformationController::class,'sendEmailToBooking']);
-Route::post('/sendEmailToCustomer',[TicketInformationController::class,'sendEmailToCustomer']);
-Route::post('/sendCancelEmailToSupport',[TicketInformationController::class,'sendCancelEmailToSupport']);
+Route::post('/getDetailsSms', [TicketInformationController::class, 'getDetailsSms']);
+Route::post('/getBookingID', [TicketInformationController::class, 'getBookingID']);
+Route::post('/getEmailID', [TicketInformationController::class, 'getEmailID']);
+Route::post('/save_customSMS', [TicketInformationController::class, 'save_customSMS']);
+Route::post('/sms_log', [TicketInformationController::class, 'sms_log']); // added on 7-sep-2025
+Route::post('/GetCancelSmsToCustomer', [TicketInformationController::class, 'GetCancelSmsToCustomer']);
+Route::post('/GetCancelSmsToCMO', [TicketInformationController::class, 'GetCancelSmsToCMO']);
+Route::post('/save_CancelcustomSMSToCustomer', [TicketInformationController::class, 'save_CancelcustomSMSToCustomer']);
+Route::post('/save_CancelcustomSMSToCMO', [TicketInformationController::class, 'save_CancelcustomSMSToCMO']);
+Route::post('/sendEmailToBooking', [TicketInformationController::class, 'sendEmailToBooking']);
+Route::post('/sendEmailToCustomer', [TicketInformationController::class, 'sendEmailToCustomer']);
+Route::post('/sendCancelEmailToSupport', [TicketInformationController::class, 'sendCancelEmailToSupport']);
 
 
 
-Route::post('/failedticketadjust',[TicketInformationController::class,'failedticketadjust']);
-Route::post('/failedticketadjustdata',[TicketInformationController::class,'failedticketadjustdata']);
+Route::post('/failedticketadjust', [TicketInformationController::class, 'failedticketadjust']);
+Route::post('/failedticketadjustdata', [TicketInformationController::class, 'failedticketadjustdata']);
 
 //Extra Seat Block
-Route::post('/extraSeatBlock',[ExtraSeatBlockController::class,'addExtraSeatBlock']);
+Route::post('/extraSeatBlock', [ExtraSeatBlockController::class, 'addExtraSeatBlock']);
 Route::post('/deleteExtraSeat', [ExtraSeatBlockController::class, 'deleteExtraSeatBlock']);
 Route::post('/extraSeatBlockData', [ExtraSeatBlockController::class, 'extraSeatBlockData']);
 Route::post('/addExtraSeatBlockByOperator', [ExtraSeatBlockController::class, 'addExtraSeatBlockByOperator']);
@@ -230,70 +248,70 @@ Route::post('/AgentFeeData', [AgentFeeController::class, 'getAllAgentFeeData']);
 Route::get('/AgentFee', [AgentFeeController::class, 'getAllAgentFee']);
 Route::put('/AgentFee/{id}', [AgentFeeController::class, 'updateAgentFee']);
 Route::delete('/AgentFee/{id}', [AgentFeeController::class, 'deleteAgentFee']);
-Route::get('/AgentFee/{id}', [AgentFeeController::class, 'getAgentFee']); 
+Route::get('/AgentFee/{id}', [AgentFeeController::class, 'getAgentFee']);
 // Agent wallet
 
-Route::get('/agentWalletBalance/{id}',[AgentWalletController::class,'agentWalletBalance']);
-Route::post('/agentWallet',[AgentWalletController::class,'addAgentWallet']);
-Route::post('/agentTransByAdmin',[AgentWalletController::class,'agentTransByAdmin']);
-Route::post('/agentWalletData',[AgentWalletController::class,'getData']);
-Route::post('/agentWalletAllData',[AgentWalletController::class,'getAllData']);
-Route::post('/agentWalletBalance',[AgentWalletController::class,'agentWalletBalancedetails']);
-Route::post('/agentAllTransaction',[AgentWalletController::class,'agentAllTransaction']);
-Route::put('/changeAgentWalletStatus/{id}',[AgentWalletController::class,'changeStatus']);
-Route::put('/declineWlletReqStatus/{id}',[AgentWalletController::class,'declineWlletReqStatus']);
+Route::get('/agentWalletBalance/{id}', [AgentWalletController::class, 'agentWalletBalance']);
+Route::post('/agentWallet', [AgentWalletController::class, 'addAgentWallet']);
+Route::post('/agentTransByAdmin', [AgentWalletController::class, 'agentTransByAdmin']);
+Route::post('/agentWalletData', [AgentWalletController::class, 'getData']);
+Route::post('/agentWalletAllData', [AgentWalletController::class, 'getAllData']);
+Route::post('/agentWalletBalance', [AgentWalletController::class, 'agentWalletBalancedetails']);
+Route::post('/agentAllTransaction', [AgentWalletController::class, 'agentAllTransaction']);
+Route::put('/changeAgentWalletStatus/{id}', [AgentWalletController::class, 'changeStatus']);
+Route::put('/declineWlletReqStatus/{id}', [AgentWalletController::class, 'declineWlletReqStatus']);
 
 
 //Agent Notification
-Route::post('/agentnotification',[AgentNotificationController::class,'getData']);
-Route::post('/addPushNotification',[AgentNotificationController::class,'addNotification']);
-Route::post('/allPushNotification',[AgentNotificationController::class,'allPushNotification']);
-Route::delete('/deletePushNotification/{id}',[AgentNotificationController::class,'deleteNotification']);
+Route::post('/agentnotification', [AgentNotificationController::class, 'getData']);
+Route::post('/addPushNotification', [AgentNotificationController::class, 'addNotification']);
+Route::post('/allPushNotification', [AgentNotificationController::class, 'allPushNotification']);
+Route::delete('/deletePushNotification/{id}', [AgentNotificationController::class, 'deleteNotification']);
 
 // Agent Report 
-	
-Route::post('/agentcompletereport',[AgentCompleteReportController::class,'getalldata']);
-Route::post('/agentcommissionreport',[AgentCommissionReportController::class,'getalldata']);
-Route::post('/agentcancelticketreport',[AgentCancelTicketReportController::class,'getalldata']);
-Route::post('/agentwalletreport',[AgentWalletReportController::class,'getalldata']);
-Route::get('/agentcommissionslab',[AgentCommissionSlabController::class,'agentcommissionslab']);
-Route::get('/customercommissionslab',[AgentCommissionSlabController::class,'customercommissionslab']);
+
+Route::post('/agentcompletereport', [AgentCompleteReportController::class, 'getalldata']);
+Route::post('/agentcommissionreport', [AgentCommissionReportController::class, 'getalldata']);
+Route::post('/agentcancelticketreport', [AgentCancelTicketReportController::class, 'getalldata']);
+Route::post('/agentwalletreport', [AgentWalletReportController::class, 'getalldata']);
+Route::get('/agentcommissionslab', [AgentCommissionSlabController::class, 'agentcommissionslab']);
+Route::get('/customercommissionslab', [AgentCommissionSlabController::class, 'customercommissionslab']);
 
 
 ////////////////////////////Agent End//////////////////////////////////////////
 
-Route::post('socialmediaData',[SocialMediaController::class,'getAllsocialmedia']);
-Route::post('socialmedia',[SocialMediaController::class,'addsocialmedia']);
-Route::put('socialmedia/{id}',[SocialMediaController::class,'updatesocialmedia']);
+Route::post('socialmediaData', [SocialMediaController::class, 'getAllsocialmedia']);
+Route::post('socialmedia', [SocialMediaController::class, 'addsocialmedia']);
+Route::put('socialmedia/{id}', [SocialMediaController::class, 'updatesocialmedia']);
 Route::delete('socialmedia/{id}', [SocialMediaController::class, 'deletesocialmedia']);
 Route::put('/changeStatussocialmedia/{id}', [SocialMediaController::class, 'changeStatus']);
 
 //Seo Setting
-Route::get('/seosetting',[SeoSettingController::class,'getAllseosetting']);
-Route::post('seosetting',[SeoSettingController::class,'addseosetting']);
-Route::put('seosetting/{id}',[SeoSettingController::class,'updateseosetting']);
-Route::put('changeStatusseosetting/{id}',[SeoSettingController::class,'changeStatusseosetting']);
+Route::get('/seosetting', [SeoSettingController::class, 'getAllseosetting']);
+Route::post('seosetting', [SeoSettingController::class, 'addseosetting']);
+Route::put('seosetting/{id}', [SeoSettingController::class, 'updateseosetting']);
+Route::put('changeStatusseosetting/{id}', [SeoSettingController::class, 'changeStatusseosetting']);
 Route::delete('seosetting/{id}', [SeoSettingController::class, 'deleteseosetting']);
-Route::post('seosettingData',[SeoSettingController::class,'seosettingData']);
+Route::post('seosettingData', [SeoSettingController::class, 'seosettingData']);
 
 
 Route::post('/BusData', [BusController::class, 'BusData']);
 Route::get('/busDisplayInfo', [BusController::class, 'busDisplayInfo']);
 
 
-Route::post('/dashboarddata',[DashboardController::class,'getAll']);
-Route::post('/agentdashboarddata',[DashboardController::class,'getAllAgentData']);
-Route::post('/toproutedata',[DashboardController::class,'getRoute']);
-Route::get('/operatordata',[DashboardController::class,'getOperator']);
-Route::get('/ticketstaticsdata',[DashboardController::class,'getticketstatics']);
-Route::get('/bookingbydevicedata',[DashboardController::class,'getbookingbydevice']);
-Route::post('/pnrstaticsdata',[DashboardController::class,'getpnrstatics']);
+Route::post('/dashboarddata', [DashboardController::class, 'getAll']);
+Route::post('/agentdashboarddata', [DashboardController::class, 'getAllAgentData']);
+Route::post('/toproutedata', [DashboardController::class, 'getRoute']);
+Route::get('/operatordata', [DashboardController::class, 'getOperator']);
+Route::get('/ticketstaticsdata', [DashboardController::class, 'getticketstatics']);
+Route::get('/bookingbydevicedata', [DashboardController::class, 'getbookingbydevice']);
+Route::post('/pnrstaticsdata', [DashboardController::class, 'getpnrstatics']);
 
 //Route::middleware(['api'])->group(function ($router) {
 
-    //Route::get('me', 'AuthController@me')->middleware('log.route');
-    
-Route::post('/seatsBus',[BusController::class,'seatsBus']);
+//Route::get('me', 'AuthController@me')->middleware('log.route');
+
+Route::post('/seatsBus', [BusController::class, 'seatsBus']);
 // Route::get('/user/getAllUser', [UserController::class, 'getAllUser']);
 Route::get('/user', [UserController::class, 'getAllUser'])->middleware('log.route');
 Route::post('/user', [UserController::class, 'createUser'])->middleware('log.route');
@@ -316,45 +334,45 @@ Route::put('/changeStatusBusSitting/{id}', [BusSittingController::class, 'change
 
 //Booking Seized
 
-Route::get('/bookingseized',[BookingSeizedController::class,'getAllseized']);
-Route::get('/bookingseizedById/{id}',[BookingSeizedController::class,'bookingseizedById']);
-Route::post('/bookingseized',[BookingSeizedController::class,'saveSeized']);
-Route::post('/bookingseizedData',[BookingSeizedController::class,'bookingseizedData']);
-Route::delete('/deletebookingseized/{id}',[BookingSeizedController::class,'deletebookingseized']);
+Route::get('/bookingseized', [BookingSeizedController::class, 'getAllseized']);
+Route::get('/bookingseizedById/{id}', [BookingSeizedController::class, 'bookingseizedById']);
+Route::post('/bookingseized', [BookingSeizedController::class, 'saveSeized']);
+Route::post('/bookingseizedData', [BookingSeizedController::class, 'bookingseizedData']);
+Route::delete('/deletebookingseized/{id}', [BookingSeizedController::class, 'deletebookingseized']);
 Route::put('/changebookingseizedStatus/{id}', [BookingSeizedController::class, 'changeStatus']);
 
 
 
 ///SEATOPEN///
 
-Route::get('/seatopen',[SeatOpenController::class,'getAllseatopen']);
-Route::post('/seatopen',[SeatOpenController::class,'addseatopen']);
-Route::put('/seatopen/{id}',[SeatOpenController::class,'updateseatopen']);
+Route::get('/seatopen', [SeatOpenController::class, 'getAllseatopen']);
+Route::post('/seatopen', [SeatOpenController::class, 'addseatopen']);
+Route::put('/seatopen/{id}', [SeatOpenController::class, 'updateseatopen']);
 Route::post('/deleteSeatopen', [SeatOpenController::class, 'deleteseatopen']);
 Route::post('/getseatopenDT', [SeatOpenController::class, 'getseatopenDT']);
 Route::post('/seatopenData', [SeatOpenController::class, 'seatopenData']);
 Route::put('/changeseatopenStatus/{id}', [SeatOpenController::class, 'changeStatus']);
-Route::post('/alreadyOpen',[SeatOpenController::class,'alreadyOpen']);
+Route::post('/alreadyOpen', [SeatOpenController::class, 'alreadyOpen']);
 
-Route::post('/editseatOpen',[SeatOpenController::class,'editseatOpen']);
-Route::post('/updateSeatOpen',[SeatOpenController::class,'updateSeatOpenData']);
-Route::post('/addseatOpenByOperator',[SeatOpenController::class,'addseatOpenByOperator']);
+Route::post('/editseatOpen', [SeatOpenController::class, 'editseatOpen']);
+Route::post('/updateSeatOpen', [SeatOpenController::class, 'updateSeatOpenData']);
+Route::post('/addseatOpenByOperator', [SeatOpenController::class, 'addseatOpenByOperator']);
 
 
 ////////////SEAT BLOCK//////
-Route::get('/seatblock',[SeatBlockController::class,'getAllseatblock']);
-Route::post('/seatblock',[SeatBlockController::class,'addseatblock']);
-Route::put('/seatblock/{id}',[SeatBlockController::class,'updateseatblock']);
+Route::get('/seatblock', [SeatBlockController::class, 'getAllseatblock']);
+Route::post('/seatblock', [SeatBlockController::class, 'addseatblock']);
+Route::put('/seatblock/{id}', [SeatBlockController::class, 'updateseatblock']);
 Route::post('/deleteSeatblock', [SeatBlockController::class, 'deleteseatblock']);
 Route::post('/getseatblockDT', [SeatBlockController::class, 'getseatblockDT']);
 Route::post('/seatblockData', [SeatBlockController::class, 'seatblockData']);
 Route::put('/changeseatblockStatus/{id}', [SeatBlockController::class, 'changeStatus']);
-Route::post('/alreadyBlocks',[SeatBlockController::class,'alreadyBlocks']);
+Route::post('/alreadyBlocks', [SeatBlockController::class, 'alreadyBlocks']);
 
-Route::post('/editseatblock',[SeatBlockController::class,'editseatblock']);
-Route::post('/updateSeatBlock',[SeatBlockController::class,'updateSeatBlockData']);
+Route::post('/editseatblock', [SeatBlockController::class, 'editseatblock']);
+Route::post('/updateSeatBlock', [SeatBlockController::class, 'updateSeatBlockData']);
 
-Route::post('/addseatBlockByOperator',[SeatBlockController::class,'addseatBlockByOperator']);
+Route::post('/addseatBlockByOperator', [SeatBlockController::class, 'addseatBlockByOperator']);
 
 
 // Route::get('/removeSeatBlockCornJob',[SeatBlockController::class,'removeSeatBlockCornJob']);
@@ -430,7 +448,7 @@ Route::get('/slider', [SliderController::class, 'getAllSlider']);
 //Route::put('/slider/{id}', [SliderController::class, 'updateSlider']);
 Route::delete('/slider/{id}', [SliderController::class, 'deleteSlider']);
 Route::get('/slider/{id}', [SliderController::class, 'getSlider']);
-Route::post('sliderDataTable',[SliderController::class,'getData']);
+Route::post('sliderDataTable', [SliderController::class, 'getData']);
 Route::put('/changeStatusSlider/{id}', [SliderController::class, 'changeStatus']);
 
 
@@ -440,15 +458,15 @@ Route::post('/updateBanner/', [BannerController::class, 'updateBanner']);
 Route::get('/banner', [BannerController::class, 'getAllBanner']);
 Route::delete('/banner/{id}', [BannerController::class, 'deleteBanner']);
 Route::get('/banner/{id}', [BannerController::class, 'getBanner']);
-Route::post('bannerDataTable',[BannerController::class,'getData']);
+Route::post('bannerDataTable', [BannerController::class, 'getData']);
 Route::put('/changeStatusBanner/{id}', [BannerController::class, 'changeStatus']);
 
 Route::post('/test/Dummy/{dummy}', [DummyController::class, 'save']);
 
-Route::get('api/test/{dummy}', function (App\Dummy $dummy) {
+//Route::get('api/test/{dummy}', function (App\Dummy $dummy) {
 //calling the UserController@functionUser
 // DummyController@save
-});
+// });
 
 Route::post('/customerQuery', [CustomerQueryController::class, 'createCustomerQuery']);
 Route::get('/customerQuery', [CustomerQueryController::class, 'getAllCustomerQuery']);
@@ -474,48 +492,48 @@ Route::delete('/review/{id}', [ReviewController::class, 'deleteData']);
 
 
 ////SeatOpenReport/////
-Route::post('seatopenreport',[SeatOpenReportController::class,'getData']);
+Route::post('seatopenreport', [SeatOpenReportController::class, 'getData']);
 ////SeatBlockReport/////
-Route::post('seatblockreport',[SeatBlockReportController::class,'getData']);
+Route::post('seatblockreport', [SeatBlockReportController::class, 'getData']);
 ///ExtraSeatOpenReport////
-Route::post('extraseatopenreport',[ExtraSeatOpenReportController::class,'getAllextraseatopen']);
+Route::post('extraseatopenreport', [ExtraSeatOpenReportController::class, 'getAllextraseatopen']);
 ///CompleteReport////
-Route::post('completereport',[CompleteReportController::class,'getData']);
+Route::post('completereport', [CompleteReportController::class, 'getData']);
 ///PendingPNRReport////
-Route::post('pendingpnrreport',[CompleteReportController::class,'getPendingPNR']);
+Route::post('pendingpnrreport', [CompleteReportController::class, 'getPendingPNR']);
 ///FailledTransactionReport////
-Route::post('failledtransactionreport',[FailledTransactionReportController::class,'getData']);
+Route::post('failledtransactionreport', [FailledTransactionReportController::class, 'getData']);
 ///BusCancellationReport////
-Route::post('buscancellationreport',[BusCancellationReportController::class,'getData']);
+Route::post('buscancellationreport', [BusCancellationReportController::class, 'getData']);
 ////OwnerPaymentReport/////
-Route::post('ownerpaymentreport',[OwnerPaymentReportController::class,'getData']);
+Route::post('ownerpaymentreport', [OwnerPaymentReportController::class, 'getData']);
 //CancelTicketReport
-Route::post('cancelticketreport',[CancelTicketReportController::class,'getData']);
+Route::post('cancelticketreport', [CancelTicketReportController::class, 'getData']);
 //ContactReport
-Route::post('contactreport',[ContactReportController::class,'getData']);	
-Route::delete('contactreport/{id}',[ContactReportController::class,'deleteData']);
+Route::post('contactreport', [ContactReportController::class, 'getData']);
+Route::delete('contactreport/{id}', [ContactReportController::class, 'deleteData']);
 
 
 // ClearTransactionReport //
-Route::get('cleartransactionreport',[ClearTransactionReportController::class,'getAll']);
+Route::get('cleartransactionreport', [ClearTransactionReportController::class, 'getAll']);
 //CouponUsedUserReportController//
-Route::post('couponuseduserreport',[CouponUsedUserReportController::class,'getData']);
+Route::post('couponuseduserreport', [CouponUsedUserReportController::class, 'getData']);
 
 
 
 
 //Page Content
-Route::get('/pagecontent',[PageContentController::class,'getAllpagecontent']);
-Route::post('pagecontentData',[PageContentController::class,'getAllData']);
-Route::post('pagecontent',[PageContentController::class,'addpagecontent']);
-Route::put('pagecontent/{id}',[PageContentController::class,'updatepagecontent']);
+Route::get('/pagecontent', [PageContentController::class, 'getAllpagecontent']);
+Route::post('pagecontentData', [PageContentController::class, 'getAllData']);
+Route::post('pagecontent', [PageContentController::class, 'addpagecontent']);
+Route::put('pagecontent/{id}', [PageContentController::class, 'updatepagecontent']);
 Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);
 
 //Faq
-Route::get('/faq',[FaqController::class,'getAllfaq']);
-Route::post('faqData',[FaqController::class,'getAllData']);
-Route::post('faq',[FaqController::class,'addfaq']);
-Route::put('faq/{id}',[FaqController::class,'updatefaq']);
+Route::get('/faq', [FaqController::class, 'getAllfaq']);
+Route::post('faqData', [FaqController::class, 'getAllData']);
+Route::post('faq', [FaqController::class, 'addfaq']);
+Route::put('faq/{id}', [FaqController::class, 'updatefaq']);
 Route::delete('faq/{id}', [FaqController::class, 'deletefaq']);
 Route::put('/changefaqStatus/{id}', [FaqController::class, 'changeStatus']);
 
@@ -523,18 +541,18 @@ Route::put('/changefaqStatus/{id}', [FaqController::class, 'changeStatus']);
 
 //user Content
 // Route::get('/user',[UserContentController::class,'getAlluser']);
-Route::post('BusOperatorData',[UserContentController::class,'getAllData']);
-Route::post('BusOperator',[UserContentController::class,'adduser']);
-Route::put('BusOperator/{id}',[UserContentController::class,'updateuser']);
+Route::post('BusOperatorData', [UserContentController::class, 'getAllData']);
+Route::post('BusOperator', [UserContentController::class, 'adduser']);
+Route::put('BusOperator/{id}', [UserContentController::class, 'updateuser']);
 Route::delete('BusOperator/{id}', [UserContentController::class, 'deleteuser']);
 Route::put('changePassword/{id}', [UserContentController::class, 'changePassword']);
 Route::put('/changeuserStatus/{id}', [UserContentController::class, 'changeStatus']);
 
 //Testimonial
 
-Route::post('/gettestimonial',[TestimonialController::class,'getAlltestimonial']);
-Route::post('testimonial',[TestimonialController::class,'addtestimonial']);
-Route::put('testimonial/{id}',[TestimonialController::class,'updatetestimonial']);
+Route::post('/gettestimonial', [TestimonialController::class, 'getAlltestimonial']);
+Route::post('testimonial', [TestimonialController::class, 'addtestimonial']);
+Route::put('testimonial/{id}', [TestimonialController::class, 'updatetestimonial']);
 Route::delete('testimonial/{id}', [TestimonialController::class, 'deletetestimonial']);
 Route::put('/changetestimonialStatus/{id}', [TestimonialController::class, 'changeStatus']);
 
@@ -574,7 +592,7 @@ Route::get('/appversion/{id}', [AppVersionController::class, 'getAppVersion']);
 
 Route::get('/sitemaster', [SiteMasterController::class, 'getAllSiteMaster']);
 Route::post('/sitemaster', [SiteMasterController::class, 'createSiteMaster']);
-Route::put('/sitemaster/{id}', [SiteMasterController::class, 'updateSiteMaster']); 
+Route::put('/sitemaster/{id}', [SiteMasterController::class, 'updateSiteMaster']);
 Route::delete('/sitemaster/{id}', [SiteMasterController::class, 'deleteSiteMaster']);
 Route::get('/sitemaster/{id}', [SiteMasterController::class, 'getSiteMaster']);
 
@@ -702,10 +720,10 @@ Route::get('/busextraSeatsByBus/{id}', [BusSeatsController::class, 'busextraSeat
 Route::put('/updateBusSeatsExtras/{id}', [BusSeatsController::class, 'updateBusSeatsExtras']);
 
 Route::get('/busSeatsFare/{id}', [BusSeatsController::class, 'getAllBusSeatsFare']);
-Route::put('/updateNewFare',[BusSeatsController::class,'updateNewFare']);
+Route::put('/updateNewFare', [BusSeatsController::class, 'updateNewFare']);
 
 //cronjob API
-Route::get('/cronjob_cleanbusseat',[BusSeatsController::class,'cronjob_cleanbusseat']);
+Route::get('/cronjob_cleanbusseat', [BusSeatsController::class, 'cronjob_cleanbusseat']);
 
 
 
@@ -909,20 +927,20 @@ Route::post('/testMe', [ArticleController::class, 'testMe']);
 Route::put('/updateOneToMany', [ArticleController::class, 'updateOneToMany']);
 
 
-Route::get('/odbusCharges',[OdbusChargesController::class,'getAll']);
-Route::get('/odbusCharges/{id}',[OdbusChargesController::class,'getById']);
+Route::get('/odbusCharges', [OdbusChargesController::class, 'getAll']);
+Route::get('/odbusCharges/{id}', [OdbusChargesController::class, 'getById']);
 Route::delete('/odbusCharges/{id}', [OdbusChargesController::class, 'delete']);
-Route::post('odbusChargesData',[OdbusChargesController::class,'getData']);
+Route::post('odbusChargesData', [OdbusChargesController::class, 'getData']);
 Route::put('/changeStatus/{id}', [OdbusChargesController::class, 'changeStatus']);
 Route::delete('/removePopup/{id}', [OdbusChargesController::class, 'removePopup']);
 Route::post('/addOdbusCharges', [OdbusChargesController::class, 'save']);
-Route::post('/updateOdbusCharges',[OdbusChargesController::class,'update']);
+Route::post('/updateOdbusCharges', [OdbusChargesController::class, 'update']);
 
 Route::post('/offersDT', [OffersController::class, 'getOffersDT']);
 
 ////////////Owner Payment//////
-Route::get('/ownerpayment',[OwnerPaymentController::class,'getAllOwnerPayment']);
-Route::post('/ownerpayment',[OwnerPaymentController::class,'createOwnerPayment']);
+Route::get('/ownerpayment', [OwnerPaymentController::class, 'getAllOwnerPayment']);
+Route::post('/ownerpayment', [OwnerPaymentController::class, 'createOwnerPayment']);
 Route::post('/getownerpaymentDT', [OwnerPaymentController::class, 'getOwnerPaymentDT']);
 
 Route::post('/locationsData', [locationController::class, 'locationsData']);
@@ -946,7 +964,7 @@ Route::post('/AgentResetPassword', [UserController::class, 'AgentResetPassword']
 Route::get('/GetAllRoles', [UserController::class, 'getRoles']);
 Route::post('/AgentRgestration', [UserController::class, 'agentRegister']);
 
-Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
+// Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
 
 
 Route::post('/login', [UserController::class, 'login']);
@@ -972,9 +990,9 @@ Route::post('/updateAgentProfile', [AgentController::class, 'updateAgentProfile'
 Route::post('/TestEmail', [BusController::class, 'testingEmail']);
 
 //Association Content
-Route::post('AssociationData',[AssociationController::class,'getAllData']);
-Route::post('Association',[AssociationController::class,'adduser']);
-Route::put('Association/{id}',[AssociationController::class,'updateuser']);
+Route::post('AssociationData', [AssociationController::class, 'getAllData']);
+Route::post('Association', [AssociationController::class, 'adduser']);
+Route::put('Association/{id}', [AssociationController::class, 'updateuser']);
 Route::delete('Association/{id}', [AssociationController::class, 'deleteuser']);
 Route::put('changeAssociationPassword/{id}', [AssociationController::class, 'changePassword']);
 Route::put('/changeAssociationStatus/{id}', [AssociationController::class, 'changeStatus']);
@@ -998,9 +1016,9 @@ Route::post('/deleteassocAssignAgent', [AssociationAssigAgentController::class, 
 Route::get('/allAgent', [AssociationController::class, 'getAllAgent']);
 
 // AgentReport
-Route::post('agentbookingreport',[AgentReportController::class,'getData']);
-Route::post('agentcancelreport',[AgentReportController::class,'agentcancelreport']);
-Route::post('agentCommissionreport',[AgentReportController::class,'agentCommissionreport']);
+Route::post('agentbookingreport', [AgentReportController::class, 'getData']);
+Route::post('agentcancelreport', [AgentReportController::class, 'agentcancelreport']);
+Route::post('agentCommissionreport', [AgentReportController::class, 'agentCommissionreport']);
 
 //Operator Assign operators
 Route::get('/allUserOperator', [AssociationController::class, 'getAllUserOperator']);
@@ -1069,17 +1087,17 @@ Route::put('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'updat
 Route::delete('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'deleteApiUserCommission']);
 Route::get('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'getApiUserCommission']);
 ///API User CompleteReport////
-Route::post('ApiUsercompletereport',[ApiUserCompleteReportController::class,'getData']);
+Route::post('ApiUsercompletereport', [ApiUserCompleteReportController::class, 'getData']);
 //API User CancelTicketReport
-Route::post('ApiUsercancelticketreport',[ApiUserCancelTicketReportController::class,'getData']);
+Route::post('ApiUsercancelticketreport', [ApiUserCancelTicketReportController::class, 'getData']);
 
 
 
-Route::post('manageClientOperatorData',[ApiUserManageOperatorController::class,'manageClientOperatorData']);
+Route::post('manageClientOperatorData', [ApiUserManageOperatorController::class, 'manageClientOperatorData']);
 
-Route::post('manageClientOperator',[ApiUserManageOperatorController::class,'manageClientOperator']);
+Route::post('manageClientOperator', [ApiUserManageOperatorController::class, 'manageClientOperator']);
 
-Route::delete('deletemanageClientOperator/{id}',[ApiUserManageOperatorController::class,'deletemanageClientOperator']);
+Route::delete('deletemanageClientOperator/{id}', [ApiUserManageOperatorController::class, 'deletemanageClientOperator']);
 
 
 // added by Lima on 23 Dec,2023
@@ -1087,3 +1105,29 @@ Route::delete('deletemanageClientOperator/{id}',[ApiUserManageOperatorController
 Route::get('/getLessBookingUrls', [CompleteReportController::class, 'getLessBookingUrls']);
 Route::get('/PaytmBookingCancel/{pnr}', [TicketInformationController::class, 'PaytmBookingCancel']);
 
+// Jagan
+Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
+Route::post('scheduleRefundSelected', [SchedulerController::class, 'scheduleRefundSelected']);
+Route::post('apiLogReport', [ApiLogReportController::class, 'apiLogReport']);
+
+//add by sahil for chats
+Route::post('top-route',[ChartController::class,"topRoutes"]);
+Route::post('top-city',[ChartController::class,"topCity"]);
+Route::post('day-wise',[ChartController::class,"bookingReport"]);
+
+
+//////////////////////////////////////////    AppNotification \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//Added By Subhasis on 03 Dec 2025
+
+Route::post('/list', [AppNotificationController::class, 'list']);
+Route::post('/create', [AppNotificationController::class, 'create']);
+Route::put('/update/{id}', [AppNotificationController::class, 'update']);
+Route::delete('/delete/{id}', [AppNotificationController::class, 'delete']);
+Route::post('/status/{id}', [AppNotificationController::class, 'updateStatus']);
+Route::post('/notification/status/{id}', [AppNotificationController::class, 'updateStatus']);
+Route::post('/sendNotification',[AppNotificationController::class,'sendNotification']);
+
+
+Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
+Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);
+      

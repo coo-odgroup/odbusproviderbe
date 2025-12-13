@@ -19,19 +19,19 @@ class LogRoute
         $response = $next($request);
 
         //if (app()->environment('local')) {
-            $log = [
-                'URI' => $request->getUri(),
-                'METHOD' => $request->getMethod(),
-                'REQUEST_BODY' => $request->all(),
-                'RESPONSE' => $response->getContent()
-            ];
+        $log = [
+            'URI' => $request->getUri(),
+            'METHOD' => $request->getMethod(),
+            'REQUEST_BODY' => $request->all(),
+            'RESPONSE' => $response->getContent()
+        ];
 
-            Log::info(json_encode($log));
+        Log::info(json_encode($log));
         //}
 
-        $response->headers->set('Access-Control-Allow-Origin' , '*');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
         $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');
-        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With, Application','ip');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With, Application', 'ip');
         return $response;
     }
 }

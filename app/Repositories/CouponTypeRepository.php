@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Repositories;
+
 use App\Models\CouponType;
 use Illuminate\Support\Facades\Log;
 
@@ -18,7 +20,7 @@ class CouponTypeRepository
     {
         $this->couponType = $couponType;
     }
-  
+
     public function getAll()
     {
         return $this->couponType->whereNotIn('status', [2])->get();
@@ -28,40 +30,35 @@ class CouponTypeRepository
     {
         $paginate = $request['rows_number'] ;
         $name = $request['coupon_type_name'] ;
-       
+
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;
 
-        $data= $this->couponType->whereNotIn('status', [2])
-                             ->orderBy('id','DESC');
+        $data = $this->couponType->whereNotIn('status', [2])
+                             ->orderBy('id', 'DESC');
 
-        if($paginate=='all') 
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
-        if($name!=null)
-        {
-            $data=$data->where('coupon_type_name','LIKE', '%'.$name.'%');
-        } 
-      
-        if($user_role==5)
-        {
-            $data = $data->where('user_id',$user_id);   
+        if ($name != null) {
+            $data = $data->where('coupon_type_name', 'LIKE', '%'.$name.'%');
         }
-        $data=$data->paginate($paginate);
+
+        if ($user_role == 5) {
+            $data = $data->where('user_id', $user_id);
+        }
+        $data = $data->paginate($paginate);
 
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
-           );   
-           return $response;
-        
+           );
+        return $response;
+
     }
 
     public function getById($id)
@@ -76,7 +73,7 @@ class CouponTypeRepository
      */
     public function save($data)
     {
-        $role = new $this->couponType;
+        $role = new $this->couponType();
         $role->coupon_type_name = $data['coupon_type_name'];
         $role->created_by = $data['created_by'] ;
         $role->save();
@@ -84,7 +81,7 @@ class CouponTypeRepository
         return $role->fresh();
     }
 
-    
+
     public function update($data, $id)
     {
         $role = $this->couponType->find($id);
@@ -93,7 +90,7 @@ class CouponTypeRepository
         $role->update();
         return $role;
     }
-   
+
     public function delete($id)
     {
         $role = $this->couponType->find($id);
@@ -109,9 +106,8 @@ class CouponTypeRepository
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = Config::get('constants.ALL_RECORDS');
         }
 
         $columnIndex_arr = $request->get('order');
@@ -131,7 +127,7 @@ class CouponTypeRepository
         ->where('coupon_type_name', 'like', '%' .$searchValue . '%')->count();
 
         // Fetch records
-        $records = $this->couponType->orderBy($columnName,$columnSortOrder)
+        $records = $this->couponType->orderBy($columnName, $columnSortOrder)
             ->where('coupon_type_name', 'like', '%' .$searchValue . '%')
             ->whereNotIn('status', [2])
             ->select('*')
@@ -140,14 +136,13 @@ class CouponTypeRepository
             ->get();
 
         $data_arr = array();
-        $sno = $start+1;
-        foreach($records as $record)
-        {
+        $sno = $start + 1;
+        foreach ($records as $record) {
             $id = $record->id;
-            $coupon_type_name = $record->coupon_type_name;       
+            $coupon_type_name = $record->coupon_type_name;
             $created_by = $record->created_by;
             $createdDate = $record->created_at;
-            $updatedDate = $record->updated_at;    
+            $updatedDate = $record->updated_at;
             $status = $record->status;
 
             $data_arr[] = array(
@@ -155,8 +150,8 @@ class CouponTypeRepository
                 "coupon_type_name" => $coupon_type_name,
                 "created_by" => $created_by,
                 "status" => $status,
-                "created_at"=>date('j M Y h:i a',strtotime($createdDate)),
-                "updated_at"=>date('j M Y h:i a',strtotime($updatedDate)),
+                "created_at" => date('j M Y h:i a', strtotime($createdDate)),
+                "updated_at" => date('j M Y h:i a', strtotime($updatedDate)),
             );
         }
 
@@ -165,21 +160,21 @@ class CouponTypeRepository
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
+        );
         return $response;
-        
+
     }
 
     public function changeStatus($id)
     {
         $post = $this->couponType->find($id);
-        if($post->status==0){
+        if ($post->status == 0) {
             $post->status = 1;
-        }elseif($post->status==1){
+        } elseif ($post->status == 1) {
             $post->status = 0;
         }
         $post->update();
         return $post;
-    }   
+    }
 
 }

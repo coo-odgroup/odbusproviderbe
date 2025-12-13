@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\ReviewService;
-
+use App\Repositories\ReviewRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -13,45 +12,49 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-
 class ReviewController extends Controller
 {
     use ApiResponser;
-   
-    protected $reviewService; 
 
-    
-    public function __construct(ReviewService $reviewService)
+    protected $reviewRepository;
+
+
+    public function __construct(ReviewRepository $reviewRepository)
     {
-        $this->reviewService = $reviewService;
-
-        
+        $this->reviewRepository = $reviewRepository;
     }
 
 
     public function getAll()
     {
-        $reviewData = $this->reviewService->getAll();
-        return $this->successResponse($reviewData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $reviewData = $this->reviewRepository->getAll();
+        return $this->successResponse($reviewData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getData(Request $request)
-    {    
-        $reviewData = $this->reviewService->getData($request);
-        return $this->successResponse($reviewData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    {
+        $reviewData = $this->reviewRepository->getData($request);
+        return $this->successResponse($reviewData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     public function deleteData($id)
-    {    
-        // Log::info($request);exit;
-        $reviewData = $this->reviewService->deleteData($id);
-        return $this->successResponse($reviewData,"User Review Deleted",Response::HTTP_OK);
+    {
+        $reviewData = $this->reviewRepository->getById($id);
+
+
+        if (!$reviewData) {
+            return $this->errorResponse("Review not found", Response::HTTP_NOT_FOUND);
+        }
+
+        $this->reviewRepository->deleteData($id);
+
+        return $this->successResponse([], "User Review Deleted", Response::HTTP_OK);
     }
+
+
 
     public function changeStatus($id)
-    {    
-        $reviewData = $this->reviewService->changeStatus($id);
-        return $this->successResponse($reviewData,"User Review Status Updated",Response::HTTP_OK);
+    {
+        $reviewData = $this->reviewRepository->changeStatus($id);
+        return $this->successResponse($reviewData, "User Review Status Updated", Response::HTTP_OK);
     }
-
 }
-

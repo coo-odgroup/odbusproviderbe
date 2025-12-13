@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use App\Services\ApiClientIssueService;
+use App\Repositories\ApiClientIssueRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
@@ -11,80 +13,88 @@ use App\AppValidator\ApiClientIssueValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 
-
 class ApiClientIssueController extends Controller
 {
     use ApiResponser;
-    
-    protected $ApiClientIssueService;
+
+    protected $ApiClientIssueRepository;
     protected $ApiClientIssueValidator;
-    
-    public function __construct(ApiClientIssueService $ApiClientIssueService, ApiClientIssueValidator $ApiClientIssueValidator)
+
+    public function __construct(ApiClientIssueRepository $ApiClientIssueRepository, ApiClientIssueValidator $ApiClientIssueValidator)
     {
-        $this->ApiClientIssueService = $ApiClientIssueService;
+        $this->ApiClientIssueRepository = $ApiClientIssueRepository;
         $this->ApiClientIssueValidator = $ApiClientIssueValidator;
     }
 
 
-    public function apiclientissuetype() {
+    public function apiclientissuetype()
+    {
 
-      $data = $this->ApiClientIssueService->apiclientissuetype();
-      return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+        $data = $this->ApiClientIssueRepository->apiclientissuetype();
+        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function apiclientissuesubtype(Request $request) {
+    public function apiclientissuesubtype(Request $request)
+    {
 
-      $data = $this->ApiClientIssueService->apiclientissuesubtype($request);
-      return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+        $data = $this->ApiClientIssueRepository->apiclientissuesubtype($request);
+        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function apiclientissuedata(Request $request) {
+    public function apiclientissuedata(Request $request)
+    {
 
-      $data = $this->ApiClientIssueService->apiclientissuedata($request);
-      return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
+        $data = $this->ApiClientIssueRepository->apiclientissuedata($request);
+        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
 
-    public function allapiclientissuedata(Request $request) {
+    public function allapiclientissuedata(Request $request)
+    {
 
-      $data = $this->ApiClientIssueService->allapiclientissuedata($request);
-      return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
-    
-    public function apiclientissuestatue(Request $request) {
+        $data = $this->ApiClientIssueRepository->allapiclientissuedata($request);
+        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-      $data = $this->ApiClientIssueService->apiclientissuestatue($request);
-      return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
+    public function apiclientissuestatue(Request $request)
+    {
 
-    public function addapiclientissue(Request $request) {
-        
+        $data = $this->ApiClientIssueRepository->apiclientissuestatue($request);
+        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function addapiclientissue(Request $request)
+    {
+
         $data = $request->only([
-                    'issueType_id','issueSubType_id','reference_id','busId','operatorId','source','destination',
-                    'message','user_id','created_by'                   
-                  ]);
-       
-             
-              $ApiClientIssueValidator = $this->ApiClientIssueValidator->validate($data);
-        
+            'issueType_id',
+            'issueSubType_id',
+            'reference_id',
+            'busId',
+            'operatorId',
+            'source',
+            'destination',
+            'message',
+            'user_id',
+            'created_by'
+        ]);
+
+
+        $ApiClientIssueValidator = $this->ApiClientIssueValidator->validate($data);
+
         if ($ApiClientIssueValidator->fails()) {
-          $errors = $ApiClientIssueValidator->errors();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            $errors = $ApiClientIssueValidator->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        } else {
+            $data = $this->ApiClientIssueRepository->addapiclientissue($request);
+            return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         }
-        else
-        {
-             $data = $this->ApiClientIssueService->addapiclientissue($request);
-            return $this->successResponse($data,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-        }
-        
-      
-           
-        }     
-  
+    }
+
 
 
     // public function changeStatus(Request $request) {
-      
+
     //     try{
     //       $this->ApiClientIssueService->changeStatus($request);
     //     }

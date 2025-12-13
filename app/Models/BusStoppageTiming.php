@@ -15,14 +15,14 @@ class BusStoppageTiming extends Model
     protected $fillable = ['bus_id','location_id','stoppage_name','stoppage_time','created_by','boarding_droping_id'];
     public function busStoppage()
     {
-    	return $this->belongsTo(BusStoppage::class);
+        return $this->belongsTo(BusStoppage::class);
     }
     public function location()
     {
-    	return $this->belongsTo(Location::class);
+        return $this->belongsTo(Location::class);
     }
     public function boardingDroping()
     {
-    	return $this->belongsTo(BoardingDroping::class);
+        return $this->belongsTo(BoardingDroping::class);
     }
 }

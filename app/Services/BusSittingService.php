@@ -8,12 +8,11 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Validator; 
+use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
 class BusSittingService
 {
-    
     protected $busSittingRepository;
 
     /**
@@ -107,7 +106,7 @@ class BusSittingService
     public function getAllBusSittingDT($request)
     {
         return $this->busSittingRepository->getAllBusSittingDT($request);
-    } 
+    }
 
     public function BusSittingData($request)
     {

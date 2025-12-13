@@ -8,15 +8,15 @@ use App\Models\ApiClientIssue;
 
 class ApiClientIssueSubType extends Model
 {
-    use HasFactory; 
+    use HasFactory;
     protected $table = 'apiclientissuesubtype';
     protected $fillable = ['name','heading','status','created_by','created_at','updated_at'];
-    
+
     public function apiClientIssue()
     {
-        return $this->hasMany(ApiClientIssue::class);        
-    } 
+        return $this->hasMany(ApiClientIssue::class);
+    }
 
-   
+
 
 }

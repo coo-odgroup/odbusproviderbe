@@ -10,20 +10,19 @@ use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 
-
 class PermissionToRoleService
 {
-    protected $permissionToRoleRepository;    
-   
+    protected $permissionToRoleRepository;
+
     public function __construct(PermissionToRoleRepository $permissionToRoleRepository)
     {
         $this->permissionToRoleRepository = $permissionToRoleRepository;
-    }          
+    }
 
     public function getAllPermissionToRole($request)
     {
         //return $this->permissionToRoleRepository->getAllPermissionToRole($request);
-    } 
+    }
 
     // public function addPermissionToRole($request)
     // {
@@ -33,11 +32,11 @@ class PermissionToRoleService
     // public function deletePermissionToRole($id)
     // {
     //     return $this->permissionToRoleRepository->deletePermissionToRole($id);
-    // } 
-   
+    // }
+
     // public function changeStatus($id)
     // {
     //     return $this->permissionToRoleRepository->changeStatus($id);
-    // }   
+    // }
 
 }

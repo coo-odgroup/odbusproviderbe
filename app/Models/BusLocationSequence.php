@@ -13,13 +13,13 @@ class BusLocationSequence extends Model
     use HasFactory;
     protected $table = 'bus_location_sequence';
     protected $fillable = ['bus_id','location_id', 'sequence'];
-                            
-      public function bus()
-      {
-            return $this->belongsTo(Bus::class);
-      }
-      public function location()
-      {
-            return $this->belongsTo(Location::class);
-      }
+
+    public function bus()
+    {
+        return $this->belongsTo(Bus::class);
+    }
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
 }

@@ -6,31 +6,30 @@ use App\Models\AppVersion;
 
 class AppVersionRepository
 {
-    
     protected $appVersion;
 
-    
+
     public function __construct(AppVersion $appVersion)
     {
         $this->appVersion = $appVersion;
     }
 
-    
+
     public function getAll()
     {
         return $this->appVersion->whereNotIn('status', [2])->get();
     }
 
-    
+
     public function getById($id)
     {
         return $this->appVersion ->where('id', $id)->get();
     }
 
-    
+
     public function save($data)
     {
-        $appversion = new $this->appVersion;
+        $appversion = new $this->appVersion();
         $appversion->info = $data['info'];
         $appversion->name = $data['name'];
         $appversion->mandatory = $data['mandatory'];
@@ -40,16 +39,16 @@ class AppVersionRepository
         $appversion->allowed_days = $data['allowed_days'];
         $appversion->has_issues = $data['has_issues'];
         $appversion->created_by = $data['created_by'];
-        
+
         $appversion->save();
 
         return $appversion->fresh();
     }
 
-    
+
     public function update($data, $id)
     {
-        
+
         $appversion = $this->appVersion->find($id);
 
         $appversion->info = $data['info'];
@@ -75,7 +74,7 @@ class AppVersionRepository
      */
     public function delete($id)
     {
-        
+
         $appversion = $this->appVersion->find($id);
         $appversion->status = 2;
         $appversion->delete();

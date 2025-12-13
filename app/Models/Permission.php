@@ -11,9 +11,9 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 
 class Permission extends Model
-{    
+{
     protected $table = 'permission';
-    protected $fillable = ['name', 'created_at', 'created_by'];       
+    protected $fillable = ['name', 'created_at', 'created_by'];
 
     // public function user()
     // {

@@ -23,7 +23,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\Cors::class,
 
-        
+
     ];
 
     /**
@@ -70,6 +70,6 @@ class Kernel extends HttpKernel
         //'log.route' =>Illuminate\Routing\Middleware\UserController::class
         'log.route' => \App\Http\Middleware\LogRoute::class,
         'cors' => \App\Http\Middleware\Cors::class,
-        
+
     ];
 }

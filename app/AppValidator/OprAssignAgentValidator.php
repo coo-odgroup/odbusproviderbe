@@ -1,4 +1,5 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
@@ -6,14 +7,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
 class OprAssignAgentValidator
-{   
-    public function validate($data) { 
+{
+    public function validate($data)
+    {
         // Log::info($data);
         $rules = [
             'user_id' => 'required',
             'agent_id' => 'required|array|min:1'
-        ];      
-      
+        ];
+
         $agentValidator = Validator::make($data, $rules);
         return $agentValidator;
     }

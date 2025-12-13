@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\BusSeatLayout;
 use App\Models\BusSeats;
+
 class Seats extends Model
 {
     use HasFactory;
@@ -14,7 +15,7 @@ class Seats extends Model
     protected $fillable = ['bus_seat_layout_id','seat_class_id', 'berthType','seatText','rowNumber','colNumber'];
     public function BusSeatLayout()
     {
-    	return $this->belongsTo(BusSeatLayout::class);
+        return $this->belongsTo(BusSeatLayout::class);
     }
     public function BusSeats()
     {

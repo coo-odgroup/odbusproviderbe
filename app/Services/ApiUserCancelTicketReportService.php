@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use App\Repositories\ApiUserCancelTicketReportRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -11,11 +10,10 @@ use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 
-
 class ApiUserCancelTicketReportService
 {
-    protected $apiusercancelticketreportRepository;    
-   
+    protected $apiusercancelticketreportRepository;
+
     public function __construct(ApiUserCancelTicketReportRepository $apiusercancelticketreportRepository)
     {
         $this->apiusercancelticketreportRepository = $apiusercancelticketreportRepository;

@@ -1,14 +1,15 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class AssociationValidator 
-{   
+class AssociationValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
         $rules = [
             'name' => 'required',
             'email' => 'required',
@@ -18,8 +19,8 @@ class AssociationValidator
             'phone' => 'required',
             'password' => 'required',
             'location' => 'required'
-        ];      
-      
+        ];
+
         $associationValidator = Validator::make($data, $rules);
         return $associationValidator;
     }

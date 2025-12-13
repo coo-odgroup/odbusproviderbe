@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Repositories;
+
 use App\Models\Role;
 use Illuminate\Support\Facades\Log;
+
 class RoleRepository
 {
     /**
@@ -31,40 +34,35 @@ class RoleRepository
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
-       
+
         $user_role = $request['user_role'] ;
         $user_id = $request['user_id'] ;
 
-        $data= $this->role->whereNotIn('status', [2])
-                             ->orderBy('id','DESC');
+        $data = $this->role->whereNotIn('status', [2])
+                             ->orderBy('id', 'DESC');
 
-        if($paginate=='all') 
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
-        }
-        elseif ($paginate == null) 
-        {
+        } elseif ($paginate == null) {
             $paginate = 10 ;
         }
 
-        if($name!=null)
-        {
-            $data=$data->where('name','LIKE', '%'.$name.'%');
-        } 
-      
-        if($user_role==5)
-        {
-            $data = $data->where('user_id',$user_id);   
+        if ($name != null) {
+            $data = $data->where('name', 'LIKE', '%'.$name.'%');
         }
-        $data=$data->paginate($paginate);
+
+        if ($user_role == 5) {
+            $data = $data->where('user_id', $user_id);
+        }
+        $data = $data->paginate($paginate);
 
         $response = array(
-             "count" => $data->count(), 
+             "count" => $data->count(),
              "total" => $data->total(),
             "data" => $data
-           );   
-           return $response;
-        
+           );
+        return $response;
+
     }
 
     /**
@@ -85,7 +83,7 @@ class RoleRepository
      */
     public function save($data)
     {
-        $role = new $this->role;
+        $role = new $this->role();
         $role->name = $data['name'];
         $role->created_by = $data['created_by'] ;
         $role->save();
@@ -93,7 +91,7 @@ class RoleRepository
         return $role->fresh();
     }
 
-    
+
     public function update($data, $id)
     {
         $role = $this->role->find($id);
@@ -102,7 +100,7 @@ class RoleRepository
         $role->update();
         return $role;
     }
-   
+
     public function delete($id)
     {
         $role = $this->role->find($id);
@@ -118,9 +116,8 @@ class RoleRepository
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = Config::get('constants.ALL_RECORDS');
         }
 
         $columnIndex_arr = $request->get('order');
@@ -140,7 +137,7 @@ class RoleRepository
         ->where('name', 'like', '%' .$searchValue . '%')->count();
 
         // Fetch records
-        $records = $this->role->orderBy($columnName,$columnSortOrder)
+        $records = $this->role->orderBy($columnName, $columnSortOrder)
             ->where('name', 'like', '%' .$searchValue . '%')
             ->whereNotIn('status', [2])
             ->select('*')
@@ -149,14 +146,13 @@ class RoleRepository
             ->get();
 
         $data_arr = array();
-        $sno = $start+1;
-        foreach($records as $record)
-        {
+        $sno = $start + 1;
+        foreach ($records as $record) {
             $id = $record->id;
-            $name = $record->name;       
+            $name = $record->name;
             $created_by = $record->created_by;
             $createdDate = $record->created_at;
-            $updatedDate = $record->updated_at;    
+            $updatedDate = $record->updated_at;
             $status = $record->status;
 
             $data_arr[] = array(
@@ -164,8 +160,8 @@ class RoleRepository
                 "name" => $name,
                 "created_by" => $created_by,
                 "status" => $status,
-                "created_at"=>date('j M Y h:i a',strtotime($createdDate)),
-                "updated_at"=>date('j M Y h:i a',strtotime($updatedDate)),
+                "created_at" => date('j M Y h:i a', strtotime($createdDate)),
+                "updated_at" => date('j M Y h:i a', strtotime($updatedDate)),
             );
         }
 
@@ -174,21 +170,21 @@ class RoleRepository
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
+        );
         return $response;
-        
+
     }
 
     public function changeStatus($id)
     {
         $post = $this->role->find($id);
-        if($post->status==0){
+        if ($post->status == 0) {
             $post->status = 1;
-        }elseif($post->status==1){
+        } elseif ($post->status == 1) {
             $post->status = 0;
         }
         $post->update();
         return $post;
-    }   
+    }
 
 }

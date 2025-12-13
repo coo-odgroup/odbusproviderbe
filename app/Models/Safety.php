@@ -16,9 +16,9 @@ class Safety extends Model
     ];
     public function busSafety()
     {
-       return $this->hasMany(BusSafety::class);
-        
-    } 
-    
+        return $this->hasMany(BusSafety::class);
+
+    }
+
 
 }

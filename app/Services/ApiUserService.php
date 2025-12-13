@@ -26,12 +26,12 @@ class ApiUserService
      * @return String
      */
     // public function savePostData($data)
-    // {        
-    //     try {            
-    //          return  $this->apiUserRepository->save($data);          
-    //     } 
+    // {
+    //     try {
+    //          return  $this->apiUserRepository->save($data);
+    //     }
     //     catch (Exception $e) {
-    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));            
+    //         throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
     //     }
     //     return $ApiUser;
     // }
@@ -62,9 +62,9 @@ class ApiUserService
     public function getAll($request)
     {
         return $this->apiUserRepository->getAll($request);
-    }    
+    }
 
-   
+
     /**
      * Get  by id.
      *
@@ -93,7 +93,7 @@ class ApiUserService
         return $agent;
     }
 
-    
+
     /**
      * Get all Data in Datatable Format.
      *
@@ -102,8 +102,8 @@ class ApiUserService
     // public function getAllApiUserData($request)
     // {
     //     return $this->apiUserRepository->getAllApiUserData($request);
-    // } 
-   
+    // }
+
     // public function changeStatus($request)
     // {
     //     try {
@@ -113,7 +113,7 @@ class ApiUserService
     //     }
     //     return $agent;
 
-    // } 
+    // }
 
     // public function apiclientprofile($request)
     // {
@@ -122,9 +122,9 @@ class ApiUserService
     // public function updateapiclient($request)
     // {
     //      return $this->apiUserRepository->updateapiclient($request);
-    // }  
+    // }
 
 
-   
+
 
 }

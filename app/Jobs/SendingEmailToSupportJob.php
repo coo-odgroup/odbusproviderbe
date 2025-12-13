@@ -14,23 +14,26 @@ use Illuminate\Support\Facades\Config;
 
 class SendingEmailToSupportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    protected $to;      
+    protected $to;
     protected $email;
     protected $pnr;
     protected $message;
 
     public function __construct($request)
     {
-        $this->to = $request['Booking_Email'];        
-        $this->pnr = $request['pnr'];        
-        $this->message = $request['Booking_Msg'];        
+        $this->to = $request['Booking_Email'];
+        $this->pnr = $request['pnr'];
+        $this->message = $request['Booking_Msg'];
     }
 
     /**
@@ -42,22 +45,22 @@ class SendingEmailToSupportJob implements ShouldQueue
 
     public function handle()
     {
-        $data = [            
+        $data = [
             'Email_Msg' => $this->message,
         ];
 
         $this->subject = config('services.email.subjectTicket');
-        $this->subject = str_replace("<PNR>",$this->pnr,$this->subject);
-        
+        $this->subject = str_replace("<PNR>", $this->pnr, $this->subject);
+
         Mail::send('EmailToBooking', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
-            ->to($this->to)            
+            ->to($this->to)
                                ->subject($this->subject);
         });
-        
+
         // check for failures
         // if (Mail::failures()) {
-        //     return new Error(Mail::failures()); 
+        //     return new Error(Mail::failures());
         //     return "Email failed";
         // }else{
         //     return 'success';

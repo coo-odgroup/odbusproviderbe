@@ -7,14 +7,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
 class SendWalletEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -32,10 +34,10 @@ class SendWalletEmailJob implements ShouldQueue
     {
         $this->to = $to;
         $this->subject = $subject;
-        $this->userName=$req['userName'];
-        $this->amount=$req['amount'];
-        $this->via=$req['via'];
-        $this->tran_id=$req['tran_id'];
+        $this->userName = $req['userName'];
+        $this->amount = $req['amount'];
+        $this->via = $req['via'];
+        $this->tran_id = $req['tran_id'];
     }
 
     /**
@@ -45,13 +47,13 @@ class SendWalletEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
-            'userName'=>$this->userName,
+        $data = [
+            'userName' => $this->userName,
             'amount' => $this->amount,
             'via' => $this->via,
             'tran_id' => $this->tran_id
         ];
-        Mail::send('agentWalletRequestEmail', $data, function ($messageNew) {            
+        Mail::send('agentWalletRequestEmail', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

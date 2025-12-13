@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CustomerQueryCategory;
 
-
 class CustomerQueryCategoryIssues extends Model
 {
     use HasFactory;
@@ -14,6 +13,6 @@ class CustomerQueryCategoryIssues extends Model
     protected $fillable = ['name'];
     public function customerQueryCategory()
     {
-    	return $this->belongsTo(CustomerQueryCategory::class);
+        return $this->belongsTo(CustomerQueryCategory::class);
     }
 }

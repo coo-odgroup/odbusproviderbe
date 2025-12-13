@@ -13,9 +13,8 @@ use InvalidArgumentException;
 
 class BusSpecialFareService
 {
-    
     protected $busSpecialFareRepository;
- 
+
     public function __construct(BusSpecialFareRepository $busSpecialFareRepository)
     {
         $this->busSpecialFareRepository = $busSpecialFareRepository;
@@ -81,7 +80,7 @@ class BusSpecialFareService
      * @param array $data
      * @return String
      */
-   
+
     // public function updatePost($data, $id)
     // {
     //     try {
@@ -100,7 +99,7 @@ class BusSpecialFareService
      * @param array $data
      * @return String
      */
-    
+
     // public function savePostData($data)
     // {
     //     try {
@@ -122,7 +121,7 @@ class BusSpecialFareService
     //     return $specialfare;
 
     // }
-   
+
 
 
 }

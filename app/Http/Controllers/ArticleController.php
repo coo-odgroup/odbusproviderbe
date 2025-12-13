@@ -12,9 +12,6 @@ use App\Models\BusStoppage;
 use App\Models\Location;
 use App\Models\Locationcode;
 use App\Models\BusSchedule;
-
-
-
 //use App\Models\BusSpecialFare;
 use App\Models\SpecialFare;
 // use Illuminate\Support\Facades\Validator;
@@ -23,13 +20,10 @@ use App\Models\SpecialFare;
 // use Middleware;
 // use InvalidArgumentException;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Support\Facades\DB;
 
 class ArticleController extends Controller
-
 {
-
     //protected $busSpecialFare;
     protected $busCancelled;
     protected $bus;
@@ -43,11 +37,19 @@ class ArticleController extends Controller
     protected $myComment;
 
 
-    
-    public function __construct(Bus $bus,SpecialFare $specialFare,
-    BusCancelled $busCancelled,BusOperator $busOperator,
-    BusStoppage $busStoppage,Location $location,Locationcode $locationcode,BusSchedule $busSchedule,Article $article,MyComment $myComment)
-    {
+
+    public function __construct(
+        Bus $bus,
+        SpecialFare $specialFare,
+        BusCancelled $busCancelled,
+        BusOperator $busOperator,
+        BusStoppage $busStoppage,
+        Location $location,
+        Locationcode $locationcode,
+        BusSchedule $busSchedule,
+        Article $article,
+        MyComment $myComment
+    ) {
         //$this->busSpecialFare = $busSpecialFare;
         $this->busCancelled = $busCancelled;
         $this->bus = $bus;
@@ -58,9 +60,10 @@ class ArticleController extends Controller
         $this->locationcode = $locationcode;
         $this->busSchedule = $busSchedule;
     }
-    
- 
-    public function testMe(Request $data){
+
+
+    public function testMe(Request $data)
+    {
         //Log:: info($data);
         $bus = $this->bus->find($data['bus_id']);
         $bus->running_cycle = $data['running_cycle'];
@@ -68,162 +71,160 @@ class ArticleController extends Controller
         //Log:: info($entryDates);
         //$busScheduleModels[] = "";
         //$entryDates[];
-        //$entryDate = strtotime("+".$data['running_cycle']."day", strtotime($data['entry_date']));                
+        //$entryDate = strtotime("+".$data['running_cycle']."day", strtotime($data['entry_date']));
         $entryDate = $data['entry_date'];
-        $busScheduleDate->entry_date=$entryDate;
-            for($date=0;$date<=30;$date++) {   
-               
-                $busSchedule= new busSchedule();
-                $busSchedule->bus_id=$data['bus_id'];
-                $entryDate = strtotime("+".$data['running_cycle']."day", strtotime($entryDate));                
-                $entryDate = date("Y-m-d", $entryDate);
-                $busSchedule->entry_date=$entryDate;
-                $busSchedule->created_by =$data['created_by'];
-                $busSchedule->status = 1;
-                $busScheduleModels[] =  $busSchedule;
-            }        
-            $bus->busSchedule()->saveMany($busScheduleModels);
-            
-            return $busScheduleModels;
-            //return $bus;
+        $busScheduleDate->entry_date = $entryDate;
+        for ($date = 0;$date <= 30;$date++) {
+
+            $busSchedule = new busSchedule();
+            $busSchedule->bus_id = $data['bus_id'];
+            $entryDate = strtotime("+".$data['running_cycle']."day", strtotime($entryDate));
+            $entryDate = date("Y-m-d", $entryDate);
+            $busSchedule->entry_date = $entryDate;
+            $busSchedule->created_by = $data['created_by'];
+            $busSchedule->status = 1;
+            $busScheduleModels[] =  $busSchedule;
+        }
+        $bus->busSchedule()->saveMany($busScheduleModels);
+
+        return $busScheduleModels;
+        //return $bus;
     }
 
-    public function saveBuscancel(Request $data){
+    public function saveBuscancel(Request $data)
+    {
         $recordsDatas =  $this->busCancelled->with('Bus.busSchedule')->get();
         //return $recordsDatas;
-       
+
         $busIds = $data['bus_id'];
 
-        foreach($busIds as $busId) 
-        {
+        foreach ($busIds as $busId) {
             $busCancelled = new BusCancelled();
-            $busCancelled->bus_operator_id = $data['bus_operator_id'];        
+            $busCancelled->bus_operator_id = $data['bus_operator_id'];
             $busCancelled->cancelled_date = $data['cancelled_date'];
             $busCancelled->cancelled_by = $data['cancelled_by'];
             $busCancelled->status = 0;
             $busCancelled->reason = $data['reason'];
             $busCancelled->bus_id = $busId;
-            
-           // $busCancelled->save();
+
+            // $busCancelled->save();
         }
         return $busCancelled;
 
     }
-   
+
     public function manytomany()
     {
-       // DB::enableQueryLog();
+        // DB::enableQueryLog();
         //$recordsData = $this->specialFare->with('bus')->get();
         $rowperpage = 10;
-        $searchValue ="";
+        $searchValue = "";
         $draw = 2;
-        $start=0;
-        $columnSortOrder='desc';
-        $columnName="id";
+        $start = 0;
+        $columnSortOrder = 'desc';
+        $columnName = "id";
         $data_arr = array();
-        $totalRecordswithFilter=$this->specialFare->with('bus')  
-        ->whereHas('bus', function ($query) use ($searchValue){
-               $query->where('name', 'like', '%' .$searchValue . '%');               
-           })->whereNotIn('status', [2])->count();
-        $totalRecords=$this->specialFare->withCount('bus')->whereNotIn('status', [2])->count();
-        $totalRecordData=$this->specialFare->whereHas('bus')->whereNotIn('status', [2])->get();
+        $totalRecordswithFilter = $this->specialFare->with('bus')
+        ->whereHas('bus', function ($query) use ($searchValue) {
+            $query->where('name', 'like', '%' .$searchValue . '%');
+        })->whereNotIn('status', [2])->count();
+        $totalRecords = $this->specialFare->withCount('bus')->whereNotIn('status', [2])->count();
+        $totalRecordData = $this->specialFare->whereHas('bus')->whereNotIn('status', [2])->get();
         $totalRecordCount = count($totalRecordData);
-      
+
 
         //return $totalRecordCount;
-        
+
         $recordsDatas =  $this->specialFare->with('Bus')
-        ->orderBy($columnName,$columnSortOrder)  
-        ->whereHas('bus', function ($query) use ($searchValue){
-               $query->where('name', 'like', '%' .$searchValue . '%');
-                     //->orWhere('name', 'like', '%' .$columnName . '%')
-                     //->orWhere('name', 'like', '%' .$columnSortOrder . '%');
+        ->orderBy($columnName, $columnSortOrder)
+        ->whereHas('bus', function ($query) use ($searchValue) {
+            $query->where('name', 'like', '%' .$searchValue . '%');
+            //->orWhere('name', 'like', '%' .$columnName . '%')
+            //->orWhere('name', 'like', '%' .$columnSortOrder . '%');
 
         })
            ->skip($start)
            ->take($rowperpage)
            ->whereNotIn('status', [2])
            ->get();
-        
+
 
         //return $recordsDatas;
-        
-       // $quries = DB::getQueryLog();
+
+        // $quries = DB::getQueryLog();
         //Log::info($quries);
 
         $data_arr = array();
-       foreach($recordsDatas as $record)
-        {                    
-           $buses= $record->bus;           
-            
-           $busNames="";
-          foreach($buses as $bus)
-           {               
-                $busNames .=  ($busNames=="")?$bus->name:",".$bus->name;              
-           }
+        foreach ($recordsDatas as $record) {
+            $buses = $record->bus;
 
-           $data_arr[] = array(
-            "id" => $record->id,                
-            "seater_price" => $record->seater_price, 
-            "sleeper_price" => $record->sleeper_price,
-            "date" => $record->date,
-            "created_at" => date('j M Y h:i a',strtotime($record->created_at)),
-            "status" => $record->status,
-            "group_code" => $record->group_code,
-            "name"=>$busNames,
-            "iTotalRecords" => $totalRecordCount,
-            "iTotalDisplayRecords" => $totalRecordswithFilter,  
-           );    
+            $busNames = "";
+            foreach ($buses as $bus) {
+                $busNames .=  ($busNames == "") ? $bus->name : ",".$bus->name;
+            }
 
-         
-        
-        } 
-        return  $data_arr;     
+            $data_arr[] = array(
+             "id" => $record->id,
+             "seater_price" => $record->seater_price,
+             "sleeper_price" => $record->sleeper_price,
+             "date" => $record->date,
+             "created_at" => date('j M Y h:i a', strtotime($record->created_at)),
+             "status" => $record->status,
+             "group_code" => $record->group_code,
+             "name" => $busNames,
+             "iTotalRecords" => $totalRecordCount,
+             "iTotalDisplayRecords" => $totalRecordswithFilter,
+            );
+
+
+
+        }
+        return  $data_arr;
     }
     public function insertManyTomany()
     {
 
-        $spacialfare = $this->specialFare->find(3);   
+        $spacialfare = $this->specialFare->find(3);
         $busIds = [1330, 1327];
         $spacialfare->bus()->attach($busIds);
     }
     public function cancelbusDT()
     {
         $rowperpage = 10;
-        $searchValue ="";
+        $searchValue = "";
         $draw = 2;
-        $start=0;
-        $columnSortOrder='desc';
-        $columnName="id";
+        $start = 0;
+        $columnSortOrder = 'desc';
+        $columnName = "id";
         //  $busRecords =  $this->busOperator->with('bus.busstoppage')
         // ->get();
-         //  $busRecords =  $this->bus->with('busOperator')
+        //  $busRecords =  $this->bus->with('busOperator')
         //  ->get();
         // $busRecords =  $this->busStoppage->with('bus')
         //   ->get();
-        $totalRecords=$this->busCancelled->whereNotIn('status', [2])->count();
-        
-        $totalRecordswithFilter=$this->busCancelled
-        ->with('bus.busOperator','bus.busstoppage')  
-        ->whereHas('bus', function ($query) use ($searchValue){
-               $query->where('name', 'like', '%' .$searchValue . '%');               
-           })
+        $totalRecords = $this->busCancelled->whereNotIn('status', [2])->count();
+
+        $totalRecordswithFilter = $this->busCancelled
+        ->with('bus.busOperator', 'bus.busstoppage')
+        ->whereHas('bus', function ($query) use ($searchValue) {
+            $query->where('name', 'like', '%' .$searchValue . '%');
+        })
            ->whereNotIn('status', [2])
            ->count();
 
-        $busRecords =  $this->busCancelled->with('bus.busOperator','bus.busstoppage')
-        ->orderBy($columnName,$columnSortOrder)
-        ->whereHas('bus', function ($query) use ($searchValue){
-        $query->where('name', 'like', '%' .$searchValue . '%');          
-    })
+        $busRecords =  $this->busCancelled->with('bus.busOperator', 'bus.busstoppage')
+        ->orderBy($columnName, $columnSortOrder)
+        ->whereHas('bus', function ($query) use ($searchValue) {
+            $query->where('name', 'like', '%' .$searchValue . '%');
+        })
         ->skip($start)
         ->take($rowperpage)
         ->whereNotIn('status', [2])
         ->get();
-       $data_arr = array();
-       $bus_stoppage = array();
-       $response = array();
-        foreach($busRecords as $record){
+        $data_arr = array();
+        $bus_stoppage = array();
+        $response = array();
+        foreach ($busRecords as $record) {
             $id = $record->id;
             $busRecord  = $record->bus;
             $name = $busRecord->name;
@@ -234,70 +235,72 @@ class ArticleController extends Controller
             $reason = $record->reason;
             $cancelled_by = $record->cancelled_by;
             $status = $record->status;
-            foreach($bStoppages as $bStoppage){
+            foreach ($bStoppages as $bStoppage) {
                 $sourceId = $bStoppage->source_id;
                 $destinationId = $bStoppage->destination_id;
                 $stoppageName = $this->location->whereIn('id', array($sourceId, $destinationId))->get('name');
-                
+
                 $bus_stoppage[] = array(
                     "sourceName" => $stoppageName,
-                    "destinationName" => $stoppageName                   
+                    "destinationName" => $stoppageName
                 );
             }
-         
-        $data_arr[] = array(
-            "id" => $id,
-            "cancelled_date" => $cancelled_date,
-            "reason" => $reason,
-            "cancelled_by" => $cancelled_by,
-            "operatorName" => $operatorName,
-            "name" => $name,
-            "sourceId" => $sourceId,
-            "busStoppgae"=>$bus_stoppage,
-            "routes" => $stoppageName,
-            "Stoppage" =>$bStoppage->bus_id,
-            "status" => $status         
-            
-        );
-        $response = array(
-            "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordswithFilter,
-            "aaData" => $data_arr
-        ); 
-    }
-      //return ($busRecords);
-       //return ($data_arr);
+
+            $data_arr[] = array(
+                "id" => $id,
+                "cancelled_date" => $cancelled_date,
+                "reason" => $reason,
+                "cancelled_by" => $cancelled_by,
+                "operatorName" => $operatorName,
+                "name" => $name,
+                "sourceId" => $sourceId,
+                "busStoppgae" => $bus_stoppage,
+                "routes" => $stoppageName,
+                "Stoppage" => $bStoppage->bus_id,
+                "status" => $status
+
+            );
+            $response = array(
+                "draw" => intval($draw),
+                "iTotalRecords" => $totalRecords,
+                "iTotalDisplayRecords" => $totalRecordswithFilter,
+                "aaData" => $data_arr
+            );
+        }
+        //return ($busRecords);
+        //return ($data_arr);
         //return $busRecords->bus;
         return ($response);
     }
-     
-    public function insertOneToMany(Request $data){
-        $this->location->name= $data['name'];
-        $this->location->synonym= $data['synonym'];
-        $this->location->created_by= $data['created_by'];
+
+    public function insertOneToMany(Request $data)
+    {
+        $this->location->name = $data['name'];
+        $this->location->synonym = $data['synonym'];
+        $this->location->created_by = $data['created_by'];
         $this->location->save();
         $locationModels = [];
-         //TOD Latter,Write Enhanced Query
+        //TOD Latter,Write Enhanced Query
         foreach ($data['locationcode'] as $lCode) {
             $locationModels[] = new Locationcode($lCode);
         }
         $this->location->locationcode()->saveMany($locationModels);
-        return $data['locationcode'];      
+        return $data['locationcode'];
     }
-    public function updateOneToMany(Request $data){
+    public function updateOneToMany(Request $data)
+    {
         //Find The record to update
         $this->location = $this->location->find(1802);
         $this->location->locationcode()->delete();
-        
+
         $locationModels = [];
-         //TOD Latter,Write Enhanced Query
+        //TOD Latter,Write Enhanced Query
         foreach ($data['locationcode'] as $lCode) {
-        $locationModels[] = new Locationcode($lCode);
+            $locationModels[] = new Locationcode($lCode);
         }
         $this->location->locationcode()->saveMany($locationModels);
-        //return $data['locationcode'];    
-        //return $locationModels; 
+        //return $data['locationcode'];
+        //return $locationModels;
         return $this->location->id;
 
     }
@@ -306,47 +309,46 @@ class ArticleController extends Controller
         $draw = 0;
         $start = 0;
         $rowperpage = 10; // Rows display per page
-        if(!is_numeric($rowperpage))
-        {
-            $rowperpage=Config::get('constants.ALL_RECORDS');
+        if (!is_numeric($rowperpage)) {
+            $rowperpage = Config::get('constants.ALL_RECORDS');
         }
-       // $columnIndex_arr = $request->get('order');
+        // $columnIndex_arr = $request->get('order');
         //$columnName_arr = $request->get('columns');
-       // $order_arr = $request->get('order');
+        // $order_arr = $request->get('order');
         //$search_arr = $request->get('search');
 
-       // $columnIndex = $columnIndex_arr[0]['column']; // Column index
-       // $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+        // $columnIndex = $columnIndex_arr[0]['column']; // Column index
+        // $columnName = $columnName_arr[$columnIndex]['data']; // Column name
         //$columnSortOrder = $order_arr[0]['dir']; // asc or desc
-       // $searchValue = $search_arr['value']; // Search value
+        // $searchValue = $search_arr['value']; // Search value
 
         // Total records
-        $totalRecords=$this->busCancelled->whereNotIn('status', [2])->count();
-        
-        $totalRecordswithFilter=$this->busCancelled->with('bus.busOperator','bus.busstoppage')  
+        $totalRecords = $this->busCancelled->whereNotIn('status', [2])->count();
+
+        $totalRecordswithFilter = $this->busCancelled->with('bus.busOperator', 'bus.busstoppage')
        // ->whereHas('bus', function ($query) use ($searchValue){
-             //  $query->where('name', 'like', '%' .$searchValue . '%');               
+             //  $query->where('name', 'like', '%' .$searchValue . '%');
            //})
            ->whereNotIn('status', [2])->count();
-      
-       
-       
-           // Fetch records
-    
-       $busRecords =  $this->busCancelled->with('bus.busOperator','bus.busstoppage')
+
+
+
+        // Fetch records
+
+        $busRecords =  $this->busCancelled->with('bus.busOperator', 'bus.busstoppage')
       // ->orderBy($columnName,$columnSortOrder)
       // ->whereHas('bus', function ($query) use ($searchValue){
-       // $query->where('name', 'like', '%' .$searchValue . '%');                   
+        // $query->where('name', 'like', '%' .$searchValue . '%');
     //})
-       ->skip($start)
-       ->take($rowperpage)
-       ->whereNotIn('status', [2])
-       ->get();
-       
+        ->skip($start)
+        ->take($rowperpage)
+        ->whereNotIn('status', [2])
+        ->get();
+
         $data_arr = array();
         $bus_stoppage = array();
-       
-        foreach($busRecords as $record){
+
+        foreach ($busRecords as $record) {
             $id = $record->id;
             $busRecord  = $record->bus;
             $name = $busRecord->name;
@@ -357,43 +359,43 @@ class ArticleController extends Controller
             $reason = $record->reason;
             $cancelled_by = $record->cancelled_by;
             $status = $record->status;
-            $stoppageName="";   
-            $routesdata="";         
-            foreach($bStoppages as $bStoppage){            
-                          
+            $stoppageName = "";
+            $routesdata = "";
+            foreach ($bStoppages as $bStoppage) {
+
                 $sourceId = $bStoppage->source_id;
-                $destinationId = $bStoppage->destination_id;               
+                $destinationId = $bStoppage->destination_id;
                 $stoppageName = $this->location->whereIn('id', array($sourceId, $destinationId))->get('name');
-                
+
                 $bus_stoppage[] = array(
                     "sourceName" => $stoppageName,
                     "destinationName" => $stoppageName,
                 );
-               $routesdata =  $stoppageName[0]['name']."-".$stoppageName[1]['name'];
-              
-            }  
-            
-            
-        $data_arr[] = array(
-            "id" => $id,
-            "cancelled_date" => $cancelled_date,
-            "reason" => $reason,
-            "cancelled_by" => $cancelled_by,
-            "operatorName" => $operatorName,
-            "name" => $name,
-            //"name" => $name." >> ".$busRecord->bus_number,           
-          //  "busStoppgae"=>$bus_stoppage,
-            "routes" => $routesdata,           
-            "status" => $status           
-        );
+                $routesdata =  $stoppageName[0]['name']."-".$stoppageName[1]['name'];
+
+            }
+
+
+            $data_arr[] = array(
+                "id" => $id,
+                "cancelled_date" => $cancelled_date,
+                "reason" => $reason,
+                "cancelled_by" => $cancelled_by,
+                "operatorName" => $operatorName,
+                "name" => $name,
+                //"name" => $name." >> ".$busRecord->bus_number,
+              //  "busStoppgae"=>$bus_stoppage,
+                "routes" => $routesdata,
+                "status" => $status
+            );
         }
         $response = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr
-        ); 
-    
+        );
+
         return ($response);
 
     }

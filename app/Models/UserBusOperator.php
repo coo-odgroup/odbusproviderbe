@@ -19,13 +19,11 @@ class UserBusOperator extends Model
      *
      * @var array
      */
-    protected $table = 'user_bus_operator';    
+    protected $table = 'user_bus_operator';
 
     protected $fillable = ['user_id','bus_operator_id'];
     public function BusOperator()
-    {        
-        return $this->belongsTo(BusOperator::class);        
-    } 
+    {
+        return $this->belongsTo(BusOperator::class);
+    }
 }
-
-

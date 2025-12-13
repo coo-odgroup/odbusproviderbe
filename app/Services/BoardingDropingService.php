@@ -13,10 +13,9 @@ use InvalidArgumentException;
 
 class BoardingDropingService
 {
-    
     protected $boardingDropingRepository;
 
-    
+
     public function __construct(boardingDropingRepository $boardingDropingRepository)
     {
         $this->boardingDropingRepository = $boardingDropingRepository;
@@ -27,7 +26,7 @@ class BoardingDropingService
      * @param $id
      * @return String
      */
-    
+
     // public function deleteById($id)
     // {
     //     try {
@@ -97,7 +96,7 @@ class BoardingDropingService
     // {
     //     try {
     //         $boardingDropping = $this->boardingDropingRepository->save($data);
-    //     } 
+    //     }
     //     catch (Exception $e) {
     //         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
     //     }

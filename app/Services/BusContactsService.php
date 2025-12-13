@@ -12,10 +12,9 @@ use InvalidArgumentException;
 
 class BusContactsService
 {
-    
     protected $busContactsRepository;
 
-    
+
     public function __construct(busContactsRepository $busContactsRepository)
     {
         $this->busContactsRepository = $busContactsRepository;
@@ -23,7 +22,7 @@ class BusContactsService
 
     // public function deleteByBusId($id)
     // {
-    //     $post = $this->busContactsRepository->deletebyBusid($id);
+    //     $this->busContactsRepository->deletebyBusid($id);
     // }
     // public function deleteById($id)
     // {

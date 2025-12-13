@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\BusCancellationReportService;
+use App\Repositories\BusCancellationReportRepository;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -14,18 +14,18 @@ use Symfony\Component\HttpFoundation\Response;
 class BusCancellationReportController extends Controller
 {
     use ApiResponser;
-   
-    protected $buscancellationreportService;    
-    
-    public function __construct(BusCancellationReportService $buscancellationreportService)
+
+    protected $buscancellationreportService;
+    protected $buscancellationreportRepository;
+
+    public function __construct(BusCancellationReportRepository $buscancellationreportRepository)
     {
-        $this->buscancellationreportService = $buscancellationreportService;        
+        $this->buscancellationreportRepository = $buscancellationreportRepository;
     }
 
     public function getData(Request $request)
     {
-        $buscancel = $this->buscancellationreportService->getData($request);
-        return $this->successResponse($buscancel,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $buscancel = $this->buscancellationreportRepository->getData($request);
+        return $this->successResponse($buscancel, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-
 }

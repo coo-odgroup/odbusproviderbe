@@ -13,6 +13,6 @@ class BusSeatsExtra extends Model
     protected $fillable = ['bus_id','journey_dt','type','seat_type','seat_number','created_by'];
     public function Bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
 }

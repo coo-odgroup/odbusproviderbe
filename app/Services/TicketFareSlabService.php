@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Location;
@@ -10,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
 class TicketFareSlabService
-
 {
     /**
      * @var $postRepository
@@ -27,36 +27,36 @@ class TicketFareSlabService
         $this->ticketFareSlabRepository = $ticketFareSlabRepository;
     }
 
-   
+
     // public function createslab($data)
     // {
     //     $result = $this->ticketFareSlabRepository->createslab($data);
 
     //     return $result;
-       
+
     // }
     //  public function ticketFareSlabData($data)
     // {
     //     $result = $this->ticketFareSlabRepository->ticketFareSlabData($data);
 
     //     return $result;
-       
-   // }
+
+    // }
 
     //  public function changeStatusticketFareSlab($id)
     // {
     //     $result = $this->ticketFareSlabRepository->changeStatusticketFareSlab($id);
 
     //     return $result;
-       
-   // }
+
+    // }
     //  public function deleteticketFareSlab($id)
     // {
     //     $result = $this->ticketFareSlabRepository->deleteticketFareSlab($id);
 
     //     return $result;
-       
+
     // }
 
-  
+
 }

@@ -18,13 +18,15 @@ class BusStoppageService
     protected $busStoppageRepository;
     protected $busStoppageTiming;
     protected $location;
-     protected $busLocationSequence;
+    protected $busLocationSequence;
+
+
     public function __construct(busStoppageRepository $busStoppageRepository, BusStoppageTiming $busStoppageTiming, Location $location, BusLocationSequence $busLocationSequence)
     {
         $this->busStoppageRepository = $busStoppageRepository;
         $this->busLocationSequence = $busLocationSequence;
         $this->busStoppageTiming = $busStoppageTiming;
-        $this->location=$location;
+        $this->location = $location;
     }
     // public function deleteById($id)
     // {
@@ -55,18 +57,18 @@ class BusStoppageService
     // {
     //     $data['result']= $this->busStoppageRepository->getBusStoppagebyBusId($busid);
     //     $data['locations']=$this->busLocationSequence->where('status','1')->select('location_id')->where('bus_id', $busid)->get();
-     
+
     //     //$data['locations']=$this->busStoppageTiming->select('location_id')->distinct()->where('bus_id',$busid)->get();
     //      if($data['locations']){
     //         foreach($data['locations'] as $v)
-    //         { 
+    //         {
     //             $v['location_name']=$this->location->where('id', $v->location_id)->get();
-               
+
     //         }
     //     }
     //     return $data;
     // }
-    
+
     // public function getBusByOperator($operator_id)
     // {
     //     return $this->busStoppageRepository->getBusByOperator($operator_id);
@@ -93,7 +95,7 @@ class BusStoppageService
     // }
     public function deletebyBusId($id)
     {
-         $result = $this->busStoppageRepository->deletebyBusId($id);
+        $result = $this->busStoppageRepository->deletebyBusId($id);
         return $result;
     }
 
@@ -117,5 +119,5 @@ class BusStoppageService
     //     return $result;
     // }
 
-    
+
 }

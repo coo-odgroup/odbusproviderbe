@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use App\Models\MyComment;
 
 class Article extends Model
@@ -13,9 +12,10 @@ class Article extends Model
     protected $table = 'articles';
     protected $fillable = ['title','slug','body'];
 
-    public function MyComment(){
-       // return $this->hasMany(Comment::class);
-       return $this->hasMany(MyComment::class);
+    public function MyComment()
+    {
+        // return $this->hasMany(Comment::class);
+        return $this->hasMany(MyComment::class);
     }
-    
+
 }

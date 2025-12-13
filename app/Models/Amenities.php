@@ -17,8 +17,8 @@ class Amenities extends Model
     public function busAmenities()
     {
         return $this->hasMany(BusAmenities::class);
-        
-    } 
+
+    }
     public function getDisabledAttribute()
     {
         return "false";

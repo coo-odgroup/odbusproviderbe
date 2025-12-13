@@ -11,7 +11,6 @@ use App\Models\BusOperator;
 use App\Models\BusSeats;
 use App\Models\BookingSeized;
 
-
 class BusStoppage extends Model
 {
     use HasFactory;
@@ -20,11 +19,11 @@ class BusStoppage extends Model
     'base_sleeper_fare', 'dep_time','arr_time','j_day','created_by'];
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
     public function user()
     {
-    	return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
     public function stoppage()
     {
@@ -35,7 +34,7 @@ class BusStoppage extends Model
         return $this->hasMany(BusSeats::class);
     }
 
-     public function bookingSeized()
+    public function bookingSeized()
     {
         return $this->belongsTo(BookingSeized::class);
     }

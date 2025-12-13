@@ -44,7 +44,7 @@ class ApiUserCommissionService
     //     return $this->apiUserCommissionRepository->getAll($request);
     // }
 
-   
+
     /**
      * Get  by id.
      *
@@ -108,5 +108,5 @@ class ApiUserCommissionService
         return $busType;
 
     }
-   
+
 }

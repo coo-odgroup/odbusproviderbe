@@ -44,7 +44,7 @@ class RegisterController extends Controller
         $this->middleware('guest:super_admin');
     }
 
-    
+
 
     protected function createAdmin(Request $request)
     {

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\OwnerPaymentReportService;
+use App\Repositories\OwnerPaymentReportRepository;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -13,19 +13,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OwnerPaymentReportController extends Controller
 {
-    use ApiResponser;   
-   
-    protected $ownerpaymentreportService;    
-    
-    public function __construct(OwnerPaymentReportService $ownerpaymentreportService)
+    use ApiResponser;
+
+    protected $ownerpaymentreportRepository;
+
+    public function __construct(OwnerPaymentReportRepository $ownerpaymentreportRepository)
     {
-        $this->ownerpaymentreportService = $ownerpaymentreportService;        
+        $this->ownerpaymentreportRepository = $ownerpaymentreportRepository;
     }
 
     public function getData(Request $request)
     {
-        $ownerpayment = $this->ownerpaymentreportService->getData($request);
-        return $this->successResponse($ownerpayment,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $ownerpayment = $this->ownerpaymentreportRepository->getData($request);
+        return $this->successResponse($ownerpayment, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-
 }

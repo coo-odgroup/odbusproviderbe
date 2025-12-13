@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\AgentCommissionReportService;
+use App\Repositories\AgentCommissionReportRepository;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -15,20 +16,23 @@ class AgentCommissionReportController extends Controller
 {
     use ApiResponser;
    
-    protected $agentcommissionreportService; 
- 
+    protected $agentcommissionreportRepository;
 
     
-    public function __construct(AgentCommissionReportService $agentcommissionreportService)
+    public function __construct(AgentCommissionReportRepository $agentcommissionreportRepository)
     {
-        $this->agentcommissionreportService = $agentcommissionreportService;        
+        $this->agentcommissionreportRepository = $agentcommissionreportRepository;
     }
 
     public function getalldata(Request $request)
     {
-       
-        $completeData = $this->agentcommissionreportService->getalldata($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        try {
+            $completeData = $this->agentcommissionreportRepository->getData($request);
+            return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        
     }
 
 }

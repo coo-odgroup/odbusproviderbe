@@ -12,27 +12,28 @@ use InvalidArgumentException;
 
 class TicketCancelationController extends Controller
 {
-    
     protected $ticketCancelationService;
 
-    
+
     public function __construct(TicketCancelationService $ticketCancelationService)
     {
         $this->ticketCancelationService = $ticketCancelationService;
     }
-    public function getAllTicketCancelations() {
+    public function getAllTicketCancelations()
+    {
 
         $ticketcancelation = $this->ticketCancelationService->getAll();
-        $ticketcancel ['status']=1;
-        $ticketcancel ['message']='All Data Fetched Successfully';
-        $ticketcancel ['result']=$ticketcancelation;
+        $ticketcancel ['status'] = 1;
+        $ticketcancel ['message'] = 'All Data Fetched Successfully';
+        $ticketcancel ['result'] = $ticketcancelation;
 
         return response($ticketcancel, 200);
     }
-    public function createTicketCancelations(Request $request) {
-        
+    public function createTicketCancelations(Request $request)
+    {
+
         $data = $request->only(['name','created_by']);
-        
+
         $ticketCancelationRules = [
           'name' => 'required',
           'created_by' => 'required'
@@ -46,26 +47,26 @@ class TicketCancelationController extends Controller
           'created_by' => 'required'
 
         ];
-        $ticketCancelationRule=$request->input('ticketCancelationRule');
-      
-      // $userValidation = Validator::make($inputs, $userRules);
+        $ticketCancelationRule = $request->input('ticketCancelationRule');
 
-      foreach($request['ticketCancelationRule'] as $ticketCancelation_rule){
-        $ticketCancelationruleValidation = Validator::make($ticketCancelation_rule, $ticketCancelationruleRules);
-        if ($ticketCancelationruleValidation->fails()) {
-          // throw new InvalidArgumentException($locationCodeValidation->errors()->first());
-          $errors = $ticketCancelationruleValidation->errors();
+        // $userValidation = Validator::make($inputs, $userRules);
 
-          return $errors->toJson();
-          exit;
+        foreach ($request['ticketCancelationRule'] as $ticketCancelation_rule) {
+            $ticketCancelationruleValidation = Validator::make($ticketCancelation_rule, $ticketCancelationruleRules);
+            if ($ticketCancelationruleValidation->fails()) {
+                // throw new InvalidArgumentException($locationCodeValidation->errors()->first());
+                $errors = $ticketCancelationruleValidation->errors();
+
+                return $errors->toJson();
+                exit;
+
+            }
 
         }
-          
-      } 
-       
-  
+
+
         $result = ['status' => 200];
-  
+
         try {
             $result['data'] = $this->ticketCancelationService->savePostData($request);
         } catch (Exception $e) {
@@ -75,16 +76,17 @@ class TicketCancelationController extends Controller
             ];
         }
         return response()->json($result, $result['status']);
-      
-      } 
-      public function getTicketCancelationsbyID($id) {
-            
+
+    }
+    public function getTicketCancelationsbyID($id)
+    {
+
         $ticketcancelation = $this->ticketCancelationService->getById($id);
-        $ticketcancel ['status']=1;
-        $ticketcancel ['message']='Single Data Fetched Successfully';
-        $ticketcancel ['result']=$ticketcancelation;
+        $ticketcancel ['status'] = 1;
+        $ticketcancel ['message'] = 'Single Data Fetched Successfully';
+        $ticketcancel ['result'] = $ticketcancelation;
         return response($ticketcancel, 200);
 
-        }
+    }
 
 }

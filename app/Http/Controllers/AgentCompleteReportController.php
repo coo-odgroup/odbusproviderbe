@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\AgentCompleteReportService;
+use App\Repositories\AgentCompleteReportRepository;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -15,19 +15,22 @@ class AgentCompleteReportController extends Controller
 {
     use ApiResponser;
    
-    protected $agentcompletereportService; 
- 
-
+    protected $agentcompletereportRepository;
     
-    public function __construct(AgentCompleteReportService $agentcompletereportService)
+    public function __construct(AgentCompleteReportRepository $agentcompletereportRepository)
     {
-        $this->agentcompletereportService = $agentcompletereportService;        
+        $this->agentcompletereportRepository = $agentcompletereportRepository;
     }
 
     public function getalldata(Request $request)
     {
-        $completeData = $this->agentcompletereportService->getalldata($request);
-        return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        try {
+            $completeData = $this->agentcompletereportRepository->getData($request);
+            return $this->successResponse($completeData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        
     }
 
 }

@@ -9,7 +9,6 @@ use App\Models\BusStoppage;
 use App\Models\Seats;
 use App\Models\TicketPrice;
 
-
 class BusSeats extends Model
 {
     use HasFactory;
@@ -17,11 +16,11 @@ class BusSeats extends Model
     protected $fillable = ['bus_id','ticket_price_id','seats_id','operation_date','status','type' ,'category','seat_type','berth_type','source_id','destination_id','seat_number','duration','created_by','reason','other_reason'];
     public function bus()
     {
-    	return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Bus::class);
     }
     public function busStoppage()
     {
-    	return $this->belongsTo(BusStoppage::class);
+        return $this->belongsTo(BusStoppage::class);
     }
     public function seats()
     {
@@ -29,6 +28,6 @@ class BusSeats extends Model
     }
     public function ticketPrice()
     {
-        return $this->belongsTo(TicketPrice::class);        
+        return $this->belongsTo(TicketPrice::class);
     }
 }

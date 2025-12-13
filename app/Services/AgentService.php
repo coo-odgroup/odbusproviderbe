@@ -48,12 +48,12 @@ class AgentService
     // {
     //     return $this->agentRepository->agentprofile($request);
     // }
-    //  public function updateAgentProfile($request)
-    // {
-    //     return $this->agentRepository->updateAgentProfile($request);
-    // }
+     public function updateAgentProfile($request)
+    {
+        return $this->agentRepository->updateAgentProfile($request);
+    }
 
-   
+
     /**
      * Get  by id.
      *
@@ -106,7 +106,7 @@ class AgentService
     // public function getAllAgentData($request)
     // {
     //     return $this->agentRepository->getAllAgentData($request);
-    // } 
+    // }
 
     // public function ourAgentData($request)
     // {

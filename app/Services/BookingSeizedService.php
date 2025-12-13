@@ -26,59 +26,59 @@ class BookingSeizedService
 
     
     
-    public function getAll()
-    {
-        return $this->bookingseizedRepository->getAll();
-    }
+//     public function getAll()
+//     {
+//         return $this->bookingseizedRepository->getAll();
+//     }
 
-    public function bookingseizedById($id)
-    {
-        return $this->bookingseizedRepository->bookingseizedById($id);
-    }
+//     public function bookingseizedById($id)
+//     {
+//         return $this->bookingseizedRepository->bookingseizedById($id);
+//     }
 
 
     
-    public function updateSeized($data)
-    { 
-        try {
-            $seized = $this->bookingseizedRepository->update($data);
-        } catch (Exception $e) {
-            // Log::info($e->getMessage());
-            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
-        }
-        return $seized;
-    }
+//     public function updateSeized($data)
+//     { 
+//         try {
+//             $seized = $this->bookingseizedRepository->update($data);
+//         } catch (Exception $e) {
+//             // Log::info($e->getMessage());
+//             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
+//         }
+//         return $seized;
+//     }
 
 
-    public function bookingseizedData($data)
-    { 
+//     public function bookingseizedData($data)
+//     { 
 
-       return $seized = $this->bookingseizedRepository->bookingseizedData($data);
-   }  
+//        return $seized = $this->bookingseizedRepository->bookingseizedData($data);
+//    }  
 
-   public function deletebookingseized($id)
-    { 
+//    public function deletebookingseized($id)
+//     { 
 
-       return $seized = $this->bookingseizedRepository->deletebookingseized($id);
-   }
-
-
-
-   public function changeStatus($id)
-   {
-    try {
-        $post = $this->bookingseizedRepository->changeStatus($id);
-
-    } catch (Exception $e) {
-        throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
-    }
-    return $post;
-}
+//        return $seized = $this->bookingseizedRepository->deletebookingseized($id);
+//    }
 
 
-public function saveSeized($data)
-{   
-    return  $seized = $this->bookingseizedRepository->save($data);
-}
+
+//    public function changeStatus($id)
+//    {
+//     try {
+//         $post = $this->bookingseizedRepository->changeStatus($id);
+
+//     } catch (Exception $e) {
+//         throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+//     }
+//     return $post;
+// }
+
+
+// public function saveSeized($data)
+// {   
+//     return  $seized = $this->bookingseizedRepository->save($data);
+// }
 
 }

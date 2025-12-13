@@ -12,16 +12,15 @@ use InvalidArgumentException;
 
 class ReasonService
 {
-    
     protected $reasonRepository;
 
-    
+
     public function __construct(reasonRepository $reasonRepository)
     {
         $this->reasonRepository = $reasonRepository;
     }
 
-    
+
     // public function deleteById($id)
     // {
     //     DB::beginTransaction();
@@ -42,22 +41,22 @@ class ReasonService
 
     // }
 
-    
+
     // public function getAll()
     // {
     //     return $this->reasonRepository->getAll();
     // }
 
-    
+
     // public function getById($id)
     // {
     //     return $this->reasonRepository->getById($id);
     // }
 
-   
+
     // public function updatePost($data, $id)
     // {
-        
+
 
     //     DB::beginTransaction();
 
@@ -86,7 +85,7 @@ class ReasonService
      */
     // public function savePostData($data)
     // {
-        
+
 
     //     $result = $this->reasonRepository->save($data);
 

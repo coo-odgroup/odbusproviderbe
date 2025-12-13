@@ -100,7 +100,7 @@ class AppDownloadService
      */
     // public function savePostData($data)
     // {
-        
+
 
     //     $result = $this->appDownloadRepository->save($data);
 

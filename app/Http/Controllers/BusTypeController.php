@@ -1,86 +1,99 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\BusType;
-use App\Services\BusTypeService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
 use InvalidArgumentException;
 use Exception;
 use App\AppValidator\BusTypeValidator;
+use App\Repositories\BusTypeRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+
 class BusTypeController extends Controller
 {
-   
     use ApiResponser;
-      
-      
-    protected $busTypeService;
-    protected $busTypeValidator;
+
+
     
-    public function __construct(BusTypeService $busTypeService,BusTypeValidator $busTypeValidator)
+    protected $busTypeValidator;
+     protected $busTypeRepository;
+
+    public function __construct(
+    BusTypeRepository $busTypeRepository,
+    BusTypeValidator $busTypeValidator)
     {
-        $this->busTypeService = $busTypeService;
+       
         $this->busTypeValidator = $busTypeValidator;
+        $this->busTypeRepository = $busTypeRepository;
     }
 
 
-    public function getAllBusType(Request $request) {
+    public function getAllBusType(Request $request)
+    {
 
-      $busTypes = $this->busTypeService->getAll($request);
-      return $this->successResponse($busTypes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-    } 
-
-    public function BusTypebyUser(Request $request) {
-
-      $busTypes = $this->busTypeService->BusTypebyUser($request);
-      return $this->successResponse($busTypes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+        
+        
+        $busTypes = $this->busTypeRepository->getAll($request);
+        return $this->successResponse($busTypes, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-    public function getAllBusTypeData(Request $request) {
 
-      $busTypes = $this->busTypeService->getAllBusTypeData($request);
-      return $this->successResponse($busTypes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    public function BusTypebyUser(Request $request)
+    {
+        
+        $busTypes = $this->busTypeRepository->BusTypebyUser($request);
+        
+        
+
+        return $this->successResponse($busTypes, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+    public function getAllBusTypeData(Request $request)
+    {
+
+        $busTypes = $this->busTypeRepository->getAllBusTypeData($request);
+        return $this->successResponse($busTypes, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     public function getBusTypeOperator(Request $request)
     {
-      $busTypes=$this->busTypeService->getBusTypeOperator($request);
-      return $this->successResponse($busTypes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+        $busTypes = $this->busTypeRepository->getBusTypeOperator($request);
+        return $this->successResponse($busTypes, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-    public function createBusType(Request $request) {
-      $data = $request->only([
-        'type',
-        'name',
-        'user_id',
-        'status',
-        'user_role',
-        'bus_operator_id',
-        'created_by'
-      ]);
+    public function createBusType(Request $request)
+    {
+        $data = $request->only([
+          'type',
+          'name',
+          'user_id',
+          'status',
+          'user_role',
+          'bus_operator_id',
+          'created_by'
+        ]);
 
-    
 
-      $busTypeValidation = $this->busTypeValidator->validate($data);
-      
-      if ($busTypeValidation->fails()) {
-        $errors = $busTypeValidation->errors();
-        // return $errors->toJson();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      }
 
-      try {
-          $data=$this->busTypeService->savePostData($data);
-          return $this->successResponse($data,"Bus Type Added",Response::HTTP_CREATED); 
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }   
-     
-    } 
+        $busTypeValidation = $this->busTypeValidator->validate($data);
 
-    public function updateBusType(Request $request, $id) {
+        if ($busTypeValidation->fails()) {
+            $errors = $busTypeValidation->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+
+        try {
+            $data = $this->busTypeRepository->save($data);
+            return $this->successResponse($data, "Bus Type Added", Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+
+    }
+
+    public function updateBusType(Request $request, $id)
+    {
         $data = $request->only([
           'type',
           'name',
@@ -90,64 +103,68 @@ class BusTypeController extends Controller
           'bus_operator_id',
           'created_by'
         ]);
-        
+
         $busTypeValidation = $this->busTypeValidator->validate($data);
 
         if ($busTypeValidation->fails()) {
-          $errors = $busTypeValidation->errors();
-          // return $errors->toJson();
-          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            $errors = $busTypeValidation->errors();
+            
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
-        
+
         try {
-          $this->busTypeService->update($data, $id);
-          return $this->successResponse(null, "Bus Type Updated",Response::HTTP_CREATED);
-         
+          
+            $this->busTypeRepository->update($data, $id);
+            return $this->successResponse(null, "Bus Type Updated", Response::HTTP_CREATED);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+
+    }
+
+    public function deleteBusType($id)
+    {
+
+        try {
+            
+            $this->busTypeRepository->delete($id);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        
+        return $this->successResponse(null, "Bus Type Deleted", Response::HTTP_ACCEPTED);
+
     }
 
-    public function deleteBusType ($id) {
+    public function getBusType($id)
+    {
+        try {
+            
+            $bustypeID = $this->busTypeRepository->getById($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse($bustypeID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
 
-      try {
-        $this->busTypeService->deleteById($id);
+    }
+    public function getBusTypeDT(Request $request)
+    {
+
         
-      } 
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse(Null,"Bus Type Deleted",Response::HTTP_ACCEPTED); 
-     
+        $busTypes = $this->busTypeRepository->getAllBusTypeDT($request);
+        return $this->successResponse($busTypes, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+
     }
 
-    public function getBusType($id) {
-      try {
-        $bustypeID= $this->busTypeService->getById($id);
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse($bustypeID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-      
-    }   
-    public function getBusTypeDT(Request $request) {      
-        
-      $busTypes = $this->busTypeService->getAllBusTypeDT($request);
-      return $this->successResponse($busTypes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      
-    }
+    public function changeStatus($id)
+    {
+        try {
 
-    public function changeStatus ($id) {
-      try{
-        $this->busTypeService->changeStatus($id);
-      }
-      catch (Exception $e){
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-      return $this->successResponse(null, "Bus Type Status Updated", Response::HTTP_ACCEPTED);
+        } catch (Exception $e) {
+               return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        return $this->successResponse(null, "Bus Type Status Updated", Response::HTTP_ACCEPTED);
     }
 
 

@@ -5,11 +5,10 @@ namespace App\Repositories;
 use App\Models\Slider;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\File;
 
 class SliderRepository
 {
-    
     public function __construct(Slider $slider)
     {
         $this->slider = $slider;
@@ -22,43 +21,42 @@ class SliderRepository
     public function getData($request)
     {
         $paginate = $request['per_page'];
-        $searchBy = $request['searchBy']; 
+        $searchBy = $request['searchBy'];
         $status = $request['status'];
         $userID = $request['userID'] ;
         $role_id = $request['role_id'] ;
         //return $request->all();
-       
-        if($searchBy!='' && $status!=''){
+
+        if ($searchBy != '' && $status != '') {
             $list = $this->slider->where('occassion', 'like', '%' .$searchBy . '%')
                                  ->where('status', $status)
                                  ->whereNotIn('status', [2])
-                                 ->orderBy('id','desc');
-        }elseif($searchBy!='' && $status==''){
+                                 ->orderBy('id', 'desc');
+        } elseif ($searchBy != '' && $status == '') {
             $list = $this->slider->where('occassion', $searchBy)
                                  ->whereNotIn('status', [2])
-                                 ->orderBy('id','desc');
-        }elseif($searchBy=='' && $status!=''){
+                                 ->orderBy('id', 'desc');
+        } elseif ($searchBy == '' && $status != '') {
             $list = $this->slider->where('status', $status)
                                  ->whereNotIn('status', [2])
-                                 ->orderBy('id','desc');
-        }else{
+                                 ->orderBy('id', 'desc');
+        } else {
             $list = $this->slider->with('coupon')->whereNotIn('status', [2])
-                                 ->orderBy('id','desc');    
+                                 ->orderBy('id', 'desc');
         }
-        if($userID!= null && $role_id!= 1 )
-          {
+        if ($userID != null && $role_id != 1) {
             $list = $list->Where('user_id', $userID);
-          }
+        }
 
         $list =  $list->paginate($paginate);
         //return $list;
         $response = array(
-            "count" => $list->count(), 
+            "count" => $list->count(),
             "total" => $list->total(),
             "data" => $list
-           );   
-           return $response;
-                            
+           );
+        return $response;
+
     }
     public function getById($id)
     {
@@ -77,14 +75,13 @@ class SliderRepository
         $slide->start_time = $data['start_time'];
         $slide->end_date = $data['end_date'];
         $slide->end_time = $data['end_time'];
-        if($data['coupon_id']!= 'null'){
+        if ($data['coupon_id'] != 'null') {
             $slide->coupon_id  = $data['coupon_id'];
-        }else
-        {
-             $slide->coupon_id  = 0;
+        } else {
+            $slide->coupon_id  = 0;
         }
-        
-       
+
+
         $slide->slider_description = $data['slider_description'];
         $slide->created_by = $data['created_by'];
         return $slide;
@@ -93,28 +90,28 @@ class SliderRepository
     {
         // Log::info($data);exit;
 
-        $slide = new $this->slider;
-        $slide = $this->getModel($data,$slide);
+        $slide = new $this->slider();
+        $slide = $this->getModel($data, $slide);
         $file = collect($data)->get('slider_img');
         //Log::info($file);
-        if(($file)!=null){
+        if (($file) != null) {
 
             $filename  = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
             $picture   = $filename;
             $slide->slider_photo = $picture;
             $file->move(public_path('uploads/slider_photos/'), $picture);
-       }
+        }
 
-       $android_file = collect($data)->get('android_image');
-        if(($android_file)!=null){
+        $android_file = collect($data)->get('android_image');
+        if (($android_file) != null) {
 
             $filename  = $android_file->getClientOriginalName();
             $extension = $android_file->getClientOriginalExtension();
             $picture   = $filename;
             $slide->android_image = $picture;
             $android_file->move(public_path('uploads/slider_photos/'), $picture);
-       }
+        }
         $slide->save();
         return $slide->fresh();
     }
@@ -123,47 +120,45 @@ class SliderRepository
     {
         $sliderId = $data['id'];
         $slider_data = $this->slider->where('id', $sliderId)->get();
-        $slide = $this->slider->find($sliderId); 
+        $slide = $this->slider->find($sliderId);
         $file = collect($data)->get('slider_img');
 
         $android_file = collect($data)->get('android_image');
 
-        if(($file)!='null'){
-            $slide=$this->getModel($data,$slide);
+        if (($file) != 'null') {
+            $slide = $this->getModel($data, $slide);
             $filename  = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
             $picture   = $filename;
             $slide->slider_photo = $picture;
             $file->move(public_path('uploads/slider_photos/'), $picture);
-           
-          if($slider_data[0]->slider_photo !=''){
-            
-             $old_image_path_consumer = public_path('uploads/slider_photos/').$slider_data[0]->slider_photo;
-             if(File::exists($old_image_path_consumer)){
+
+            if ($slider_data[0]->slider_photo != '') {
+
+                $old_image_path_consumer = public_path('uploads/slider_photos/').$slider_data[0]->slider_photo;
+                if (File::exists($old_image_path_consumer)) {
                     unlink($old_image_path_consumer);
-                }     
-          }
-            
-        }
-        elseif(($android_file)!='null' && ($android_file)!='undefined' ){
-            $slide=$this->getModel($data,$slide);
+                }
+            }
+
+        } elseif (($android_file) != 'null' && ($android_file) != 'undefined') {
+            $slide = $this->getModel($data, $slide);
             $filename  = $android_file->getClientOriginalName();
             $extension = $android_file->getClientOriginalExtension();
             $picture   = $filename;
             $slide->android_image = $picture;
             $android_file->move(public_path('uploads/slider_photos/'), $picture);
-           
-          if($slider_data[0]->android_image !=''){
-            
-             $old_image_path_consumer = public_path('uploads/slider_photos/').$slider_data[0]->android_image;
-             if(File::exists($old_image_path_consumer)){
+
+            if ($slider_data[0]->android_image != '') {
+
+                $old_image_path_consumer = public_path('uploads/slider_photos/').$slider_data[0]->android_image;
+                if (File::exists($old_image_path_consumer)) {
                     unlink($old_image_path_consumer);
-                }     
-          }
-            
-        }
-        else{
-             $slide=$this->getModel($data,$slide);
+                }
+            }
+
+        } else {
+            $slide = $this->getModel($data, $slide);
         }
         $slide->update();
         return $slide;
@@ -180,9 +175,9 @@ class SliderRepository
     public function changeStatus($id)
     {
         $slide = $this->slider->find($id);
-        if($slide->status==0){
+        if ($slide->status == 0) {
             $slide->status = 1;
-        }elseif($slide->status==1){
+        } elseif ($slide->status == 1) {
             $slide->status = 0;
         }
         $slide->update();

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\BusOwnerFare;
@@ -12,39 +13,38 @@ use InvalidArgumentException;
 
 class OwnerPaymentService
 {
-    
     protected $ownerPaymentRepository;
 
-    
+
     public function __construct(OwnerPaymentRepository $ownerPaymentRepository)
     {
         $this->ownerPaymentRepository = $ownerPaymentRepository;
     }
 
-   
-    
+
+
     // public function getAll()
     // {
     //     return $this->ownerPaymentRepository->getAll();
     // }
-   
+
     // public function dataTable($request)
     // {
-        
+
     //     return $this->ownerPaymentRepository->getDatatable($request);
-    // }  
+    // }
     // public function getPaymentDetails($request)
     // {
-        
+
     //     return $this->ownerPaymentRepository->getPaymentDetails($request);
-    // } 
+    // }
 
     // public function ownerpaymentData($request)
     // {
-        
+
     //     return $this->ownerPaymentRepository->ownerpaymentData($request);
     // }
-        
+
     // public function savePostData($data)
     // {
     //     try {
@@ -56,6 +56,6 @@ class OwnerPaymentService
     //     }
     //     return $post;
     // }
-   
+
 
 }

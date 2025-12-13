@@ -8,12 +8,11 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Validator; 
+use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 
 class RoleService
 {
-    
     protected $roleRepository;
 
     /**
@@ -107,7 +106,7 @@ class RoleService
     // public function getAllRoleDT($request)
     // {
     //     return $this->roleRepository->getAllBusSittingDT($request);
-    // } 
+    // }
 
     // public function RoleData($request)
     // {

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Repositories\AssocAssignReportRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -8,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
-
 
 class AssocAssignReportService
 {
@@ -18,7 +18,7 @@ class AssocAssignReportService
     {
         $this->AssocAssignReportRepository = $AssocAssignReportRepository;
     }
-    
+
     // public function getAssignBusData($request)
     // {
     //     return $this->AssocAssignReportRepository->getAssignBusData($request);

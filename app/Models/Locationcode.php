@@ -14,7 +14,7 @@ class Locationcode extends Model
     protected $fillable = ['location_id','type','providerid','created_by','status'];
     public function location()
     {
-    	return $this->belongsTo(Location::class);
+        return $this->belongsTo(Location::class);
     }
 
     protected $hidden = [

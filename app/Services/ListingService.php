@@ -11,8 +11,7 @@ use InvalidArgumentException;
 
 class ListingService
 {
-    
-    protected $listingRepository;    
+    protected $listingRepository;
     public function __construct(ListingRepository $listingRepository)
     {
         $this->listingRepository = $listingRepository;
@@ -22,6 +21,6 @@ class ListingService
     //     return $this->listingRepository->getAll();
     // }
 
-    
-   
+
+
 }

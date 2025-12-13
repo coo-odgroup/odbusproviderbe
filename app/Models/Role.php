@@ -12,9 +12,9 @@ use App\Models\PermissionToRole;
 use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
-{    
+{
     protected $table = 'role';
-    protected $fillable = ['name', 'created_at', 'created_by'];       
+    protected $fillable = ['name', 'created_at', 'created_by'];
 
     public function user()
     {

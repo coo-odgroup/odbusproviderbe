@@ -8,16 +8,16 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Blogger extends Authenticatable
-    {
-        use Notifiable;
+{
+    use Notifiable;
 
-        protected $guard = 'super_admin';
+    protected $guard = 'super_admin';
 
-        protected $fillable = [
-            'name', 'email', 'password',
-        ];
+    protected $fillable = [
+        'name', 'email', 'password',
+    ];
 
-        protected $hidden = [
-            'password', 'remember_token',
-        ];
-    }
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+}

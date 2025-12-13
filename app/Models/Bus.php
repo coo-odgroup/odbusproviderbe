@@ -7,10 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\BusSeats;
 use App\Models\BusAmenities;
 use App\Models\BusSafety;
-
 use App\Models\BusSeatLayout;
 use App\Models\bus_seats;
-
 // use App\Models\Amenities;
 use App\Models\CityClosing;
 use App\Models\BusContacts;
@@ -27,70 +25,65 @@ use App\Models\BusStoppageTiming;
 use App\Models\BookingSeized;
 use App\Models\BusType;
 
-
-
-
-
-
 //bus_seats  bus_amenities city_closing bus_contacts bus_stoppage bus_stoppage_timing
 class Bus extends Model
 {
-    use HasFactory; 
+    use HasFactory;
     protected $table = 'bus';
-    protected $fillable = [ 
+    protected $fillable = [
         'bus_operator_id','user_id', 'name','via','bus_number','bus_description','bus_type_id','bus_sitting_id','amenities_id','cancellationslabs_id','bus_seat_layout_id','running_cycle','popularity','admin_notes','has_return_bus', 'return_bus_id','cancelation_points','created_by',
     ];
     public function busAmenities()
     {
-        return $this->hasMany(BusAmenities::class);        
-    } 
+        return $this->hasMany(BusAmenities::class);
+    }
 
     public function ticketPrice()
     {
-        return $this->hasMany(TicketPrice::class)->where('status','!=',2);        
-    } 
+        return $this->hasMany(TicketPrice::class)->where('status', '!=', 2);
+    }
 
     public function busSafety()
     {
-        return $this->hasMany(BusSafety::class);               
-    } 
+        return $this->hasMany(BusSafety::class);
+    }
     public function review()
-    {        
-        return $this->hasMany(Review::class);        
-    } 
+    {
+        return $this->hasMany(Review::class);
+    }
     public function busSchedule()
-    {        
-        return $this->hasMany(BusSchedule::class)->where('status','!=',2);               
-    } 
+    {
+        return $this->hasMany(BusSchedule::class)->where('status', '!=', 2);
+    }
     public function busCancelled()
-    {        
-        return $this->hasMany(BusCancelled::class);        
-    } 
+    {
+        return $this->hasMany(BusCancelled::class);
+    }
     public function busstoppage()
-    {        
-        return $this->hasMany(BusStoppage::class)->where('status','!=',2);                
-    }  
+    {
+        return $this->hasMany(BusStoppage::class)->where('status', '!=', 2);
+    }
     public function busSeats()
-    {        
-        return $this->hasMany(BusSeats::class);                
-    }     
+    {
+        return $this->hasMany(BusSeats::class);
+    }
     public function busOperator()
     {
         return $this->belongsTo(BusOperator::class);
     }
     public function specialFare()
     {
-        return $this->belongsToMany(SpecialFare::class);       
+        return $this->belongsToMany(SpecialFare::class);
     }
 
     public function festivalFare()
     {
-        return $this->belongsToMany(FestivalFare::class);       
+        return $this->belongsToMany(FestivalFare::class);
     }
     public function busContacts()
-        {
-            return $this->hasMany(BusContacts::class)->where('status','!=',2);               
-        }
+    {
+        return $this->hasMany(BusContacts::class)->where('status', '!=', 2);
+    }
 
     public function BusSitting()
     {
@@ -108,31 +101,31 @@ class Bus extends Model
 
     public function bus_seats()
     {
-        return $this->hasMany(BusSeats::class)->where('status','!=',2);        
+        return $this->hasMany(BusSeats::class)->where('status', '!=', 2);
     }
 
     public function ownerfare()
     {
         return $this->belongsToMany(OwnerFare::class);
-    } 
+    }
     public function bookingseized()
     {
-        return $this->hasMany(BookingSeized::class)->where('status','!=',2);        
+        return $this->hasMany(BookingSeized::class)->where('status', '!=', 2);
     }
 
     public function cancellationslabs()
-    {        
-        return $this->belongsTo(CancellationSlab::class);        
+    {
+        return $this->belongsTo(CancellationSlab::class);
     }
 
 
     // public function cancellationslabs()
-    // {        
-    //     return $this->belongsTo(Cancellationslabs::class);        
-    // } 
+    // {
+    //     return $this->belongsTo(Cancellationslabs::class);
+    // }
     public function busStoppageTimimg()
-    {        
-        return $this->hasMany(BusStoppageTiming::class)->where('status','!=',2);               
+    {
+        return $this->hasMany(BusStoppageTiming::class)->where('status', '!=', 2);
     }
 
 }

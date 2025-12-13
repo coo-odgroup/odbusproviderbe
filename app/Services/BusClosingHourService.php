@@ -13,13 +13,12 @@ use InvalidArgumentException;
 
 class BusClosingHourService
 {
-    
     protected $busClosingHourRepository;
 
-    
+
     public function __construct(BusClosingHourRepository $busClosingHourRepository)
     {
-        $this->busClosingHourRepository = $busClosingHourRepository; 
+        $this->busClosingHourRepository = $busClosingHourRepository;
     }
     // public function deleteById($id)
     // {
@@ -52,12 +51,12 @@ class BusClosingHourService
     // {
     //     return $this->busClosingHourRepository->getAll($request);
     // }
-     /**
-     * Get  by id.
-     *
-     * @param $id
-     * @return String
-     */
+    /**
+    * Get  by id.
+    *
+    * @param $id
+    * @return String
+    */
     // public function getById($id)
     // {
     //     return $this->busClosingHourRepository->getById($id);
@@ -101,6 +100,6 @@ class BusClosingHourService
     //     }
     //     return $post;
     // }
-   
+
 
 }

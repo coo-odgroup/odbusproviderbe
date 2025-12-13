@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AppDownload extends Model
 {
-    use HasFactory; 
+    use HasFactory;
     protected $table = 'appdownload';
     // public $timestamps = false;
     protected $fillable = [

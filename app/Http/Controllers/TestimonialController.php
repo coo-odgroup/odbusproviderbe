@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\TestimonialService;
+use App\Repositories\TestimonialRepository;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Traits\ApiResponser;
@@ -13,108 +13,105 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\TestimonialValidator;
 
-
 class TestimonialController extends Controller
 {
     use ApiResponser;
-   
-    protected $testimonialService;
-    protected $testimonialValidator;   
-    
-    
-    public function __construct(TestimonialService $testimonialService, TestimonialValidator $testimonialValidator)
+
+    protected $testimonialRepository;
+    protected $testimonialValidator;
+
+
+    public function __construct(TestimonialRepository $testimonialRepository, TestimonialValidator $testimonialValidator)
     {
-        $this->testimonialService = $testimonialService;
-        $this->testimonialValidator = $testimonialValidator;                
+       $this->testimonialRepository = $testimonialRepository;
+        $this->testimonialValidator = $testimonialValidator;
     }
 
     public function getAlltestimonial(Request $request)
     {
-      // Log::info($request);
-      
-        $testimonial = $this->testimonialService->getAll($request);
-        return $this->successResponse($testimonial,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        // Log::info($request);
+
+        $testimonial = $this->testimonialRepository->getAll($request);
+        return $this->successResponse($testimonial, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-     public function addtestimonial(Request $request)
-     {
-      // log::info($request);exit;
-     	 $data = $request->only([
-            'posted_by',
-            'testinmonial_content',
-            'travel_date',
-            'user_id',
-            'destination',
-            'source',
-            'designation',
-            'created_by'
-        ]); 
-
-    	 $testimonial = $this->testimonialValidator->validate($data);
-
-
-      if ($testimonial->fails()) {
-        $errors = $testimonial->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      }      
-      try {
-        $this->testimonialService->addtestimonial($request);
-        return $this->successResponse(null, "Testimonial Added", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-      	// Log::info($e);
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }  
-
-     }
-     public function updatetestimonial(Request $request , $id)
-     {
-
-     	 $data = $request->only([
-             'posted_by',
-            'testinmonial_content',
-            'travel_date',
-            'user_id',
-            'destination',
-            'source',
-            'designation',
-            'created_by'
+    public function addtestimonial(Request $request)
+    {
+        // log::info($request);exit;
+        $data = $request->only([
+          'posted_by',
+          'testinmonial_content',
+          'travel_date',
+          'user_id',
+          'destination',
+          'source',
+          'designation',
+          'created_by'
         ]);
 
-    	 $testimonial = $this->testimonialValidator->validate($data);
+        $testimonial = $this->testimonialValidator->validate($data);
 
 
-      if ($testimonial->fails()) {
-        $errors = $testimonial->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-      }      
-      try {
-        $this->testimonialService->updatetestimonial($request, $id);
-        return $this->successResponse(null,"Testimonial Updated", Response::HTTP_CREATED);
-      }
-      catch(Exception $e){
-      	// Log::info($e);
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }  
+        if ($testimonial->fails()) {
+            $errors = $testimonial->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        try {
+            $this->testimonialRepository->addtestimonial($request);
+            return $this->successResponse(null, "Testimonial Added", Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            // Log::info($e);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
 
-     }
+    }
+    public function updatetestimonial(Request $request, $id)
+    {
 
-     public function deletetestimonial($id)
-     {
+        $data = $request->only([
+           'posted_by',
+          'testinmonial_content',
+          'travel_date',
+          'user_id',
+          'destination',
+          'source',
+          'designation',
+          'created_by'
+        ]);
 
-     	$testimonial = $this->testimonialService->deletetestimonial($id);
-        return $this->successResponse($testimonial,"Testimonial Deleted",Response::HTTP_OK);
+        $testimonial = $this->testimonialValidator->validate($data);
 
-     } 
-     public function changeStatus($id)
-     {
-      $testimonial = $this->testimonialService->changeStatus($id);
-        return $this->successResponse($testimonial,"Testimonial Status Updated",Response::HTTP_OK);
 
-     }
+        if ($testimonial->fails()) {
+            $errors = $testimonial->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        try {
+            $this->testimonialRepository->updatetestimonial($request,$id);
+            return $this->successResponse(null, "Testimonial Updated", Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            // Log::info($e);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
 
-     
-    
-     
+    }
+
+    public function deletetestimonial($id)
+    {
+
+        $testimonial = $this->testimonialRepository->deletetestimonial($id);
+        return $this->successResponse($testimonial, "Testimonial Deleted", Response::HTTP_OK);
+
+    }
+    public function changeStatus($id)
+    {
+        $testimonial =$this->testimonialRepository->changeStatus($id);
+        return $this->successResponse($testimonial, "Testimonial Status Updated", Response::HTTP_OK);
+
+    }
+
+
+
+
 
 }

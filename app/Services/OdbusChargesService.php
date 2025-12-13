@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 
-
 class OdbusChargesService
 {
     /**
@@ -32,13 +31,13 @@ class OdbusChargesService
     // {
     //     return $this->odbusChargesRepository->getData($request);
     // }
-    
+
     // public function getAll()
     // {
     //     return $this->odbusChargesRepository->getAll();
     // }
-    
-   
+
+
     /**
      * Get  by id.
      *
@@ -75,7 +74,7 @@ class OdbusChargesService
      * @return String
      */
     // public function savePostData($data)
-    // {   
+    // {
     //     // Log::info($data);exit;
     //     try {
     //         $charges = $this->odbusChargesRepository->save($data);
@@ -104,7 +103,7 @@ class OdbusChargesService
     //         throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
     //     }
     //     return $charges;
-    // } 
+    // }
 
     // public function removePopup($id)
     // {

@@ -7,7 +7,7 @@ use App\Models\BusAmenities;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use App\Traits\ApiResponser;
-use App\Services\BusAmenitiesService;
+use App\Repositories\BusAmenitiesRepository;
 use Exception;
 use InvalidArgumentException;
 use App\AppValidator\BusAmenitiesValidator;
@@ -16,98 +16,100 @@ use Symfony\Component\HttpFoundation\Response;
 class BusAmenitiesController extends Controller
 {
     use ApiResponser;
-    protected $busAmenitiesService;
+    protected $busAmenitiesRepository;
     protected $busAmenitiesValidator;
-    
-    public function __construct(BusAmenitiesService $busAmenitiesService,BusAmenitiesValidator $busAmenitiesValidator)
+
+    public function __construct(busAmenitiesRepository $busAmenitiesRepository, BusAmenitiesValidator $busAmenitiesValidator)
     {
-        $this->busAmenitiesService = $busAmenitiesService;
+        $this->busAmenitiesRepository = $busAmenitiesRepository;
         $this->busAmenitiesValidator = $busAmenitiesValidator;
     }
 
 
-    public function getAllBusAmenities(Request $request) {
+    public function getAllBusAmenities(Request $request)
+    {
 
-        $busAmenities = $this->busAmenitiesService->getAll();
-        return $this->successResponse($busAmenities,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $busAmenities = $this->busAmenitiesRepository->getAll();
+        return $this->successResponse($busAmenities, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function createBusAmenities(Request $request) {
+    public function createBusAmenities(Request $request)
+    {
         $data = $request->only([
 
-            'bus_id', 
+            'bus_id',
             'amenities_id',
             'created_by'
-            
-          ]);
-          $busAmenitiesValidation = $this->busAmenitiesValidator->validate($data);
 
-        if ($busAmenitiesValidation->fails()) {
-            $errors = $busAmenitiesValidation->errors();
-            // return $errors->toJson();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-          }
-      try {
-          $this->busAmenitiesService->savePostData($data);
-      } catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-
-      return $this->successResponse($data,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED); 
-    } 
-
-    public function updateBusAmenities(Request $request, $id) {
-        $data = $request->only([
-            'bus_id', 
-            'amenities_id',
-            'created_by'
         ]);
-        
         $busAmenitiesValidation = $this->busAmenitiesValidator->validate($data);
 
         if ($busAmenitiesValidation->fails()) {
             $errors = $busAmenitiesValidation->errors();
             // return $errors->toJson();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-          }
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        try {
+            $this->busAmenitiesRepository->save($data);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->successResponse($data, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
+    }
+
+    public function updateBusAmenities(Request $request, $id)
+    {
+        $data = $request->only([
+            'bus_id',
+            'amenities_id',
+            'created_by'
+        ]);
+
+        $busAmenitiesValidation = $this->busAmenitiesValidator->validate($data);
+
+        if ($busAmenitiesValidation->fails()) {
+            $errors = $busAmenitiesValidation->errors();
+            // return $errors->toJson();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
 
         try {
-            $this->busAmenitiesService->updatePost($data, $id);
-
+            $this->busAmenitiesRepository->update($data, $id);
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
 
-        return $this->successResponse($data,Config::get('constants.RECORD_UPDATED'),Response::HTTP_OK); 
+        return $this->successResponse($data, Config::get('constants.RECORD_UPDATED'), Response::HTTP_OK);
     }
 
-    public function deleteBusAmenities ($id) {
-    
-      try {
-          $this->busAmenitiesService->deleteById($id);
-      } catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-      }
-      return $this->successResponse(Null,Config::get('constants.RECORD_REMOVED'),Response::HTTP_ACCEPTED); 
-    }
+    public function deleteBusAmenities($id)
+    {
 
-    public function getBusAmenities($id) {
-        try{
-            $busAmenitiesID=$this->busAmenitiesService->getById($id);
+        try {
+            $this->busAmenitiesRepository->delete($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
-        catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-          }
-          return $this->successResponse($busAmenitiesID,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
-        }   
-        
-        
-         ////data table//////
-    public function getBusAmenitiesDT(Request $request) {      
-        
-        $busAmenities = $this->busAmenitiesService->getAllBusAmenitiesDT($request);
-        return $this->successResponse($busAmenities,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-        
-      }
-	     
+        return $this->successResponse(null, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+    }
+
+    public function getBusAmenities($id)
+    {
+        try {
+            $busAmenitiesID = $this->busAmenitiesRepository->getById($id);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+        return $this->successResponse($busAmenitiesID, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+
+    ////data table//////
+    public function getBusAmenitiesDT(Request $request)
+    {
+
+        $busAmenities = $this->busAmenitiesRepository->getAllBusAmenitiesDT($request);
+        return $this->successResponse($busAmenities, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 }

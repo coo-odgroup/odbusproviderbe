@@ -16,7 +16,7 @@ class Banner extends Model
     ];
 
 
-     public function busOperator()
+    public function busOperator()
     {
         return $this->belongsTo(BusOperator::class);
     }

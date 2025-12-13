@@ -7,8 +7,6 @@ use App\Models\BusOperator;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
-
-
 class Faq extends Model
 {
     use HasFactory;

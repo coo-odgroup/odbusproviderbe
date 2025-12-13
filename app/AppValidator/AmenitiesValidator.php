@@ -1,19 +1,20 @@
 <?php
+
 namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class AmenitiesValidator 
-{   
+class AmenitiesValidator
+{
+    public function validate($data)
+    {
 
-    public function validate($data) { 
-        
         $rules = [
             'name' => 'required|max:50',
-            
+
             'created_by' => 'required',
-        ];      
+        ];
 
         $AmenitiesValidation = Validator::make($data, $rules);
         return $AmenitiesValidation;

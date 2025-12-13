@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
-
 class SendCancelTicketEmailJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -31,10 +33,10 @@ class SendCancelTicketEmailJob implements ShouldQueue
     {
         $this->to = $to;
         $this->subject = $subject;
-        $this->pnr=$req['pnr'];
-        $this->refund_amount=$req['refund_amount'];
-        $this->deduction_percent=$req['deduction_percent'];
-        
+        $this->pnr = $req['pnr'];
+        $this->refund_amount = $req['refund_amount'];
+        $this->deduction_percent = $req['deduction_percent'];
+
     }
 
     /**
@@ -44,7 +46,7 @@ class SendCancelTicketEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        $data=[
+        $data = [
             'pnr' => $this->pnr,
             'refund_amount' => $this->refund_amount,
             'deduction_percent' => $this->deduction_percent
