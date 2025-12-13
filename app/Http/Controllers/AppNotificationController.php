@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\AppNotification;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AppNotificationController extends Controller
 {
@@ -158,5 +160,70 @@ public function update(Request $request, $id)
             'message' => 'Notification deleted and set to inactive',
             'deleted_by' => $request->user_id
         ]);
+    }
+
+    public function sendNotification(Request $request) {
+        $cur_date = date('Y-m-d');
+        $cur_time = date('H:i:s');
+        $bookings = DB::table('booking as b')
+        ->join('users as u', 'u.id', '=', 'b.users_id')
+        ->join('location as sl', 'sl.id', '=', 'b.source_id')
+        ->join('location as dl', 'dl.id', '=', 'b.destination_id')
+        ->join('bus as bus', 'bus.id','=','b.bus_id')
+        ->select(
+            'b.id',
+            'b.boarding_time',
+            'b.dropping_time',
+            'b.journey_dt',
+            'b.pnr',
+            'b.boarding_point',
+            'b.dropping_point',
+
+            'u.name as user_name',
+
+            'sl.name as source_name',
+            'dl.name as destination_name',
+
+            'bus.bus_number',
+            'bus.name as bus_name',
+        )
+        ->where('b.journey_dt', $cur_date)
+        ->whereRaw(
+            "TIME(?) BETWEEN DATE_SUB(TIME(b.boarding_time), INTERVAL 1 HOUR) AND TIME(b.boarding_time)",
+            [$cur_time]
+        )
+        ->get();
+
+        // return $bookings;
+        $tempData = [];
+
+        foreach ($bookings as $b) {
+            $data = [
+                'ROUTENAME'     => $b->source_name . ' to ' . $b->destination_name,
+                'BUSNAME'       => $b->bus_name,
+                'NUMBER'        => $b->bus_number,
+                'TIME'          => $b->boarding_time,
+                'BOARDINGPOINT' => $b->boarding_point
+            ];
+
+            $tempData[] = $this->getTemp($data);
+        }
+
+        return $tempData;
+    }
+
+    public function getTemp($data)
+    {
+        $templateData = DB::table('scheduler.push_notification_template')
+        ->where('id', 26)
+        ->get();
+
+        $template = $templateData[0]->message;
+
+        foreach ($data as $key => $value) {
+            $template = str_replace('{{' . $key . '}}', $value, $template);
+        }
+
+        return $template;
     }
 }
