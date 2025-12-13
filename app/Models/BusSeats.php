@@ -14,7 +14,7 @@ class BusSeats extends Model
 {
     use HasFactory;
     protected $table = 'bus_seats';
-    protected $fillable = ['bus_id', 'category','seat_type','berth_type','source_id','destination_id','seat_number','duration','created_by'];
+    protected $fillable = ['bus_id','ticket_price_id','seats_id','operation_date','status','type' ,'category','seat_type','berth_type','source_id','destination_id','seat_number','duration','created_by','reason','other_reason'];
     public function bus()
     {
     	return $this->belongsTo(Bus::class);
