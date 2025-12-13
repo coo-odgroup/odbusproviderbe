@@ -137,6 +137,8 @@ use App\Http\Controllers\ApiUserManageOperatorController;
 
 // Scheduler
 use App\Http\Controllers\SchedulerController;
+// Api Log Report
+use App\Http\Controllers\ApiLogReportController;
 
 //AppNotification
 use App\Http\Controllers\AppNotificationController;
@@ -1103,8 +1105,10 @@ Route::delete('deletemanageClientOperator/{id}', [ApiUserManageOperatorControlle
 Route::get('/getLessBookingUrls', [CompleteReportController::class, 'getLessBookingUrls']);
 Route::get('/PaytmBookingCancel/{pnr}', [TicketInformationController::class, 'PaytmBookingCancel']);
 
+// Jagan
 Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
 Route::post('scheduleRefundSelected', [SchedulerController::class, 'scheduleRefundSelected']);
+Route::post('apiLogReport', [ApiLogReportController::class, 'apiLogReport']);
 
 //add by sahil for chats
 Route::post('top-route',[ChartController::class,"topRoutes"]);
