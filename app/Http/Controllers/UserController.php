@@ -93,6 +93,7 @@ class UserController extends Controller
    public function login(Request $request) { 
 
     $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+    // dd($arrParam);
     $request=[];
 
     $request['email']= isset($arrParam->email) ? $arrParam->email :null;
