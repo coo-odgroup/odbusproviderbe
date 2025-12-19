@@ -11,16 +11,29 @@ class ApiLogReportController extends Controller
 {
     public function __construct() {}
 
-    public function apiLogReport(Request $request) {
+    public function apiLogReport(Request $request)
+    {
         $date = $request['date'] ?? today();
         $user = $request['user'] ?? [559, 486];
         $paginate = $request['rows_number'] ?? 100;
+        $status = $request['status'] ?? null;
+
+        // return $status;
 
         $api_log_data = DB::table('api_log')
             ->whereIn('user_id', (array) $user)
-            ->when($request->url, fn($q) => $q->where('url', 'LIKE', '%' . $request->url . '%'))
-            ->whereDate('created_at', $date)
-            ->paginate($paginate);
+            ->where('url', 'LIKE', '%TicketConfirmation%')
+            ->whereDate('created_at', $date);
+
+        if (isset($status) && (int)$status === 1) {
+            $api_log_data->where('response', 'LIKE', '%\\"status\\\":\\\"1\\\"%');
+        } elseif (isset($status) && (int)$status === 0) {
+            $api_log_data->where('response', 'LIKE', '%\\"status\\\":\\\"0\\\"%');
+        }
+
+        $api_log_data = $api_log_data->paginate($paginate);
+
+        // return "working";
 
         // return $api_log_data;
 
@@ -51,7 +64,7 @@ class ApiLogReportController extends Controller
 
             $status = $array["status"] ?? "";
 
-            if($status=="") {
+            if ($status == "") {
                 continue;
             }
 
