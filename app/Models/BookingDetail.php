@@ -24,7 +24,11 @@ class BookingDetail extends Model
     {
         return $this->belongsTo(BusSeats::class);
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> e81390389c469f729a9aff2058722017db2239d0
     public function seat()
     {
         return $this->belongsTo(Seats::class, 'bus_seats_id','id');

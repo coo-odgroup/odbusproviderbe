@@ -145,6 +145,8 @@ use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\RouteWiseBookingController;
 use App\Http\Controllers\NotificationMasterController;
 
+use Illuminate\Support\Facades\Artisan;
+
 
 Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
 Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);
@@ -1140,4 +1142,9 @@ Route::post('/sendNotification',[AppNotificationController::class,'sendNotificat
 
 Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
 Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);
+
+
+$router->get('/updateMinPriceForBus', function () {
+   Artisan::call('update:minPriceForBus');
+});
       
