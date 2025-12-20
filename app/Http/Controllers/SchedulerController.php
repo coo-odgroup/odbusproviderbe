@@ -24,11 +24,6 @@ class SchedulerController extends Controller
 
     }
 
-    public function scheduleRecords(Request $request) {
-        $cancelticketData = $this->schedulerRepository->scheduleRecords($request);
-        return $this->successResponse($cancelticketData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-    }
-
     public function scheduleRefund(Request $request) {
         $scheduleRefundData = $this->schedulerRepository->scheduleRefund($request);
         return $this->successResponse($scheduleRefundData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);

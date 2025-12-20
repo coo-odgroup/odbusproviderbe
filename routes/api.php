@@ -142,7 +142,10 @@ use App\Http\Controllers\ApiLogReportController;
 
 //AppNotification
 use App\Http\Controllers\AppNotificationController;
+use App\Http\Controllers\RouteWiseBookingController;
 use App\Http\Controllers\NotificationMasterController;
+
+use Illuminate\Support\Facades\Artisan;
 
 
 Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
@@ -1110,10 +1113,19 @@ Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
 Route::post('scheduleRefundSelected', [SchedulerController::class, 'scheduleRefundSelected']);
 Route::post('apiLogReport', [ApiLogReportController::class, 'apiLogReport']);
 
-//add by sahil for chats
+//Added by sahil 
+//For chats
 Route::post('top-route',[ChartController::class,"topRoutes"]);
 Route::post('top-city',[ChartController::class,"topCity"]);
 Route::post('day-wise',[ChartController::class,"bookingReport"]);
+Route::post('total-bus-seat',[ChartController::class,"TotalBusSeat"]);
+
+//Route wise booking 
+Route::post('route-wise-booking',[RouteWiseBookingController::class,"routewiseBooking"]);
+Route::post('route-wise-search',[RouteWiseBookingController::class,'allData']);
+
+
+
 
 
 //////////////////////////////////////////    AppNotification \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -1130,4 +1142,9 @@ Route::post('/sendNotification',[AppNotificationController::class,'sendNotificat
 
 Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
 Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);
+
+
+$router->get('/updateMinPriceForBus', function () {
+   Artisan::call('update:minPriceForBus');
+});
       

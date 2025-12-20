@@ -11,16 +11,29 @@ class ApiLogReportController extends Controller
 {
     public function __construct() {}
 
-    public function apiLogReport(Request $request) {
+    public function apiLogReport(Request $request)
+    {
         $date = $request['date'] ?? today();
         $user = $request['user'] ?? [559, 486];
-        $paginate = $request['rows_number'] ?? 10;
+        $paginate = $request['rows_number'] ?? 100;
+        $status = $request['status'] ?? null;
+
+        // return $status;
 
         $api_log_data = DB::table('api_log')
             ->whereIn('user_id', (array) $user)
-            ->when($request->url, fn($q) => $q->where('url', 'LIKE', '%' . $request->url . '%'))
-            ->whereDate('created_at', $date)
-            ->paginate($paginate);
+            ->where('url', 'LIKE', '%TicketConfirmation%')
+            ->whereDate('created_at', $date);
+
+        if (isset($status) && (int)$status === 1) {
+            $api_log_data->where('response', 'LIKE', '%\\"status\\\":\\\"1\\\"%');
+        } elseif (isset($status) && (int)$status === 0) {
+            $api_log_data->where('response', 'LIKE', '%\\"status\\\":\\\"0\\\"%');
+        }
+
+        $api_log_data = $api_log_data->paginate($paginate);
+
+        // return "working";
 
         // return $api_log_data;
 
@@ -29,29 +42,40 @@ class ApiLogReportController extends Controller
 
         foreach ($api_log_data->items() as $item) {
 
+            // return $item;
+
             $req = json_decode($item->request_body, true);
             $transactionId = $req["transaction_id"] ?? null;
 
             // Fetch PNR
-            $pnr = null;
-            if ($transactionId) {
-                $pnr = DB::table('booking')
-                    ->where('transaction_id', $transactionId)
-                    ->value('pnr');
-            }
+            // $pnr = null;
+            // if ($transactionId) {
+            //     $pnr = DB::table('booking')
+            //         ->where('transaction_id', $transactionId)
+            //         ->value('pnr');
+            // }
 
             // Clean response
             $resp = stripslashes($item->response);
             $clean = trim($resp, '"');
             $array = json_decode($clean, true);
 
+            // return $array;
+
             $status = $array["status"] ?? "";
+
+            if ($status == "") {
+                continue;
+            }
+
+            $pnr = $array["data"]["final_pnr"] ?? "";
 
             // Push formatted data
             $result[] = [
                 "transaction_id" => $transactionId,
                 "pnr" => $pnr,
                 "response_status" => $status,
+                "response_status_arr" => $clean,
                 "created_at" => $item->created_at,
                 "user_name" => $item->user_name,
             ];

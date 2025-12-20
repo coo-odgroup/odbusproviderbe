@@ -44,4 +44,15 @@ class TicketPrice extends Model
     {
         return $this->belongsTo(Location::class, 'destination_id');
     }
+
+    public function operator()
+    {
+        return $this->belongsTo(BusOperator::class, 'bus_operator_id', 'id');
+    }
+
+    public function busdata()
+    {
+        return $this->belongsTo(Bus::class,'bus_id','id');
+    }
+
 }
