@@ -33,7 +33,8 @@ class RouteWiseBookingController extends Controller
             $delay ++;
         }
 
-        return "Job Created successfully...";
+
+        return response()->json(["status"=>200,"msg"=>"Job Created successfully..."]);
     }
 
 
