@@ -30,4 +30,10 @@ class BusSeats extends Model
     {
         return $this->belongsTo(TicketPrice::class);
     }
+
+    public function seat()
+    {
+        return $this->belongsTo(Seats::class, 'seats_id', 'id');
+    }
+
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Bus;
+use App\Models\BusOperator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -127,7 +128,6 @@ class ChartController extends Controller
         $startDate = $request->start_date??$startDate;
         $endDate   = $request->end_date??$endDate;
 
-        // CASE 1: Only single date → Hour-wise report
         if ($startDate == $endDate) {
             // return "oneday";
             $date = $startDate;
@@ -198,7 +198,6 @@ class ChartController extends Controller
         ], 400);
     }
 
-
     public function TotalBusSeat()
     {
         $date = '2022-04-15';
@@ -248,6 +247,171 @@ class ChartController extends Controller
         
     }
 
+
+    // public function operatorBooking(Request $request)
+    // {
+    //     $fromDate = $request->from_j_date ?? "2025-06-01";
+    //     $toDate   = $request->to_j_date ?? "2025-12-01";
+    //     $order = $request->order;
+    //     $limit = $request->limit ?? 10;
+    //     $operator_id = $request->bus_operator_id;
+
+    //     $operators = BusOperator::with(['buses' => function ($query) use ($fromDate, $toDate) {
+    //         $query->withCount(['bookings' => function ($q) use ($fromDate, $toDate) {
+    //             $q->whereBetween('journey_dt', [$fromDate, $toDate]);
+    //         }]);
+    //     }])
+    //     ->get()
+    //     ->map(function ($operator) {
+
+    //         $busWise = $operator->buses
+    //             ->filter(fn ($bus) => $bus->bookings_count > 0)
+    //             ->groupBy('bus_number')
+    //             ->map(function ($buses, $busNumber) {
+    //                 return [
+    //                     'bus_number'    => $busNumber,
+    //                     'total_booking' => $buses->sum('bookings_count'),
+    //                 ];
+    //             })
+    //             ->values();
+
+    //         $totalBooking = $busWise->sum('total_booking');
+
+    //         if ($totalBooking == 0) {
+    //             return null;
+    //         }
+
+    //         return [
+    //             'operator_name' => $operator->operator_name,
+    //             'total_booking' => $totalBooking,
+    //             'bus_wise'      => $busWise,
+    //         ];
+    //     })
+    //     ->filter()
+    //     ->sortByDesc('total_booking')
+    //     ->values()
+    //     ->take($limit);
+
+    //     return response()->json($operators);
+    // }
+
+    public function operatorBooking(Request $request)
+    {
+        $currectDate = now()->toDateString();
+        $fromDate = $request->from_j_date ?? $currectDate;
+        $toDate   = $request->to_j_date ?? $currectDate;
+        $limit    = $request->limit ?? 10;
+        $operatorIds = $request->bus_operator_id; // [112,134]
+
+        $operators = BusOperator::query()
+            ->when(!empty($operatorIds), function ($q) use ($operatorIds) {
+                // Ensure array
+                $q->whereIn('id', is_array($operatorIds) ? $operatorIds : [$operatorIds]);
+            })
+            ->with([
+                'buses' => function ($query) use ($fromDate, $toDate) {
+                    $query->withCount([
+                        'bookings' => function ($q) use ($fromDate, $toDate) {
+                            $q->whereBetween('journey_dt', [$fromDate, $toDate]);
+                        }
+                    ]);
+                }
+            ])
+            ->get()
+            ->map(function ($operator) {
+
+                $busWise = $operator->buses
+                    ->filter(fn ($bus) => $bus->bookings_count > 0)
+                    ->groupBy('bus_number')
+                    ->map(function ($buses, $busNumber) {
+                        return [
+                            'bus_number'    => $busNumber,
+                            'total_booking' => $buses->sum('bookings_count'),
+                        ];
+                    })
+                    ->values();
+
+                $totalBooking = $busWise->sum('total_booking');
+
+                if ($totalBooking === 0) {
+                    return null;
+                }
+
+                return [
+                    'operator_name' => $operator->operator_name,
+                    'total_booking' => $totalBooking,
+                    'bus_wise'      => $busWise,
+                ];
+            })
+            ->filter()
+            ->sortByDesc('total_booking')
+            ->values()
+            ->take($limit);
+
+        return response()->json($operators);
+    }
+
+
+    public function operatorRevenue(Request $request)
+    {
+        $fromDate    = $request->from_j_date ?? "2025-06-01";
+        $toDate      = $request->to_j_date ?? "2025-12-01";
+        $limit       = $request->limit ?? 10;
+        $operatorIds = $request->bus_operator_id;
+
+        $rows = DB::table('bus_operator')
+            ->join('bus', 'bus_operator.id', '=', 'bus.bus_operator_id')
+            ->join('booking', 'bus.id', '=', 'booking.bus_id')
+            ->whereBetween('booking.journey_dt', [$fromDate, $toDate])
+
+            ->when(!empty($operatorIds), function ($q) use ($operatorIds) {
+                $q->whereIn(
+                    'bus_operator.id',
+                    is_array($operatorIds) ? $operatorIds : [$operatorIds]
+                );
+            })
+
+            ->select(
+                'bus_operator.id as operator_id',
+                'bus_operator.operator_name',
+                'bus.id as bus_id',
+                'bus.bus_number',
+                DB::raw('SUM(booking.owner_fare) as bus_revenue'),
+                DB::raw('COUNT(booking.id) as bus_booking')
+            )
+            ->groupBy(
+                'bus_operator.id',
+                'bus_operator.operator_name',
+                'bus.id',
+                'bus.bus_number'
+            )
+            ->get();
+
+        $result = $rows
+            ->groupBy('operator_id')
+            ->map(function ($items) {
+                return [
+                    'operator_name'  => $items->first()->operator_name,
+                    'total_revenue'  => (int) $items->sum('bus_revenue'),
+                    'total_booking'  => (int) $items->sum('bus_booking'),
+                    'bus_wise'       => $items->map(function ($bus) {
+                        return [
+                            'bus_number'    => $bus->bus_number,
+                            'total_revenue' => (int) $bus->bus_revenue,
+                            'total_booking' => (int) $bus->bus_booking,
+                        ];
+                    })->values()
+                ];
+            })
+            ->sortByDesc('total_revenue')
+            ->values()
+            ->take($limit);
+
+        return response()->json([
+            'status' => 1,
+            'data'   => $result
+        ]);
+    }
 
 
 }

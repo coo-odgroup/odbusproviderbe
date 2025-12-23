@@ -25,10 +25,28 @@ class BookingDetail extends Model
         return $this->belongsTo(BusSeats::class);
     }
     
+    public function busSeat()
+    {
+        return $this->belongsTo(BusSeats::class, 'bus_seats_id', 'id');
+    }
+
     public function seat()
     {
-        return $this->belongsTo(Seats::class, 'bus_seats_id','id');
+        return $this->hasOneThrough(
+            Seats::class,
+            BusSeats::class,
+            'bus_seats.id',
+            'seats.id',
+            'bus_seats_id',
+            'seats_id'
+        )->select([
+            'seats.id',
+            'seats.berthType',
+            'seats.seatText',
+        ]);
     }
+
+
 
     // public function Booking()
     // {

@@ -1119,6 +1119,8 @@ Route::post('top-route',[ChartController::class,"topRoutes"]);
 Route::post('top-city',[ChartController::class,"topCity"]);
 Route::post('day-wise',[ChartController::class,"bookingReport"]);
 Route::post('total-bus-seat',[ChartController::class,"TotalBusSeat"]);
+Route::post('operator-wise-booking',[ChartController::class, "operatorBooking"]);
+Route::post('operator-wise-revenue',[ChartController::class, "operatorRevenue"]);
 
 //Route wise booking 
 Route::post('route-wise-booking',[RouteWiseBookingController::class,"routewiseBooking"]);
