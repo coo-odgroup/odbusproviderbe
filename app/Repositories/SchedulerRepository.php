@@ -75,7 +75,7 @@ class SchedulerRepository
 
         foreach ($data as $booking) {
             $customerId = $booking->CustomerPayment->id;
-            $orderId = $booking->CustomerPayment->order_id; // TX123456
+            $orderId = $booking->CustomerPayment->pp_orderId; // TX123456 // order_id
             $amount = $booking->refund_amount;
             ScheduleRefundJob::dispatch($amount, $orderId, $customerId);
             // ScheduleRefundJob::dispatch($amount, $orderId, $customerId)->delay(now()->addSeconds(5));

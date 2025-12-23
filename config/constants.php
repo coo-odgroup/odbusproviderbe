@@ -38,6 +38,14 @@ return [
     'CLIENT_SECRET' => env('CLIENT_SECRET', 'NGYyMjVmYTAtMjU2My00NWIxLTg1MzItZjhjNjRjZDQwNDRk'),
     'GRANT_TYPE' => env('GRANT_TYPE', 'client_credentials'),
     'PHONPE_API_URL' => env('PHONPE_API_URL','https://api-preprod.phonepe.com/apis/pg-sandbox/'),
-    'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL','http://localhost:4200/payment-status')
+    'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL','https://odtesting.odbus.co.in/payment-status'),
+
+    'REFUND_STATUS_CODE' => [
+        'INITIATED' => 0,
+        'PENDING'   => 1,
+        'CONFIRMED' => 2,
+        'COMPLETED' => 3,
+        'FAILED'    => 4,
+    ],
 ];
 
