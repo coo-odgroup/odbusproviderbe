@@ -18,7 +18,7 @@ class ChartController extends Controller
         $statusCode     = 200;
         $response       = [];
         $message        = '';
-        
+
         try {
             $defaultStart = Carbon::now()->subMonth()->startOfMonth()->toDateString();
             $defaultEnd   = Carbon::now()->subMonth()->endOfMonth()->toDateString();
@@ -72,12 +72,13 @@ class ChartController extends Controller
         ], $statusCode);
     }
 
-    public function topCity(Request $request){
+    public function topCity(Request $request)
+    {
         $status         = true;
         $statusCode     = 200;
         $response       = [];
         $message        = '';
-        
+
         try {
             $defaultStart = Carbon::now()->subMonth()->startOfMonth()->toDateString();
             $defaultEnd   = Carbon::now()->subMonth()->endOfMonth()->toDateString();
@@ -88,17 +89,17 @@ class ChartController extends Controller
             $limit = $request->limit ?? 10;
 
             $cities = DB::table('booking')
-                    ->join('location as src', 'src.id', '=', 'booking.source_id')
-                    ->select(
-                        'booking.source_id',
-                        'src.name as source_name',
-                        DB::raw('COUNT(*) as total_bookings')
-                    )
-                    ->whereBetween('booking.created_at', [$startDate, $endDate])
-                    ->groupBy('booking.source_id', 'src.name')
-                    ->orderBy('total_bookings', $order)
-                    ->limit($limit)
-                    ->get();
+                ->join('location as src', 'src.id', '=', 'booking.source_id')
+                ->select(
+                    'booking.source_id',
+                    'src.name as source_name',
+                    DB::raw('COUNT(*) as total_bookings')
+                )
+                ->whereBetween('booking.created_at', [$startDate, $endDate])
+                ->groupBy('booking.source_id', 'src.name')
+                ->orderBy('total_bookings', $order)
+                ->limit($limit)
+                ->get();
             $response = $cities;
             $message = Config::get('constants.RECORD_FETCHED');
         } catch (\Throwable $th) {
@@ -120,13 +121,13 @@ class ChartController extends Controller
     {
         $startDate = "2025-10-02";
         $endDate = "2025-10-02";
-        
+
         $defaultStart = Carbon::now()->subDay()->toDateString();
 
         // return $defaultStart;
 
-        $startDate = $request->start_date??$startDate;
-        $endDate   = $request->end_date??$endDate;
+        $startDate = $request->start_date ?? $startDate;
+        $endDate   = $request->end_date ?? $endDate;
 
         if ($startDate == $endDate) {
             // return "oneday";
@@ -142,7 +143,7 @@ class ChartController extends Controller
                 )
                 ->whereDate('created_at', $date)
                 ->groupBy(DB::raw("HOUR(created_at)"))
-                ->orderBy("total_booking","ASC")
+                ->orderBy("total_booking", "ASC")
                 ->get();
 
             $result = $data->map(function ($item) {
@@ -151,7 +152,7 @@ class ChartController extends Controller
                     "total_booking" => $item->total_booking,
                     "odbus" => $item->odbus_total,
                     "abhibus" => $item->abhibus_total,
-                    "paytm"=> $item->paytm_total,
+                    "paytm" => $item->paytm_total,
                 ];
             });
 
@@ -174,7 +175,7 @@ class ChartController extends Controller
                 )
                 ->whereBetween(DB::raw("DATE(created_at)"), [$startDate, $endDate])
                 ->groupBy(DB::raw("DATE(created_at)"))
-                ->orderBy("total_booking","ASC")
+                ->orderBy("total_booking", "ASC")
                 ->get();
 
             $result = $data->map(function ($item) {
@@ -225,7 +226,7 @@ class ChartController extends Controller
         $lower_berth = $seats->where('berthType', 1)->count();
         $upper_berth = $seats->where('berthType', 2)->count();
 
-        $data = [$lower_berth,$upper_berth];
+        $data = [$lower_berth, $upper_berth];
 
         // return $data;
 
@@ -243,8 +244,6 @@ class ChartController extends Controller
         ];
 
         return $response;
-
-        
     }
 
 
@@ -321,7 +320,7 @@ class ChartController extends Controller
             ->map(function ($operator) {
 
                 $busWise = $operator->buses
-                    ->filter(fn ($bus) => $bus->bookings_count > 0)
+                    ->filter(fn($bus) => $bus->bookings_count > 0)
                     ->groupBy('bus_number')
                     ->map(function ($buses, $busNumber) {
                         return [
@@ -414,4 +413,91 @@ class ChartController extends Controller
     }
 
 
+    public function operatorBusclose(Request $request)
+    {
+        $startDate = "2025-10-02";
+        $endDate = "2025-10-02";
+
+        $defaultStart = Carbon::now()->subDay()->toDateString();
+
+        $fromDate = $request->from_date ?? $defaultStart;
+        $toDate   = $request->to_date   ?? $defaultStart;
+
+        if ($fromDate === $toDate) {
+
+            $operators = $this->getOperatorCancelData($fromDate);
+
+            return response()->json([
+                "status" => 1,
+                "type"   => "single_date",
+                "data"   => $operators
+            ]);
+        }
+
+        $dates = DB::table('bus_cancelled_date')
+            ->select('cancelled_date')
+            ->whereBetween('cancelled_date', [$fromDate, $toDate])
+            ->distinct()
+            ->orderBy('cancelled_date')
+            ->pluck('cancelled_date');
+
+        $result = [];
+
+        foreach ($dates as $date) {
+            $operators = $this->getOperatorCancelData($date);
+
+            if ($operators->isNotEmpty()) {
+                $result[] = [
+                    "date" => $date,
+                    "operators" => $operators
+                ];
+            }
+        }
+
+        return response()->json([
+            "status" => 1,
+            "type"   => "date_wise",
+            "data"   => $result
+        ]);
+    }
+
+    private function getOperatorCancelData($date)
+    {
+        $operators = DB::table('bus_operator')
+            ->join('bus_cancelled', 'bus_cancelled.bus_operator_id', '=', 'bus_operator.id')
+            ->join('bus_cancelled_date', 'bus_cancelled_date.bus_cancelled_id', '=', 'bus_cancelled.id')
+            ->select(
+                'bus_operator.id',
+                'bus_operator.operator_name',
+                DB::raw('COUNT(DISTINCT bus_cancelled.bus_id) as total_cancel')
+            )
+            ->where('bus_cancelled_date.cancelled_date', $date)
+            ->where('bus_operator.status', 1)
+            ->groupBy('bus_operator.id', 'bus_operator.operator_name')
+            ->orderByDesc('total_cancel')
+            ->limit(10)
+            ->get();
+
+        $operators->transform(function ($operator) use ($date) {
+
+            $operator->cancelled_buses = DB::table('bus_cancelled')
+                ->join('bus', 'bus.id', '=', 'bus_cancelled.bus_id')
+                ->join('bus_cancelled_date', 'bus_cancelled_date.bus_cancelled_id', '=', 'bus_cancelled.id')
+                ->join('ticket_price', 'ticket_price.bus_id', '=', 'bus.id')
+                ->select(
+                    'bus.id',
+                    'bus.bus_number',
+                    'bus.name',
+                    // DB::raw('GROUP_CONCAT(DISTINCT CONCAT(ticket_price.source_id,"-",ticket_price.destination_id)) as routes')
+                )
+                ->where('bus_cancelled.bus_operator_id', $operator->id)
+                ->where('bus_cancelled_date.cancelled_date', $date)
+                ->groupBy('bus.id', 'bus.bus_number', 'bus.name')
+                ->get();
+
+            return $operator;
+        });
+
+        return $operators;
+    }
 }
