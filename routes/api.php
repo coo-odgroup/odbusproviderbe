@@ -1149,4 +1149,7 @@ Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'get
 $router->get('/updateMinPriceForBus', function () {
    Artisan::call('update:minPriceForBus');
 });
-      
+
+$router->get('/booking-archive-failed', function () {
+   Artisan::call('booking:archive-failed');
+});
