@@ -1121,6 +1121,7 @@ Route::post('day-wise',[ChartController::class,"bookingReport"]);
 Route::post('total-bus-seat',[ChartController::class,"TotalBusSeat"]);
 Route::post('operator-wise-booking',[ChartController::class, "operatorBooking"]);
 Route::post('operator-wise-revenue',[ChartController::class, "operatorRevenue"]);
+Route::post('operator-wise-busclose',[ChartController::class, "operatorBusclose"]);
 
 //Route wise booking 
 Route::post('route-wise-booking',[RouteWiseBookingController::class,"routewiseBooking"]);

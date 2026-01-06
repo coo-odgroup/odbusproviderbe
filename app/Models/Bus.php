@@ -138,4 +138,12 @@ class Bus extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function route()
+    {
+        return $this->hasOne(TicketPrice::class, 'bus_id')
+            ->select('bus_id', 'source_id', 'destination_id')
+            ->groupBy('bus_id', 'source_id', 'destination_id');
+    }
+
+
 }
