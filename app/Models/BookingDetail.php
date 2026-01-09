@@ -16,6 +16,11 @@ class BookingDetail extends Model
                             'passenger_name','passenger_gender','passenger_age',
                             'created_by'];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];    
+
     public function Bus()
     {
         return $this->belongsTo(Bus::class);

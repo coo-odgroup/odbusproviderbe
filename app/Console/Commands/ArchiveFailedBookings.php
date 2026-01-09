@@ -6,6 +6,10 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\Booking;
+use App\Models\CustomerPayment;
+use App\Models\BookingDetail;
+use App\Models\BookingSequence;
 
 class ArchiveFailedBookings extends Command
 {
@@ -29,121 +33,125 @@ class ArchiveFailedBookings extends Command
         try {
             Log::info('ArchiveFailedBookings started at: ' . now());
 
-            $bkBookingLastRecord = (array) DB::table('bk_booking')
+            // ---------------------------------
+            // Get last processed journey date
+            // ---------------------------------
+            $bkBookingLastRecord = DB::table('bk_booking')
                 ->select('journey_dt')
                 ->orderBy('id', 'desc')
                 ->first();
 
-            if (!empty($bkBookingLastRecord)) {
-                $cutoffDate = Carbon::parse($bkBookingLastRecord['journey_dt'])
-                    ->addDay()
-                    ->toDateString();
+            if ($bkBookingLastRecord) {
+                $cutoffDate = Carbon::parse($bkBookingLastRecord->journey_dt)->addDay();
             } else {
-                $cutoffDate = "2022-04-15";
+                $cutoffDate = Carbon::parse('2022-04-15');
             }
 
-            // Log::info($cutoffDate);
+            // ---------------------------------
+            // BEGIN TRANSACTION
+            // ---------------------------------
+            DB::beginTransaction();
+
+            // ---------------------------------
+            // Find next date having failed bookings
+            // ---------------------------------
+            $nextJourneyDate = Booking::whereIn('status', [0, 4])
+                ->whereDate('journey_dt', '>=', $cutoffDate->toDateString())
+                ->orderBy('journey_dt')
+                ->value('journey_dt');
+
+            if (!$nextJourneyDate) {
+                DB::rollBack();
+                $this->info('No failed bookings found');
+                return Command::SUCCESS;
+            }
+
+            $cutoffDate = Carbon::parse($nextJourneyDate)->toDateString();
+
+            // ---------------------------------
+            // Fetch failed bookings for that date
+            // ---------------------------------
+            $failedBookings = Booking::whereIn('status', [0, 4])
+                ->whereDate('journey_dt', $cutoffDate)
+                ->selectRaw('*, id AS booking_id')
+                ->get()
+                ->makeHidden(['id'])
+                ->toArray();
+
+            // ---------------------------------
+            // Extract booking IDs
+            // ---------------------------------
+            $bookingIds = collect($failedBookings)
+                ->pluck('booking_id')
+                ->filter()
+                ->toArray();
+
+            Log::info('Total Bookings', ['count' => count($bookingIds)]);
+            Log::info('Failed bookings found for date: ' . $cutoffDate);
             // return;
 
-            DB::transaction(function () use ($cutoffDate) {
-                // Before one month particular date
-                $failedBookings = DB::table('booking')
-                    ->whereIn('status', [0, 4])
-                    ->whereDate('journey_dt', '=', $cutoffDate)
-                    ->get()
-                    ->map(function ($row) {
-                        $row = (array) $row;
+            // ---------------------------
+            // Fetch dependent tables
+            // ---------------------------
+            $failedCustomerPayments = CustomerPayment::whereIn('booking_id', $bookingIds)
+                ->selectRaw('*, id AS customer_payment_id')
+                ->get()
+                ->makeHidden(['id'])
+                ->toArray();
 
-                        $row['booking_id'] = $row['id'];
-                        unset($row['id']);
+            $failedBookingDetail = BookingDetail::whereIn('booking_id', $bookingIds)
+                ->selectRaw('*, id AS booking_detail_id')
+                ->get()
+                ->makeHidden(['id'])
+                ->toArray();
 
-                        return $row;
-                    })
-                    ->toArray();
+            $failedBookingSequence = BookingSequence::whereIn('booking_id', $bookingIds)
+                ->selectRaw('*, id AS booking_sequence_id')
+                ->get()
+                ->makeHidden(['id'])
+                ->toArray();
 
-                // $failedBookings = DB::table('booking')
-                //     ->selectRaw('*, id AS booking_id')
-                //     ->whereIn('status', [0, 4])
-                //     ->where('journey_dt', $cutoffDate)
-                //     ->get()
-                //     ->toArray();
+            // ---------------------------
+            // Delete related SMS
+            // ---------------------------
+            DB::table('manage_sms')->whereIn('booking_id', $bookingIds)->delete();
 
-                // Log::info($failedBookings);
-                // return;
+            // ---------------------------
+            // Insert into backup tables
+            // ---------------------------
+            DB::table('bk_booking')->insert($failedBookings);
+            DB::table('bk_booking_detail')->insert($failedBookingDetail);
+            DB::table('bk_customer_payment')->insert($failedCustomerPayments);
+            DB::table('bk_booking_sequence')->insert($failedBookingSequence);
 
-                if (empty($failedBookings)) {
-                    $this->info('No failed bookings found');
-                    return;
-                }
+            // ---------------------------
+            // Delete from main tables
+            // ---------------------------
+            DB::table('booking_sequence')->whereIn('booking_id', $bookingIds)->delete();
+            DB::table('booking_detail')->whereIn('booking_id', $bookingIds)->delete();
+            DB::table('customer_payment')->whereIn('booking_id', $bookingIds)->delete();
+            DB::table('booking')->whereIn('id', $bookingIds)->delete();
 
-                $bookingIds = collect($failedBookings)
-                    ->pluck('booking_id')
-                    ->filter()
-                    ->toArray();
+            // ---------------------------
+            // COMMIT TRANSACTION
+            // ---------------------------
+            DB::commit();
+            DB::disconnect();
+            sleep(0.5);
 
-                $failedCustomerPayments = DB::table('customer_payment')
-                    ->whereIn('booking_id', $bookingIds)
-                    ->get()
-                    ->map(function ($row) {
-                        $row = (array) $row;
-                        $row['customer_payment_id'] = $row['id'];
-                        unset($row['id']);
-                        return $row;
-                    })
-                    ->toArray();
-
-                $failedBookingDetail = DB::table('booking_detail')
-                    ->whereIn('booking_id', $bookingIds)
-                    ->get()
-                    ->map(function ($row) {
-                        $row = (array) $row;
-                        $row['booking_detail_id'] = $row['id'];
-                        unset($row['id']);
-                        return $row;
-                    })
-                    ->toArray();
-
-                $failedBookingSequence = DB::table('booking_sequence')
-                    ->whereIn('booking_id', $bookingIds)
-                    ->get()
-                    ->map(function ($row) {
-                        $row = (array) $row;
-                        $row['booking_sequence_id'] = $row['id'];
-                        unset($row['id']);
-                        return $row;
-                    })
-                    ->toArray();
-
-                // Log::info($failedCustomerPayments);
-                // Log::info($failedBookingDetail);
-                // Log::info($failedBookingSequence);
-                // return;
-
-                DB::table('manage_sms')->whereIn('booking_id', $bookingIds)->delete();
-
-                // Insert in Backup Table
-                DB::table('bk_booking')->insert($failedBookings);
-                DB::table('bk_booking_detail')->insert($failedBookingDetail);
-                DB::table('bk_customer_payment')->insert($failedCustomerPayments);
-                DB::table('bk_booking_sequence')->insert($failedBookingSequence);
-
-                // Log::info('Data inserted');
-                // return;
-
-                // Clear Main Table
-                if (!empty($bookingIds)) {
-                    DB::table('booking_sequence')->whereIn('booking_id', $bookingIds)->delete();
-                    DB::table('booking_detail')->whereIn('booking_id', $bookingIds)->delete();
-                    DB::table('customer_payment')->whereIn('booking_id', $bookingIds)->delete();
-                    DB::table('booking')->whereIn('id', $bookingIds)->delete();
-                }
-            });
+            $this->info('Archiving completed successfully');
 
         } catch (\Throwable $e) {
 
-            Log::error('ArchiveFailedBookings Error: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+            // ---------------------------
+            // ROLLBACK ON ERROR
+            // ---------------------------
+            DB::rollBack();
+
+            Log::error('ArchiveFailedBookings Error', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
             ]);
 
             $this->error('Archiving failed. Check logs for details.');
@@ -160,6 +168,5 @@ class ArchiveFailedBookings extends Command
         }
 
         return Command::SUCCESS;
-
     }
 }
