@@ -1154,3 +1154,7 @@ $router->get('/updateMinPriceForBus', function () {
 $router->get('/booking-archive-failed', function () {
    Artisan::call('booking:archive-failed');
 });
+
+$router->get('/clear-old-logs', function () {
+   Artisan::call('logs:clear-old');
+});
