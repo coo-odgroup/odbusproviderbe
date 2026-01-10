@@ -128,4 +128,22 @@ class Bus extends Model
         return $this->hasMany(BusStoppageTiming::class)->where('status', '!=', 2);
     }
 
+    public function operator()
+    {
+        return $this->belongsTo(BusOperator::class, 'bus_operator_id');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function route()
+    {
+        return $this->hasOne(TicketPrice::class, 'bus_id')
+            ->select('bus_id', 'source_id', 'destination_id')
+            ->groupBy('bus_id', 'source_id', 'destination_id');
+    }
+
+
 }

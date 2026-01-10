@@ -1119,6 +1119,9 @@ Route::post('top-route',[ChartController::class,"topRoutes"]);
 Route::post('top-city',[ChartController::class,"topCity"]);
 Route::post('day-wise',[ChartController::class,"bookingReport"]);
 Route::post('total-bus-seat',[ChartController::class,"TotalBusSeat"]);
+Route::post('operator-wise-booking',[ChartController::class, "operatorBooking"]);
+Route::post('operator-wise-revenue',[ChartController::class, "operatorRevenue"]);
+Route::post('operator-wise-busclose',[ChartController::class, "operatorBusclose"]);
 
 //Route wise booking 
 Route::post('route-wise-booking',[RouteWiseBookingController::class,"routewiseBooking"]);
@@ -1147,4 +1150,11 @@ Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'get
 $router->get('/updateMinPriceForBus', function () {
    Artisan::call('update:minPriceForBus');
 });
-      
+
+$router->get('/booking-archive-failed', function () {
+   Artisan::call('booking:archive-failed');
+});
+
+$router->get('/clear-old-logs', function () {
+   Artisan::call('logs:clear-old');
+});

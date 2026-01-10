@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\UpdateMinPriceForBus::class        
+        Commands\UpdateMinPriceForBus::class,
+        \App\Console\Commands\ArchiveFailedBookings::class,
     ];
 
     /**
@@ -25,6 +26,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        // $schedule->command('booking:archive-failed')->daily();
     }
 
     /**

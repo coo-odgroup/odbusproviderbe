@@ -16,6 +16,11 @@ class BookingDetail extends Model
                             'passenger_name','passenger_gender','passenger_age',
                             'created_by'];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];    
+
     public function Bus()
     {
         return $this->belongsTo(Bus::class);
@@ -25,10 +30,28 @@ class BookingDetail extends Model
         return $this->belongsTo(BusSeats::class);
     }
     
+    public function busSeat()
+    {
+        return $this->belongsTo(BusSeats::class, 'bus_seats_id', 'id');
+    }
+
     public function seat()
     {
-        return $this->belongsTo(Seats::class, 'bus_seats_id','id');
+        return $this->hasOneThrough(
+            Seats::class,
+            BusSeats::class,
+            'bus_seats.id',
+            'seats.id',
+            'bus_seats_id',
+            'seats_id'
+        )->select([
+            'seats.id',
+            'seats.berthType',
+            'seats.seatText',
+        ]);
     }
+
+
 
     // public function Booking()
     // {
