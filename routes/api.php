@@ -139,6 +139,8 @@ use App\Http\Controllers\ApiUserManageOperatorController;
 use App\Http\Controllers\SchedulerController;
 // Api Log Report
 use App\Http\Controllers\ApiLogReportController;
+// Cancellation Revenue
+use App\Http\Controllers\CancellationRevenueController;
 
 //AppNotification
 use App\Http\Controllers\AppNotificationController;
@@ -1169,4 +1171,18 @@ Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'get
 $router->get('/updateMinPriceForBus', function () {
    Artisan::call('update:minPriceForBus');
 });
-      
+
+$router->get('/booking-archive-failed', function () {
+   Artisan::call('booking:archive-failed');
+});
+
+$router->get('/clear-old-logs', function () {
+   Artisan::call('logs:clear-old');
+});
+
+// Cancellation Revenue Chart by Jagan
+Route::post('cancelled-ticket-count', [CancellationRevenueController::class, "cancelledTicketCount"]);
+Route::post('refund-amount', [CancellationRevenueController::class, "refundAmount"]);
+
+// Alert for double seat booking
+Route::get('/AlertDuplicateBooking', [DashboardController::class, 'AlertDuplicateBooking']);
