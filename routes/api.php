@@ -1131,9 +1131,9 @@ Route::post('month-wise-booking',[ChartController::class, "monthBooking"]);
 Route::post('month-wise-revenue',[ChartController::class, "monthRevenue"]);
 Route::post('route-wise-revenue',[ChartController::class,"routeRevenue"]);
 
+Route::post('total-seatBlock',[ChartController::class, 'seateBlock']);
 // Each bus wise revenue
 Route::post('bus-wise-revenue',[ChartController::class,"busRevenue"]);
-
 
 //Route wise booking 
 Route::post('route-wise-booking',[RouteWiseBookingController::class,"routewiseBooking"]);
@@ -1145,6 +1145,11 @@ Route::post("all-passengers",[ChartController::class,"allPassenger"]);
 //Report for Active Operator
 Route::post("active-operators",[ChartController::class,"activeOperator"]);
 Route::post("active-buses",[ChartController::class,"activeBus"]);
+
+//operator pannel api
+Route::post('operator-dashboarddata',[DashboardController::class,'operatorDashbord']);
+Route::post('operator-booking',[DashboardController::class,'opBooking']);
+Route::post('operator-revenue',[DashboardController::class,'opRevenue']);
 
 
 

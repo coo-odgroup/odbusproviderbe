@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\Bus;
 use App\Models\BusOperator;
+use App\Models\BusSeats;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -916,10 +917,181 @@ class ChartController extends Controller
                 'bus_operator.organisation_name',
                 DB::raw('SUM(booking.owner_fare) as total_owner_fare')
             )
-            ->groupBy('bus.id', 'bus.name','bus_operator.organisation_name')
+            ->groupBy('bus.id', 'bus.name', 'bus_operator.organisation_name')
             ->get();
 
-        return response()->json(["status"=>200,"data"=>$booking]);
+        return response()->json(["status" => 200, "data" => $booking]);
     }
 
+
+    // public function seateBlock(Request $request)
+    // {
+    //     $fromDate = $request->from_date ?? Carbon::now()->subDays(30)->toDateString();
+    //     $toDate = $request->to_date ?? Carbon::now()->toDateString();
+    //     $limit = $request->limit ?? 10;
+    //     $seatBlock = BusSeats::join('bus', 'bus.id', '=', 'bus_seats.bus_id')
+    //         ->join('bus_operator', 'bus_operator.id', '=', 'bus.bus_operator_id')
+    //         ->where('bus_seats.status', 1)
+    //         ->whereBetween('bus_seats.created_at',[$fromDate,$toDate])
+    //         ->select(
+    //             'bus.bus_operator_id',
+    //             'bus_operator.organisation_name',
+    //             'bus_seats.bus_id',
+    //             'bus.name as bus_name',
+    //             'bus.bus_number as bus_number',
+    //             DB::raw('COUNT(bus_seats.id) as seat_block_count')
+    //         )
+    //         ->groupBy(
+    //             'bus.bus_operator_id',
+    //             'bus_operator.organisation_name',
+    //             'bus_seats.bus_id',
+    //             'bus.name',
+    //             'bus.bus_number'
+    //         )
+    //         ->get()
+    //         ->groupBy('bus_operator_id')
+    //         ->map(function ($operator) {
+
+    //             $totalSeatBlock = $operator->sum('seat_block_count');
+
+    //             return [
+    //                 'bus_operator_id'          => $operator->first()->bus_operator_id,
+    //                 'organisation_name'        => $operator->first()->organisation_name,
+    //                 'total_seat_block_count'   => $totalSeatBlock,
+    //                 'buses' => $operator->map(function ($bus) {
+    //                     return [
+    //                         'bus_id'           => $bus->bus_id,
+    //                         'bus_name'         => $bus->bus_name ."(".$bus->bus_id.")". "(" . $bus->bus_number . ")",
+    //                         'seat_block_count' => $bus->seat_block_count,
+    //                     ];
+    //                 })->values()
+    //             ];
+    //         })
+    //         ->values()->take($limit);
+
+    //     return response()->json(["status"=>200,"data"=>$seatBlock]);
+    // }
+
+
+    // public function seateBlock(Request $request)
+    // {
+    //     $fromDate = $request->from_date ?? Carbon::now()->subDays(30)->toDateString();
+    //     $toDate   = $request->to_date ?? Carbon::now()->toDateString();
+    //     $limit    = $request->limit ?? 10;
+    //     $operatorId = [1, 23];
+
+    //     $seatBlock = BusSeats::join('bus', 'bus.id', '=', 'bus_seats.bus_id')
+    //         ->join('bus_operator', 'bus_operator.id', '=', 'bus.bus_operator_id')
+    //         ->where('bus_seats.status', 1)
+    //         ->whereBetween('bus_seats.created_at', [$fromDate, $toDate])
+
+    //         ->when($operatorId, function ($query) use ($operatorId) {
+    //             $query->where('bus.bus_operator_id', $operatorId);
+    //         })
+
+    //         ->select(
+    //             'bus.bus_operator_id',
+    //             'bus_operator.organisation_name',
+    //             'bus_seats.bus_id',
+    //             'bus.name as bus_name',
+    //             'bus.bus_number as bus_number',
+    //             DB::raw('COUNT(bus_seats.id) as seat_block_count')
+    //         )
+    //         ->groupBy(
+    //             'bus.bus_operator_id',
+    //             'bus_operator.organisation_name',
+    //             'bus_seats.bus_id',
+    //             'bus.name',
+    //             'bus.bus_number'
+    //         )
+    //         ->get()
+    //         ->groupBy('bus_operator_id')
+    //         ->map(function ($operator) {
+
+    //             $totalSeatBlock = $operator->sum('seat_block_count');
+
+    //             return [
+    //                 'bus_operator_id'        => $operator->first()->bus_operator_id,
+    //                 'organisation_name'      => $operator->first()->organisation_name,
+    //                 'total_seat_block_count' => $totalSeatBlock,
+    //                 'buses' => $operator->map(function ($bus) {
+    //                     return [
+    //                         'bus_id'           => $bus->bus_id,
+    //                         'bus_name'         => $bus->bus_name . "(" . $bus->bus_id . ")" . "(" . $bus->bus_number . ")",
+    //                         'seat_block_count' => $bus->seat_block_count,
+    //                     ];
+    //                 })->values()
+    //             ];
+    //         })
+    //         ->values()
+    //         ->take($limit);
+
+    //     return response()->json([
+    //         "status" => 200,
+    //         "data"   => $seatBlock
+    //     ]);
+    // }
+
+
+    public function seateBlock(Request $request)
+    {
+        $fromDate = $request->from_date ?? Carbon::now()->subDays(30)->toDateString();
+        $toDate   = $request->to_date ?? Carbon::now()->toDateString();
+        $limit    = $request->limit ?? 10;
+        $type = $request->type ?? 2; //seat open/close
+
+        $operatorIds = $request->bus_operator_id;
+
+        $seatBlock = BusSeats::join('bus', 'bus.id', '=', 'bus_seats.bus_id')
+            ->join('bus_operator', 'bus_operator.id', '=', 'bus.bus_operator_id')
+            ->where('bus_seats.status', 1)
+            ->where('bus_seats.type',$type)  // seat block =2, seat open = 1
+            ->whereBetween('bus_seats.created_at', [$fromDate, $toDate])
+
+            ->when(!empty($operatorIds), function ($query) use ($operatorIds) {
+                $query->whereIn('bus.bus_operator_id', $operatorIds);
+            })
+
+            ->select(
+                'bus.bus_operator_id',
+                'bus_operator.organisation_name',
+                'bus_seats.bus_id',
+                'bus.name as bus_name',
+                'bus.bus_number as bus_number',
+                DB::raw('COUNT(bus_seats.id) as seat_block_count')
+            )
+            ->groupBy(
+                'bus.bus_operator_id',
+                'bus_operator.organisation_name',
+                'bus_seats.bus_id',
+                'bus.name',
+                'bus.bus_number'
+            )
+            ->get()
+            ->groupBy('bus_operator_id')
+            ->map(function ($operator) {
+
+                $totalSeatBlock = $operator->sum('seat_block_count');
+
+                return [
+                    'bus_operator_id'        => $operator->first()->bus_operator_id,
+                    'organisation_name'      => $operator->first()->organisation_name,
+                    'total_seat_block_count' => $totalSeatBlock,
+                    'buses' => $operator->map(function ($bus) {
+                        return [
+                            'bus_id'           => $bus->bus_id,
+                            'bus_name'         => $bus->bus_name . "(" . $bus->bus_id . ")" . "(" . $bus->bus_number . ")",
+                            'seat_block_count' => $bus->seat_block_count,
+                        ];
+                    })->values()
+                ];
+            })
+            ->values()
+            ->take($limit);
+
+        return response()->json([
+            "status" => 200,
+            "data"   => $seatBlock
+        ]);
+    }
 }
