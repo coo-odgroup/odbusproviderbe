@@ -141,6 +141,8 @@ use App\Http\Controllers\SchedulerController;
 use App\Http\Controllers\ApiLogReportController;
 // Cancellation Revenue
 use App\Http\Controllers\CancellationRevenueController;
+// Auto Cron
+use App\Http\Controllers\AutoCronController;
 
 //AppNotification
 use App\Http\Controllers\AppNotificationController;
@@ -1161,9 +1163,18 @@ $router->get('/clear-old-logs', function () {
    Artisan::call('logs:clear-old');
 });
 
-// Cancellation Revenue Chart by Jagan
+// Chart by Jagan
 Route::post('cancelled-ticket-count', [CancellationRevenueController::class, "cancelledTicketCount"]);
 Route::post('refund-amount', [CancellationRevenueController::class, "refundAmount"]);
+Route::post('cancellation-charges', [CancellationRevenueController::class, "cancellationCharges"]);
+Route::post('buswisetotalloss', [CancellationRevenueController::class, "busWiseTotalLoss"]);
 
 // Alert for double seat booking
 Route::get('/AlertDuplicateBooking', [DashboardController::class, 'AlertDuplicateBooking']);
+
+// Cron Job Crud API by Jagan
+Route::post('autocronlist', [AutoCronController::class, "cronList"]);
+Route::post('autocroncreate', [AutoCronController::class, "cronCreate"]);
+Route::put('autocronupdate/{id}', [AutoCronController::class, 'cronUpdate']);
+Route::delete('autocrondetete/{id}', [AutoCronController::class, 'cronDelete']);
+Route::get('cronfrequencies', [AutoCronController::class, 'getCronFrequenciesList']);
