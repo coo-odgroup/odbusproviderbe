@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\AppNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\FcmNotification;
 
 class AppNotificationController extends Controller
 {
@@ -179,7 +180,9 @@ public function update(Request $request, $id)
             'b.boarding_point',
             'b.dropping_point',
 
+
             'u.name as user_name',
+            'u.id as user_id',
 
             'sl.name as source_name',
             'dl.name as destination_name',
@@ -194,8 +197,8 @@ public function update(Request $request, $id)
         )
         ->get();
 
-        // return $bookings;
-        $tempData = [];
+       // return $bookings;
+        $fcmPayload = [];
 
         foreach ($bookings as $b) {
             $data = [
@@ -206,24 +209,84 @@ public function update(Request $request, $id)
                 'BOARDINGPOINT' => $b->boarding_point
             ];
 
-            $tempData[] = $this->getTemp($data);
+            $temp  = $this->getTemp($data);
+            $temp_id = $temp['id'];
+            $title = $temp['title'];
+            $body  = $temp['message'];
+
+            $fcmPayload[] = [
+                "message" => [
+                    "token" => '',
+
+                    "notification" => [
+                        "title" => $title,
+                        "body"  => $body
+                    ],
+
+                    "data" => [
+                        "deeplink"        => "",
+                        "notification_id" => '',
+                        "booking_id"      => $b->id ?? '',
+                        "from_city"       => $b->source_name ?? '',
+                        "to_city"         => $b->destination_name ?? ''
+                    ],
+
+                    "android" => [
+                        "priority" => "HIGH",
+                        "notification" => [
+                            "channel_id"   => "default",
+                            "click_action" => "FLUTTER_NOTIFICATION_CLICK"
+                        ]
+                    ],
+
+                    "apns" => [
+                        "payload" => [
+                            "aps" => [
+                                "category" => "NEW_MESSAGE",
+                                "sound"    => "default"
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+            $notification = FcmNotification::create([
+                'customer_id' => $b->user_id,
+                'template_id' => $temp_id,
+                'title' => $title,
+                'message' => $body,
+                'link' => '',
+                'data_payload' => json_encode($fcmPayload),
+                'booking_id' => $b->id ?? null,
+                'src' => $b->source_name ?? null,
+                'destination' => $b->destination_name ?? null,
+                'notification_type' => '',
+                'status' => 'queued',
+                'scheduled_at' => date('Y-m-d H:i:s'),
+            ]);
         }
 
-        return $tempData;
+        return  $fcmPayload;
     }
 
-    public function getTemp($data)
+   public function getTemp($data)
     {
         $templateData = DB::table('scheduler.push_notification_template')
-        ->where('id', 26)
-        ->get();
+            ->where('id', 26)
+            ->first();
 
-        $template = $templateData[0]->message;
+        return [
+            'id'      => $templateData->id,
+            'title'   => $templateData->title,
+            'message' => $this->bindMessage($templateData->message, $data)
+        ];
+    }
 
+    private function bindMessage($template, $data)
+    {
         foreach ($data as $key => $value) {
             $template = str_replace('{{' . $key . '}}', $value, $template);
         }
-
         return $template;
     }
+
 }

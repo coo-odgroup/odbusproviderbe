@@ -26,7 +26,7 @@ class AgentCommissionReportRepository
         $this->agentWallet = $agentWallet;
     }
     
-    public function getData($request)
+    public function      getData($request)
     {
         $paginate = $request->rows_number;
         $bus_operator_id = $request->bus_operator_id;
@@ -39,7 +39,7 @@ class AgentCommissionReportRepository
 
         $user_id  =  $request->user_id;
 
-        $data = $this->booking->with(
+        $data = $this->booking->with(  
             'BookingDetail.BusSeats.seats',
             'BookingDetail.BusSeats.ticketPrice',
             'Bus'
