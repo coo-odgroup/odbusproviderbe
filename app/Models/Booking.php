@@ -22,6 +22,12 @@ class Booking extends Model
                             'total_fare','ownr_fare','is_coupon','coupon_code','coupon_discount',
                             'discounted_fare','origin','app_type','typ_id','created_by'];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'journey_dt' => 'datetime:Y-m-d H:i:s',
+    ];    
+
     public function Users()
     {
         return $this->belongsTo(Users::class);

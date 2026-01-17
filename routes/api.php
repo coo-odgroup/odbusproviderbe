@@ -139,6 +139,10 @@ use App\Http\Controllers\ApiUserManageOperatorController;
 use App\Http\Controllers\SchedulerController;
 // Api Log Report
 use App\Http\Controllers\ApiLogReportController;
+// Cancellation Revenue
+use App\Http\Controllers\CancellationRevenueController;
+// Auto Cron
+use App\Http\Controllers\AutoCronController;
 
 //AppNotification
 use App\Http\Controllers\AppNotificationController;
@@ -1119,10 +1123,37 @@ Route::post('top-route',[ChartController::class,"topRoutes"]);
 Route::post('top-city',[ChartController::class,"topCity"]);
 Route::post('day-wise',[ChartController::class,"bookingReport"]);
 Route::post('total-bus-seat',[ChartController::class,"TotalBusSeat"]);
+Route::post('operator-wise-booking',[ChartController::class, "operatorBooking"]);
+Route::post('operator-wise-revenue',[ChartController::class, "operatorRevenue"]);
+Route::post('operator-wise-busclose',[ChartController::class, "operatorBusclose"]);
+
+Route::post('payment-report',[ChartController::class, "paymentReport"]);
+Route::post('peak-booking',[ChartController::class, "peakBooking"]);
+Route::post('month-wise-booking',[ChartController::class, "monthBooking"]);
+Route::post('month-wise-revenue',[ChartController::class, "monthRevenue"]);
+Route::post('route-wise-revenue',[ChartController::class,"routeRevenue"]);
+
+Route::post('total-seatBlock',[ChartController::class, 'seateBlock']);
+// Each bus wise revenue
+Route::post('bus-wise-revenue',[ChartController::class,"busRevenue"]);
 
 //Route wise booking 
 Route::post('route-wise-booking',[RouteWiseBookingController::class,"routewiseBooking"]);
 Route::post('route-wise-search',[RouteWiseBookingController::class,'allData']);
+
+//Date Wise Passenger list
+Route::post("all-passengers",[ChartController::class,"allPassenger"]);
+
+//Report for Active Operator
+Route::post("active-operators",[ChartController::class,"activeOperator"]);
+Route::post("active-buses",[ChartController::class,"activeBus"]);
+
+//operator pannel api
+Route::post('operator-dashboarddata',[DashboardController::class,'operatorDashbord']);
+Route::post('operator-booking',[DashboardController::class,'opBooking']);
+Route::post('operator-revenue',[DashboardController::class,'opRevenue']);
+
+
 
 
 
@@ -1151,4 +1182,27 @@ Route::post('agent/redeem-commission', [AgentWalletController::class, 'redeemCom
 $router->get('/updateMinPriceForBus', function () {
    Artisan::call('update:minPriceForBus');
 });
-      
+
+$router->get('/booking-archive-failed', function () {
+   Artisan::call('booking:archive-failed');
+});
+
+$router->get('/clear-old-logs', function () {
+   Artisan::call('logs:clear-old');
+});
+
+// Chart by Jagan
+Route::post('cancelled-ticket-count', [CancellationRevenueController::class, "cancelledTicketCount"]);
+Route::post('refund-amount', [CancellationRevenueController::class, "refundAmount"]);
+Route::post('cancellation-charges', [CancellationRevenueController::class, "cancellationCharges"]);
+Route::post('buswisetotalloss', [CancellationRevenueController::class, "busWiseTotalLoss"]);
+
+// Alert for double seat booking
+Route::get('/AlertDuplicateBooking', [DashboardController::class, 'AlertDuplicateBooking']);
+
+// Cron Job Crud API by Jagan
+Route::post('autocronlist', [AutoCronController::class, "cronList"]);
+Route::post('autocroncreate', [AutoCronController::class, "cronCreate"]);
+Route::put('autocronupdate/{id}', [AutoCronController::class, 'cronUpdate']);
+Route::delete('autocrondetete/{id}', [AutoCronController::class, 'cronDelete']);
+Route::get('cronfrequencies', [AutoCronController::class, 'getCronFrequenciesList']);

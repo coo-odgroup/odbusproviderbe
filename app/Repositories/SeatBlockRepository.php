@@ -1649,10 +1649,125 @@ class SeatBlockRepository
         return $seatBlock;
     }
 
-
-
-
     public function seatblockData($request)
+    {
+        $paginate   = $request['rows_number'] ?? 10;
+        $name       = $request['name'] ?? null;
+        $bus_id     = $request['bus_id'] ?? null;
+        $page_no    = $request['page_no'] ?? 1;
+        $fromDate   = $request['fromDate'] ?? null;
+        $toDate     = $request['toDate'] ?? null;
+        $busOperatorId = $request['bus_operator_id'] ?? null;
+        $source_id  = $request['source_id'] ?? null;
+        $destination_id = $request['destination_id'] ?? null;
+        $userBusOperatorId = $request['USER_BUS_OPERATOR_ID'] ?? null;
+
+        if ($paginate === 'all') {
+            $paginate = Config::get('constants.ALL_RECORDS');
+        }
+
+        $query = $this->busSeats
+            ->select(
+                'id','bus_id','ticket_price_id','seats_id',
+                'type','operation_date','reason','other_reason',
+                'status','updated_at','created_by'
+            )
+            ->where('type', 2)
+            ->whereNotIn('status', [2])
+            ->with([
+                'bus:id,bus_operator_id,name,bus_number',
+                'bus.busOperator:id,operator_name,organisation_name',
+                'seats:id,seatText,berthType,bus_seat_layout_id',
+                'ticketPrice:id,bus_id,source_id,destination_id'
+            ]);
+
+        /* ================= FILTERS ================= */
+
+        if ($userBusOperatorId) {
+            $query->whereHas('bus', fn($q) =>
+                $q->where('bus_operator_id', $userBusOperatorId)
+            );
+        }
+
+        if ($busOperatorId) {
+            $query->whereHas('bus', fn($q) =>
+                $q->where('bus_operator_id', $busOperatorId)
+            );
+        }
+
+        if ($bus_id) {
+            $query->where('bus_id', $bus_id);
+        }
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('operation_date', [$fromDate, $toDate]);
+        } else {
+            $query->where('operation_date', now()->toDateString());
+        }
+
+        if ($name) {
+            $query->where(function ($q) use ($name) {
+                $q->whereHas('bus', fn($b) =>
+                    $b->where('name', 'like', "%{$name}%")
+                )->orWhere('reason', 'like', "%{$name}%");
+            });
+        }
+
+        if ($source_id && $destination_id) {
+            $query->whereHas('ticketPrice', fn($q) =>
+                $q->where('source_id', $source_id)
+                ->where('destination_id', $destination_id)
+            );
+        }
+
+        /* ================= FETCH ================= */
+
+        $data = $query
+            ->orderBy('operation_date', 'desc')
+            ->get()
+            ->groupBy(['bus_id','operation_date','ticket_price_id']);
+
+        /* ================= SOURCE / DESTINATION ================= */
+
+        $locationIds = [];
+
+        foreach ($data as $busGroup) {
+            foreach ($busGroup as $dateGroup) {
+                foreach ($dateGroup as $routeGroup) {
+                    $tp = $routeGroup->first()->ticketPrice;
+                    if ($tp) {
+                        $locationIds[] = $tp->source_id;
+                        $locationIds[] = $tp->destination_id;
+                    }
+                }
+            }
+        }
+
+        $locations = $this->location
+            ->whereIn('id', array_unique($locationIds))
+            ->pluck('name','id');
+
+        foreach ($data as $busGroup) {
+            foreach ($busGroup as $dateGroup) {
+                foreach ($dateGroup as $routeGroup) {
+                    foreach ($routeGroup as $seat) {
+                        $tp = $seat->ticketPrice;
+                        $seat->bus_source = $locations[$tp->source_id] ?? null;
+                        $seat->bus_destination = $locations[$tp->destination_id] ?? null;
+                    }
+                }
+            }
+        }
+
+        /* ================= PAGINATION ================= */
+
+        return $this->customPaginate($data, $paginate, $page_no)
+            ->withPath('/api/seatblockData');
+    }
+
+
+
+    public function seatblockData_backup($request)
     {
         $paginate = $request['rows_number'] ;
         $name = $request['name'] ;
@@ -1754,19 +1869,15 @@ class SeatBlockRepository
          if($data)
         {
              foreach($data as $date){
-                    // log::info($date);exit;
-                foreach ($date as $route) {
-              
+                foreach ($date as $route) {              
                    foreach ($route as $kk=>$seatOp)
-                    {   
-                         
+                    { 
                        foreach ($seatOp as $SingleseatOp)
                         {
-                            // $SingleseatOp['source']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->source_id)->get();
-                            // $SingleseatOp['destination']=$this->location->select('name')->where('id', $SingleseatOp->ticketPrice->destination_id)->get(); 
                             $SingleseatOp['bus_source']=$this->location->select('name')->where('id', $SingleseatOp->bus->ticketPrice[0]->source_id)->get();
                             $SingleseatOp['bus_destination']=$this->location->select('name')->where('id', $SingleseatOp->bus->ticketPrice[0]->destination_id)->get(); 
-                        }break;
+                        }
+                        break;
                     }
                     
                 }

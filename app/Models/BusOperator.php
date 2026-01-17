@@ -30,4 +30,9 @@ class BusOperator extends Model
         return $this->hasMany(TicketFareSlab::class);
 
     }
+
+    public function buses()
+    {
+        return $this->hasMany(Bus::class, 'bus_operator_id');
+    }
 }
