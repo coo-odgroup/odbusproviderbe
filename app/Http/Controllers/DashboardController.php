@@ -90,6 +90,7 @@ class DashboardController extends Controller
         WHERE 
             bkg.status IN (1,4)   -- Booked / Hold
             AND bd.status = 1    -- Seat booked
+            and bkg.journey_dt >= CURDATE()
         GROUP BY 
             bkg.journey_dt,
             bkg.bus_id,
