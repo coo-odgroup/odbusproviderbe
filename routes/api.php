@@ -1174,6 +1174,10 @@ Route::post('/sendNotification',[AppNotificationController::class,'sendNotificat
 Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
 Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);
 
+Route::post('agent/redeemable-commissions', [AgentReportController::class, 'redeemableCommissions']);
+Route::post('agent/redeem-commission', [AgentWalletController::class, 'redeemCommission']);
+
+
 
 $router->get('/updateMinPriceForBus', function () {
    Artisan::call('update:minPriceForBus');

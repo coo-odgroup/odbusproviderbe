@@ -7,6 +7,8 @@ use App\Models\Booking;
 use App\Models\Location;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;  
+
 
 /*Priyadarshi to Review*/
 class AgentReportRepository
@@ -241,7 +243,7 @@ class AgentReportRepository
         $end_date  =  $request->rangeToDate;
 
         $data = $this->booking->with(
-            'BookingDetail.BusSeats.seats',
+            'BookingDetail.BusSeats.seats',  
             'BookingDetail.BusSeats.ticketPrice',
             'Bus',
             'User'
@@ -315,5 +317,84 @@ class AgentReportRepository
             "data" => $data
            );
     }
+  public function redeemableCommissions($request)
+{
+
+ Log::info('AGENT COMMISSION FILTER', [
+    'user_id' => $request->user_id,
+    'start'   => $request->rangeFromDate,
+    'end'     => $request->rangeToDate,
+]);
+
+    $limit = $request->rows_number ?? 10;
+    if ($limit === 'all') {
+        $limit = null;
+    }
+
+    $query = $this->booking
+        ->with(
+            'BookingDetail.BusSeats.seats',
+            'BookingDetail.BusSeats.ticketPrice',
+            'Bus',
+            'User'
+        )
+        ->with('bus.busstoppage')
+        ->whereIn('status', [1, 2])
+        ->where('app_type', 'AGENT')
+        ->where('user_id', $request->user_id)          
+        ->where('with_tds_commission', '>', 0)
+        ->where('redeem_status', 0);
+
+    $start = $request->rangeFromDate;
+    $end   = $request->rangeToDate;
+
+    if (!empty($start) && !empty($end)) {
+        if ($start === $end) {
+            $query->whereDate('journey_dt', $start);
+        } else {
+            $query->whereBetween('journey_dt', [$start, $end]);
+        }
+    } elseif (!empty($start)) {
+        $query->whereDate('journey_dt', '>=', $start);
+    } elseif (!empty($end)) {
+        $query->whereDate('journey_dt', '<=', $end);
+    }
+
+    $query->orderBy('journey_dt', 'DESC');
+
+    if ($limit) {
+        $data = $query->take($limit)->get();
+    } else {
+        $data = $query->get();
+    }
+
+    foreach ($data as $v) {
+
+        $v['from_location'] = $this->location->where('id', $v->source_id)->get();
+        $v['to_location'] = $this->location->where('id', $v->destination_id)->get();
+
+        $stoppage = $this->bus->with('ticketPrice')->where('id', $v->bus_id)->get();
+        $stoppages['source'] = [];
+        $stoppages['destination'] = [];
+
+        if (!empty($stoppage)) {
+            foreach ($stoppage[0]['ticketPrice'] as $k => $a) {
+                $stoppages['source'][$k] = $this->location->where('id', $a->source_id)->get();
+                $stoppages['destination'][$k] = $this->location->where('id', $a->destination_id)->get();
+            }
+        }
+
+        $v['source'] = $stoppages['source'];
+        $v['destination'] = $stoppages['destination'];
+    }
+
+    return [
+        'count' => count($data),
+        'total' => count($data),
+        'data' => $data
+    ];
+}
+
 
 }
+ 

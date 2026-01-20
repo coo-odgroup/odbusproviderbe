@@ -53,5 +53,15 @@ class AgentReportController extends Controller
         }
         
     }
+    public function redeemableCommissions(Request $request)
+{
+    try {
+        $data = $this->agentreportRepository->redeemableCommissions($request);
+        return $this->successResponse($data, 'Redeemable commissions fetched', 200);
+    } catch (\Exception $e) {
+        return $this->errorResponse($e->getMessage(), 500);
+    }
+}
+
 
 }

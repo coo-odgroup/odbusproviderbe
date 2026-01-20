@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\AgentWalletRepository;
 use Illuminate\Support\Facades\DB;
+use App\Models\AgentWallet;
+use App\Models\Booking;
 
 class AgentWalletController extends Controller
 {
@@ -148,5 +150,126 @@ class AgentWalletController extends Controller
         }
         
     }
+public function redeemCommission(Request $request)
+{
+    try {
+
+        Log::info('REDEEM REQUEST', $request->all());
+
+        $pnrs    = $request->pnrs;
+        $agentId = $request->user_id;
+
+        if (!is_array($pnrs) || count($pnrs) === 0) {
+            return response()->json([
+                'status' => false,
+                'message' => 'PNRs missing'
+            ], 400);
+        }
+
+        DB::beginTransaction();
+
+        $bookings = Booking::whereIn('pnr', $pnrs)
+            ->where('user_id', $agentId)
+            ->whereIn('status', [1,2])
+            ->where('redeem_status', 0)
+            ->where('with_tds_commission', '>', 0)
+            ->lockForUpdate()
+            ->get();
+
+        if ($bookings->isEmpty()) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'No redeemable commission found'
+            ], 400);
+        }
+
+        $totalCommission = $bookings->sum('with_tds_commission');
+
+        if ($totalCommission <= 0) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Commission amount is zero'
+            ], 400);
+        }
+
+         
+        $lastWallet = AgentWallet::where('user_id', $agentId)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $previousBalance = $lastWallet ? $lastWallet->balance : 0;
+        $newBalance     = $previousBalance + $totalCommission;
+
+        AgentWallet::insert([
+            'transaction_id'   => 'CR' . now()->format('YmdHis') . rand(1000,9999),
+            'amount'           => $totalCommission,
+            'transaction_type' => 'c',
+            'type'             => 'Commission Redeem',
+            'balance'          => $newBalance,
+            'user_id'          => $agentId,
+            'created_by'       => $agentId,
+            'status'           => 1,
+            'created_at'       => now(),
+            'updated_at'       => now()
+        ]);
+
+        
+        Booking::whereIn('pnr', $bookings->pluck('pnr'))
+            ->update([
+                'redeem_status' => 1,
+                'updated_at'    => now()
+            ]);
+
+
+
+        
+         
+
+        $fromDate = $bookings->min('journey_dt');
+        $toDate   = $bookings->max('journey_dt');
+
+        DB::table('agent_redeem')->insert([
+            'agent_id'         => $agentId,
+            'from_date'        => $fromDate,
+            'to_date'          => $toDate,
+            'booking_ids'      => implode(',', $bookings->pluck('pnr')->toArray()),
+            'previous_balance' => $previousBalance,
+            'redeem_amount'    => $totalCommission,
+            'current_balance'  => $newBalance,
+            'created_by'       => $agentId,
+            'created_on'       => now()
+        ]);
+
+
+        DB::commit();
+
+        return response()->json([
+            'status'           => true,
+            'message'          => 'Commission redeemed successfully',
+            'credited_amount' => $totalCommission,
+            'wallet_balance'  => $newBalance,
+            'redeemed_pnrs'   => $bookings->pluck('pnr')
+        ], 200);
+
+    } catch (\Throwable $e) {
+
+        DB::rollBack();
+
+        Log::error('REDEEM FAILED', [
+            'error' => $e->getMessage(),
+            'line'  => $e->getLine()
+        ]);
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Internal server error'
+        ], 500);
+    }
+}
+
+
+
          
 }
