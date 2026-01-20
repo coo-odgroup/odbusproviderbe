@@ -22,10 +22,29 @@ class AutoCronController extends Controller
         $message        = '';
 
         try {
-            $order = $request->order ?? 'DESC';
-            $limit = $request->limit ?? 10;
+            $order = 'DESC';
+            $limit = $request->rows_number ?? 10;
+            $frequency_id = $request->frequency_id ?? null;
+            $run_type = $request->run_type ?? null;
+            $search = $request->search ?? null;
 
-            $result = Cron::orderBy('created_at', $order)->limit($limit)->get();
+            $result = Cron::with('frequency')
+                ->orderBy('created_at', $order)
+                ->when($frequency_id, function ($q) use ($frequency_id) {
+                    $q->where('frequency_id', $frequency_id);
+                })
+                ->when($run_type, function ($q) use ($run_type) {
+                    $q->where('run_type', $run_type);
+                })
+                ->when($search, function ($q) use ($search) {
+                    $q->where(function ($sub) use ($search) {
+                        $sub->where('name', 'LIKE', "%{$search}%")
+                            ->orWhere('command', 'LIKE', "%{$search}%");
+                    });
+                })
+                ->limit($limit)
+                ->get();
+
 
             if (!empty($result)) {
                 $response = $result;
@@ -85,7 +104,7 @@ class AutoCronController extends Controller
             ]);
 
             $response = $cron;
-            $message  = Config::get('constants.RECORD_CREATED', 'Cron created successfully');
+            $message  = Config::get('constants.RECORD_ADDED', 'Cron created successfully');
 
         } catch (\Throwable $th) {
 
