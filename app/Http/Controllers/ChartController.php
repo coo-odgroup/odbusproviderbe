@@ -18,66 +18,6 @@ use Symfony\Component\HttpFoundation\Response;
 class ChartController extends Controller
 {
     use ApiResponser;
-    // public function topRoutes(Request $request)
-    // {
-    //     $status         = true;
-    //     $statusCode     = 200;
-    //     $response       = [];
-    //     $message        = '';
-
-    //     try {
-    //         $defaultStart = Carbon::now()->subMonth()->startOfMonth()->toDateString();
-    //         $defaultEnd   = Carbon::now()->subMonth()->endOfMonth()->toDateString();
-
-    //         $startDate = $request->start_date ?? "2025-01-01";
-    //         $endDate = $request->end_date ?? $defaultEnd;
-    //         $order = $request->order ?? 'DESC';
-    //         $limit = $request->limit ?? 10;
-
-    //         $routes = DB::table('booking')
-    //             ->join('location as src', 'src.id', '=', 'booking.source_id')
-    //             ->join('location as dst', 'dst.id', '=', 'booking.destination_id')
-    //             ->select(
-    //                 'booking.source_id',
-    //                 'src.name as source_name',
-    //                 'booking.destination_id',
-    //                 'dst.name as destination_name',
-    //                 DB::raw('COUNT(*) as total_bookings')
-    //             )
-    //             ->whereBetween('booking.created_at', [$startDate, $endDate])
-    //             ->groupBy('booking.source_id', 'booking.destination_id', 'src.name', 'dst.name')
-    //             ->orderBy('total_bookings', $order)
-    //             ->limit($limit)
-    //             ->get();
-
-    //         $topRoute = [];
-
-    //         if (!empty($routes) && count($routes) > 0) {
-    //             foreach ($routes as $value) {
-    //                 $topRoute[] = [
-    //                     "Route" => $value->source_name . '-' . $value->destination_name,
-    //                     "TotalBooking" => $value->total_bookings
-    //                 ];
-    //             }
-    //             $message = Config::get('constants.RECORD_FETCHED');
-    //             $response = $topRoute;
-    //         } else {
-    //             $message = Config::get('constants.RECORD_NOT_FOUND');
-    //         }
-    //     } catch (\Throwable $th) {
-    //         $status     = false;
-    //         $statusCode = 500;
-    //         $message    = 'Something went wrong. Please try again later.';
-    //     }
-
-    //     return response()->json([
-    //         'status'         => $status,
-    //         'statusCode'     => $statusCode,
-    //         'message'        => $message,
-    //         'data'       => $response,
-    //     ], $statusCode);
-    // }
-
     public function topRoutes(Request $request)
     {
         $status     = true;
@@ -207,13 +147,11 @@ class ChartController extends Controller
 
         $defaultStart = Carbon::now()->subDay()->toDateString();
 
-        // return $defaultStart;
 
         $startDate = $request->start_date ?? $startDate;
         $endDate   = $request->end_date ?? $endDate;
 
         if ($startDate == $endDate) {
-            // return "oneday";
             $date = $startDate;
 
             $data = DB::table('booking')
@@ -246,7 +184,6 @@ class ChartController extends Controller
         }
 
         if ($startDate && $endDate) {
-            // return "multi";
             $data = DB::table('booking')
                 ->select(
                     DB::raw("DATE(created_at) as date"),
@@ -280,51 +217,6 @@ class ChartController extends Controller
             "message" => "Please provide start_date or start_date + end_date"
         ], 400);
     }
-
-    // public function TotalBusSeat(Request $request)
-    // {
-    //     $date = $request->start_date;
-
-    //     $totalBooked = DB::table('booking_detail')
-    //         ->join('seats', 'seats.id', '=', 'booking_detail.bus_seats_id')
-    //         ->selectRaw("
-    //             DATE(booking_detail.created_at) AS booking_date,
-    //             COUNT(*) AS total_booking,
-    //             SUM(CASE WHEN seats.berthType = 1 THEN 1 ELSE 0 END) AS total_seat,
-    //             SUM(CASE WHEN seats.berthType = 2 THEN 1 ELSE 0 END) AS total_sleeper
-    //         ")
-    //         ->whereDate('booking_detail.created_at', $date)
-    //         ->groupByRaw('DATE(booking_detail.created_at)')
-    //         ->first();
-
-    //     // return $totalBooked;
-
-    //     $seats = Bus::where('bus.status', 1)
-    //         ->join('seats', 'seats.bus_seat_layout_id', '=', 'bus.bus_seat_layout_id')
-    //         ->select('seats.id', 'seats.berthType')
-    //         ->distinct()
-    //         ->get();
-
-    //     $lower_berth = $seats->where('berthType', 1)->count();
-    //     $upper_berth = $seats->where('berthType', 2)->count();
-
-    //     $data = [$lower_berth, $upper_berth];
-
-    //     // return $data;
-
-    //     $response = [
-    //         // "total_seat" => $lower_berth +$upper_berth,
-    //         "total_lower_berth" => $lower_berth,
-    //         "total_upper_berth" => $upper_berth,
-    //         "total_seat_booked" => $totalBooked[0]->total_seat,
-    //         "total_seat_avl" => $lower_berth - $totalBooked[0]->total_seat,
-    //         "total_sleeper_booked" => $totalBooked[0]->total_sleeper,
-    //         "total_sleeper_avl" => $upper_berth - $totalBooked[0]->total_sleeper
-
-    //     ];
-
-    //     return $response;
-    // }
 
     public function TotalBusSeat(Request $request)
     {
@@ -467,7 +359,6 @@ class ChartController extends Controller
         $currentDate = now()->toDateString();
 
         $fromDate = $request->from_j_date ?? $currentDate;
-        // $toDate   = $request->to_j_date   ?? "2025-12-01";
         $limit    = $request->limit ?? 10;
         $order    = strtoupper($request->order ?? "DESC");
         $operatorIds = $request->bus_operator_id;
@@ -725,7 +616,6 @@ class ChartController extends Controller
 
     public function paymentReport(Request $request)
     {
-        // $date = "2025-06-10";
         $defaultStart = Carbon::now()->toDateString();
         $date = $request->start_date ?? $defaultStart;
         $order = $request->order ?? "DESC";
@@ -772,13 +662,8 @@ class ChartController extends Controller
     {
         $toDate   = $request->end_date ?? Carbon::now()->toDateString();
         $fromDate = $request->start_date ?? Carbon::now()->subMonths(12)->toDateString();
-
-        // return [$toDate,$fromDate];
-
         $fromdate = $request->start_date ?? $fromDate;
         $todate = $request->end_date ?? $toDate;
-
-        // return [$fromdate,$todate];
         $booking = Booking::select(
             DB::raw("YEAR(journey_dt) as year"),
             DB::raw("MONTH(journey_dt) as month_no"),
@@ -904,7 +789,6 @@ class ChartController extends Controller
         $operator_id = $request->operator_id;
         $startDate = $request->start_date;
         $endDate = $request->end_date;
-        // return $operator_id;
         $booking = Booking::join('bus', 'bus.id', '=', 'booking.bus_id')
             ->join('bus_operator', 'bus_operator.id', '=', 'bus.bus_operator_id')
             ->where('bus.bus_operator_id', $operator_id)
@@ -922,117 +806,7 @@ class ChartController extends Controller
 
         return response()->json(["status" => 200, "data" => $booking]);
     }
-
-
-    // public function seateBlock(Request $request)
-    // {
-    //     $fromDate = $request->from_date ?? Carbon::now()->subDays(30)->toDateString();
-    //     $toDate = $request->to_date ?? Carbon::now()->toDateString();
-    //     $limit = $request->limit ?? 10;
-    //     $seatBlock = BusSeats::join('bus', 'bus.id', '=', 'bus_seats.bus_id')
-    //         ->join('bus_operator', 'bus_operator.id', '=', 'bus.bus_operator_id')
-    //         ->where('bus_seats.status', 1)
-    //         ->whereBetween('bus_seats.created_at',[$fromDate,$toDate])
-    //         ->select(
-    //             'bus.bus_operator_id',
-    //             'bus_operator.organisation_name',
-    //             'bus_seats.bus_id',
-    //             'bus.name as bus_name',
-    //             'bus.bus_number as bus_number',
-    //             DB::raw('COUNT(bus_seats.id) as seat_block_count')
-    //         )
-    //         ->groupBy(
-    //             'bus.bus_operator_id',
-    //             'bus_operator.organisation_name',
-    //             'bus_seats.bus_id',
-    //             'bus.name',
-    //             'bus.bus_number'
-    //         )
-    //         ->get()
-    //         ->groupBy('bus_operator_id')
-    //         ->map(function ($operator) {
-
-    //             $totalSeatBlock = $operator->sum('seat_block_count');
-
-    //             return [
-    //                 'bus_operator_id'          => $operator->first()->bus_operator_id,
-    //                 'organisation_name'        => $operator->first()->organisation_name,
-    //                 'total_seat_block_count'   => $totalSeatBlock,
-    //                 'buses' => $operator->map(function ($bus) {
-    //                     return [
-    //                         'bus_id'           => $bus->bus_id,
-    //                         'bus_name'         => $bus->bus_name ."(".$bus->bus_id.")". "(" . $bus->bus_number . ")",
-    //                         'seat_block_count' => $bus->seat_block_count,
-    //                     ];
-    //                 })->values()
-    //             ];
-    //         })
-    //         ->values()->take($limit);
-
-    //     return response()->json(["status"=>200,"data"=>$seatBlock]);
-    // }
-
-
-    // public function seateBlock(Request $request)
-    // {
-    //     $fromDate = $request->from_date ?? Carbon::now()->subDays(30)->toDateString();
-    //     $toDate   = $request->to_date ?? Carbon::now()->toDateString();
-    //     $limit    = $request->limit ?? 10;
-    //     $operatorId = [1, 23];
-
-    //     $seatBlock = BusSeats::join('bus', 'bus.id', '=', 'bus_seats.bus_id')
-    //         ->join('bus_operator', 'bus_operator.id', '=', 'bus.bus_operator_id')
-    //         ->where('bus_seats.status', 1)
-    //         ->whereBetween('bus_seats.created_at', [$fromDate, $toDate])
-
-    //         ->when($operatorId, function ($query) use ($operatorId) {
-    //             $query->where('bus.bus_operator_id', $operatorId);
-    //         })
-
-    //         ->select(
-    //             'bus.bus_operator_id',
-    //             'bus_operator.organisation_name',
-    //             'bus_seats.bus_id',
-    //             'bus.name as bus_name',
-    //             'bus.bus_number as bus_number',
-    //             DB::raw('COUNT(bus_seats.id) as seat_block_count')
-    //         )
-    //         ->groupBy(
-    //             'bus.bus_operator_id',
-    //             'bus_operator.organisation_name',
-    //             'bus_seats.bus_id',
-    //             'bus.name',
-    //             'bus.bus_number'
-    //         )
-    //         ->get()
-    //         ->groupBy('bus_operator_id')
-    //         ->map(function ($operator) {
-
-    //             $totalSeatBlock = $operator->sum('seat_block_count');
-
-    //             return [
-    //                 'bus_operator_id'        => $operator->first()->bus_operator_id,
-    //                 'organisation_name'      => $operator->first()->organisation_name,
-    //                 'total_seat_block_count' => $totalSeatBlock,
-    //                 'buses' => $operator->map(function ($bus) {
-    //                     return [
-    //                         'bus_id'           => $bus->bus_id,
-    //                         'bus_name'         => $bus->bus_name . "(" . $bus->bus_id . ")" . "(" . $bus->bus_number . ")",
-    //                         'seat_block_count' => $bus->seat_block_count,
-    //                     ];
-    //                 })->values()
-    //             ];
-    //         })
-    //         ->values()
-    //         ->take($limit);
-
-    //     return response()->json([
-    //         "status" => 200,
-    //         "data"   => $seatBlock
-    //     ]);
-    // }
-
-
+    
     public function seateBlock(Request $request)
     {
         $fromDate = $request->from_date ?? Carbon::now()->subDays(30)->toDateString();
@@ -1045,7 +819,7 @@ class ChartController extends Controller
         $seatBlock = BusSeats::join('bus', 'bus.id', '=', 'bus_seats.bus_id')
             ->join('bus_operator', 'bus_operator.id', '=', 'bus.bus_operator_id')
             ->where('bus_seats.status', 1)
-            ->where('bus_seats.type',$type)  // seat block =2, seat open = 1
+            ->where('bus_seats.type', $type)  // seat block =2, seat open = 1
             ->whereBetween('bus_seats.created_at', [$fromDate, $toDate])
 
             ->when(!empty($operatorIds), function ($query) use ($operatorIds) {

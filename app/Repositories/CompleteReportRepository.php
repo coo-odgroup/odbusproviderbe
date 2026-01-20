@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
 /*Priyadarshi to Review*/
+
 class CompleteReportRepository
 {
     protected $booking;
@@ -44,9 +45,9 @@ class CompleteReportRepository
                 ->with(['BusSeats' => function ($quer) {
                     $quer->select('id', 'bus_id', 'ticket_price_id', 'ticket_price_id', 'seats_id')
 
-                                            ->with(['ticketPrice' => function ($que) {
-                                                $que->select('id', 'bus_id', 'source_id', 'destination_id', 'base_seat_fare', 'base_sleeper_fare', 'dep_time', 'arr_time');
-                                            }]);
+                        ->with(['ticketPrice' => function ($que) {
+                            $que->select('id', 'bus_id', 'source_id', 'destination_id', 'base_seat_fare', 'base_sleeper_fare', 'dep_time', 'arr_time');
+                        }]);
 
                     $quer->with(['seats' => function ($qu) {
                         $qu->select('id', 'seatText', 'rowNumber', 'berthType');
@@ -54,20 +55,20 @@ class CompleteReportRepository
                 }]);
         }])
 
-                            ->with(['bus' => function ($query) {
-                                $query->select('id', 'bus_operator_id', 'name', 'bus_number')
-                                    ->with(['busstoppage' => function ($quer) {
-                                        $quer->select('id', 'bus_id', 'source_id', 'destination_id', 'dep_time', 'arr_time');
-                                    }]);
-                            }])
-                            ->with(['Users' => function ($query) {
-                                $query->select('id', 'name', 'email', 'phone') ;
-                            }])
-                            ->with(['CustomerPayment' => function ($query) {
-                                $query->select('id', 'booking_id', 'name', 'amount', 'order_id', 'razorpay_id') ;
-                            }])
-                             ->where('status', 1)
-                             ->orderBy('id', 'DESC');
+            ->with(['bus' => function ($query) {
+                $query->select('id', 'bus_operator_id', 'name', 'bus_number')
+                    ->with(['busstoppage' => function ($quer) {
+                        $quer->select('id', 'bus_id', 'source_id', 'destination_id', 'dep_time', 'arr_time');
+                    }]);
+            }])
+            ->with(['Users' => function ($query) {
+                $query->select('id', 'name', 'email', 'phone');
+            }])
+            ->with(['CustomerPayment' => function ($query) {
+                $query->select('id', 'booking_id', 'name', 'amount', 'order_id', 'razorpay_id');
+            }])
+            ->where('status', 1)
+            ->orderBy('id', 'DESC');
 
         // $u->with(["bookingDetail" => function($b){
         //     $b->with(["busSeats" => function($s){
@@ -78,7 +79,7 @@ class CompleteReportRepository
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         if ($request['USER_BUS_OPERATOR_ID'] != "") {
@@ -111,7 +112,9 @@ class CompleteReportRepository
         }
 
         if (!empty($bus_operator_id)) {
-            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id);});
+            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {
+                $query->where('id', $bus_operator_id);
+            });
         }
 
         if (!empty($payment_id)) {
@@ -128,22 +131,21 @@ class CompleteReportRepository
             $data = $data->orderBy('created_at', 'DESC');
         } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
             if ($start_date == $end_date) {
-                $data = $data->where('created_at', 'like', '%'.$start_date.'%')
-                        ->orderBy('created_at', 'DESC');
-
+                $data = $data->where('created_at', 'like', '%' . $start_date . '%')
+                    ->orderBy('created_at', 'DESC');
             } else {
                 $data = $data->whereBetween('created_at', [$start_date, $end_date])
-                        ->orderBy('created_at', 'DESC');
+                    ->orderBy('created_at', 'DESC');
             }
         } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
             $data = $data->where('journey_dt', date('Y-m-d'))->orderBy('journey_dt', 'DESC');
         } elseif ($date_type == 'journey' && $start_date != null && $end_date != null) {
             if ($start_date == $end_date) {
-                $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')
-                        ->orderBy('journey_dt', 'DESC');
+                $data = $data->where('journey_dt', 'like', '%' . $start_date . '%')
+                    ->orderBy('journey_dt', 'DESC');
             } else {
-                $data = $data-> whereBetween('journey_dt', [$start_date, $end_date])
-                       ->orderBy('journey_dt', 'DESC');
+                $data = $data->whereBetween('journey_dt', [$start_date, $end_date])
+                    ->orderBy('journey_dt', 'DESC');
             }
         }
         $data = $data->paginate($paginate);
@@ -158,6 +160,9 @@ class CompleteReportRepository
         $journey = '';
         $current_dt = date("Y-m-d");
         $current_tt = date("h:i:s");
+
+        $totalSeats = 0;
+        $totalSleepers = 0;
 
         // log::info($current_dt);
         // log::info($current_tt);
@@ -177,7 +182,21 @@ class CompleteReportRepository
                     $journey = 'Over';
                 }
 
-                $totalSeats = $totalSeats +  count($v->BookingDetail);
+                // Seat / Sleeper count
+                if (!empty($v->booking_detail)) {
+                    foreach ($v->booking_detail as $bd) {
+
+                        $berthType = $bd->bus_seats->seats->berthType ?? null;
+
+                        if ($berthType == 1) {
+                            $totalSeats++;      // Seat
+                        } elseif ($berthType == 2) {
+                            $totalSleepers++;   // Sleeper
+                        }
+                    }
+                }
+
+                // $totalSeats = $totalSeats +  count($v->BookingDetail);
                 $totalfare = $totalfare + $v->total_fare;
                 $totalAgentComission = $totalAgentComission + $v->agent_commission;
                 $totalPayableAmount = $totalPayableAmount + $v->payable_amount;
@@ -210,20 +229,20 @@ class CompleteReportRepository
         $owner_fare = $owner_fare + $additional_owner_fare;
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
-             "totalSeats" => $totalSeats,
-             "totalfare" => number_format($totalfare, 2, ".", ""),
-             "totalPayableAmount" => number_format($totalReceivedAmount, 2, ".", ""),
-             "owner_fare" => number_format($owner_fare, 2, ".", ""),
-             "additional_owner_fare" => number_format($additional_owner_fare, 2, ".", ""),
+            "count" => $data->count(),
+            "total" => $data->total(),
+            "totalSeats" => $totalSeats,
+            "totalSleepers" => $totalSleepers,
+            "totalfare" => number_format($totalfare, 2, ".", ""),
+            "totalPayableAmount" => number_format($totalReceivedAmount, 2, ".", ""),
+            "owner_fare" => number_format($owner_fare, 2, ".", ""),
+            "additional_owner_fare" => number_format($additional_owner_fare, 2, ".", ""),
             "data" => $data
-           );
+        );
 
 
 
         return $response;
-
     }
 
     //Created By Chakra 26-04-2022 11:56 AM
@@ -250,14 +269,14 @@ class CompleteReportRepository
             'CustomerPayment',
             'User.role'
         )
-                             ->with('bus.busstoppage')
-                             ->where('status', 0)
-                             // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
-                             ->orderBy('id', 'DESC');
+            ->with('bus.busstoppage')
+            ->where('status', 0)
+            // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
+            ->orderBy('id', 'DESC');
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         if (!empty($pnr)) {
@@ -267,12 +286,18 @@ class CompleteReportRepository
 
 
         if (!empty($bus_operator_id)) {
-            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id);});
+            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {
+                $query->where('id', $bus_operator_id);
+            });
         }
 
         if (!empty($payment_id)) {
-            $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id)->where('payment_done', '1');})
-                      ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('order_id', $payment_id)->where('payment_done', '1');});
+            $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id) {
+                $query->where('razorpay_id', $payment_id)->where('payment_done', '1');
+            })
+                ->orwhereHas('CustomerPayment', function ($query) use ($payment_id) {
+                    $query->where('order_id', $payment_id)->where('payment_done', '1');
+                });
         }
 
         if (!empty($source_id) && !empty($destination_id)) {
@@ -284,23 +309,21 @@ class CompleteReportRepository
             $data = $data->orderBy('created_at', 'DESC');
         } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
             if ($start_date == $end_date) {
-                $data = $data->where('created_at', 'like', '%'.$start_date.'%')
-                        ->orderBy('created_at', 'DESC');
-
+                $data = $data->where('created_at', 'like', '%' . $start_date . '%')
+                    ->orderBy('created_at', 'DESC');
             } else {
                 $data = $data->whereBetween('created_at', [$start_date, $end_date])
-                        ->orderBy('created_at', 'DESC');
+                    ->orderBy('created_at', 'DESC');
             }
-
         } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
             $data = $data->where('journey_dt', date('Y-m-d'))->orderBy('journey_dt', 'DESC');
         } elseif ($date_type == 'journey' && $start_date != null && $end_date != null) {
             if ($start_date == $end_date) {
-                $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')
-                        ->orderBy('journey_dt', 'DESC');
+                $data = $data->where('journey_dt', 'like', '%' . $start_date . '%')
+                    ->orderBy('journey_dt', 'DESC');
             } else {
-                $data = $data-> whereBetween('journey_dt', [$start_date, $end_date])
-                       ->orderBy('journey_dt', 'DESC');
+                $data = $data->whereBetween('journey_dt', [$start_date, $end_date])
+                    ->orderBy('journey_dt', 'DESC');
             }
         }
         $data = $data->paginate($paginate);
@@ -341,26 +364,21 @@ class CompleteReportRepository
         }
 
 
-        $totalReceivedAmount = $totalPayableAmount - $totalAgentComission ;
+        $totalReceivedAmount = $totalPayableAmount - $totalAgentComission;
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
-             "totalfare" => number_format($totalfare, 2, ".", ""),
-             "totalPayableAmount" => number_format($totalReceivedAmount, 2, ".", ""),
-             "owner_fare" => number_format($owner_fare, 2, ".", ""),
+            "count" => $data->count(),
+            "total" => $data->total(),
+            "totalfare" => number_format($totalfare, 2, ".", ""),
+            "totalPayableAmount" => number_format($totalReceivedAmount, 2, ".", ""),
+            "owner_fare" => number_format($owner_fare, 2, ".", ""),
             "data" => $data
-           );
+        );
 
 
 
         return $response;
-
     }
 
-    public function getLessBookingUrls()
-    {
-
-    }
-
+    public function getLessBookingUrls() {}
 }
