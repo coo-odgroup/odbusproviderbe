@@ -18,6 +18,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\UpdateMinPriceForBus::class,
         \App\Console\Commands\ArchiveFailedBookings::class,
+        \App\Console\Commands\YearWiseArchiveBookings::class,
+        \App\Console\Commands\RunAutoCrons::class,
     ];
 
     /**

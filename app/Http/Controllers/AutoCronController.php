@@ -77,7 +77,7 @@ class AutoCronController extends Controller
             $validator = Validator::make($request->all(), [
                 'name'          => 'required|string|max:255',
                 'command'       => 'required|string',
-                'frequency_id'  => 'required|exists:mysql_scheduler.cron_frequencies,id',
+                'frequency_id'  => 'required|exists:cron_frequencies,id',
                 'run_type'      => 'required|in:auto,manual',
                 'is_active'     => 'required|boolean',
                 'last_run_at'   => 'nullable|date',
@@ -134,7 +134,7 @@ class AutoCronController extends Controller
             $validator = Validator::make($request->all(), [
                 'name'          => 'required|string|max:255',
                 'command'       => 'required|string',
-                'frequency_id'  => 'required|exists:mysql_scheduler.cron_frequencies,id',
+                'frequency_id'  => 'required|exists:cron_frequencies,id',
                 'run_type'      => 'required|in:auto,manual',
                 'is_active'     => 'required|boolean',
                 'last_run_at'   => 'nullable|date',

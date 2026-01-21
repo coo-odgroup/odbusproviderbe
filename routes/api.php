@@ -1191,6 +1191,10 @@ $router->get('/clear-old-logs', function () {
    Artisan::call('logs:clear-old');
 });
 
+$router->get('/booking-year-wise-archive', function () {
+   Artisan::call('booking:year-wise-archive');
+});
+
 // Chart by Jagan
 Route::post('cancelled-ticket-count', [CancellationRevenueController::class, "cancelledTicketCount"]);
 Route::post('refund-amount', [CancellationRevenueController::class, "refundAmount"]);
