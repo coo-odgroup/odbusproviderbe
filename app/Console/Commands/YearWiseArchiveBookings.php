@@ -22,7 +22,7 @@ class YearWiseArchiveBookings extends Command
     /**
      * Command description
      */
-    protected $description = 'Move bookings older than 1 month to backup table year wise';
+    protected $description = 'Move failed bookings older than 1 month to backup table year wise';
 
     /**
      * Execute the command
@@ -86,10 +86,10 @@ class YearWiseArchiveBookings extends Command
 
                 // Safety: check archive tables exist
                 if (
-                    !Schema::connection('archive_transaction')->hasTable($bookingTable) ||
-                    !Schema::connection('archive_transaction')->hasTable($bookingDetailTable) ||
-                    !Schema::connection('archive_transaction')->hasTable($customerPaymentTable) ||
-                    !Schema::connection('archive_transaction')->hasTable($bookingSequenceTable)
+                    !Schema::hasTable($bookingTable) ||
+                    !Schema::hasTable($bookingDetailTable) ||
+                    !Schema::hasTable($customerPaymentTable) ||
+                    !Schema::hasTable($bookingSequenceTable)
                 ) {
                     Log::error("Archive tables missing for year {$year}");
                     continue;
@@ -118,6 +118,24 @@ class YearWiseArchiveBookings extends Command
                     ->makeHidden(['id'])
                     ->toArray();
 
+                // Log::info($oldBookings);
+                // return;
+
+                $oldBookings = collect($oldBookings)->map(function ($booking) {
+                    if (isset($booking['created_at'])) {
+                        $booking['created_at'] = Carbon::parse($booking['created_at'])->format('Y-m-d H:i:s');
+                    }
+
+                    if (isset($booking['updated_at'])) {
+                        $booking['updated_at'] = Carbon::parse($booking['updated_at'])->format('Y-m-d H:i:s');
+                    }
+
+                    return $booking;
+                })->toArray();
+
+                // Log::info($oldBookings);
+                // return;
+
                 if (empty($oldBookings)) {
                     Log::info("No bookings for {$nextJourneyDate}");
                     continue;
@@ -134,11 +152,41 @@ class YearWiseArchiveBookings extends Command
                     ->makeHidden(['id'])
                     ->toArray();
 
+                $oldCustomerPayments = collect($oldCustomerPayments)->map(function ($bookingPay) {
+                    if (isset($bookingPay['created_at'])) {
+                        $bookingPay['created_at'] = Carbon::parse($bookingPay['created_at'])->format('Y-m-d H:i:s');
+                    }
+
+                    if (isset($bookingPay['updated_at'])) {
+                        $bookingPay['updated_at'] = Carbon::parse($bookingPay['updated_at'])->format('Y-m-d H:i:s');
+                    }
+
+                    return $bookingPay;
+                })->toArray();
+
+                // Log::info($oldCustomerPayments);
+                // return;
+
                 $oldBookingDetail = BookingDetail::whereIn('booking_id', $bookingIds)
                     ->selectRaw('*, id AS booking_detail_id')
                     ->get()
                     ->makeHidden(['id'])
                     ->toArray();
+
+                $oldBookingDetail = collect($oldBookingDetail)->map(function ($bookingDtls) {
+                    if (isset($bookingDtls['created_at'])) {
+                        $bookingDtls['created_at'] = Carbon::parse($bookingDtls['created_at'])->format('Y-m-d H:i:s');
+                    }
+
+                    if (isset($bookingDtls['updated_at'])) {
+                        $bookingDtls['updated_at'] = Carbon::parse($bookingDtls['updated_at'])->format('Y-m-d H:i:s');
+                    }
+
+                    return $bookingDtls;
+                })->toArray();
+
+                // Log::info($oldBookingDetail);
+                // return;
 
                 $oldBookingSequence = BookingSequence::whereIn('booking_id', $bookingIds)
                     ->selectRaw('*, id AS booking_sequence_id')
@@ -146,11 +194,25 @@ class YearWiseArchiveBookings extends Command
                     ->makeHidden(['id'])
                     ->toArray();
 
+                $oldBookingSequence = collect($oldBookingSequence)->map(function ($bookingSeq) {
+                    if (isset($bookingSeq['created_at'])) {
+                        $bookingSeq['created_at'] = Carbon::parse($bookingSeq['created_at'])->format('Y-m-d H:i:s');
+                    }
+
+                    if (isset($bookingSeq['updated_at'])) {
+                        $bookingSeq['updated_at'] = Carbon::parse($bookingSeq['updated_at'])->format('Y-m-d H:i:s');
+                    }
+
+                    return $bookingSeq;
+                })->toArray();
+
+                // Log::info($oldBookingSequence);
+                // return;
+
                 // ---------------------------------
                 // Multi-DB Transaction
                 // ---------------------------------
                 DB::beginTransaction();
-                DB::connection('archive_transaction')->beginTransaction();
 
                 try {
 
@@ -158,10 +220,10 @@ class YearWiseArchiveBookings extends Command
                     DB::table('manage_sms')->whereIn('booking_id', $bookingIds)->delete();
 
                     // Insert into YEAR tables (ARCHIVE DB)
-                    DB::connection('archive_transaction')->table($bookingTable)->insert($oldBookings);
-                    DB::connection('archive_transaction')->table($bookingDetailTable)->insert($oldBookingDetail);
-                    DB::connection('archive_transaction')->table($customerPaymentTable)->insert($oldCustomerPayments);
-                    DB::connection('archive_transaction')->table($bookingSequenceTable)->insert($oldBookingSequence);
+                    DB::table($bookingTable)->insert($oldBookings);
+                    DB::table($bookingDetailTable)->insert($oldBookingDetail);
+                    DB::table($customerPaymentTable)->insert($oldCustomerPayments);
+                    DB::table($bookingSequenceTable)->insert($oldBookingSequence);
 
                     // Delete from main tables
                     DB::table('booking_sequence')->whereIn('booking_id', $bookingIds)->delete();
@@ -170,14 +232,12 @@ class YearWiseArchiveBookings extends Command
                     DB::table('booking')->whereIn('id', $bookingIds)->delete();
 
                     DB::commit();
-                    DB::connection('archive_transaction')->commit();
 
                     Log::info("Archived {$nextJourneyDate} ({$year}) successfully");
 
                 } catch (\Throwable $e) {
 
                     DB::rollBack();
-                    DB::connection('archive_transaction')->rollBack();
                     throw $e;
                 }
 
