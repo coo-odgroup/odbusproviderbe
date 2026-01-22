@@ -143,6 +143,10 @@ class YearWiseArchiveBookings extends Command
 
                 $bookingIds = collect($oldBookings)->pluck('booking_id')->toArray();
 
+                Log::info("Processing Records", [
+                    'count' => count($bookingIds)
+                ]);
+
                 // ---------------------------------
                 // Fetch related tables
                 // ---------------------------------
