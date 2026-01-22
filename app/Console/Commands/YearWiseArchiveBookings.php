@@ -33,93 +33,67 @@ class YearWiseArchiveBookings extends Command
         $startTime = microtime(true);
 
         try {
-            Log::info('YearWiseArchiveBookings started at: ' . now());
+                Log::info('YearWiseArchiveBookings started at: ' . now());
 
-            // ---------------------------------
-            // Config: never archive before this year
-            // ---------------------------------
-            $minArchiveYear = 2022;
+                // Dynamically find the year with a record, starting from 2022
+                $startYear = 2022;
+                $maxYear = (int)date('Y') + 1; // look ahead one year from current
+                $foundYear = null;
+                $bkBookingLastRecord = null;
 
-            // ---------------------------------
-            // Get latest journey year
-            // ---------------------------------
-            $latestJourney = Booking::orderBy('journey_dt', 'desc')->value('journey_dt');
+                for ($year = $startYear; $year <= $maxYear; $year++) {
 
-            if (!$latestJourney) {
-                $this->info('No bookings found');
-                return Command::SUCCESS;
-            }
+                    $tableName = $year . '_booking';
+                    if (!Schema::hasTable($tableName)) {
+                        continue;
+                    }
 
-            $latestYear = Carbon::parse($latestJourney)->year;
-            $archiveTillYear = $latestYear - 2;  // keep current & previous year in main
+                    $bkBookingLastRecord = DB::table($tableName)
+                                            ->select('journey_dt')
+                                            ->orderBy('id', 'desc')
+                                            ->first();
 
-            Log::info("Latest Year: {$latestYear}, Archive till: {$archiveTillYear}");
+                    if ($bkBookingLastRecord) {
+                        $foundYear = $year;
+                        break;
+                    }
+                }
 
-            // ---------------------------------
-            // Find all years to archive (>= minArchiveYear)
-            // ---------------------------------
-            $yearsToArchive = Booking::selectRaw('YEAR(journey_dt) as year')
-                ->whereYear('journey_dt', '>=', $minArchiveYear)
-                ->whereYear('journey_dt', '<=', $archiveTillYear)
-                ->distinct()
-                ->orderBy('year') // earliest year first
-                ->pluck('year')
-                ->toArray();
+                if ($bkBookingLastRecord) {
+                    $journeyDate = Carbon::parse($bkBookingLastRecord->journey_dt)->addDay();
+                    // $journeyDate = Carbon::parse('2022-12-31')->addDay(); // Testing purpose
+                    $journeyDate = $journeyDate->format('Y-m-d');
+                } else {
+                    // fallback: use the start year and a default date
+                    $journeyDate = $startYear . '-04-15';
+                }
 
-            if (empty($yearsToArchive)) {
-                $this->info('No years eligible for archive');
-                return Command::SUCCESS;
-            }
+                $currentYear = date('Y', strtotime($journeyDate));
 
-            // ---------------------------------
-            // Loop years in order
-            // ---------------------------------
-            foreach ($yearsToArchive as $year) {
-
-                Log::info("Archiving year {$year} started");
+                Log::info("Archiving year {$currentYear} started");
 
                 // Dynamic table names
-                $bookingTable          = "{$year}_booking";
-                $bookingDetailTable    = "{$year}_booking_detail";
-                $customerPaymentTable  = "{$year}_customer_payment";
-                $bookingSequenceTable  = "{$year}_booking_sequence";
+                $bookingTable          = "{$currentYear}_booking";
+                $bookingDetailTable    = "{$currentYear}_booking_detail";
+                $customerPaymentTable  = "{$currentYear}_customer_payment";
+                $bookingSequenceTable  = "{$currentYear}_booking_sequence";
 
-                // Safety: check archive tables exist
                 if (
                     !Schema::hasTable($bookingTable) ||
                     !Schema::hasTable($bookingDetailTable) ||
                     !Schema::hasTable($customerPaymentTable) ||
                     !Schema::hasTable($bookingSequenceTable)
                 ) {
-                    Log::error("Archive tables missing for year {$year}");
-                    continue;
+                    Log::error("Archive tables missing for year {$currentYear}");
+                    return;
                 }
-
-                // Pick the **oldest pending date** for this year
-                $nextJourneyDate = Booking::whereIn('status', [1, 2])
-                    ->whereYear('journey_dt', $year)
-                    ->orderBy('journey_dt')
-                    ->value('journey_dt');
-
-                if (!$nextJourneyDate) {
-                    Log::info("No pending dates for year {$year}");
-                    continue;
-                }
-
-                Log::info("Processing date {$nextJourneyDate} for year {$year}");
-
-                // ---------------------------------
-                // Fetch bookings for this date
-                // ---------------------------------
+             
                 $oldBookings = Booking::whereIn('status', [1, 2])
-                    ->whereDate('journey_dt', $nextJourneyDate)
-                    ->selectRaw('*, id AS booking_id')
-                    ->get()
-                    ->makeHidden(['id'])
-                    ->toArray();
-
-                // Log::info($oldBookings);
-                // return;
+                                        ->whereDate('journey_dt', $journeyDate)
+                                        ->selectRaw('*, id AS booking_id')
+                                        ->get()
+                                        ->makeHidden(['id'])
+                                        ->toArray();
 
                 $oldBookings = collect($oldBookings)->map(function ($booking) {
                     if (isset($booking['created_at'])) {
@@ -133,24 +107,22 @@ class YearWiseArchiveBookings extends Command
                     return $booking;
                 })->toArray();
 
-                // Log::info($oldBookings);
-                // return;
-
                 if (empty($oldBookings)) {
-                    Log::info("No bookings for {$nextJourneyDate}");
-                    continue;
+                    Log::info("No bookings for {$journeyDate} to archive");
                 }
 
                 $bookingIds = collect($oldBookings)->pluck('booking_id')->toArray();
+
+                Log::info('Total Bookings', ['count' => count($bookingIds)]);
 
                 // ---------------------------------
                 // Fetch related tables
                 // ---------------------------------
                 $oldCustomerPayments = CustomerPayment::whereIn('booking_id', $bookingIds)
-                    ->selectRaw('*, id AS customer_payment_id')
-                    ->get()
-                    ->makeHidden(['id'])
-                    ->toArray();
+                                                        ->selectRaw('*, id AS customer_payment_id')
+                                                        ->get()
+                                                        ->makeHidden(['id'])
+                                                        ->toArray();
 
                 $oldCustomerPayments = collect($oldCustomerPayments)->map(function ($bookingPay) {
                     if (isset($bookingPay['created_at'])) {
@@ -164,14 +136,11 @@ class YearWiseArchiveBookings extends Command
                     return $bookingPay;
                 })->toArray();
 
-                // Log::info($oldCustomerPayments);
-                // return;
-
                 $oldBookingDetail = BookingDetail::whereIn('booking_id', $bookingIds)
-                    ->selectRaw('*, id AS booking_detail_id')
-                    ->get()
-                    ->makeHidden(['id'])
-                    ->toArray();
+                                                    ->selectRaw('*, id AS booking_detail_id')
+                                                    ->get()
+                                                    ->makeHidden(['id'])
+                                                    ->toArray();
 
                 $oldBookingDetail = collect($oldBookingDetail)->map(function ($bookingDtls) {
                     if (isset($bookingDtls['created_at'])) {
@@ -184,9 +153,6 @@ class YearWiseArchiveBookings extends Command
 
                     return $bookingDtls;
                 })->toArray();
-
-                // Log::info($oldBookingDetail);
-                // return;
 
                 $oldBookingSequence = BookingSequence::whereIn('booking_id', $bookingIds)
                     ->selectRaw('*, id AS booking_sequence_id')
@@ -205,13 +171,7 @@ class YearWiseArchiveBookings extends Command
 
                     return $bookingSeq;
                 })->toArray();
-
-                // Log::info($oldBookingSequence);
-                // return;
-
-                // ---------------------------------
-                // Multi-DB Transaction
-                // ---------------------------------
+               
                 DB::beginTransaction();
 
                 try {
@@ -233,7 +193,7 @@ class YearWiseArchiveBookings extends Command
 
                     DB::commit();
 
-                    Log::info("Archived {$nextJourneyDate} ({$year}) successfully");
+                    Log::info("Archived {$journeyDate} ({$currentYear}) successfully");
 
                 } catch (\Throwable $e) {
 
@@ -241,16 +201,10 @@ class YearWiseArchiveBookings extends Command
                     throw $e;
                 }
 
-                sleep(1); // throttle
+                sleep(0.5); // throttle
 
-                // Exit after **archiving one date**, next run will pick next date
-                $this->info("Archived date {$nextJourneyDate} for year {$year}. Run next time for the next date.");
+                $this->info("Archived date {$journeyDate} for year {$currentYear}. Run next time for the next date.");
                 return Command::SUCCESS;
-            }
-
-            // If reached here, nothing left to archive
-            $this->info('No more dates left to archive');
-            return Command::SUCCESS;
 
         } catch (\Throwable $e) {
 
