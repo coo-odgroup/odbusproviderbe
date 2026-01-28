@@ -36,7 +36,7 @@ class YearWiseArchiveBookings extends Command
                 Log::info('YearWiseArchiveBookings started at: ' . now());
 
                 // Dynamically find the year with a record, starting from 2022
-                $startYear = 2022;
+                $startYear = 2024;
                 $maxYear = (int)date('Y') + 1; // look ahead one year from current
                 $foundYear = null;
                 $bkBookingLastRecord = null;
@@ -155,10 +155,10 @@ class YearWiseArchiveBookings extends Command
                 })->toArray();
 
                 $oldBookingSequence = BookingSequence::whereIn('booking_id', $bookingIds)
-                    ->selectRaw('*, id AS booking_sequence_id')
-                    ->get()
-                    ->makeHidden(['id'])
-                    ->toArray();
+                                                        ->selectRaw('*, id AS booking_sequence_id')
+                                                        ->get()
+                                                        ->makeHidden(['id'])
+                                                        ->toArray();
 
                 $oldBookingSequence = collect($oldBookingSequence)->map(function ($bookingSeq) {
                     if (isset($bookingSeq['created_at'])) {
