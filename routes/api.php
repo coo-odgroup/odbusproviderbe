@@ -143,6 +143,8 @@ use App\Http\Controllers\ApiLogReportController;
 use App\Http\Controllers\CancellationRevenueController;
 // Auto Cron
 use App\Http\Controllers\AutoCronController;
+// Campaign
+use App\Http\Controllers\CampaignController;
 
 //AppNotification
 use App\Http\Controllers\AppNotificationController;
@@ -1210,3 +1212,21 @@ Route::post('autocroncreate', [AutoCronController::class, "cronCreate"]);
 Route::put('autocronupdate/{id}', [AutoCronController::class, 'cronUpdate']);
 Route::delete('autocrondetete/{id}', [AutoCronController::class, 'cronDelete']);
 Route::get('cronfrequencies', [AutoCronController::class, 'getCronFrequenciesList']);
+
+// Campaign Master Crud API by Jagan
+Route::post('campaignmasterlist', [CampaignController::class, "campaignmasterList"]);
+Route::post('campaignmastercreate', [CampaignController::class, "campaignmasterCreate"]);
+Route::put('campaignmasterupdate/{id}', [CampaignController::class, 'campaignmasterUpdate']);
+Route::delete('campaignmasterdetete/{id}', [CampaignController::class, 'campaignmasterDelete']);
+
+// Campaign Crud API by Jagan
+Route::post('campaignlist', [CampaignController::class, "campaignList"]);
+Route::post('campaigncreate', [CampaignController::class, "campaignCreate"]);
+Route::put('campaignupdate/{id}', [CampaignController::class, 'campaignUpdate']);
+Route::delete('campaigndetete/{id}', [CampaignController::class, 'campaignDelete']);
+
+// Campaign Routes Crud API by Jagan
+Route::post('campaignrouteslist', [CampaignController::class, "campaignRoutesList"]);
+Route::post('campaignroutescreate', [CampaignController::class, "campaignRoutesCreate"]);
+Route::put('campaignroutesupdate/{id}', [CampaignController::class, 'campaignRoutesUpdate']);
+Route::delete('campaignroutesdetete/{id}', [CampaignController::class, 'campaignRoutesDelete']);
