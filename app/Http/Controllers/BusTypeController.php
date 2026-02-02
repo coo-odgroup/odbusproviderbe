@@ -160,7 +160,7 @@ class BusTypeController extends Controller
     public function changeStatus($id)
     {
         try {
-
+            $this->busTypeRepository->changeStatus($id);    
         } catch (Exception $e) {
                return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }

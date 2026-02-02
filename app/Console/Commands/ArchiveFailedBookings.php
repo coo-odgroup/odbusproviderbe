@@ -119,18 +119,64 @@ class ArchiveFailedBookings extends Command
             // ---------------------------
             // Insert into backup tables
             // ---------------------------
-            DB::table('bk_booking')->insert($failedBookings);
-            DB::table('bk_booking_detail')->insert($failedBookingDetail);
-            DB::table('bk_customer_payment')->insert($failedCustomerPayments);
-            DB::table('bk_booking_sequence')->insert($failedBookingSequence);
+            // DB::table('bk_booking')->insert($failedBookings);
+            // DB::table('bk_booking_detail')->insert($failedBookingDetail);
+            // DB::table('bk_customer_payment')->insert($failedCustomerPayments);
+            // DB::table('bk_booking_sequence')->insert($failedBookingSequence);
+
+            // DB::table('bk_booking')->insert($failedBookings);
+            collect($failedBookings)
+                ->chunk(200)
+                ->each(function ($chunk) {
+                    DB::table('bk_booking')->insert($chunk->toArray());
+                });
+
+            collect($failedBookingDetail)
+                ->chunk(200)
+                ->each(function ($chunk) {
+                    DB::table('bk_booking_detail')->insert($chunk->toArray());
+                });
+
+            collect($failedCustomerPayments)
+                ->chunk(200)
+                ->each(function ($chunk) {
+                    DB::table('bk_customer_payment')->insert($chunk->toArray());
+                });
+
+            collect($failedBookingSequence)
+                ->chunk(200)
+                ->each(function ($chunk) {
+                    DB::table('bk_booking_sequence')->insert($chunk->toArray());
+                });
 
             // ---------------------------
             // Delete from main tables
             // ---------------------------
-            DB::table('booking_sequence')->whereIn('booking_id', $bookingIds)->delete();
-            DB::table('booking_detail')->whereIn('booking_id', $bookingIds)->delete();
-            DB::table('customer_payment')->whereIn('booking_id', $bookingIds)->delete();
-            DB::table('booking')->whereIn('id', $bookingIds)->delete();
+            // DB::table('booking_sequence')->whereIn('booking_id', $bookingIds)->delete();
+            // DB::table('booking_detail')->whereIn('booking_id', $bookingIds)->delete();
+            // DB::table('customer_payment')->whereIn('booking_id', $bookingIds)->delete();
+            // DB::table('booking')->whereIn('id', $bookingIds)->delete();
+
+            collect($bookingIds)
+                ->chunk(200)
+                ->each(function ($chunk) {
+
+                    DB::table('booking_sequence')
+                        ->whereIn('booking_id', $chunk)
+                        ->delete();
+
+                    DB::table('booking_detail')
+                        ->whereIn('booking_id', $chunk)
+                        ->delete();
+
+                    DB::table('customer_payment')
+                        ->whereIn('booking_id', $chunk)
+                        ->delete();
+
+                    DB::table('booking')
+                        ->whereIn('id', $chunk)
+                        ->delete();
+                });
 
             // ---------------------------
             // COMMIT TRANSACTION
@@ -140,7 +186,6 @@ class ArchiveFailedBookings extends Command
             sleep(0.5);
 
             $this->info('Archiving completed successfully');
-
         } catch (\Throwable $e) {
 
             // ---------------------------
@@ -155,7 +200,6 @@ class ArchiveFailedBookings extends Command
             ]);
 
             $this->error('Archiving failed. Check logs for details.');
-
         } finally {
 
             $endTime = microtime(true);

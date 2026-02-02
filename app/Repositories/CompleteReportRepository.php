@@ -68,7 +68,7 @@ class CompleteReportRepository
                 $query->select('id', 'booking_id', 'name', 'amount', 'order_id', 'razorpay_id');
             }])
             ->where('status', 1)
-            ->orderBy('id', 'DESC');
+            ->orderBy('journey_dt', 'DESC');
 
         // $u->with(["bookingDetail" => function($b){
         //     $b->with(["busSeats" => function($s){
@@ -161,9 +161,6 @@ class CompleteReportRepository
         $current_dt = date("Y-m-d");
         $current_tt = date("h:i:s");
 
-        $totalSeats = 0;
-        $totalSleepers = 0;
-
         // log::info($current_dt);
         // log::info($current_tt);
 
@@ -182,21 +179,7 @@ class CompleteReportRepository
                     $journey = 'Over';
                 }
 
-                // Seat / Sleeper count
-                if (!empty($v->booking_detail)) {
-                    foreach ($v->booking_detail as $bd) {
-
-                        $berthType = $bd->bus_seats->seats->berthType ?? null;
-
-                        if ($berthType == 1) {
-                            $totalSeats++;      // Seat
-                        } elseif ($berthType == 2) {
-                            $totalSleepers++;   // Sleeper
-                        }
-                    }
-                }
-
-                // $totalSeats = $totalSeats +  count($v->BookingDetail);
+                $totalSeats = $totalSeats +  count($v->BookingDetail);
                 $totalfare = $totalfare + $v->total_fare;
                 $totalAgentComission = $totalAgentComission + $v->agent_commission;
                 $totalPayableAmount = $totalPayableAmount + $v->payable_amount;
@@ -232,7 +215,6 @@ class CompleteReportRepository
             "count" => $data->count(),
             "total" => $data->total(),
             "totalSeats" => $totalSeats,
-            "totalSleepers" => $totalSleepers,
             "totalfare" => number_format($totalfare, 2, ".", ""),
             "totalPayableAmount" => number_format($totalReceivedAmount, 2, ".", ""),
             "owner_fare" => number_format($owner_fare, 2, ".", ""),
