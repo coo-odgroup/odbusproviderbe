@@ -134,6 +134,7 @@ use App\Http\Controllers\ApiUserComissionController;
 use App\Http\Controllers\ApiUserCompleteReportController;
 use App\Http\Controllers\ApiUserCancelTicketReportController;
 use App\Http\Controllers\ApiUserManageOperatorController;
+use App\Http\Controllers\ArchiveReportController;
 
 // Scheduler
 use App\Http\Controllers\SchedulerController;
@@ -1154,6 +1155,9 @@ Route::post("active-buses",[ChartController::class,"activeBus"]);
 Route::post('operator-dashboarddata',[DashboardController::class,'operatorDashbord']);
 Route::post('operator-booking',[DashboardController::class,'opBooking']);
 Route::post('operator-revenue',[DashboardController::class,'opRevenue']);
+
+Route::post('archive-completereport',[ArchiveReportController::class,'archiveCompleteReport']);
+Route::post('archive-cancelreport',[ArchiveReportController::class,'archiveCancelReport']);
 
 
 

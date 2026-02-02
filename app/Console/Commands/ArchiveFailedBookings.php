@@ -205,7 +205,6 @@ class ArchiveFailedBookings extends Command
                         ->delete();
                 });
 
-
             // ---------------------------
             // COMMIT TRANSACTION
             // ---------------------------
