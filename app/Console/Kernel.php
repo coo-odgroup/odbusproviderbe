@@ -16,8 +16,16 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\UpdateMinPriceForBus::class,
+        \App\Console\Commands\UpdateMinPriceForBus::class,
         \App\Console\Commands\ArchiveFailedBookings::class,
+        \App\Console\Commands\YearWiseArchiveBookings::class,
+        \App\Console\Commands\ArchiveBusCancellation::class,
+        \App\Console\Commands\ArchiveDaywiseBookingSeized::class,
+        \App\Console\Commands\ArchiveFestivalFare::class,
+        \App\Console\Commands\ArchiveOwnerFare::class,
+        \App\Console\Commands\ArchiveSpecialFare::class,
+        \App\Console\Commands\ClearOldLogs::class,
+        \App\Console\Commands\RunAutoCrons::class,
     ];
 
     /**

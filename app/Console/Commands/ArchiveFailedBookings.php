@@ -33,9 +33,7 @@ class ArchiveFailedBookings extends Command
         try {
             Log::info('ArchiveFailedBookings started at: ' . now());
 
-            // ---------------------------------
-            // Get last processed journey date
-            // ---------------------------------
+
             $bkBookingLastRecord = DB::table('bk_booking')
                 ->select('journey_dt')
                 ->orderBy('id', 'desc')
@@ -44,19 +42,13 @@ class ArchiveFailedBookings extends Command
             if ($bkBookingLastRecord) {
                 $cutoffDate = Carbon::parse($bkBookingLastRecord->journey_dt)->addDay();
             } else {
-                $cutoffDate = Carbon::parse('2022-04-15');
+                $cutoffDate = '2022-04-15';
             }
 
-            // ---------------------------------
-            // BEGIN TRANSACTION
-            // ---------------------------------
             DB::beginTransaction();
 
-            // ---------------------------------
-            // Find next date having failed bookings
-            // ---------------------------------
             $nextJourneyDate = Booking::whereIn('status', [0, 4])
-                ->whereDate('journey_dt', '>=', $cutoffDate->toDateString())
+                ->whereDate('journey_dt', '=', $cutoffDate)
                 ->orderBy('journey_dt')
                 ->value('journey_dt');
 
@@ -68,36 +60,51 @@ class ArchiveFailedBookings extends Command
 
             $cutoffDate = Carbon::parse($nextJourneyDate)->toDateString();
 
-            // ---------------------------------
-            // Fetch failed bookings for that date
-            // ---------------------------------
             $failedBookings = Booking::whereIn('status', [0, 4])
-                ->whereDate('journey_dt', $cutoffDate)
+                ->where('journey_dt', $cutoffDate)
                 ->selectRaw('*, id AS booking_id')
                 ->get()
                 ->makeHidden(['id'])
                 ->toArray();
 
-            // ---------------------------------
-            // Extract booking IDs
-            // ---------------------------------
+            $failedBookings = collect($failedBookings)->map(function ($booking) {
+                if (isset($booking['created_at'])) {
+                    $booking['created_at'] = Carbon::parse($booking['created_at'])->format('Y-m-d H:i:s');
+                }
+
+                if (isset($booking['updated_at'])) {
+                    $booking['updated_at'] = Carbon::parse($booking['updated_at'])->format('Y-m-d H:i:s');
+                }
+
+                return $booking;
+            })->toArray();
+
             $bookingIds = collect($failedBookings)
                 ->pluck('booking_id')
                 ->filter()
                 ->toArray();
 
+            // Log::info($bookingIds); exit;
             Log::info('Total Bookings', ['count' => count($bookingIds)]);
             Log::info('Failed bookings found for date: ' . $cutoffDate);
-            // return;
 
-            // ---------------------------
-            // Fetch dependent tables
-            // ---------------------------
             $failedCustomerPayments = CustomerPayment::whereIn('booking_id', $bookingIds)
                 ->selectRaw('*, id AS customer_payment_id')
                 ->get()
                 ->makeHidden(['id'])
                 ->toArray();
+
+            $failedCustomerPayments = collect($failedCustomerPayments)->map(function ($customerPayment) {
+                if (isset($customerPayment['created_at'])) {
+                    $customerPayment['created_at'] = Carbon::parse($customerPayment['created_at'])->format('Y-m-d H:i:s');
+                }
+
+                if (isset($customerPayment['updated_at'])) {
+                    $customerPayment['updated_at'] = Carbon::parse($customerPayment['updated_at'])->format('Y-m-d H:i:s');
+                }
+
+                return $customerPayment;
+            })->toArray();
 
             $failedBookingDetail = BookingDetail::whereIn('booking_id', $bookingIds)
                 ->selectRaw('*, id AS booking_detail_id')
@@ -105,11 +112,35 @@ class ArchiveFailedBookings extends Command
                 ->makeHidden(['id'])
                 ->toArray();
 
+            $failedBookingDetail = collect($failedBookingDetail)->map(function ($bookingDetails) {
+                if (isset($bookingDetails['created_at'])) {
+                    $bookingDetails['created_at'] = Carbon::parse($bookingDetails['created_at'])->format('Y-m-d H:i:s');
+                }
+
+                if (isset($bookingDetails['updated_at'])) {
+                    $bookingDetails['updated_at'] = Carbon::parse($bookingDetails['updated_at'])->format('Y-m-d H:i:s');
+                }
+
+                return $bookingDetails;
+            })->toArray();
+
             $failedBookingSequence = BookingSequence::whereIn('booking_id', $bookingIds)
                 ->selectRaw('*, id AS booking_sequence_id')
                 ->get()
                 ->makeHidden(['id'])
                 ->toArray();
+
+            $failedBookingSequence = collect($failedBookingSequence)->map(function ($bookingSeq) {
+                if (isset($bookingSeq['created_at'])) {
+                    $bookingSeq['created_at'] = Carbon::parse($bookingSeq['created_at'])->format('Y-m-d H:i:s');
+                }
+
+                if (isset($bookingSeq['updated_at'])) {
+                    $bookingSeq['updated_at'] = Carbon::parse($bookingSeq['updated_at'])->format('Y-m-d H:i:s');
+                }
+
+                return $bookingSeq;
+            })->toArray();
 
             // ---------------------------
             // Delete related SMS
@@ -120,29 +151,25 @@ class ArchiveFailedBookings extends Command
             // Insert into backup tables
             // ---------------------------
             // DB::table('bk_booking')->insert($failedBookings);
-            // DB::table('bk_booking_detail')->insert($failedBookingDetail);
-            // DB::table('bk_customer_payment')->insert($failedCustomerPayments);
-            // DB::table('bk_booking_sequence')->insert($failedBookingSequence);
-
-            // DB::table('bk_booking')->insert($failedBookings);
             collect($failedBookings)
-                ->chunk(200)
+                ->chunk(200) // 100–500 is usually safe
                 ->each(function ($chunk) {
                     DB::table('bk_booking')->insert($chunk->toArray());
                 });
 
+            // DB::table('bk_booking_detail')->insert($failedBookingDetail);
             collect($failedBookingDetail)
                 ->chunk(200)
                 ->each(function ($chunk) {
                     DB::table('bk_booking_detail')->insert($chunk->toArray());
                 });
-
+            // DB::table('bk_customer_payment')->insert($failedCustomerPayments);
             collect($failedCustomerPayments)
                 ->chunk(200)
                 ->each(function ($chunk) {
                     DB::table('bk_customer_payment')->insert($chunk->toArray());
                 });
-
+            // DB::table('bk_booking_sequence')->insert($failedBookingSequence);
             collect($failedBookingSequence)
                 ->chunk(200)
                 ->each(function ($chunk) {
@@ -188,9 +215,6 @@ class ArchiveFailedBookings extends Command
             $this->info('Archiving completed successfully');
         } catch (\Throwable $e) {
 
-            // ---------------------------
-            // ROLLBACK ON ERROR
-            // ---------------------------
             DB::rollBack();
 
             Log::error('ArchiveFailedBookings Error', [

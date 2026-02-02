@@ -99,12 +99,14 @@ class AgentReportRepository
 
                 $stoppages['source'] = [];
                 $stoppages['destination'] = [];
-                if (!empty($stoppage)) {
-                    foreach ($stoppage[0]['ticketPrice'] as $k => $a) {
-                        $stoppages['source'][$k] = $this->location->where('id', $a->source_id)->get();
-                        $stoppages['destination'][$k] = $this->location->where('id', $a->destination_id)->get();
-                    }
-                }
+               if (!empty($stoppage)) {
+                       if(!empty($stoppage[0]['ticketPrice'])){
+                            foreach ($stoppage[0]['ticketPrice'] as $k => $a) {
+                                $stoppages['source'][$k] = $this->location->where('id', $a->source_id)->get();
+                                $stoppages['destination'][$k] = $this->location->where('id', $a->destination_id)->get();
+                            }
+                       }
+               }
                 $v['source'] = $stoppages['source'];
                 $v['destination'] = $stoppages['destination'];
             }
