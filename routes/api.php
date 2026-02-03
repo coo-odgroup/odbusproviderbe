@@ -1234,3 +1234,9 @@ Route::post('campaignrouteslist', [CampaignController::class, "campaignRoutesLis
 Route::post('campaignroutescreate', [CampaignController::class, "campaignRoutesCreate"]);
 Route::put('campaignroutesupdate/{id}', [CampaignController::class, 'campaignRoutesUpdate']);
 Route::delete('campaignroutesdetete/{id}', [CampaignController::class, 'campaignRoutesDelete']);
+
+// Campaign Services Crud API by Jagan
+Route::post('campaignserviceslist', [CampaignController::class, "campaignServicesList"]);
+Route::post('campaignservicescreate', [CampaignController::class, "campaignServicesCreate"]);
+Route::put('campaignservicesupdate/{id}', [CampaignController::class, 'campaignServicesUpdate']);
+Route::delete('campaignservicesdetete/{id}', [CampaignController::class, 'campaignServicesDelete']);

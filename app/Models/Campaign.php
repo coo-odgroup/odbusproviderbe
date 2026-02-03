@@ -33,4 +33,14 @@ class Campaign extends Model
         'deleted_at',
         'deleted_by'
     ];
+
+    public function campaignMaster()
+    {
+        return $this->belongsTo(CampaignMaster::class, 'campaign_master_id');
+    }
+
+    public function operator()
+    {
+        return $this->belongsTo(BusOperator::class, 'operator_id');
+    }
 }

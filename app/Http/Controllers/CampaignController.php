@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\CampaignMaster;
 use App\Models\Campaign;
 use App\Models\CampaignRoutes;
+use App\Models\CampaignServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
@@ -144,7 +146,6 @@ class CampaignController extends Controller
             ]);
 
             $message = Config::get('constants.RECORD_UPDATED');
-
         } catch (\Throwable $th) {
 
             Log::error($th);
@@ -186,7 +187,6 @@ class CampaignController extends Controller
             ]);
 
             $message = Config::get('constants.RECORD_REMOVED');
-
         } catch (\Throwable $th) {
 
             Log::error($th);
@@ -217,7 +217,25 @@ class CampaignController extends Controller
             $limit = $request->limit ?? 10;
             $search = $request->search ?? null;
 
-            $result = Campaign::orderBy('created_at', $order)->limit($limit)->get();
+            // $result = Campaign::orderBy('created_at', $order)->limit($limit)->get();
+            // $result = Campaign::join('campaign_master', 'campaign.campaign_master_id', '=', 'campaign_master.id')
+            //       ->join('bus_operator', 'campaign.operator_id', '=', 'bus_operator.id')
+            //       ->select(
+            //           'campaign.*',
+            //           'campaign_master.campaign_name',
+            //           'bus_operator.operator_name'
+            //       )
+            //       ->orderBy('campaign.created_at', $order)
+            //       ->limit($limit)
+            //       ->get();
+
+            $result = Campaign::with([
+                'campaignMaster:id,campaign_name',
+                'operator:id,operator_name'
+            ])
+                ->orderBy('created_at', $order)
+                ->limit($limit)
+                ->get();
 
             if (!empty($result)) {
                 $response = $result;
@@ -303,7 +321,7 @@ class CampaignController extends Controller
         ], $statusCode);
     }
 
-    public function campaignUpdate(Request $request)
+    public function campaignUpdate(Request $request, $id)
     {
         $status     = true;
         $statusCode = 200;
@@ -311,6 +329,18 @@ class CampaignController extends Controller
         $message    = '';
 
         try {
+            // Check record exists
+            $record = Campaign::find($id);
+
+            if (!$record) {
+                return response()->json([
+                    'status'     => false,
+                    'statusCode' => 404,
+                    'message'    => Config::get('constants.RECORD_NOT_FOUND')
+                ], 404);
+            }
+
+            // Validation
             $validator = Validator::make($request->all(), [
                 'operator_id' => 'required|numeric',
                 'campaign_master_id' => 'required|numeric',
@@ -335,16 +365,7 @@ class CampaignController extends Controller
                 ], 422);
             }
 
-            $record = Campaign::where('id', $request->id)->first();
-
-            if (!$record) {
-                return response()->json([
-                    'status'     => false,
-                    'statusCode' => 404,
-                    'message'    => Config::get('constants.RECORD_NOT_FOUND'),
-                ], 404);
-            }
-
+            // Update
             $record->update([
                 'operator_id' => $request->operator_id,
                 'campaign_master_id' => $request->campaign_master_id,
@@ -361,7 +382,6 @@ class CampaignController extends Controller
             ]);
 
             $message = Config::get('constants.RECORD_UPDATED');
-
         } catch (\Throwable $th) {
 
             Log::error($th);
@@ -403,7 +423,6 @@ class CampaignController extends Controller
             ]);
 
             $message = Config::get('constants.RECORD_REMOVED');
-
         } catch (\Throwable $th) {
 
             Log::error($th);
@@ -434,7 +453,26 @@ class CampaignController extends Controller
             $limit = $request->limit ?? 10;
             $search = $request->search ?? null;
 
-            $result = CampaignRoutes::orderBy('created_at', $order)->limit($limit)->get();
+            // $result = CampaignRoutes::orderBy('created_at', $order)->limit($limit)->get();
+            // $result = CampaignRoutes::join('campaign', 'campaign_routes.campaign_id', '=', 'campaign.id')
+            //     ->join('location as src', 'campaign_routes.src_id', '=', 'src.id')
+            //     ->join('location as dest', 'campaign_routes.dest_id', '=', 'dest.id')
+            //     ->select(
+            //         'campaign_routes.*',
+            //         'src.name as source_location',
+            //         'dest.name as destination_location'
+            //     )
+            //     ->orderBy('campaign_routes.created_at', $order)
+            //     ->limit($limit)
+            //     ->get();
+
+            $result = CampaignRoutes::with([
+                'source:id,name',
+                'destination:id,name'
+            ])
+                ->orderBy('created_at', $order)
+                ->limit($limit)
+                ->get();
 
             if (!empty($result)) {
                 $response = $result;
@@ -479,7 +517,7 @@ class CampaignController extends Controller
                 ], 422);
             }
 
-            Campaign::create([
+            CampaignRoutes::create([
                 'campaign_id' => $request->campaign_id,
                 'src_id' => $request->src_id,
                 'dest_id' => $request->dest_id,
@@ -499,6 +537,142 @@ class CampaignController extends Controller
             'status'     => $status,
             'statusCode' => $statusCode,
             'message'    => $message,
+        ], $statusCode);
+    }
+
+    public function campaignRoutesUpdate(Request $request, $id)
+    {
+        $status     = true;
+        $statusCode = 200;
+        $response   = [];
+        $message    = '';
+
+        try {
+            // Check record exists
+            $record = CampaignRoutes::find($id);
+
+            if (!$record) {
+                return response()->json([
+                    'status'     => false,
+                    'statusCode' => 404,
+                    'message'    => Config::get('constants.RECORD_NOT_FOUND')
+                ], 404);
+            }
+
+            // Validation (UNCHANGED)
+            $validator = Validator::make($request->all(), [
+                'campaign_id' => 'required|integer|exists:campaign,id',
+                'src_id'      => 'required|integer',
+                'dest_id'     => 'required|integer',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'     => false,
+                    'statusCode' => 422,
+                    'message'    => $validator->errors()->first(),
+                    'errors'     => $validator->errors(),
+                ], 422);
+            }
+
+            // Update
+            $record->update([
+                'campaign_id' => $request->campaign_id,
+                'src_id'      => $request->src_id,
+                'dest_id'    => $request->dest_id,
+            ]);
+
+            $message  = Config::get('constants.RECORD_UPDATED');
+        } catch (\Throwable $th) {
+
+            Log::error($th);
+
+            $status     = false;
+            $statusCode = 500;
+            $message    = Config::get('constants.EXCEPTION_ERROR');
+        }
+
+        return response()->json([
+            'status'     => $status,
+            'statusCode' => $statusCode,
+            'message'    => $message,
+        ], $statusCode);
+    }
+
+    public function campaignRoutesDelete($id)
+    {
+        $status     = true;
+        $statusCode = 200;
+        $response   = [];
+        $message    = '';
+
+        try {
+            // Check record exists
+            $record = CampaignRoutes::find($id);
+
+            if (!$record) {
+                return response()->json([
+                    'status'     => false,
+                    'statusCode' => 404,
+                    'message'    => Config::get('constants.RECORD_NOT_FOUND')
+                ], 404);
+            }
+
+            // Soft delete
+            $record->update([
+                'deleted_at' => now(),
+            ]);
+
+            $message = Config::get('constants.RECORD_REMOVED');
+        } catch (\Throwable $th) {
+
+            Log::error($th);
+
+            $status     = false;
+            $statusCode = 500;
+            $message    = Config::get('constants.EXCEPTION_ERROR');
+        }
+
+        return response()->json([
+            'status'     => $status,
+            'statusCode' => $statusCode,
+            'message'    => $message,
+        ], $statusCode);
+    }
+    // Campaign Routes End
+
+    // Campaign Services Start
+    public function campaignServicesList(Request $request)
+    {
+        $status         = true;
+        $statusCode     = 200;
+        $response       = [];
+        $message        = '';
+
+        try {
+            $order = $request->order ?? 'DESC';
+            $limit = $request->limit ?? 10;
+            $search = $request->search ?? null;
+
+            $result = CampaignServices::orderBy('created_at', $order)->limit($limit)->get();
+
+            if (!empty($result)) {
+                $response = $result;
+                $message  = Config::get('constants.RECORD_FETCHED');
+            } else {
+                $message = Config::get('constants.RECORD_NOT_FOUND');
+            }
+        } catch (\Throwable $th) {
+            $status     = false;
+            $statusCode = 500;
+            $message    = Config::get('constants.EXCEPTION_ERROR');
+        }
+
+        return response()->json([
+            'status'         => $status,
+            'statusCode'     => $statusCode,
+            'message'        => $message,
+            'data'       => $response,
         ], $statusCode);
     }
 }

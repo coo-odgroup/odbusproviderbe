@@ -24,4 +24,19 @@ class CampaignRoutes extends Model
         'deleted_at',
         'deleted_by'
     ];
+
+    public function campaign()
+    {
+        return $this->belongsTo(Campaign::class, 'campaign_id');
+    }
+
+    public function source()
+    {
+        return $this->belongsTo(Location::class, 'src_id');
+    }
+
+    public function destination()
+    {
+        return $this->belongsTo(Location::class, 'dest_id');
+    }
 }
