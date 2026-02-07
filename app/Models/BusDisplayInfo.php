@@ -9,7 +9,7 @@ class BusDisplayInfo extends Model
 {
     use HasFactory;
     protected $table = 'bus_display_info';
-    protected $fillable = [    ];
+    protected $fillable = [];
 
 
 

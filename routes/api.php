@@ -61,6 +61,8 @@ use App\Http\Controllers\AgentReportController;
 use App\Http\Controllers\OffersController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChartController;
+use App\Http\Controllers\DisplayInfoController;
+
 
 
 
@@ -394,18 +396,24 @@ Route::post('/addseatBlockByOperator', [SeatBlockController::class, 'addseatBloc
 
 
 
-Route::post('/BusType', [BusTypeController::class, 'createBusType']);
 Route::post('/BusTypeOperator', [BusTypeController::class, 'getBusTypeOperator']);
 Route::post('/BusTypebyUser', [BusTypeController::class, 'BusTypebyUser']);
 
 
 Route::post('/BusTypeData', [BusTypeController::class, 'getAllBusTypeData']);
+
+Route::post('/BusType', [BusTypeController::class, 'createBusType']);
 Route::get('/BusType', [BusTypeController::class, 'getAllBusType']);
 Route::put('/BusType/{id}', [BusTypeController::class, 'updateBusType']);
 Route::delete('/BusType/{id}', [BusTypeController::class, 'deleteBusType']);
 Route::get('/BusType/{id}', [BusTypeController::class, 'getBusType']);
 Route::post('/BusTypeDT', [BusTypeController::class, 'getBusTypeDT']);
 Route::put('/changeStatusBusType/{id}', [BusTypeController::class, 'changeStatus']);
+
+Route::post('/DisplayInfo', [DisplayInfoController::class, 'createDisplayInfo']);
+Route::put('/DisplayInfo/{id}', [DisplayInfoController::class, 'updateDisplayInfo']);
+Route::delete('/DisplayInfo/{id}', [DisplayInfoController::class, 'deleteDisplayInfo']);
+Route::get('/DisplayInfoData', [DisplayInfoController::class, 'getAllDisplayInfoData']);
 
 
 Route::post('/Amenities', [AmenitiesController::class, 'createAmenities']);
