@@ -58,7 +58,7 @@ class DisplayInfoRepository
 
     public function delete($id)
     {
-        $post = $this->displayinfo->find($id);
+        $post = BusDisplayInfo::find($id);
         $post->delete();
         return 'success';
 
