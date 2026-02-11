@@ -61,6 +61,8 @@ use App\Http\Controllers\AgentReportController;
 use App\Http\Controllers\OffersController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChartController;
+use App\Http\Controllers\DisplayInfoController;
+
 
 
 
@@ -144,6 +146,8 @@ use App\Http\Controllers\ApiLogReportController;
 use App\Http\Controllers\CancellationRevenueController;
 // Auto Cron
 use App\Http\Controllers\AutoCronController;
+// Campaign
+use App\Http\Controllers\CampaignController;
 
 //AppNotification
 use App\Http\Controllers\AppNotificationController;
@@ -392,18 +396,24 @@ Route::post('/addseatBlockByOperator', [SeatBlockController::class, 'addseatBloc
 
 
 
-Route::post('/BusType', [BusTypeController::class, 'createBusType']);
 Route::post('/BusTypeOperator', [BusTypeController::class, 'getBusTypeOperator']);
 Route::post('/BusTypebyUser', [BusTypeController::class, 'BusTypebyUser']);
 
 
 Route::post('/BusTypeData', [BusTypeController::class, 'getAllBusTypeData']);
+
+Route::post('/BusType', [BusTypeController::class, 'createBusType']);
 Route::get('/BusType', [BusTypeController::class, 'getAllBusType']);
 Route::put('/BusType/{id}', [BusTypeController::class, 'updateBusType']);
 Route::delete('/BusType/{id}', [BusTypeController::class, 'deleteBusType']);
 Route::get('/BusType/{id}', [BusTypeController::class, 'getBusType']);
 Route::post('/BusTypeDT', [BusTypeController::class, 'getBusTypeDT']);
 Route::put('/changeStatusBusType/{id}', [BusTypeController::class, 'changeStatus']);
+
+Route::post('/DisplayInfo', [DisplayInfoController::class, 'createDisplayInfo']);
+Route::put('/DisplayInfo/{id}', [DisplayInfoController::class, 'updateDisplayInfo']);
+Route::delete('/DisplayInfo/{id}', [DisplayInfoController::class, 'deleteDisplayInfo']);
+Route::get('/DisplayInfoData', [DisplayInfoController::class, 'getAllDisplayInfoData']);
 
 
 Route::post('/Amenities', [AmenitiesController::class, 'createAmenities']);
@@ -1214,3 +1224,27 @@ Route::post('autocroncreate', [AutoCronController::class, "cronCreate"]);
 Route::put('autocronupdate/{id}', [AutoCronController::class, 'cronUpdate']);
 Route::delete('autocrondetete/{id}', [AutoCronController::class, 'cronDelete']);
 Route::get('cronfrequencies', [AutoCronController::class, 'getCronFrequenciesList']);
+
+// Campaign Master Crud API by Jagan
+Route::post('campaignmasterlist', [CampaignController::class, "campaignmasterList"]);
+Route::post('campaignmastercreate', [CampaignController::class, "campaignmasterCreate"]);
+Route::put('campaignmasterupdate/{id}', [CampaignController::class, 'campaignmasterUpdate']);
+Route::delete('campaignmasterdetete/{id}', [CampaignController::class, 'campaignmasterDelete']);
+
+// Campaign Crud API by Jagan
+Route::post('campaignlist', [CampaignController::class, "campaignList"]);
+Route::post('campaigncreate', [CampaignController::class, "campaignCreate"]);
+Route::put('campaignupdate/{id}', [CampaignController::class, 'campaignUpdate']);
+Route::delete('campaigndetete/{id}', [CampaignController::class, 'campaignDelete']);
+
+// Campaign Routes Crud API by Jagan
+Route::post('campaignrouteslist', [CampaignController::class, "campaignRoutesList"]);
+Route::post('campaignroutescreate', [CampaignController::class, "campaignRoutesCreate"]);
+Route::put('campaignroutesupdate/{id}', [CampaignController::class, 'campaignRoutesUpdate']);
+Route::delete('campaignroutesdetete/{id}', [CampaignController::class, 'campaignRoutesDelete']);
+
+// Campaign Services Crud API by Jagan
+Route::post('campaignserviceslist', [CampaignController::class, "campaignServicesList"]);
+Route::post('campaignservicescreate', [CampaignController::class, "campaignServicesCreate"]);
+Route::put('campaignservicesupdate/{id}', [CampaignController::class, 'campaignServicesUpdate']);
+Route::delete('campaignservicesdetete/{id}', [CampaignController::class, 'campaignServicesDelete']);

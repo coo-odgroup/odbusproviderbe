@@ -100,11 +100,39 @@ class CouponRepository
 
         $batch_insert_array = [];
 
-        if ($data['bus_id']) {
-            foreach ($data['bus_id'] as $b) {
+       
+       
+        if ($data['all_route_check'] === true) {
+           $batch_insert_array= $this->commonQuery($data);
+        }
 
-                $coupons = new $this->coupon();
+        else{
+            if ($data['bus_id']) {
+                foreach ($data['bus_id'] as $b) {
+                  $batch_insert_array=  $this->commonQuery($data,$b);
+                }            
+            }
+        }
 
+        if(isset($batch_insert_array['status']) && $batch_insert_array['status'] == 'exist'){
+                return $batch_insert_array;
+        }
+
+        else if ($batch_insert_array) {
+            foreach ($batch_insert_array as $coupons) {
+                $coupons->save();
+            }
+        }
+
+        return 'success';
+    }
+
+
+    public function commonQuery($data,$b=[]){
+
+    $batch_insert_array = [];
+
+               $coupons = new $this->coupon();
 
                 $coupons->coupon_type_id = $data['coupon_type'];
                 $coupons->via = $data['via'];
@@ -112,6 +140,7 @@ class CouponRepository
                 $coupons->coupon_code = strtoupper($data['coupon_code']);
                 $coupons->type = $data['coupon_discount_type'];
                 $coupons->valid_by = $data['valid_by'];
+                $coupons->user_type = $data['user_type'];
 
                 if ($data['coupon_type'] == 1) {
                     $ar = explode('-', $b);
@@ -121,14 +150,22 @@ class CouponRepository
                     $coupons->bus_operator_id = $opr_id;
                     $coupons->bus_id = $bus_id;
                 } elseif ($data['coupon_type'] == 2) {
-                    $ar = explode('-', $b);
-                    $src_id = $ar[0];
-                    $dest_id = $ar[1];
-                    $bus_id = $ar[2];
+                     if ($data['all_route_check'] === true) {
+                        // ✅ Apply to ALL routes
+                        $coupons->source_id = null;
+                        $coupons->destination_id = null;
 
-                    $coupons->source_id =  $src_id;
-                    $coupons->destination_id = $dest_id;
-                    $coupons->bus_id = $bus_id;
+                    } else {
+                        $ar = explode('-', $b);
+                        $src_id = $ar[0];
+                        $dest_id = $ar[1];
+                        $bus_id = $ar[2];
+
+                        $coupons->source_id =  $src_id;
+                        $coupons->destination_id = $dest_id;
+                        $coupons->bus_id = $bus_id;
+
+                    }
                 } else {
                     $ar = explode('-', $b);
                     $opr_id = $ar[0];
@@ -165,6 +202,7 @@ class CouponRepository
                 $coupons->created_by = $data['created_by'];
                 $coupons->auto_apply = ($data['auto_apply'] == true) ? 1 : 0;
                 $coupons->apply_once = ($data['apply_once'] == true) ? 1 : 0;
+                $coupons->all_route_check = ($data['all_route_check'] == true) ? 1 : 0;
 
                 $coupons->status = 0;
 
@@ -175,40 +213,44 @@ class CouponRepository
                 $from_date = $data['from_date'];
                 $to_date = $data['to_date'];
 
-                $chk = $this->coupon->where('bus_id', $bus_id)
-                                    ->where(function ($query) use ($from_date, $to_date) {
-                                        $query->whereBetween('from_date', [$from_date,$to_date])
-                                            ->orWhereBetween('to_date', [$from_date,$to_date]);
-                                    })->where('status', '!=', 2)->get();
+                if ($data['all_route_check'] === true) {
 
-                // $queries  = \DB::getQueryLog();
-                // $last_query = end($queries);
-                // Log::info($queries);
-                // Log::info($chk);
+                 $chk = $this->coupon->where('coupon_type_id', 2)
+                                        ->where(function ($query) use ($from_date, $to_date) {
+                                            $query->whereBetween('from_date', [$from_date,$to_date])
+                                                ->orWhereBetween('to_date', [$from_date,$to_date]);
+                                        })->where('status', '!=', 2)->get();
 
-                if (count($chk) > 0) {
+                   if (count($chk) > 0) {
+                        $error['status'] = 'exist';
+                        $error['message'] = 'Coupon is already added between '.$data['from_date']." - ".$data['to_date'];
 
-                    $getBus = $this->bus->where("id", $bus_id)->get();
+                        return $error;
+                   }                      
+                                        
 
-                    $error['status'] = 'exist';
-                    $error['message'] = 'Coupon is already added for '.$getBus[0]->name.' bus between '.$data['from_date']." - ".$data['to_date'];
+                }else{
 
-                    return $error;
-                } else {
-                    array_push($batch_insert_array, $coupons);
+                    $chk = $this->coupon->where('bus_id', $bus_id)
+                                        ->where(function ($query) use ($from_date, $to_date) {
+                                            $query->whereBetween('from_date', [$from_date,$to_date])
+                                                ->orWhereBetween('to_date', [$from_date,$to_date]);
+                                        })->where('status', '!=', 2)->get();
+
+                    if (count($chk) > 0) {
+
+                        $getBus = $this->bus->where("id", $bus_id)->get();
+
+                        $error['status'] = 'exist';
+                        $error['message'] = 'Coupon is already added for '.$getBus[0]->name.' bus between '.$data['from_date']." - ".$data['to_date'];
+
+                        return $error;
+                    }
+
                 }
 
-            }
-
-            if ($batch_insert_array) {
-                foreach ($batch_insert_array as $coupons) {
-                    $coupons->save();
-                }
-
-            }
-        }
-
-        return 'success';
+                array_push($batch_insert_array, $coupons);
+                return $batch_insert_array;
     }
 
 
@@ -223,8 +265,9 @@ class CouponRepository
         // $coupons->bus_operator_id = $data['bus_operator_id'];
         // $coupons->source_id = $data['source_id'];
         // $coupons->destination_id = $data['destination_id'];
-        // $coupons->type = $data['coupon_discount_type'];
-        // $coupons->valid_by = $data['valid_by'];
+         $coupons->type = $data['coupon_discount_type'];
+         $coupons->valid_by = $data['valid_by'];
+         $coupons->user_type = $data['user_type'];
         // if($data['coupon_type'] == 1)
         // {
         //     $coupons->bus_operator_id = $data['bus_operator_id'];
@@ -244,31 +287,32 @@ class CouponRepository
         //     $coupons->destination_id = $data['destination_id'];
         // }
 
-        // if($data['coupon_discount_type']==1)
-        // {
-        //     $coupons->percentage = $data['percentage'];
-        //     $coupons->max_discount_price = $data['max_discount_price'];
-        //     $coupons->amount = 0;
-        //     $coupons->min_tran_amount = 0;
+        if($data['coupon_discount_type']==1)
+        {
+            $coupons->percentage = $data['percentage'];
+            $coupons->max_discount_price = $data['max_discount_price'];
+            $coupons->amount = 0;
+            $coupons->min_tran_amount = 0;
 
-        // }
-        // else
-        // {
-        //     $coupons->amount = $data['amount'];
-        //     $coupons->min_tran_amount = $data['min_tran_amount'];
-        //     $coupons->percentage = 0;
-        //     $coupons->max_discount_price = 0;
-        // }
+        }
+        else
+        {
+            $coupons->amount = $data['amount'];
+            $coupons->min_tran_amount = $data['min_tran_amount'];
+            $coupons->percentage = 0;
+            $coupons->max_discount_price = 0;
+        }
 
-        // $coupons->max_redeem = $data['max_redeem'];
-        // $coupons->from_date = $data['from_date'];
-        // $coupons->to_date = $data['to_date'];
+        $coupons->max_redeem = $data['max_redeem'];
+        $coupons->from_date = $data['from_date'];
+        $coupons->to_date = $data['to_date'];
         $coupons->short_desc = $data['short_description'];
         $coupons->via = $data['via'];
 
         $coupons->full_desc = $data['full_description'];
         $coupons->auto_apply = ($data['auto_apply'] == true) ? 1 : 0;
         $coupons->apply_once = ($data['apply_once'] == true) ? 1 : 0;
+        $coupons->all_route_check = ($data['all_route_check'] == true) ? 1 : 0;
 
         $coupons->created_by = $data['created_by'];
         //$coupons->status = 1;
