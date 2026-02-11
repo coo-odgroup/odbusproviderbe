@@ -18,6 +18,7 @@ class CampaignRoutes extends Model
         'campaign_id',
         'src_id',
         'dest_id',
+        'bus_id',
         'active_status',
         'created_by',
         'updated_by',

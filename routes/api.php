@@ -1240,3 +1240,19 @@ Route::post('campaignserviceslist', [CampaignController::class, "campaignService
 Route::post('campaignservicescreate', [CampaignController::class, "campaignServicesCreate"]);
 Route::put('campaignservicesupdate/{id}', [CampaignController::class, 'campaignServicesUpdate']);
 Route::delete('campaignservicesdetete/{id}', [CampaignController::class, 'campaignServicesDelete']);
+
+// Campaign Active Days Crud API by Jagan
+Route::post('campaignactivedayslist', [CampaignController::class, "campaignActiveDaysList"]);
+Route::post('campaignactivedayscreate', [CampaignController::class, "campaignActiveDaysCreate"]);
+Route::put('campaignactivedaysupdate/{id}', [CampaignController::class, 'campaignActiveDaysUpdate']);
+Route::delete('campaignactivedaysdetete/{id}', [CampaignController::class, 'campaignActiveDaysDelete']);
+
+// Campaign Excluded Dates Crud API by Jagan
+Route::post('campaignexcludeddatelist', [CampaignController::class, "campaignExcludedDatesList"]);
+Route::post('campaignexcludeddatecreate', [CampaignController::class, "campaignExcludedDatesCreate"]);
+Route::put('campaignexcludeddateupdate/{id}', [CampaignController::class, 'campaignExcludedDatesUpdate']);
+Route::delete('campaignexcludeddatedetete/{id}', [CampaignController::class, 'campaignExcludedDatesDelete']);
+
+// Campaign Excluded Dates Crud API by Jagan
+Route::post('campaigndiscountcreate', [CampaignController::class, "campaignDiscountCreate"]);
+Route::put('campaigndiscountupdate/{id}', [CampaignController::class, "campaignDiscountUpdate"]);
