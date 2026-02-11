@@ -194,6 +194,10 @@ class DashboardController extends Controller
         $fromDate = Carbon::today();
         $toDate   = Carbon::today();
 
+        // $fromDate = '2025-01-01 00:00:00';
+        // $toDate   = '2025-06-01 23:59:59';
+
+
         if ($filter === 'This Week') {
             $fromDate = Carbon::today()->subDays(6);
         }
@@ -202,12 +206,6 @@ class DashboardController extends Controller
             $fromDate = Carbon::now()->startOfMonth();
             $toDate   = Carbon::now();
         }
-
-        // return [$fromDate,$toDate];
-
-        // Date filters
-        // $fromDate = $request->from_date ?? null;
-        // $toDate   = $request->to_date ?? null;
 
         // Get active buses
         $busIds = $this->activeBus($operatorId)->pluck('id');
@@ -220,47 +218,36 @@ class DashboardController extends Controller
         }
 
         $ticketPriceSub = DB::table('ticket_price')
-            ->select(
-                'bus_id',
-                DB::raw('MAX(id) as tp_id')
-            )
+            ->select('bus_id', DB::raw('MIN(id) as tp_id'))
             ->groupBy('bus_id');
 
-        $query = Booking::query()
+        $booking = Booking::query()
             ->join('bus', 'bus.id', '=', 'booking.bus_id')
-
             ->joinSub($ticketPriceSub, 'tp1', function ($join) {
                 $join->on('tp1.bus_id', '=', 'bus.id');
             })
-
             ->join('ticket_price as tp', 'tp.id', '=', 'tp1.tp_id')
             ->join('location as src', 'src.id', '=', 'tp.source_id')
             ->join('location as dst', 'dst.id', '=', 'tp.destination_id')
-
-            ->whereIn('booking.bus_id', $busIds);
-
-        if ($fromDate && $toDate) {
-            $query->whereBetween('booking.created_at', [
-                // $fromDate . ' 00:00:00',
-                // $toDate . ' 23:59:59'
-                $fromDate->startOfDay(),
-                $toDate->endOfDay()
-            ]);
-        }
-
-        $booking = $query->select(
-            'booking.bus_id',
-            'bus.name as bus_name',
-            'bus.bus_number',
-            'src.name as source',
-            'dst.name as destination',
-            DB::raw('COUNT(booking.id) as booking_count')
-        )
+            ->whereIn('booking.bus_id', $busIds)
+            ->whereBetween('booking.created_at', [$fromDate, $toDate])
+            ->select(
+                'booking.bus_id',
+                'bus.name as bus_name',
+                'bus.bus_number',
+                'src.id as source_id',
+                'src.name as source',
+                'dst.id as destination_id',
+                'dst.name as destination',
+                DB::raw('COUNT(booking.id) as booking_count')
+            )
             ->groupBy(
                 'booking.bus_id',
                 'bus.name',
                 'bus.bus_number',
+                'src.id',
                 'src.name',
+                'dst.id',
                 'dst.name'
             )
             ->get();
@@ -281,6 +268,10 @@ class DashboardController extends Controller
         $fromDate = Carbon::today();
         $toDate   = Carbon::today();
 
+        // Example date range
+        // $fromDate = '2025-01-01 00:00:00';
+        // $toDate   = '2025-06-01 23:59:59';
+
         if ($filter === 'This Week') {
             $fromDate = Carbon::today()->subDays(6);
         }
@@ -290,24 +281,21 @@ class DashboardController extends Controller
             $toDate   = Carbon::now();
         }
 
-
-        // $fromDate = $request->from_date ?? null;
-        // $toDate   = $request->to_date ?? null;
-
+        // Get active bus IDs for operator
         $busIds = $this->activeBus($operatorId)->pluck('id');
 
         if ($busIds->isEmpty()) {
             return response()->json([
                 'status' => 200,
-                'data' => []
+                'data'   => []
             ]);
         }
 
         $ticketPriceSub = DB::table('ticket_price')
-            ->select('bus_id', DB::raw('MAX(id) as tp_id'))
+            ->select('bus_id', DB::raw('MIN(id) as tp_id'))
             ->groupBy('bus_id');
 
-        $query = Booking::query()
+        $booking = Booking::query()
             ->join('bus', 'bus.id', '=', 'booking.bus_id')
             ->joinSub($ticketPriceSub, 'tp1', function ($join) {
                 $join->on('tp1.bus_id', '=', 'bus.id');
@@ -315,37 +303,32 @@ class DashboardController extends Controller
             ->join('ticket_price as tp', 'tp.id', '=', 'tp1.tp_id')
             ->join('location as src', 'src.id', '=', 'tp.source_id')
             ->join('location as dst', 'dst.id', '=', 'tp.destination_id')
-            ->whereIn('booking.bus_id', $busIds);
-
-        if ($fromDate && $toDate) {
-            $query->whereBetween('booking.created_at', [
-                // $fromDate . ' 00:00:00',
-                // $toDate . ' 23:59:59'
-                $fromDate->startOfDay(),
-                $toDate->endOfDay()
-            ]);
-        }
-
-        $booking = $query->select(
-            'booking.bus_id',
-            'bus.name as bus_name',
-            'bus.bus_number',
-            'src.name as source',
-            'dst.name as destination',
-            DB::raw('SUM(booking.owner_fare) as total_revenue')
-        )
+            ->whereIn('booking.bus_id', $busIds)
+            ->whereBetween('booking.created_at', [$fromDate, $toDate])
+            ->select(
+                'booking.bus_id',
+                'bus.name as bus_name',
+                'bus.bus_number',
+                'src.id as source_id',
+                'src.name as source',
+                'dst.id as destination_id',
+                'dst.name as destination',
+                DB::raw('SUM(booking.owner_fare) as total_revenue')
+            )
             ->groupBy(
                 'booking.bus_id',
                 'bus.name',
                 'bus.bus_number',
+                'src.id',
                 'src.name',
+                'dst.id',
                 'dst.name'
             )
             ->get();
 
         return response()->json([
             'status' => 200,
-            'data' => $booking
+            'data'   => $booking
         ]);
     }
 }
