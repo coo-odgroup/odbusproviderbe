@@ -6,19 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CampaignServices extends Model
+class CampaignExcludedDates extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'campaign_services';
+    protected $table = 'campaign_excluded_dates';
 
     protected $primaryKey = 'id';
 
     protected $fillable = [
         'campaign_id',
-        'campaign_routes_id',
-        'bus_id',
-        'active_status',
+        'excluded_date',
         'created_by',
         'updated_by',
         'deleted_at',
@@ -28,15 +26,5 @@ class CampaignServices extends Model
     public function campaign()
     {
         return $this->belongsTo(Campaign::class, 'campaign_id');
-    }
-
-    public function route()
-    {
-        return $this->belongsTo(CampaignRoutes::class, 'campaign_routes_id');
-    }
-
-    public function bus()
-    {
-        return $this->belongsTo(Bus::class, 'bus_id');
     }
 }
