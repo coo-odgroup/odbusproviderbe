@@ -7,97 +7,87 @@ use Illuminate\Database\Eloquent\Model;
 class BookingArchive extends Model
 {
     protected $guarded = [];
+
     protected $table;
+    protected $primaryKey = 'booking_id';
+    public $timestamps = false; // remove if timestamps exist
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        // $year = $year ?? date('Y');
-        // $this->table = '2022' . '_booking';
-    }
-
+    /*
+    |--------------------------------------------------------------------------
+    | Dynamic Year Table Setter
+    |--------------------------------------------------------------------------
+    */
     public function setYear($year)
     {
         $this->setTable($year . '_booking');
         return $this;
     }
 
-    public function BookingDetail()
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    // Booking → Booking Details
+    public function details()
     {
-        return $this->hasMany(BookingDetailArchive::class, 'booking_id');
+        return $this->hasMany(BookingDetailArchive::class, 'booking_id', 'booking_id');
     }
 
-    public function CustomerPayment()
+    // Booking → Payment
+    public function payment()
     {
-        return $this->hasOne(CustomerPaymentArchive::class, 'booking_id');
+        return $this->hasOne(CustomerPaymentArchive::class, 'booking_id', 'booking_id');
     }
 
-
-    public function Users()
+    // Booking → User
+    public function user()
     {
-        return $this->belongsTo(Users::class);
+        return $this->belongsTo(Users::class, 'users_id', 'id');
     }
 
-    public function User()
+    // Booking → Bus
+    public function bus()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Bus::class, 'bus_id', 'id');
     }
 
-    public function Bus()
+    // Booking → Source Location
+    public function source()
     {
-        return $this->belongsTo(Bus::class);
+        return $this->belongsTo(Location::class, 'source_id', 'id');
     }
 
-    // public function BookingDetail()
-    // {
-    //     return $this->hasMany(BookingDetail::class);
-    // }
-
-    public function ClientWallet()
+    // Booking → Destination Location
+    public function destination()
     {
-        return $this->hasMany(ApiClientWallet::class)->where('transaction_type', '=', 'c');
+        return $this->belongsTo(Location::class, 'destination_id', 'id');
     }
 
-    // public function CustomerPayment()
-    // {
-    //     return $this->hasOne(CustomerPayment::class, 'booking_id', 'id');
-    // }
-
-    public function CustomerPaymentData()
+    // Booking → Client Wallet (Credit Only)
+    public function clientWallet()
     {
-        return $this->hasOne(CustomerPayment::class);
+        return $this->hasMany(ApiClientWallet::class, 'booking_id', 'booking_id')
+                    ->where('transaction_type', 'c');
     }
 
-    public function UserBooking()
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors (Optional - For Seat Count & Numbers)
+    |--------------------------------------------------------------------------
+    */
+
+    public function getTotalSeatsAttribute()
     {
-        return $this->hasOne(UserBooking::class);
+        return $this->details->count();
     }
 
-    // public function bookingDetails()
-    // {
-    //     return $this->hasMany(BookingDetail::class, 'booking_id', 'id');
-    // }
-
-    public function booking_details()
+    public function getSeatNumbersAttribute()
     {
-        return $this->hasMany(BookingDetail::class, 'booking_id')->with('seat:id,berthType,seatText');
-    }
-
-    public function usersData()
-    {
-        return $this->belongsTo(Users::class, 'users_id','id');
-    }
-
-
-
-    public function Source()
-    {
-        return $this->belongsTo(Location::class, 'source_id');
-    }
-
-    public function Destination()
-    {
-        return $this->belongsTo(Location::class, 'destination_id');
+        return $this->details
+            ->pluck('seat.seatText')
+            ->filter()
+            ->implode(',');
     }
 }
-
