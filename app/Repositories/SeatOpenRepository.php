@@ -13,6 +13,7 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 // use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
@@ -421,10 +422,8 @@ class SeatOpenRepository
         return $data;
     }
 
-    public function updateSeatOpenData($data)
+    public function updateSeatOpenData_old_28FEB2026($data)  // Lima :: 28-feb-2026
     {
-
-
         $layoutArray = $data['bus_seat_layout_data'];
         $get_ticket_price_id = $data['busRoute'];
 
@@ -439,30 +438,7 @@ class SeatOpenRepository
                         if (isset($upperBerthData['seatChecked'])) {
                             if ($upperBerthData['seatChecked'] == "true") {
                                 foreach ($get_ticket_price_id as $ticketpriceID) {
-                                    // foreach ($all_date as $dt)
-                                    // {
-
-
-                                    /////////////// check if same seat is already booked
-
-
-                                    // $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
-                                    // ->where("seats_id",$upperBerthData['seatId'])
-                                    // ->where("ticket_price_id",$ticketpriceID)
-                                    // ->where("operation_date",$data['date'])
-                                    // ->where("type",$data['type'])
-                                    // ->where("status",1)
-                                    // ->get();
-
-                                    //    if(count($chk_duplicate)>0){
-
-                                    //    $error['status']='error';
-                                    //    $error['message']="Seat no ".$upperBerthData['seatText']." is already blocked for date - ".$data['date'];
-
-                                    //    return $error;
-
-                                    //    }
-
+                                  
 
                                     /////// before insert we need to check if the seat is booked by customer or not
 
@@ -475,7 +451,7 @@ class SeatOpenRepository
                                                     ->where("journey_dt", $data['date'])
                                                     ->where("source_id", $src_id)
                                                     ->where("destination_id", $dest_id)
-                                                    ->where("status", [1,4])
+                                                    ->whereIn("status", [1,4])
                                                     ->get();
 
                                     if (count($bookedSeatList) > 0) {
@@ -522,29 +498,6 @@ class SeatOpenRepository
                             if ($lowerBerthData['seatChecked'] == "true") {
                                 foreach ($get_ticket_price_id as $ticketpriceID) {
 
-
-
-                                    /////////////// check if same seat is already booked
-
-
-                                    // $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
-                                    // ->where("seats_id",$lowerBerthData['seatId'])
-                                    // ->where("ticket_price_id",$ticketpriceID)
-                                    // ->where("operation_date",$data['date'])
-                                    // ->where("type",$data['type'])
-                                    // ->where("status",1)
-                                    // ->get();
-
-                                    //    if(count($chk_duplicate)>0){
-
-                                    //    $error['status']='error';
-                                    //    $error['message']="Seat no ".$lowerBerthData['seatText']." is already blocked for date - ".$data['date'];
-
-                                    //    return $error;
-
-                                    //    }
-
-
                                     /////// before insert we need to check if the seat is booked by customer or not
 
                                     $getRoutes =  $this->ticketPrice->where("id", $ticketpriceID)->get();
@@ -556,7 +509,7 @@ class SeatOpenRepository
                                                     ->where("journey_dt", $data['date'])
                                                     ->where("source_id", $src_id)
                                                     ->where("destination_id", $dest_id)
-                                                    ->where("status", [1,4])
+                                                    ->whereIn("status", [1,4])
                                                     ->get();
 
                                     if (count($bookedSeatList) > 0) {
@@ -614,28 +567,6 @@ class SeatOpenRepository
                                 foreach ($get_ticket_price_id as $ticketpriceID) {
 
 
-
-                                    /////////////// check if same seat is already booked
-
-
-                                    // $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
-                                    // ->where("seats_id",$upperBerthData['seatId'])
-                                    // ->where("ticket_price_id",$ticketpriceID)
-                                    // ->where("operation_date",$data['date'])
-                                    // ->where("type",$data['type'])
-                                    // ->where("status",1)
-                                    // ->get();
-
-                                    //    if(count($chk_duplicate)>0){
-
-                                    //    $error['status']='error';
-                                    //    $error['message']="Seat no ".$upperBerthData['seatText']." is already blocked for date - ".$data['date'];
-
-                                    //    return $error;
-
-                                    //    }
-
-
                                     /////// before insert we need to check if the seat is booked by customer or not
 
                                     $getRoutes =  $this->ticketPrice->where("id", $ticketpriceID)->get();
@@ -647,7 +578,7 @@ class SeatOpenRepository
                                                     ->where("journey_dt", $data['date'])
                                                     ->where("source_id", $src_id)
                                                     ->where("destination_id", $dest_id)
-                                                    ->where("status", [1,4])
+                                                    ->whereIn("status", [1,4])
                                                     ->get();
 
                                     if (count($bookedSeatList) > 0) {
@@ -713,28 +644,6 @@ class SeatOpenRepository
                                 foreach ($get_ticket_price_id as $ticketpriceID) {
 
 
-
-                                    /////////////// check if same seat is already booked
-
-
-                                    // $chk_duplicate=$this->busSeats->where("bus_id",$data['bus_id'])
-                                    // ->where("seats_id",$lowerBerthData['seatId'])
-                                    // ->where("ticket_price_id",$ticketpriceID)
-                                    // ->where("operation_date",$data['date'])
-                                    // ->where("type",$data['type'])
-                                    // ->where("status",1)
-                                    // ->get();
-
-                                    //    if(count($chk_duplicate)>0){
-
-                                    //    $error['status']='error';
-                                    //    $error['message']="Seat no ".$lowerBerthData['seatText']." is already blocked for date - ".$data['date'];
-
-                                    //    return $error;
-
-                                    //    }
-
-
                                     /////// before insert we need to check if the seat is booked by customer or not
 
                                     $getRoutes =  $this->ticketPrice->where("id", $ticketpriceID)->get();
@@ -746,7 +655,7 @@ class SeatOpenRepository
                                                     ->where("journey_dt", $data['date'])
                                                     ->where("source_id", $src_id)
                                                     ->where("destination_id", $dest_id)
-                                                    ->where("status", [1,4])
+                                                    ->whereIn("status", [1,4])
                                                     ->get();
 
                                     if (count($bookedSeatList) > 0) {
@@ -804,6 +713,121 @@ class SeatOpenRepository
             }
         }
         return $data;
+    }
+
+    public function updateSeatOpenData($data)
+    {
+        DB::beginTransaction();
+
+        try {
+            $layoutArray = $data['bus_seat_layout_data'];
+            $ticketPriceIds = $data['busRoute'];
+
+            // ✅ collect requested seat states
+            $requestedSeats = []; // seatId => checked(true/false)
+            $seatTextMap = [];
+
+            foreach ($layoutArray as $layout) {
+                foreach (['upperBerth', 'lowerBerth'] as $type) {
+                    if (!empty($layout[$type])) {
+                        foreach ($layout[$type] as $seat) {
+                            $requestedSeats[$seat['seatId']] =
+                                ($seat['seatChecked'] ?? false) == "true";
+                            $seatTextMap[$seat['seatId']] = $seat['seatText'];
+                        }
+                    }
+                }
+            }
+
+            foreach ($ticketPriceIds as $ticketpriceID) {
+
+                $route = $this->ticketPrice->find($ticketpriceID);
+
+                // ✅ booked seats
+                $bookedSeatIds = $this->bookingDetail
+                    ->whereHas('booking', function ($q) use ($data, $route) {
+                        $q->where("bus_id", $data['bus_id'])
+                        ->where("journey_dt", $data['date'])
+                        ->where("source_id", $route->source_id)
+                        ->where("destination_id", $route->destination_id)
+                        ->whereIn("status", [1,4]);
+                    })
+                    ->pluck('bus_seats_id')
+                    ->toArray();
+
+                // ✅ existing open seat records
+                $existingSeats = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('operation_date', $data['date'])
+                    ->where('ticket_price_id', $ticketpriceID)
+                    ->get()
+                    ->keyBy('seats_id');
+
+                foreach ($requestedSeats as $seatId => $isChecked) {
+
+                    // ❌ skip booked seats
+                    if (in_array($seatId, $bookedSeatIds)) {
+                        continue;
+                    }
+
+                    $existing = $existingSeats->get($seatId);
+
+                    // -----------------------------
+                    // CASE 1: seat exists
+                    // -----------------------------
+                    if ($existing) {
+
+                        if ($isChecked) {
+                            // keep open
+                            if ($existing->status != 1) {
+                                $existing->update(['status' => 1]);
+                            }
+                        } else {
+                            // close seat
+                            if ($existing->status != 2) {
+                                $existing->update(['status' => 2]);
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    // -----------------------------
+                    // CASE 2: new seat selected
+                    // -----------------------------
+                    if ($isChecked) {
+
+                        $busSeat = new $this->busSeats();
+                        $busSeat->bus_id = $data['bus_id'];
+                        $busSeat->category = '0';
+                        $busSeat->seats_id = $seatId;
+                        $busSeat->ticket_price_id = $ticketpriceID;
+                        $busSeat->operation_date = $data['date'];
+                        $busSeat->status = 1;
+                        $busSeat->type = $data['type'];
+                        $busSeat->created_by = $data['created_by'];
+                        $busSeat->reason = $data['reason'];
+                        $busSeat->other_reason = $data['other_reson'];
+                        $busSeat->save();
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return [
+                'status' => 'success',
+                'message' => 'Seat open data synced successfully'
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
+        }
     }
 
     public function seatopenData($request)

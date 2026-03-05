@@ -104,25 +104,37 @@ class CouponRepository
        
         if ($data['all_route_check'] === true) {
            $batch_insert_array= $this->commonQuery($data);
+
+            if(isset($batch_insert_array['status']) && $batch_insert_array['status'] == 'exist'){
+                return $batch_insert_array;
+            }
+
+            else if ($batch_insert_array) {
+                foreach ($batch_insert_array as $coupons) {
+                    $coupons->save();
+                }
+            }
+
         }
 
         else{
             if ($data['bus_id']) {
                 foreach ($data['bus_id'] as $b) {
                   $batch_insert_array=  $this->commonQuery($data,$b);
+
+                   if(isset($batch_insert_array['status']) && $batch_insert_array['status'] == 'exist'){
+                            return $batch_insert_array;
+                    }
+
+                    else if ($batch_insert_array) {
+                        foreach ($batch_insert_array as $coupons) {
+                            $coupons->save();
+                        }
+                    }
+
                 }            
             }
-        }
-
-        if(isset($batch_insert_array['status']) && $batch_insert_array['status'] == 'exist'){
-                return $batch_insert_array;
-        }
-
-        else if ($batch_insert_array) {
-            foreach ($batch_insert_array as $coupons) {
-                $coupons->save();
-            }
-        }
+        }       
 
         return 'success';
     }

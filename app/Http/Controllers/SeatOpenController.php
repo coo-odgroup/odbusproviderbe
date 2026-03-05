@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -85,10 +84,15 @@ class SeatOpenController extends Controller
 
     public function updateSeatOpenData(Request $request)
     {
+            $res = $this->seatopenRepository->updateSeatOpenData($request);
+            if (isset($res['status']) && $res['status'] == 'error') {
 
-        $seatopen = $this->seatopenRepository->updateSeatOpenData($request);
-        return $this->successResponse($seatopen, "Seat Open  Added", Response::HTTP_OK);
+                return $this->errorResponse($res['message'], Response::HTTP_OK);
+            } else {
+                return $this->successResponse($res, "Seat Open  Updated", Response::HTTP_OK);
+            }
     }
+    
     public function updateseatopen(Request $request, $id)
     {
 
