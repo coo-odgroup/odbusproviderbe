@@ -760,6 +760,7 @@ class SeatOpenRepository
                     ->where('bus_id', $data['bus_id'])
                     ->where('operation_date', $data['date'])
                     ->where('ticket_price_id', $ticketpriceID)
+                    ->where('type', 1)
                     ->get()
                     ->keyBy('seats_id');
 
@@ -804,7 +805,7 @@ class SeatOpenRepository
                         $busSeat->ticket_price_id = $ticketpriceID;
                         $busSeat->operation_date = $data['date'];
                         $busSeat->status = 1;
-                        $busSeat->type = $data['type'];
+                        $busSeat->type = 1;  // seat open
                         $busSeat->created_by = $data['created_by'];
                         $busSeat->reason = $data['reason'];
                         $busSeat->other_reason = $data['other_reson'];
