@@ -62,6 +62,7 @@ use App\Http\Controllers\OffersController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DisplayInfoController;
+use App\Http\Controllers\BlogController;
 
 
 
@@ -1129,6 +1130,7 @@ Route::post('scheduleRefundSelected', [SchedulerController::class, 'scheduleRefu
 Route::post('apiLogReport', [ApiLogReportController::class, 'apiLogReport']);
 
 //Added by sahil 
+//----------------------------------------------------------------------------------------------
 //For chats
 Route::post('top-route',[ChartController::class,"topRoutes"]);
 Route::post('top-city',[ChartController::class,"topCity"]);
@@ -1168,6 +1170,42 @@ Route::post('archive-completereport',[ArchiveReportController::class,'archiveCom
 Route::post('archive-cancelreport',[ArchiveReportController::class,'archiveCancelReport']);
 
 
+
+Route::post('/test-booking-sms',[ArchiveReportController::class,'send']);
+
+//blogcategory
+Route::post('add-blogcategory',[BlogController::class,'addCategory']);
+Route::post('blogcategory',[BlogController::class,'allCategory']);
+Route::post('/blogcategory/{id}', [BlogController::class, 'updatecategory']);
+Route::delete('/delete-blogcategory/{id}', [BlogController::class, 'deletecategory']);
+
+//Blog
+Route::post('add-blog',[BlogController::class,'addblog']);
+Route::post('blog',[BlogController::class,'allblog']);
+Route::post('/blog/{id}', [BlogController::class, 'updateblog']);
+Route::delete('/delete-blog/{id}', [BlogController::class, 'deleteblog']);
+
+//Tags
+Route::post('add-tag',[BlogController::class,'addtag']);
+Route::post('tag',[BlogController::class,'alltags']);
+Route::post('/tag/{id}', [BlogController::class, 'updatetag']);
+Route::delete('/tag/{id}', [BlogController::class, 'deletetag']);
+
+//Tags map
+Route::post('add-tagmap',[BlogController::class,'addtagmap']);
+Route::post('tagmap',[BlogController::class,'alltagmaps']);
+Route::post('/tagmap/{id}', [BlogController::class, 'updatetagmap']);
+Route::delete('/delete-tagmap/{id}', [BlogController::class, 'deletetagmap']);
+
+//Blog Route
+Route::post('add-blogroute',[BlogController::class,'addblogroute']);
+Route::post('blogroute',[BlogController::class,'allblogroute']);
+Route::post('/blogroute/{id}', [BlogController::class, 'updateblogroute']);
+Route::delete('/delete-blogroute/{id}', [BlogController::class, 'deleteblogroute']);
+
+
+
+//------------------------------------------------------------------------------------------------------------------
 
 
 
