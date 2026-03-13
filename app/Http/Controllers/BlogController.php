@@ -90,7 +90,7 @@ class BlogController extends Controller
 
                 $file->move(public_path('uploads/blogs/category'), $picture);
 
-                $data['banner_image'] = "uploads/blogs/category/" . $picture;
+                $data['banner_image'] = "blogs/category/" . $picture;
             }
 
             Blogcategory::where('id', $id)->update($data);
@@ -137,7 +137,7 @@ class BlogController extends Controller
                 $picture = rand() . '-' . $filename;
 
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
-                $path = "uploads/blogs/blog_image" . $picture;
+                $path = "blogs/blog_image/" . $picture;
             }
 
             // Thumb Image
@@ -147,7 +147,7 @@ class BlogController extends Controller
                 $picture = rand() . '-' . $filename;
 
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
-                $thumpath = "uploads/blogs/blog_image/" . $picture;
+                $thumpath = "blogs/blog_image/" . $picture;
             }
 
             // OG Image
@@ -157,7 +157,7 @@ class BlogController extends Controller
                 $picture = rand() . '-' . $filename;
 
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
-                $ogpath = "uploads/blogs/blog_image/" . $picture;
+                $ogpath = "blogs/blog_image/" . $picture;
             }
 
             $data = [
@@ -170,7 +170,7 @@ class BlogController extends Controller
                 "feature_alt_text" => $request->feature_alt_text,
                 "thumb_image" => $thumpath,
                 "thumb_alt_text" => $request->thumb_alt_text,
-                "author_name" => $request->author_name,
+                "author_name" => ucwords(strtolower($request->author_name)),
                 "is_featured" => 0,
                 "active_status" => 1,
                 "meta_title" => $request->meta_title,
@@ -213,7 +213,7 @@ class BlogController extends Controller
                 "content" => $request->content,
                 "feature_alt_text" => $request->feature_alt_text,
                 "thumb_alt_text" => $request->thumb_alt_text,
-                "author_name" => $request->author_name,
+                "author_name" => ucwords(strtolower($request->author_name)),
                 "is_featured" => 0,
                 "active_status" => 1,
                 "meta_title" => $request->meta_title,
@@ -241,7 +241,7 @@ class BlogController extends Controller
 
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
 
-                $data['featured_image'] = "uploads/blogs/blog_image/" . $picture;
+                $data['featured_image'] = "blogs/blog_image/" . $picture;
             }
 
             // Thumb Image
@@ -262,7 +262,7 @@ class BlogController extends Controller
 
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
 
-                $data['thumb_image'] = "uploads/blogs/blog_image/" . $picture;
+                $data['thumb_image'] = "blogs/blog_image/" . $picture;
             }
 
             // OG Image
@@ -283,7 +283,7 @@ class BlogController extends Controller
 
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
 
-                $data['og_image'] = "uploads/blogs/blog_image/" . $picture;
+                $data['og_image'] = "blogs/blog_image/" . $picture;
             }
 
             Blog::where('id', $id)->update($data);

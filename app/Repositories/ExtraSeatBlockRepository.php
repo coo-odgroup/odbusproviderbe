@@ -24,10 +24,10 @@ class ExtraSeatBlockRepository
     protected $ticketPrice;
     protected $booking;
     protected $bookingDetail;
+    protected $busSeats;
 
 
-    public function __construct(SeatBlock $seatBlock, SeatBlockSeats $seatsBlockSeats, BusSeats
-        $busSeats, Bus $bus, Location $location, TicketPrice $ticketPrice, Booking $booking, BookingDetail $bookingDetail)
+    public function __construct(SeatBlock $seatBlock, SeatBlockSeats $seatsBlockSeats, BusSeats $busSeats, Bus $bus, Location $location, TicketPrice $ticketPrice, Booking $booking, BookingDetail $bookingDetail)
     {
         $this->seatBlock = $seatBlock;
         $this->seatBlockSeats = $seatsBlockSeats;

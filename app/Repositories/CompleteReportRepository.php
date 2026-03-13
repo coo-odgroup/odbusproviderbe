@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Bus;
 use App\Models\Booking;
 use App\Models\Location;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
@@ -32,8 +33,13 @@ class CompleteReportRepository
         $date_type = $request->date_type;
         $source_id = $request->source_id;
         $destination_id = $request->destination_id;
-        $start_date  =  $request->rangeFromDate;
-        $end_date  =  $request->rangeToDate;
+        $start_date = $request->rangeFromDate
+            ? Carbon::parse($request->rangeFromDate)->format('Y-m-d')
+            : null;
+
+        $end_date = $request->rangeToDate
+            ? Carbon::parse($request->rangeToDate)->format('Y-m-d')
+            : null;
         $bus_id = $request->bus_id;
         $hasGst = $request->hasGst;
         $apiUser = $request->apiUser;
