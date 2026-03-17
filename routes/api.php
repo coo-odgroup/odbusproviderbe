@@ -1172,6 +1172,7 @@ Route::post('archive-cancelreport',[ArchiveReportController::class,'archiveCance
 
 
 Route::post('/test-booking-sms',[ArchiveReportController::class,'send']);
+Route::post('/test-whatsapp-sms',[ArchiveReportController::class,'sendWhatsappCampaign']);
 
 //blogcategory
 Route::post('add-blogcategory',[BlogController::class,'addCategory']);

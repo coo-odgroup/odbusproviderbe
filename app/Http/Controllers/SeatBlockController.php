@@ -123,32 +123,29 @@ class SeatBlockController extends Controller
 
     public function alreadyBlocks(Request $request)
     {
-
-
         $seatblock = $this->seatblockRepository->alreadyBlocks($request);
         return $this->successResponse($seatblock, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function changeStatus($id)
     {
-
         try {
-
             $this->seatblockRepository->changeStatus($id);
+            return $this->successResponse(null, "Seat Block Status Updated", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Seat Block Status Updated", Response::HTTP_ACCEPTED);
+        
     }
 
     public function deleteseatblock(Request $request)
     {
         try {
-
             $this->seatblockRepository->delete($request);
+            return $this->successResponse(null, "Seat Block Deleted", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Seat Block Deleted", Response::HTTP_ACCEPTED);
+        
     }
 }

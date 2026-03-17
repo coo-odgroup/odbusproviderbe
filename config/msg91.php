@@ -6,4 +6,8 @@ return [
     'templates' => [
         'booking' => env('MSG91_BOOKING_TEMPLATE'),
     ],
+
+    'campaigns' => [
+        'booking_confirm' => 'test',
+    ]
 ];

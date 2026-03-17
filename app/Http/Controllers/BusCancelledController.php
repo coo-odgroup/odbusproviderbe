@@ -108,7 +108,7 @@ class BusCancelledController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         } else {
 
-            $response = $this->busCancelledRepository->busCancelledbyowner($data);
+            $response = $this->busCancelledRepository->busCancelledbyowner($request);
 
 
             if ($response['msg'] == 'Some seat already booked on') {
@@ -153,7 +153,7 @@ class BusCancelledController extends Controller
         try {
 
             $response = $this->busCancelledRepository->delete($id);
-            return $this->successResponse($response, "Bus Cancellation Record Deleted", Response::HTTP_ACCEPTED);
+            return $this->successResponse($response, "Bus Cancellation Record Deleted", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }

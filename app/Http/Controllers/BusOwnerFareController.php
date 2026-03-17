@@ -94,7 +94,7 @@ class BusOwnerFareController extends Controller
         }
 
         try {
-            $response = $this->busOwnerFareRepository->update($data, $id);
+            $response = $this->busOwnerFareRepository->update($request, $id);
             return $this->successResponse($response, "Bus Owner Fare Updated", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
@@ -105,7 +105,7 @@ class BusOwnerFareController extends Controller
     {
         try {
             $response = $this->busOwnerFareRepository->delete($id);
-            return $this->successResponse($response, "Bus Owner Fare Deleted", Response::HTTP_ACCEPTED);
+            return $this->successResponse($response, "Bus Owner Fare Deleted", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
@@ -125,7 +125,7 @@ class BusOwnerFareController extends Controller
     {
         try {
             $response = $this->busOwnerFareRepository->changeStatus($id);
-            return $this->successResponse($response, "Bus Owner Fare Status Updated", Response::HTTP_ACCEPTED);
+            return $this->successResponse($response, "Bus Owner Fare Status Updated", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }

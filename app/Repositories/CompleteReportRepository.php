@@ -47,7 +47,7 @@ class CompleteReportRepository
         $device_type = $request->device_type;
 
         // 'api_pnr','bus_name','bus_number'       ,'seat_name'
-        $data = $this->booking->select('id', 'pnr', 'transaction_id', 'user_id', 'users_id', 'bus_id', 'source_id', 'destination_id', 'journey_dt', 'boarding_point', 'dropping_point', 'boarding_time', 'dropping_time', 'origin', 'app_type', 'total_fare', 'owner_fare', 'odbus_gst_charges', 'odbus_gst_amount', 'odbus_charges', 'customer_gst_status', 'gst_invoice_no', 'customer_gst_percent', 'customer_gst_number', 'customer_gst_business_name', 'customer_gst_business_email', 'customer_gst_business_address', 'customer_gst_amount', 'coupon_code', 'coupon_discount',DB::raw('"" as coupon_type'), 'payable_amount', 'transactionFee', 'additional_owner_fare', 'additional_special_fare', 'additional_festival_fare', 'agent_commission', 'created_at', 'api_pnr', 'bus_name', 'bus_number')->with('User.role')->with(['BookingDetail' => function ($query) {
+        $data = $this->booking->select('id', 'pnr', 'transaction_id', 'user_id', 'users_id', 'bus_id', 'source_id', 'destination_id', 'journey_dt', 'boarding_point', 'dropping_point', 'boarding_time', 'dropping_time', 'origin', 'app_type', 'total_fare', 'owner_fare', 'odbus_gst_charges', 'odbus_gst_amount', 'odbus_charges', 'customer_gst_status', 'gst_invoice_no', 'customer_gst_percent', 'customer_gst_number', 'customer_gst_business_name', 'customer_gst_business_email', 'customer_gst_business_address', 'customer_gst_amount', 'coupon_code', 'coupon_discount', DB::raw('"" as coupon_type'), 'payable_amount', 'transactionFee', 'additional_owner_fare', 'additional_special_fare', 'additional_festival_fare', 'agent_commission', 'created_at', 'api_pnr', 'bus_name', 'bus_number')->with('User.role')->with(['BookingDetail' => function ($query) {
             $query->select('id', 'booking_id', 'bus_seats_id', 'passenger_name', 'passenger_gender', 'passenger_age', 'seat_name')
                 ->with(['BusSeats' => function ($quer) {
                     $quer->select('id', 'bus_id', 'ticket_price_id', 'ticket_price_id', 'seats_id')
@@ -87,8 +87,7 @@ class CompleteReportRepository
         if ($request['USER_BUS_OPERATOR_ID'] != "") {
             $data = $data->whereHas('bus', function ($query) use ($request) {
                 $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);
-            });         
-
+            });
         }
 
         if (!empty($pnr)) {
@@ -131,20 +130,25 @@ class CompleteReportRepository
         if ($date_type == 'booking' && $start_date == null && $end_date == null) {
             $data = $data->orderBy('created_at', 'DESC');
         } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
+
             if ($start_date == $end_date) {
-                $data = $data->where('created_at', 'like', '%' . $start_date . '%')
+
+                $data = $data->whereDate('created_at', $start_date)
                     ->orderBy('created_at', 'DESC');
             } else {
-                $data = $data->whereBetween('created_at', [$start_date, $end_date])
-                    ->orderBy('created_at', 'DESC');
+
+                $data = $data->whereBetween('created_at', [
+                    Carbon::parse($start_date)->startOfDay(),
+                    Carbon::parse($end_date)->endOfDay()
+                ])->orderBy('created_at', 'DESC');
             }
         } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
             $data = $data->where('journey_dt', date('Y-m-d'))->orderBy('booking.journey_dt', 'DESC')
-            ->orderBy('booking.updated_at', 'DESC');
+                ->orderBy('booking.updated_at', 'DESC');
         } elseif ($date_type == 'journey' && $start_date != null && $end_date != null) {
             if ($start_date == $end_date) {
                 $data = $data->where('journey_dt', 'like', '%' . $start_date . '%')
-                   ->orderBy('booking.journey_dt', 'DESC')
+                    ->orderBy('booking.journey_dt', 'DESC')
                     ->orderBy('booking.updated_at', 'DESC');
             } else {
                 $data = $data->whereBetween('journey_dt', [$start_date, $end_date])
@@ -153,7 +157,7 @@ class CompleteReportRepository
             }
         }
         $data = $data->paginate($paginate);
-     
+
         $totalfare = 0;
         $totalPayableAmount = 0;
         $owner_fare = 0;
@@ -205,30 +209,30 @@ class CompleteReportRepository
                 $v['destination'] = $stoppages['destination'];
                 $v->coupon_type = null;
 
-                if($v->coupon_code){
+                if ($v->coupon_code) {
 
-                $coupon = \DB::table('coupon')
-                    ->where('coupon_code', $v->coupon_code)
-                    ->where('status', 1)
-                    // ->where(function ($q) use ($v) {
+                    $coupon = \DB::table('coupon')
+                        ->where('coupon_code', $v->coupon_code)
+                        ->where('status', 1)
+                        // ->where(function ($q) use ($v) {
 
-                    //     $q->where(function ($q1) use ($v) {
-                    //         $q1->where('valid_by', 1)
-                    //         ->whereDate('from_date', '<=', $v->journey_dt)
-                    //         ->whereDate('to_date', '>=', $v->journey_dt);
-                    //     })
+                        //     $q->where(function ($q1) use ($v) {
+                        //         $q1->where('valid_by', 1)
+                        //         ->whereDate('from_date', '<=', $v->journey_dt)
+                        //         ->whereDate('to_date', '>=', $v->journey_dt);
+                        //     })
 
-                    //     ->orWhere(function ($q2) use ($v) {
-                    //         $q2->where('valid_by', 2)
-                    //         ->whereDate('from_date', '<=', $v->created_at)
-                    //         ->whereDate('to_date', '>=', $v->created_at);
-                    //     });
+                        //     ->orWhere(function ($q2) use ($v) {
+                        //         $q2->where('valid_by', 2)
+                        //         ->whereDate('from_date', '<=', $v->created_at)
+                        //         ->whereDate('to_date', '>=', $v->created_at);
+                        //     });
 
-                    // })
-                    ->select('coupon_type_id')
-                    ->first();
+                        // })
+                        ->select('coupon_type_id')
+                        ->first();
 
-                  $v->coupon_type = $coupon->coupon_type_id;
+                    $v->coupon_type = $coupon->coupon_type_id;
                 }
             }
         }

@@ -23,10 +23,13 @@ class BlogController extends Controller
     public function addCategory(Request $request)
     {
         try {
-            if (($request->banner_image) != null) {
+
+            $path = null;
+
+            if ($request->hasFile('banner_image')) {
                 $file = $request->banner_image;
                 $filename = $file->getClientOriginalName();
-                $picture   =  rand() . '-' . $filename;
+                $picture = rand() . '-' . $filename;
 
                 $file->move(public_path('uploads/blogs/category'), $picture);
                 $path = "uploads/blogs/category/" . $picture;
@@ -45,6 +48,7 @@ class BlogController extends Controller
             ];
 
             Blogcategory::create($data);
+
             return $this->successResponse("Blog Category Added", Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);

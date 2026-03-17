@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -40,7 +41,6 @@ class SeatOpenController extends Controller
     public function addseatopen(Request $request)
     {
         try {
-
             $res = $this->seatopenRepository->addseatopen($request);
 
             if (isset($res['status']) && $res['status'] == 'error') {
@@ -57,9 +57,7 @@ class SeatOpenController extends Controller
     public function addseatOpenByOperator(Request $request)
     {
         try {
-
             $res = $this->seatopenRepository->addseatOpenByOperator($request);
-
             if (isset($res['status']) && $res['status'] == 'error') {
 
                 return $this->errorResponse($res['message'], Response::HTTP_OK);
@@ -76,7 +74,6 @@ class SeatOpenController extends Controller
 
     public function editseatOpen(Request $request)
     {
-
         $seatopen = $this->seatopenRepository->editseatOpen($request);
         return $this->successResponse($seatopen, "Seat Open  Added", Response::HTTP_OK);
     }
@@ -84,19 +81,17 @@ class SeatOpenController extends Controller
 
     public function updateSeatOpenData(Request $request)
     {
-            $res = $this->seatopenRepository->updateSeatOpenData($request);
-            if (isset($res['status']) && $res['status'] == 'error') {
+        $res = $this->seatopenRepository->updateSeatOpenData($request);
+        if (isset($res['status']) && $res['status'] == 'error') {
 
-                return $this->errorResponse($res['message'], Response::HTTP_OK);
-            } else {
-                return $this->successResponse($res, "Seat Open  Updated", Response::HTTP_OK);
-            }
+            return $this->errorResponse($res['message'], Response::HTTP_OK);
+        } else {
+            return $this->successResponse($res, "Seat Open  Updated", Response::HTTP_OK);
+        }
     }
-    
+
     public function updateseatopen(Request $request, $id)
     {
-
-
         $seatopen = $this->seatopenRepository->updateseatopen($request, $id);
         return $this->successResponse($seatopen, "Seat Open Updated", Response::HTTP_OK);
     }
@@ -104,47 +99,39 @@ class SeatOpenController extends Controller
 
     public function getseatopenDT(Request $request)
     {
-
-
         $seatopen = $this->seatopenRepository->getseatopenDT($request);
         return $this->successResponse($seatopen, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function seatopenData(Request $request)
     {
-
-
         $seatopen = $this->seatopenRepository->seatopenData($request);
         return $this->successResponse($seatopen, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function alreadyOpen(Request $request)
     {
-
-
         $seatopen = $this->seatopenRepository->alreadyOpen($request);
         return $this->successResponse($seatopen, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function changeStatus($id)
     {
-
         try {
-
             $this->seatopenRepository->changeStatus($id);
+            return $this->successResponse(null, "Seat Open  Status Updated", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Seat Open  Status Updated", Response::HTTP_ACCEPTED);
     }
 
     public function deleteseatopen(Request $request)
     {
         try {
             $this->seatopenRepository->delete($request);
+            return $this->successResponse(null, "Seat Open Deleted", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Seat Open Deleted", Response::HTTP_ACCEPTED);
     }
 }
