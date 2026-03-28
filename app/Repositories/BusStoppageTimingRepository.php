@@ -71,6 +71,7 @@ class BusStoppageTimingRepository
         $busstoppageTiming->stoppage_name = $data['stoppage_name'];
         $busstoppageTiming->boarding_droping_id = $data['boarding_droping_id'];
         $busstoppageTiming->stoppage_time = $data['stoppage_time'];
+        $busstoppageTiming->status = 1;
         $busstoppageTiming->created_by = "Admin";
         $busstoppageTiming->location_id = $data['location_id'];
         return $busstoppageTiming;
