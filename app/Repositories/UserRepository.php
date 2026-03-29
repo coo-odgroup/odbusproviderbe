@@ -362,7 +362,58 @@ class UserRepository
             return 'Inval OTP';
         }
     }
-    public function login($request)
+
+     public function login($request)
+    {
+        try {
+
+            $user = $this->user->where([
+                ['email', $request['email']],
+                ['email', '<>', null]
+            ])->first();
+
+            if (!$user) {
+                return "un_registered_agent";
+            }
+
+            if ($user->status != 1) {
+                return "inactive_user";
+            }
+
+            if (!Hash::check($request['password'], $user->password)) {
+                return "pwd_mismatch";
+            }
+
+            if ($user->role_id != $request['user_type']) {
+                return "agent_role_mismatch";
+            }
+
+            // ✅ Generate token
+            $token = Str::random(60);
+
+            // ✅ Store hashed token in DB
+            $user->admin_login_token = hash('sha256', $token);
+            $user->save();
+
+            // ✅ Send plain token separately
+            $user->token = $token;
+
+            // ✅ Load relation if needed
+            if ($request['user_type'] == 4) {
+                $user->load('busOperator');
+            }
+
+            return $user;
+
+        } catch (\Throwable $e) {
+
+            \Log::error('Login Error: '.$e->getMessage());
+
+            return "something_went_wrong";
+        }
+    }
+    
+    public function login_old($request)
     {
         $query = $this->user->where([
             ['email', $request['email']],
