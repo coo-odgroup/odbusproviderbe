@@ -34,48 +34,53 @@ class Msg91Service
     }
 
 
-    public function sendWhatsappCampaign($mobile, $campaign, $variables)
+    public function sendWhatsappCampaign($numbers, $campaign, $variables)
     {
+        return config('msg91.MSG91_AUTH_KEY');
         // return $campaign;
-        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/$campaign/run";
+        // $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-booking-flow/run";
 
-        $postData = [
-            "data" => [
-                "sendTo" => [
-                    [
-                        "to" => [
-                            [
-                                "mobiles" => "91" . $mobile,
-                                "variables" => $variables
-                            ]
-                        ],
-                        "variables" => $variables
-                    ]
-                ]
-            ]
-        ];
+        // $to = [];
 
-        $curl = curl_init();
+        // foreach ($numbers as $num) {
+        //     $to[] = [
+        //         "mobiles" => "91" . $num,
+        //         "variables" => $variables
+        //     ];
+        // }
 
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($postData),
-            CURLOPT_HTTPHEADER => [
-                'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
-                'Content-Type: application/json'
-            ],
-        ]);
+        // $postData = [
+        //     "data" => [
+        //         "sendTo" => [
+        //             [
+        //                 "to" => $to,
+        //                 "variables" => $variables
+        //             ]
+        //         ]
+        //     ]
+        // ];
 
-        $response = curl_exec($curl);
+        // $curl = curl_init();
 
-        if (curl_errno($curl)) {
-            return curl_error($curl);
-        }
+        // curl_setopt_array($curl, [
+        //     CURLOPT_URL => $url,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_CUSTOMREQUEST => 'POST',
+        //     CURLOPT_POSTFIELDS => json_encode($postData),
+        //     CURLOPT_HTTPHEADER => [
+        //         'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
+        //         'Content-Type: application/json'
+        //     ],
+        // ]);
 
-        curl_close($curl);
+        // $response = curl_exec($curl);
 
-        return json_decode($response, true);
+        // if (curl_errno($curl)) {
+        //     return curl_error($curl);
+        // }
+
+        // curl_close($curl);
+
+        // return json_decode($response, true);
     }
 }

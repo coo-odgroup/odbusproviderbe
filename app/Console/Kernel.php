@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\ArchiveSpecialFare::class,
         \App\Console\Commands\ClearOldLogs::class,
         \App\Console\Commands\RunAutoCrons::class,
+        \App\Console\Commands\PhonePeRefundStatus::class,
     ];
 
     /**
@@ -38,6 +39,9 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         // $schedule->command('booking:archive-failed')->daily();
+
+        $schedule->command('phonepe:refund-status')->everyFiveMinutes();
+        
 
         $crons = Cron::with('cron_frequencies')
             ->where('run_type', 'auto')

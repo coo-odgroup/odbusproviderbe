@@ -182,6 +182,9 @@ class BlogController extends Controller
                 "meta_keywords" => $request->meta_keywords,
                 "canonical_url" => $request->canonical_url,
                 "og_image" => $ogpath,
+                "breadcrumb_schema" => $request->breadcrumb_schema ? json_encode($request->breadcrumb_schema) : null,
+                "faq_schema" => $request->faq_schema ? json_encode($request->faq_schema) : null,
+                "service_schema" => $request->service_schema ? json_encode($request->service_schema) : null,
                 "created_by" => 1,
                 "updated_by" => 1,
             ];
@@ -203,11 +206,119 @@ class BlogController extends Controller
     }
 
 
+    // public function updateblog(Request $request, $id)
+    // {
+    //     try {
+
+    //         $blog = Blog::find($id);
+
+    //         $data = [
+    //             "category_id" => $request->category_id,
+    //             "title" => $request->title,
+    //             "slug" => $request->slug,
+    //             "short_description" => $request->short_description,
+    //             "content" => $request->content,
+    //             "feature_alt_text" => $request->feature_alt_text,
+    //             "thumb_alt_text" => $request->thumb_alt_text,
+    //             "author_name" => ucwords(strtolower($request->author_name)),
+    //             "is_featured" => 0,
+    //             "active_status" => 1,
+    //             "meta_title" => $request->meta_title,
+    //             "meta_description" => $request->meta_description,
+    //             "meta_keywords" => $request->meta_keywords,
+    //             "canonical_url" => $request->canonical_url,
+    //             "breadcrumb_schema" => $request->breadcrumb_schema ? json_encode($request->breadcrumb_schema) : null,
+    //             "faq_schema" => $request->faq_schema ? json_encode($request->faq_schema) : null,
+    //             "service_schema" => $request->service_schema ? json_encode($request->service_schema) : null,
+    //             "updated_by" => 1,
+    //         ];
+
+
+    //         return $request->breadcrumb_schema;
+
+    //         // Featured Image
+    //         if ($request->hasFile('featured_image')) {
+
+    //             $file = $request->file('featured_image');
+    //             $filename = $file->getClientOriginalName();
+    //             $picture = time() . '_' . $filename;
+
+    //             if ($blog && $blog->featured_image) {
+
+    //                 $existing_image = public_path($blog->featured_image);
+
+    //                 if (file_exists($existing_image)) {
+    //                     unlink($existing_image);
+    //                 }
+    //             }
+
+    //             $file->move(public_path('uploads/blogs/blog_image'), $picture);
+
+    //             $data['featured_image'] = "blogs/blog_image/" . $picture;
+    //         }
+
+    //         // Thumb Image
+    //         if ($request->hasFile('thumb_image')) {
+
+    //             $file = $request->file('thumb_image');
+    //             $filename = $file->getClientOriginalName();
+    //             $picture = time() . '_' . $filename;
+
+    //             if ($blog && $blog->thumb_image) {
+
+    //                 $existing_image = public_path($blog->thumb_image);
+
+    //                 if (file_exists($existing_image)) {
+    //                     unlink($existing_image);
+    //                 }
+    //             }
+
+    //             $file->move(public_path('uploads/blogs/blog_image'), $picture);
+
+    //             $data['thumb_image'] = "blogs/blog_image/" . $picture;
+    //         }
+
+    //         // OG Image
+    //         if ($request->hasFile('og_image')) {
+
+    //             $file = $request->file('og_image');
+    //             $filename = $file->getClientOriginalName();
+    //             $picture = time() . '_' . $filename;
+
+    //             if ($blog && $blog->og_image) {
+
+    //                 $existing_image = public_path($blog->og_image);
+
+    //                 if (file_exists($existing_image)) {
+    //                     unlink($existing_image);
+    //                 }
+    //             }
+
+    //             $file->move(public_path('uploads/blogs/blog_image'), $picture);
+
+    //             $data['og_image'] = "blogs/blog_image/" . $picture;
+    //         }
+
+    //         Blog::where('id', $id)->update($data);
+
+    //         return $this->successResponse("Blog Updated", Response::HTTP_OK);
+    //     } catch (Exception $e) {
+    //         return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
     public function updateblog(Request $request, $id)
     {
         try {
 
             $blog = Blog::find($id);
+
+            if (!$blog) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Blog not found'
+                ], 404);
+            }
 
             $data = [
                 "category_id" => $request->category_id,
@@ -224,77 +335,81 @@ class BlogController extends Controller
                 "meta_description" => $request->meta_description,
                 "meta_keywords" => $request->meta_keywords,
                 "canonical_url" => $request->canonical_url,
+
+                // ✅ Store JSON properly
+                "breadcrumb_schema" => $request->breadcrumb_schema ? json_encode($request->breadcrumb_schema) : null,
+                "faq_schema" => $request->faq_schema ? json_encode($request->faq_schema) : null,
+                "service_schema" => $request->service_schema ? json_encode($request->service_schema) : null,
+
                 "updated_by" => 1,
             ];
 
-            // Featured Image
+            // ✅ Featured Image
             if ($request->hasFile('featured_image')) {
 
                 $file = $request->file('featured_image');
-                $filename = $file->getClientOriginalName();
-                $picture = time() . '_' . $filename;
+                $picture = time() . '_' . $file->getClientOriginalName();
 
-                if ($blog && $blog->featured_image) {
-
+                if ($blog->featured_image) {
                     $existing_image = public_path($blog->featured_image);
-
                     if (file_exists($existing_image)) {
                         unlink($existing_image);
                     }
                 }
 
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
-
                 $data['featured_image'] = "blogs/blog_image/" . $picture;
             }
 
-            // Thumb Image
+            // ✅ Thumb Image
             if ($request->hasFile('thumb_image')) {
 
                 $file = $request->file('thumb_image');
-                $filename = $file->getClientOriginalName();
-                $picture = time() . '_' . $filename;
+                $picture = time() . '_' . $file->getClientOriginalName();
 
-                if ($blog && $blog->thumb_image) {
-
+                if ($blog->thumb_image) {
                     $existing_image = public_path($blog->thumb_image);
-
                     if (file_exists($existing_image)) {
                         unlink($existing_image);
                     }
                 }
 
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
-
                 $data['thumb_image'] = "blogs/blog_image/" . $picture;
             }
 
-            // OG Image
+            // ✅ OG Image
             if ($request->hasFile('og_image')) {
 
                 $file = $request->file('og_image');
-                $filename = $file->getClientOriginalName();
-                $picture = time() . '_' . $filename;
+                $picture = time() . '_' . $file->getClientOriginalName();
 
-                if ($blog && $blog->og_image) {
-
+                if ($blog->og_image) {
                     $existing_image = public_path($blog->og_image);
-
                     if (file_exists($existing_image)) {
                         unlink($existing_image);
                     }
                 }
 
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
-
                 $data['og_image'] = "blogs/blog_image/" . $picture;
             }
 
-            Blog::where('id', $id)->update($data);
+            // ✅ Update
+            $blog->update($data);
 
-            return $this->successResponse("Blog Updated", Response::HTTP_OK);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            // ✅ Proper JSON response (VERY IMPORTANT)
+            return response()->json([
+                'status' => true,
+                'message' => 'Blog Updated Successfully',
+                'data' => $blog
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -376,17 +491,40 @@ class BlogController extends Controller
 
     //Tags Map
     // ----------------------------------------------------------------------------------
+    // public function addtagmap(Request $request)
+    // {
+    //     try {
+    //         $data = [
+    //             "blog_id" => $request->blog_id,
+    //             "tag_id" => $request->tag_id,
+    //             "created_by" => 1,
+    //             "updated_by" => 1,
+    //         ];
+
+    //         Tagmap::create($data);
+    //         return $this->successResponse("Tagmap Created Successfully", Response::HTTP_CREATED);
+    //     } catch (Exception $e) {
+    //         return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+    //     }
+    // }
+
     public function addtagmap(Request $request)
     {
         try {
-            $data = [
-                "blog_id" => $request->blog_id,
-                "tag_id" => $request->tag_id,
-                "created_by" => 1,
-                "updated_by" => 1,
-            ];
+            $insertData = [];
+            foreach ($request->tag_id as $tagId) {
+                $insertData[] = [
+                    "blog_id" => $request->blog_id,
+                    "tag_id" => $tagId,
+                    "created_by" => 1,
+                    "updated_by" => 1,
+                    "created_at" => now(),
+                    "updated_at" => now(),
+                ];
+            }
 
-            Tagmap::create($data);
+            Tagmap::insert($insertData);
+
             return $this->successResponse("Tagmap Created Successfully", Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);

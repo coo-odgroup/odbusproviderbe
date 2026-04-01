@@ -211,7 +211,7 @@ class CompleteReportRepository
 
                 if ($v->coupon_code) {
 
-                    $coupon = \DB::table('coupon')
+                    $coupon = DB::table('coupon')
                         ->where('coupon_code', $v->coupon_code)
                         ->where('status', 1)
                         // ->where(function ($q) use ($v) {
@@ -232,7 +232,7 @@ class CompleteReportRepository
                         ->select('coupon_type_id')
                         ->first();
 
-                    $v->coupon_type = $coupon->coupon_type_id;
+                    $v->coupon_type = $coupon->coupon_type_id ?? null;
                 }
             }
         }

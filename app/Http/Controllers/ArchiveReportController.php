@@ -347,45 +347,68 @@ class ArchiveReportController extends Controller
         return response()->json($response);
     }
 
+    // public function sendWhatsappCampaign(Msg91Service $msg91)
+    // {
+    //     $otp = 123456;
+
+    //     $variables = [
+
+    //         "body_1" => ["type" => "text", "value" => $otp],
+    //         "button_1" => ["type" => "text", "value" => $otp],
+
+    //         "var1" => ["type" => "text", "value" => "Sahil"],
+    //         "var2" => ["type" => "text", "value" => $otp],
+
+    //     ];
+
+    //     $mobile = [9692066142];
+
+    //     $response = $msg91->sendWhatsappCampaign($mobile, config('msg91.campaigns.otp'), $variables);
+
+    //     return response()->json($response);
+    // }
+
     public function sendWhatsappCampaign(Msg91Service $msg91)
     {
 
         $variables = [
 
-            "header_1" => ["type" => "image", "value" => "https://provider.odbus.co.in/public/uploads/logo/whatsappimage.jpg"],
+            // ✅ Header Image
+            "header_1" => [
+                "type" => "image",
+                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+            ],
 
-            "body_var_1"  => ["type" => "text", "value" => "sahil"],
-            "body_var_2"  => ["type" => "text", "value" => "ODCL1689894"],
-            "body_var_3"  => ["type" => "text", "value" => "Bhubaneswar"],
-            "body_var_4"  => ["type" => "text", "value" => "Cuttack"],
-            "body_var_5"  => ["type" => "text", "value" => "14,15"],
-            "body_var_6"  => ["type" => "text", "value" => "250"],
-            "body_var_7"  => ["type" => "text", "value" => "Nilkantheswar"],
-            "body_var_8"  => ["type" => "text", "value" => "OR 02 B 2525"],
-            "body_var_9"  => ["type" => "text", "value" => "15-12-2020"],
-            "body_var_10" => ["type" => "text", "value" => "20:55"],
-            "body_var_11" => ["type" => "text", "value" => "Passenger Name"],
-            "body_var_12" => ["type" => "text", "value" => "Boarding Point"],
-            "body_var_13" => ["type" => "text", "value" => "Dropping Point"],
-            "body_var_14" => ["type" => "text", "value" => "Confirmed"],
+            // ✅ WhatsApp body
+            "body_var_1"  => ["type" => "text", "value" => "OD123456"],
+            "body_var_2"  => ["type" => "text", "value" => "Nilkantheswar"],
+            "body_var_3"  => ["type" => "text", "value" => "OR02B2525"],
+            "body_var_4"  => ["type" => "text", "value" => "15-12-2026"],
+            "body_var_5"  => ["type" => "text", "value" => "20:55"],
+            "body_var_6"  => ["type" => "text", "value" => "Bhubaneswar"],
+            "body_var_7"  => ["type" => "text", "value" => "Baramunda"],
+            "body_var_8"  => ["type" => "text", "value" => "Cuttack"],
+            "body_var_9"  => ["type" => "text", "value" => "Badambadi"],
+            "body_var_10" => ["type" => "text", "value" => "Sahil"],
+            "body_var_11" => ["type" => "text", "value" => "A1,A2"],
+            "body_var_12" => ["type" => "text", "value" => "9692066142"],
 
-            "var1"  => ["type" => "text", "value" => "extra1"],
-            "var2"  => ["type" => "text", "value" => "extra2"],
-            "var3"  => ["type" => "text", "value" => "extra3"],
-            "var4"  => ["type" => "text", "value" => "extra4"],
-            "var5"  => ["type" => "text", "value" => "extra5"],
-            "var6"  => ["type" => "text", "value" => "extra6"],
-            "var7"  => ["type" => "text", "value" => "extra7"],
-            "var8"  => ["type" => "text", "value" => "extra8"],
-            "var9"  => ["type" => "text", "value" => "extra9"],
-            "var10" => ["type" => "text", "value" => "extra10"],
-            "var11" => ["type" => "text", "value" => "extra11"]
-
+            // ✅ SMS
+            "var1"  => ["type" => "text", "value" => "OD123456"],
+            "var2"  => ["type" => "text", "value" => "Nilkantheswar"],
+            "var3"  => ["type" => "text", "value" => "OR02B2525"],
+            "var4"  => ["type" => "text", "value" => "15-12-2026"],
+            "var5"  => ["type" => "text", "value" => "20:55"],
+            "var6"  => ["type" => "text", "value" => "Bhubaneswar"],
+            "var7"  => ["type" => "text", "value" => "Cuttack"],
+            "var8"  => ["type" => "text", "value" => "Sahil"],
+            "var9"  => ["type" => "text", "value" => "A1,A2"],
+            "var10" => ["type" => "text", "value" => "9692066142"],
         ];
 
-        $mobile = 9776290692;
+        $mobile = [9692066142];
 
-        $response = $msg91->sendWhatsappCampaign($mobile, config('msg91.campaigns.booking_confirm'), $variables);
+        $response = $msg91->sendWhatsappCampaign($mobile, config('msg91.campaigns.otp'), $variables);
 
         return response()->json($response);
     }

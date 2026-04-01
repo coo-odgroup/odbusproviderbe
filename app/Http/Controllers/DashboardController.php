@@ -259,77 +259,77 @@ class DashboardController extends Controller
     // }
 
     public function opBooking(Request $request)
-{
-    $operatorId = $request->operator_id;
-    $filter = $request->rangeFor ?? 'Today';
+    {
+        $operatorId = $request->operator_id;
+        $filter = $request->rangeFor ?? 'Today';
 
-    $fromDate = Carbon::today()->startOfDay();
-    $toDate   = Carbon::today()->endOfDay();
-
-    if ($filter === 'This Week') {
-        $fromDate = Carbon::today()->subDays(6)->startOfDay();
+        $fromDate = Carbon::today()->startOfDay();
         $toDate   = Carbon::today()->endOfDay();
-    }
 
-    if ($filter === 'This Month') {
-        $fromDate = Carbon::now()->startOfMonth()->startOfDay();
-        $toDate   = Carbon::now()->endOfDay();
-    }
+        if ($filter === 'This Week') {
+            $fromDate = Carbon::today()->subDays(6)->startOfDay();
+            $toDate   = Carbon::today()->endOfDay();
+        }
 
-    // Format dates
-    $fromDate = $fromDate->format('Y-m-d H:i:s');
-    $toDate   = $toDate->format('Y-m-d H:i:s');
+        if ($filter === 'This Month') {
+            $fromDate = Carbon::now()->startOfMonth()->startOfDay();
+            $toDate   = Carbon::now()->endOfDay();
+        }
 
-    // Get active buses
-    $busIds = $this->activeBus($operatorId)->pluck('id')->toArray();
+        // Format dates
+        $fromDate = $fromDate->format('Y-m-d H:i:s');
+        $toDate   = $toDate->format('Y-m-d H:i:s');
 
-    if (empty($busIds)) {
+        // Get active buses
+        $busIds = $this->activeBus($operatorId)->pluck('id')->toArray();
+
+        if (empty($busIds)) {
+            return response()->json([
+                'status' => 200,
+                'data' => []
+            ]);
+        }
+
+        $ticketPriceSub = DB::table('ticket_price')
+            ->select('bus_id', DB::raw('MIN(id) as tp_id'))
+            ->groupBy('bus_id');
+
+        $booking = Booking::query()
+            ->join('bus', 'bus.id', '=', 'booking.bus_id')
+            ->joinSub($ticketPriceSub, 'tp1', function ($join) {
+                $join->on('tp1.bus_id', '=', 'bus.id');
+            })
+            ->join('ticket_price as tp', 'tp.id', '=', 'tp1.tp_id')
+            ->join('location as src', 'src.id', '=', 'tp.source_id')
+            ->join('location as dst', 'dst.id', '=', 'tp.destination_id')
+            ->whereIn('booking.bus_id', $busIds)
+            ->whereBetween('booking.created_at', [$fromDate, $toDate])
+            ->select(
+                'booking.bus_id',
+                'bus.name as bus_name',
+                'bus.bus_number',
+                'src.id as source_id',
+                'src.name as source',
+                'dst.id as destination_id',
+                'dst.name as destination',
+                DB::raw('COUNT(booking.id) as booking_count')
+            )
+            ->groupBy(
+                'booking.bus_id',
+                'bus.name',
+                'bus.bus_number',
+                'src.id',
+                'src.name',
+                'dst.id',
+                'dst.name'
+            )
+            ->get();
+
         return response()->json([
             'status' => 200,
-            'data' => []
+            'data' => $booking
         ]);
     }
-
-    $ticketPriceSub = DB::table('ticket_price')
-        ->select('bus_id', DB::raw('MIN(id) as tp_id'))
-        ->groupBy('bus_id');
-
-    $booking = Booking::query()
-        ->join('bus', 'bus.id', '=', 'booking.bus_id')
-        ->joinSub($ticketPriceSub, 'tp1', function ($join) {
-            $join->on('tp1.bus_id', '=', 'bus.id');
-        })
-        ->join('ticket_price as tp', 'tp.id', '=', 'tp1.tp_id')
-        ->join('location as src', 'src.id', '=', 'tp.source_id')
-        ->join('location as dst', 'dst.id', '=', 'tp.destination_id')
-        ->whereIn('booking.bus_id', $busIds)
-        ->whereBetween('booking.created_at', [$fromDate, $toDate])
-        ->select(
-            'booking.bus_id',
-            'bus.name as bus_name',
-            'bus.bus_number',
-            'src.id as source_id',
-            'src.name as source',
-            'dst.id as destination_id',
-            'dst.name as destination',
-            DB::raw('COUNT(booking.id) as booking_count')
-        )
-        ->groupBy(
-            'booking.bus_id',
-            'bus.name',
-            'bus.bus_number',
-            'src.id',
-            'src.name',
-            'dst.id',
-            'dst.name'
-        )
-        ->get();
-
-    return response()->json([
-        'status' => 200,
-        'data' => $booking
-    ]);
-}
 
     //OPERATOR BUS WISE REVENUE
     public function opRevenue(Request $request)

@@ -166,8 +166,8 @@ Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'get
 Route::post('/emailtest', [TestEmailController::class, 'emailtest']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('/userAuth', [UserController::class, 'userDetail']);
-    Route::post('/busAuth', [BusController::class, 'createBuses']);
+   Route::get('/userAuth', [UserController::class, 'userDetail']);
+   Route::post('/busAuth', [BusController::class, 'createBuses']);
 });
 
 Route::post('/assocAssignAgentreport', [AssocAssignReportController::class, 'getAssignAgentData']);
@@ -1132,75 +1132,75 @@ Route::post('apiLogReport', [ApiLogReportController::class, 'apiLogReport']);
 //Added by sahil 
 //----------------------------------------------------------------------------------------------
 //For chats
-Route::post('top-route',[ChartController::class,"topRoutes"]);
-Route::post('top-city',[ChartController::class,"topCity"]);
-Route::post('day-wise',[ChartController::class,"bookingReport"]);
-Route::post('total-bus-seat',[ChartController::class,"TotalBusSeat"]);
-Route::post('operator-wise-booking',[ChartController::class, "operatorBooking"]);
-Route::post('operator-wise-revenue',[ChartController::class, "operatorRevenue"]);
-Route::post('operator-wise-busclose',[ChartController::class, "operatorBusclose"]);
+Route::post('top-route', [ChartController::class, "topRoutes"]);
+Route::post('top-city', [ChartController::class, "topCity"]);
+Route::post('day-wise', [ChartController::class, "bookingReport"]);
+Route::post('total-bus-seat', [ChartController::class, "TotalBusSeat"]);
+Route::post('operator-wise-booking', [ChartController::class, "operatorBooking"]);
+Route::post('operator-wise-revenue', [ChartController::class, "operatorRevenue"]);
+Route::post('operator-wise-busclose', [ChartController::class, "operatorBusclose"]);
 
-Route::post('payment-report',[ChartController::class, "paymentReport"]);
-Route::post('peak-booking',[ChartController::class, "peakBooking"]);
-Route::post('month-wise-booking',[ChartController::class, "monthBooking"]);
-Route::post('month-wise-revenue',[ChartController::class, "monthRevenue"]);
-Route::post('route-wise-revenue',[ChartController::class,"routeRevenue"]);
+Route::post('payment-report', [ChartController::class, "paymentReport"]);
+Route::post('peak-booking', [ChartController::class, "peakBooking"]);
+Route::post('month-wise-booking', [ChartController::class, "monthBooking"]);
+Route::post('month-wise-revenue', [ChartController::class, "monthRevenue"]);
+Route::post('route-wise-revenue', [ChartController::class, "routeRevenue"]);
 
-Route::post('total-seatBlock',[ChartController::class, 'seateBlock']);
+Route::post('total-seatBlock', [ChartController::class, 'seateBlock']);
 // Each bus wise revenue
-Route::post('bus-wise-revenue',[ChartController::class,"busRevenue"]);
+Route::post('bus-wise-revenue', [ChartController::class, "busRevenue"]);
 
 //Route wise booking 
-Route::post('route-wise-booking',[RouteWiseBookingController::class,"routewiseBooking"]);
-Route::post('route-wise-search',[RouteWiseBookingController::class,'allData']);
+Route::post('route-wise-booking', [RouteWiseBookingController::class, "routewiseBooking"]);
+Route::post('route-wise-search', [RouteWiseBookingController::class, 'allData']);
 
 //Date Wise Passenger list
-Route::post("all-passengers",[ChartController::class,"allPassenger"]);
+Route::post("all-passengers", [ChartController::class, "allPassenger"]);
 
 //Report for Active Operator
-Route::post("active-operators",[ChartController::class,"activeOperator"]);
-Route::post("active-buses",[ChartController::class,"activeBus"]);
+Route::post("active-operators", [ChartController::class, "activeOperator"]);
+Route::post("active-buses", [ChartController::class, "activeBus"]);
 
 //operator pannel api
-Route::post('operator-dashboarddata',[DashboardController::class,'operatorDashbord']);
-Route::post('operator-booking',[DashboardController::class,'opBooking']);
-Route::post('operator-revenue',[DashboardController::class,'opRevenue']);
+Route::post('operator-dashboarddata', [DashboardController::class, 'operatorDashbord']);
+Route::post('operator-booking', [DashboardController::class, 'opBooking']);
+Route::post('operator-revenue', [DashboardController::class, 'opRevenue']);
 
-Route::post('archive-completereport',[ArchiveReportController::class,'archiveCompleteReport']);
-Route::post('archive-cancelreport',[ArchiveReportController::class,'archiveCancelReport']);
+Route::post('archive-completereport', [ArchiveReportController::class, 'archiveCompleteReport']);
+Route::post('archive-cancelreport', [ArchiveReportController::class, 'archiveCancelReport']);
 
 
 
-Route::post('/test-booking-sms',[ArchiveReportController::class,'send']);
-Route::post('/test-whatsapp-sms',[ArchiveReportController::class,'sendWhatsappCampaign']);
+Route::post('/test-booking-sms', [ArchiveReportController::class, 'send']);
+Route::post('/test-whatsapp-sms', [ArchiveReportController::class, 'sendWhatsappCampaign']);
 
 //blogcategory
-Route::post('add-blogcategory',[BlogController::class,'addCategory']);
-Route::post('blogcategory',[BlogController::class,'allCategory']);
+Route::post('add-blogcategory', [BlogController::class, 'addCategory']);
+Route::post('blogcategory', [BlogController::class, 'allCategory']);
 Route::post('/blogcategory/{id}', [BlogController::class, 'updatecategory']);
 Route::delete('/delete-blogcategory/{id}', [BlogController::class, 'deletecategory']);
 
 //Blog
-Route::post('add-blog',[BlogController::class,'addblog']);
-Route::post('blog',[BlogController::class,'allblog']);
+Route::post('add-blog', [BlogController::class, 'addblog']);
+Route::post('blog', [BlogController::class, 'allblog']);
 Route::post('/blog/{id}', [BlogController::class, 'updateblog']);
 Route::delete('/delete-blog/{id}', [BlogController::class, 'deleteblog']);
 
 //Tags
-Route::post('add-tag',[BlogController::class,'addtag']);
-Route::post('tag',[BlogController::class,'alltags']);
+Route::post('add-tag', [BlogController::class, 'addtag']);
+Route::post('tag', [BlogController::class, 'alltags']);
 Route::post('/tag/{id}', [BlogController::class, 'updatetag']);
 Route::delete('/tag/{id}', [BlogController::class, 'deletetag']);
 
 //Tags map
-Route::post('add-tagmap',[BlogController::class,'addtagmap']);
-Route::post('tagmap',[BlogController::class,'alltagmaps']);
+Route::post('add-tagmap', [BlogController::class, 'addtagmap']);
+Route::post('tagmap', [BlogController::class, 'alltagmaps']);
 Route::post('/tagmap/{id}', [BlogController::class, 'updatetagmap']);
 Route::delete('/delete-tagmap/{id}', [BlogController::class, 'deletetagmap']);
 
 //Blog Route
-Route::post('add-blogroute',[BlogController::class,'addblogroute']);
-Route::post('blogroute',[BlogController::class,'allblogroute']);
+Route::post('add-blogroute', [BlogController::class, 'addblogroute']);
+Route::post('blogroute', [BlogController::class, 'allblogroute']);
 Route::post('/blogroute/{id}', [BlogController::class, 'updateblogroute']);
 Route::delete('/delete-blogroute/{id}', [BlogController::class, 'deleteblogroute']);
 
@@ -1221,7 +1221,7 @@ Route::put('/update/{id}', [AppNotificationController::class, 'update']);
 Route::delete('/delete/{id}', [AppNotificationController::class, 'delete']);
 Route::post('/status/{id}', [AppNotificationController::class, 'updateStatus']);
 Route::post('/notification/status/{id}', [AppNotificationController::class, 'updateStatus']);
-Route::post('/sendNotification',[AppNotificationController::class,'sendNotification']);
+Route::post('/sendNotification', [AppNotificationController::class, 'sendNotification']);
 
 
 Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
@@ -1303,3 +1303,8 @@ Route::delete('campaignexcludeddatedetete/{id}', [CampaignController::class, 'ca
 // Campaign Excluded Dates Crud API by Jagan
 Route::post('campaigndiscountcreate', [CampaignController::class, "campaignDiscountCreate"]);
 Route::put('campaigndiscountupdate/{id}', [CampaignController::class, "campaignDiscountUpdate"]);
+
+
+$router->get('/update-refund-status', function () {
+   Artisan::call('phonepe:refund-status');
+});
