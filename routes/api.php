@@ -1185,6 +1185,11 @@ Route::post('add-blog', [BlogController::class, 'addblog']);
 Route::post('blog', [BlogController::class, 'allblog']);
 Route::post('/blog/{id}', [BlogController::class, 'updateblog']);
 Route::delete('/delete-blog/{id}', [BlogController::class, 'deleteblog']);
+Route::post('/change-blogstatus/{id}', [BlogController::class, 'changeblogstatus']);
+Route::post('/get-allAuthors', [BlogController::class, 'getAllAuthors']);
+
+
+
 
 //Tags
 Route::post('add-tag', [BlogController::class, 'addtag']);
