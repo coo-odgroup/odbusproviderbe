@@ -27,6 +27,12 @@ class CompleteReportController extends Controller
         return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
+    public function cancelData(Request $request)
+    {
+        $completeData = $this->completereportRepository->cancelData($request);
+        return $this->successResponse($completeData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
 
     public function getPendingPNR(Request $request)
     {

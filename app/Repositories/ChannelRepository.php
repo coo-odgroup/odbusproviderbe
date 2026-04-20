@@ -403,7 +403,8 @@ class ChannelRepository
 
         $data = array(
                     'Phone'  => $data['phone'],
-                    'Message' => $message
+                    'Message' => $message,
+                    'smsData' => $data,
                 );
         return [$data];
     }
@@ -419,7 +420,8 @@ class ChannelRepository
 
         $data = array(
                     'Phone'  => $data['phone'],
-                    'Message' => $message
+                    'Message' => $message,
+                    'smsData' => $data
                 );
         return [$data];
     }
@@ -605,7 +607,8 @@ class ChannelRepository
 
         $data = array(
                     'to'      => $data['customermobile'],
-                    'contents' => $message
+                    'contents' => $message,
+                    'smsData' => $data
                 );
         return [$data];
     }
@@ -625,7 +628,8 @@ class ChannelRepository
 
         $data = array(
                     'to'      => $data['CMO_mobile'],
-                    'contents' => $message
+                    'contents' => $message,
+                    'smsData' => $data
                 );
         return [$data];
     }

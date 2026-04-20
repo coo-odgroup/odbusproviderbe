@@ -25,6 +25,7 @@ use App\Jobs\SendCancelEmailToSupportJob;
 use App\Jobs\SendEmailToCustomerJob;
 use App\Jobs\SendEmailToApiClientJob;
 use App\Jobs\SendEmailToSupportJob;
+use App\Services\Msg91Service;
 use Illuminate\Http\Request;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use Carbon\Carbon;
@@ -44,9 +45,11 @@ class TicketInformationRepository
     protected $bookingDetail;
     protected $apiClientWallet;
     protected $user;
+    protected $msg91Service;
 
-    public function __construct(AgentWallet $AgentWallet, Location $location, Bus $bus, Users $users, Booking $booking, CustomerPayment $customerPayment, ChannelRepository $channelRepository, ManageSMS $manageSMS, CustomSMS $customSMS, BookingDetail $bookingDetail, ApiClientWallet $apiClientWallet, User $user)
+    public function __construct(Msg91Service $msg91Service, AgentWallet $AgentWallet, Location $location, Bus $bus, Users $users, Booking $booking, CustomerPayment $customerPayment, ChannelRepository $channelRepository, ManageSMS $manageSMS, CustomSMS $customSMS, BookingDetail $bookingDetail, ApiClientWallet $apiClientWallet, User $user)
     {
+        $this->msg91Service = $msg91Service;
         $this->users = $users;
         $this->user = $user;
         $this->location = $location;
@@ -59,8 +62,6 @@ class TicketInformationRepository
         $this->customSMS = $customSMS;
         $this->bookingDetail = $bookingDetail;
         $this->apiClientWallet = $apiClientWallet;
-
-
     }
 
     public function failedticketadjust($request)
@@ -76,7 +77,6 @@ class TicketInformationRepository
             $cpd->payment_done = 1;
             $cpd->update();
         }
-
     }
 
     public function failedticketadjustdata($request)
@@ -93,16 +93,16 @@ class TicketInformationRepository
             'Users',
             'CustomerPaymentData'
         )
-                             ->with('bus.busstoppage')
-                             ->whereNotNull('adjust_pnr')->where('booking_type', 'Adjust')
-                             ->where('status', '0')->where('updated_at', 'like', '%'.date('Y-m-d').'%')
-                             // ->whereHas('CustomerPaymentData', function ($query) {$query->where('payment_done', '0' );})
-                             ->orderBy('id', 'DESC');
+            ->with('bus.busstoppage')
+            ->whereNotNull('adjust_pnr')->where('booking_type', 'Adjust')
+            ->where('status', '0')->where('updated_at', 'like', '%' . date('Y-m-d') . '%')
+            // ->whereHas('CustomerPaymentData', function ($query) {$query->where('payment_done', '0' );})
+            ->orderBy('id', 'DESC');
 
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         if (!empty($pnr)) {
@@ -110,7 +110,9 @@ class TicketInformationRepository
         }
 
         if (!empty($bus_operator_id)) {
-            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id);});
+            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {
+                $query->where('id', $bus_operator_id);
+            });
         }
 
         // if(!empty($payment_id))
@@ -149,13 +151,12 @@ class TicketInformationRepository
 
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
 
         return $response;
-
     }
 
 
@@ -171,14 +172,14 @@ class TicketInformationRepository
             'User',
             'CustomerPayment'
         )
-                             ->with('bus.busstoppage')
-                             ->with('bus.BusType')
-                             ->with('bus.BusSitting')
-                             ->with('bus.busContacts')
-                             ->with('bus.BusType.BusClass')
-                             ->where('pnr', $request[0])
-                             ->whereIn('status', [1,2])
-                             ->orderBy('id', 'DESC')->get();
+            ->with('bus.busstoppage')
+            ->with('bus.BusType')
+            ->with('bus.BusSitting')
+            ->with('bus.busContacts')
+            ->with('bus.BusType.BusClass')
+            ->where('pnr', $request[0])
+            ->whereIn('status', [1, 2])
+            ->orderBy('id', 'DESC')->get();
 
         if ($pnr_Details) {
             foreach ($pnr_Details as $key => $v) {
@@ -201,15 +202,15 @@ class TicketInformationRepository
             'User',
             'CustomerPayment'
         )
-                             ->with('bus.busstoppage')
-                             ->with('bus.BusType')
-                             ->with('bus.BusSitting')
-                             ->with('bus.busContacts')
-                             ->with('bus.BusType.BusClass')
-                             ->where('pnr', $request[0])
-                             ->where('status', 1)
-                             ->where('app_type', 'CLNTWEB')
-                             ->orderBy('id', 'DESC')->get();
+            ->with('bus.busstoppage')
+            ->with('bus.BusType')
+            ->with('bus.BusSitting')
+            ->with('bus.busContacts')
+            ->with('bus.BusType.BusClass')
+            ->where('pnr', $request[0])
+            ->where('status', 1)
+            ->where('app_type', 'CLNTWEB')
+            ->orderBy('id', 'DESC')->get();
 
         if ($pnr_Details) {
             foreach ($pnr_Details as $key => $v) {
@@ -233,15 +234,15 @@ class TicketInformationRepository
             'User',
             'CustomerPayment'
         )
-                             ->with('bus.busstoppage')
-                             ->with('bus.BusType')
-                             ->with('bus.BusSitting')
-                             ->with('bus.busContacts')
-                             ->with('bus.BusType.BusClass')
-                             ->where('pnr', $request[0])
-                             ->where('status', 1)
-                             ->where('journey_dt', '>', $date)
-                             ->orderBy('id', 'DESC')->get();
+            ->with('bus.busstoppage')
+            ->with('bus.BusType')
+            ->with('bus.BusSitting')
+            ->with('bus.busContacts')
+            ->with('bus.BusType.BusClass')
+            ->where('pnr', $request[0])
+            ->where('status', 1)
+            ->where('journey_dt', '>', $date)
+            ->orderBy('id', 'DESC')->get();
 
         if ($pnr_Details) {
             foreach ($pnr_Details as $key => $v) {
@@ -252,11 +253,7 @@ class TicketInformationRepository
 
                     $balance = $this->AgentWallet->where('user_id', $v->user_id)->where('status', 1)->orderBy('id', 'DESC')->limit(1)->first();
                     $v['agent_wallet_balance'] = $balance;
-
                 }
-
-
-
             }
         }
         return $pnr_Details;
@@ -264,7 +261,7 @@ class TicketInformationRepository
 
     public function apicancelticket($request)
     {
-        $id = $request->id ;
+        $id = $request->id;
 
         $cancelticket = $this->booking->find($id);
         $cancelticket->refund_amount = $request['refund_amount'];
@@ -290,7 +287,7 @@ class TicketInformationRepository
 
         $ApiClientWallet = new $this->apiClientWallet();
         $ApiClientWallet->balance = number_format((float)$newBalance, 2, '.', '');
-        $ApiClientWallet->amount = $request['refund_amount'] ;
+        $ApiClientWallet->amount = $request['refund_amount'];
         $ApiClientWallet->user_id = $cancelticket->user_id;
         $ApiClientWallet->type = "Refund";
         $ApiClientWallet->payment_via = "";
@@ -314,7 +311,7 @@ class TicketInformationRepository
         );
 
 
-        $subject = "TICKET CANCELLATION BY ODBUS - PNR : ".$cancelticket->pnr;
+        $subject = "TICKET CANCELLATION BY ODBUS - PNR : " . $cancelticket->pnr;
 
         if ($to_user != null) {
             SendEmailToApiClientJob::dispatch($to_user, $subject, $data);
@@ -332,28 +329,28 @@ class TicketInformationRepository
         $all_seats = '';
         if ($PNR_Details->BookingDetail) {
             foreach ($PNR_Details->BookingDetail as $k => $v) {
-                $all_seats .= $v->BusSeats->seats->seatText.',';
+                $all_seats .= $v->BusSeats->seats->seatText . ',';
             }
         }
 
         $all_seats = rtrim($all_seats, ',');
 
         $smsData = array(
-                        'phone' =>  $PNR_Details->users->phone,
-                        'PNR' => $cancelticket->pnr,
-                        'busdetails' => $bus_details->name.'-'.$bus_details->bus_number,
-                        'doj' => date('d-m-Y', strtotime($PNR_Details->journey_dt)),
-                        'route' => $source_name->name.'-'.$destination_name->name,
-                        'seat' => explode(',', $all_seats),
-                        'refundAmount' => $request->refund_amount
-                    );
+            'phone' =>  $PNR_Details->users->phone,
+            'PNR' => $cancelticket->pnr,
+            'busdetails' => $bus_details->name . '-' . $bus_details->bus_number,
+            'doj' => date('d-m-Y', strtotime($PNR_Details->journey_dt)),
+            'route' => $source_name->name . '-' . $destination_name->name,
+            'seat' => explode(',', $all_seats),
+            'refundAmount' => $request->refund_amount
+        );
 
         Log::Info($smsData);
 
         $busContactDetails = BusContacts::where('bus_id', $cancelticket->bus_id)
-                                         ->where('status', '1')
-                                         ->where('cancel_sms_send', '1')
-                                         ->get('phone');
+            ->where('status', '1')
+            ->where('cancel_sms_send', '1')
+            ->get('phone');
 
         if ($busContactDetails->isNotEmpty()) {
             $contact_number = collect($busContactDetails)->implode('phone', ',');
@@ -367,13 +364,13 @@ class TicketInformationRepository
             // $access_token_url = $api_url.'ClientLogin';
 
             $mantish_API = $client->request('POST', $api_url, [
-              'verify' => false,
-              'form_params' => [
-                  "pnr" => $cancelticket->pnr,
-                  "status" => "cancelled",
-                  "cancel_reason" => $request['reason'],
-                  "refund_amount" => $request->refund_amount
-              ]
+                'verify' => false,
+                'form_params' => [
+                    "pnr" => $cancelticket->pnr,
+                    "status" => "cancelled",
+                    "cancel_reason" => $request['reason'],
+                    "refund_amount" => $request->refund_amount
+                ]
             ]);
 
             log::info('TravelYari call-back URL has been Executed');
@@ -400,37 +397,37 @@ class TicketInformationRepository
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-              CURLOPT_URL => env('PAYTM_PNR_CANCEL_URL'),
-              CURLOPT_RETURNTRANSFER => true,
-              CURLOPT_ENCODING => '',
-              CURLOPT_MAXREDIRS => 10,
-              CURLOPT_TIMEOUT => 0,
-              CURLOPT_FOLLOWLOCATION => true,
-              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-              CURLOPT_CUSTOMREQUEST => 'POST',
-              CURLOPT_POSTFIELDS => '{
+                CURLOPT_URL => env('PAYTM_PNR_CANCEL_URL'),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => '{
             "pnr_list": [
                 {
-                    "pnr": "'.$cancelticket->pnr.'",
-                          "doj": "'.$cancelticket->journey_dt.'",
-                          "operator_id": "'.$bus_details->bus_operator_id.'",
-                          "operator_pnr": "'.$cancelticket->pnr.'",
+                    "pnr": "' . $cancelticket->pnr . '",
+                          "doj": "' . $cancelticket->journey_dt . '",
+                          "operator_id": "' . $bus_details->bus_operator_id . '",
+                          "operator_pnr": "' . $cancelticket->pnr . '",
                           "primary_passenger": null
                 }
             ]
         }',
-              CURLOPT_HTTPHEADER => array(
-                'VerifyKey: 6632596ff74049b8ad8c4a923e4a76c9',
-                'UserId: 68',
-                'Content-Type: application/json'
-              ),
+                CURLOPT_HTTPHEADER => array(
+                    'VerifyKey: 6632596ff74049b8ad8c4a923e4a76c9',
+                    'UserId: 68',
+                    'Content-Type: application/json'
+                ),
             ));
 
             $response = curl_exec($curl);
 
             curl_close($curl);
             log::info($response);
-            log::info('PAYTM call-back URL has been Executed -- '.$cancelticket->pnr);
+            log::info('PAYTM call-back URL has been Executed -- ' . $cancelticket->pnr);
 
             // added b Lima :: 7-Jun-2025
             $ins['api_url'] = env('PAYTM_PNR_CANCEL_URL');
@@ -454,7 +451,6 @@ class TicketInformationRepository
 
 
         return;
-
     }
 
     public function cancelticket($request)
@@ -464,9 +460,9 @@ class TicketInformationRepository
 
         $res_sts = '';
         $pnr = $request->pnr;
-        $id = $request->id ;
-        $user_id = $request->user_id ;
-        $full_refund = $request->full_refund ;
+        $id = $request->id;
+        $user_id = $request->user_id;
+        $full_refund = $request->full_refund;
 
 
         $cancelticket = $this->booking->find($id);
@@ -477,15 +473,15 @@ class TicketInformationRepository
 
             $api_url = Config::get('constants.CONSUMER_API_URL');
 
-            $access_token_url = $api_url.'ClientLogin';
+            $access_token_url = $api_url . 'ClientLogin';
 
             $API_RESP_TOKEN = $client->request('POST', $access_token_url, [
-              'verify' => false,
-              'form_params' => [
-                  'client_id' => "odbusSasAdminApi",
-                  'password' => "Admin@2010"
-              ]
-                    ]);
+                'verify' => false,
+                'form_params' => [
+                    'client_id' => "odbusSasAdminApi",
+                    'password' => "Admin@2010"
+                ]
+            ]);
 
             $access_token_res = json_decode($API_RESP_TOKEN->getBody());
 
@@ -493,11 +489,11 @@ class TicketInformationRepository
 
             $pnr_data['pnr'] = $cancelticket->pnr; /////this for the cancellation of dolphin seat.
 
-            $res = $client->request('POST', $api_url.'CancelDolphinSeat', [
-                    'verify' => false,
-                    'headers' => ['Authorization' =>   "Bearer " . $access_token],
-                    'form_params' => $pnr_data
-                 ]);
+            $res = $client->request('POST', $api_url . 'CancelDolphinSeat', [
+                'verify' => false,
+                'headers' => ['Authorization' =>   "Bearer " . $access_token],
+                'form_params' => $pnr_data
+            ]);
 
             $response = json_decode($res->getBody());
 
@@ -523,7 +519,7 @@ class TicketInformationRepository
                 } else {
                     $AgentWallet =  new $this->AgentWallet();
                     $AgentWallet->balance = number_format((float)$newBalance, 2, '.', '');
-                    $AgentWallet->amount = $request['refund_amount'] ;
+                    $AgentWallet->amount = $request['refund_amount'];
                     $AgentWallet->user_id = $user_id;
                     $AgentWallet->type = "Refund";
                     $AgentWallet->status = 1;
@@ -549,11 +545,11 @@ class TicketInformationRepository
             $all_seats = '';
             if ($cancelticket->origin == 'DOLPHIN') {
                 foreach ($PNR_Details[0]->BookingDetail as $k => $v) {
-                    $all_seats .= $v->seat_name.',';
+                    $all_seats .= $v->seat_name . ',';
                 }
             } else {
                 foreach ($PNR_Details[0]->BookingDetail as $k => $v) {
-                    $all_seats .= $v->BusSeats->seats->seatText.',';
+                    $all_seats .= $v->BusSeats->seats->seatText . ',';
                 }
             }
 
@@ -579,9 +575,9 @@ class TicketInformationRepository
             $smsData = array(
                 'phone' =>  $PNR_Details[0]->users->phone,
                 'PNR' => $pnr,
-                'busdetails' => $busName.'-'.$busNumber,
+                'busdetails' => $busName . '-' . $busNumber,
                 'doj' => date('d-m-Y', strtotime($PNR_Details[0]->journey_dt)),
-                'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                'route' => $source_name[0]->name . '-' . $destination_name[0]->name,
                 'seat' => explode(',', $all_seats),
                 'refundAmount' => $request->refund_amount
             );
@@ -592,9 +588,9 @@ class TicketInformationRepository
             //Send SMS to CMO
             if ($cancelticket->origin != 'DOLPHIN') {
                 $busContactDetails = BusContacts::where('bus_id', $bus_id)
-                                    ->where('status', '1')
-                                    ->where('cancel_sms_send', '1')
-                                    ->get('phone');
+                    ->where('status', '1')
+                    ->where('cancel_sms_send', '1')
+                    ->get('phone');
 
                 if ($busContactDetails->isNotEmpty()) {
                     $contact_number = collect($busContactDetails)->implode('phone', ',');
@@ -607,7 +603,7 @@ class TicketInformationRepository
                 'contactNo' => $PNR_Details[0]->users->phone,
                 'pnr' => $pnr,
                 'journeydate' => date('d-m-Y', strtotime($PNR_Details[0]->journey_dt)),
-                'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                'route' => $source_name[0]->name . '-' . $destination_name[0]->name,
                 'seat_no' => explode(',', $all_seats),
                 'cancellationDateTime' => $current_date_time,
                 'deductionPercentage' => $request->percentage_deduct,
@@ -615,7 +611,7 @@ class TicketInformationRepository
                 'totalfare' => $PNR_Details[0]->total_fare,
             );
 
-            $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr;
+            $subject = "TICKET CANCELLATION FROM ODBUS PNR " . $pnr;
 
             //Send Email To Customer
             if ($request['email'] != '') {
@@ -640,7 +636,6 @@ class TicketInformationRepository
 
             return $cancelticket;
         }
-
     }
 
     public function CancelPNRDetails($pnr)
@@ -650,8 +645,8 @@ class TicketInformationRepository
             'Bus',
             'Users'
         )
-                                    ->where('pnr', $pnr)
-                                    ->orderBy('id', 'DESC')->get();
+            ->where('pnr', $pnr)
+            ->orderBy('id', 'DESC')->get();
 
         return $pnr_Details;
     }
@@ -660,8 +655,8 @@ class TicketInformationRepository
 
     public function cancelticketdata($request)
     {
-        $paginate = $request['rows_number'] ;
-        $name = $request['name'] ;
+        $paginate = $request['rows_number'];
+        $name = $request['name'];
 
         $data = $this->booking->with(
             'BookingDetail.BusSeats.seats',
@@ -670,19 +665,18 @@ class TicketInformationRepository
             'Users',
             'CustomerPayment'
         )
-                             ->where('status', 2)
-                             ->whereNotNull('cancel_by')
-                             ->orderBy('id', 'DESC');
+            ->where('status', 2)
+            ->whereNotNull('cancel_by')
+            ->orderBy('id', 'DESC');
 
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         if ($name != null) {
             $data = $data->where('pnr', $name);
-
         }
 
         $data = $data->paginate($paginate);
@@ -707,10 +701,10 @@ class TicketInformationRepository
 
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
         return $response;
     }
 
@@ -718,8 +712,8 @@ class TicketInformationRepository
     {
         // log::info($request);
         // exit;
-        $paginate = $request['rows_number'] ;
-        $name = $request['name'] ;
+        $paginate = $request['rows_number'];
+        $name = $request['name'];
         $start_date  =  $request['rangeFromDate'];
         $end_date  =  $request['rangeToDate'];
 
@@ -730,24 +724,23 @@ class TicketInformationRepository
             'Users',
             'CustomerPayment'
         )
-                             ->where('status', 1)
-                             ->where('booking_type', 'Adjust')
-                             //->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
-                             ->orderBy('id', 'DESC');
+            ->where('status', 1)
+            ->where('booking_type', 'Adjust')
+            //->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', '1' );})
+            ->orderBy('id', 'DESC');
 
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
         if ($start_date != null && $end_date != null) {
             if ($start_date == $end_date) {
-                $data = $data->where('updated_at', 'like', '%'.$start_date.'%')
-                        ->orderBy('updated_at', 'DESC');
-
+                $data = $data->where('updated_at', 'like', '%' . $start_date . '%')
+                    ->orderBy('updated_at', 'DESC');
             } else {
                 $data = $data->whereBetween('updated_at', [$start_date, $end_date])
-                        ->orderBy('updated_at', 'DESC');
+                    ->orderBy('updated_at', 'DESC');
             }
         }
 
@@ -762,24 +755,22 @@ class TicketInformationRepository
             foreach ($data as $key => $v) {
 
                 $new_pnr   = $this->booking->with('BookingDetail.BusSeats.seats', 'Bus')
-                         ->where('status', 2)
-                         ->where('pnr', $v->adjust_pnr)->get();
+                    ->where('status', 2)
+                    ->where('pnr', $v->adjust_pnr)->get();
 
                 $v['from_location'] = $this->location->where('id', $v->source_id)->get();
                 $v['to_location'] = $this->location->where('id', $v->destination_id)->get();
-                $v['new_pnr'] = $new_pnr ;
+                $v['new_pnr'] = $new_pnr;
             }
         }
 
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
         return $response;
-
-
     }
 
     public function adjustticket($request)
@@ -792,14 +783,14 @@ class TicketInformationRepository
 
         ////////// get access token first /////////////////
 
-        $access_token_url = $api_url.'ClientLogin';
+        $access_token_url = $api_url . 'ClientLogin';
 
         $API_RESP_TOKEN = $client->request('POST', $access_token_url, [
-          'verify' => false,
-          'form_params' => [
-              'client_id' => "odbusSasAdminApi",
-              'password' => "Admin@2010"
-          ]
+            'verify' => false,
+            'form_params' => [
+                'client_id' => "odbusSasAdminApi",
+                'password' => "Admin@2010"
+            ]
         ]);
 
         $access_token_res = json_decode($API_RESP_TOKEN->getBody());
@@ -810,7 +801,7 @@ class TicketInformationRepository
         if ($request['bookingInfo']['origin'] == 'DOLPHIN') {
             $checkSeat = "SEAT AVAIL";
         } else {
-            $url = $api_url.'CheckSeatStatus';
+            $url = $api_url . 'CheckSeatStatus';
 
             $API_RESP = $client->request('POST', $url, [
                 'headers' => ['Authorization' =>   "Bearer " . $access_token],
@@ -838,120 +829,121 @@ class TicketInformationRepository
 
                 foreach ($request['bookingInfo']['bookingDetail'] as $bd) {
 
-                    $bookingDetailarr[] = array("bus_seats_id" => $bd['bus_seats_id'],
-                    "passenger_name" => $bd['passenger_name'],
-                    "passenger_gender" => $bd['passenger_gender'],
-                    "passenger_age" => $bd['passenger_age'],
-                    "created_by" => $bd['created_by']);
-
+                    $bookingDetailarr[] = array(
+                        "bus_seats_id" => $bd['bus_seats_id'],
+                        "passenger_name" => $bd['passenger_name'],
+                        "passenger_gender" => $bd['passenger_gender'],
+                        "passenger_age" => $bd['passenger_age'],
+                        "created_by" => $bd['created_by']
+                    );
                 }
-
             }
 
             if ($request['bookingInfo']['user_id'] == 0) {
 
-                $BookTicketBody = [ "customerInfo" => [
-                    "email" => $request['customerInfo']['email'],
-                    "phone" => $request['customerInfo']['phone'],
-                    "name" => $request['customerInfo']['name']
-                 ],
-                  "bookingInfo" => [
-                    "coupon_code" => '',
-                    "user_id" => $request['bookingInfo']['user_id'],
-                    "bus_id" => $request['bookingInfo']['bus_id'],
-                    "source_id" => $request['bookingInfo']['source_id'],
-                    "destination_id" =>  $request['bookingInfo']['destination_id'],
-                    "journey_date" =>  $request['bookingInfo']['journey_dt'],
-                    "boarding_point" =>   $request['bookingInfo']['boarding_point'],
-                    "dropping_point" =>   $request['bookingInfo']['dropping_point'],
-                    "boarding_time" =>  date('H:i', strtotime($request['bookingInfo']['boarding_time'])),
-                    "dropping_time" =>  date('H:i', strtotime($request['bookingInfo']['dropping_time'])),
-                    "app_type" =>  $request['bookingInfo']['app_type'],
-                    "typ_id" =>  $request['bookingInfo']['typ_id'],
-                    "total_fare" =>  $request['bookingInfo']['total_fare'],
-                    "specialFare" =>  $request['bookingInfo']['specialFare'],
-                    "addOwnerFare" =>  $request['bookingInfo']['addOwnerFare'],
-                    "festiveFare" =>  $request['bookingInfo']['festiveFare'],
-                    "owner_fare" =>  $request['bookingInfo']['owner_fare'],
-                    "transactionFee" => $request['bookingInfo']['odbus_gst'],
-                    "odbus_service_Charges" =>  $request['bookingInfo']['odbus_service_Charges'],
-                    "adj_note" =>  $request['bookingInfo']['adj_note'],
-                    "adjust_pnr" =>  $request['bookingInfo']['pnr'],
-                    "status" =>  '4',
-                    "booking_type" => 'Adjust',
-                    "created_by" =>  $request['bookingInfo']['created_by'],
-                    "bookingDetail" => $bookingDetailarr,
-                    "origin" =>  $request['bookingInfo']['origin'],
-                    "ReferenceNumber" =>  ($request['bookingInfo']['ReferenceNumber'] != null) ? $request['bookingInfo']['ReferenceNumber'] : '',
-                    "CompanyID" => ($request['bookingInfo']['CompanyID'] != null) ? $request['bookingInfo']['CompanyID'] : '',
-                    "PickupID" => ($request['bookingInfo']['PickupID'] != null) ? $request['bookingInfo']['PickupID'] : '',
-                    "DropID" => ($request['bookingInfo']['DropID'] != null) ? $request['bookingInfo']['DropID'] : '',
-                    "RouteTimeID" => ($request['bookingInfo']['RouteTimeID'] != null) ? $request['bookingInfo']['RouteTimeID'] : '',
+                $BookTicketBody = [
+                    "customerInfo" => [
+                        "email" => $request['customerInfo']['email'],
+                        "phone" => $request['customerInfo']['phone'],
+                        "name" => $request['customerInfo']['name']
+                    ],
+                    "bookingInfo" => [
+                        "coupon_code" => '',
+                        "user_id" => $request['bookingInfo']['user_id'],
+                        "bus_id" => $request['bookingInfo']['bus_id'],
+                        "source_id" => $request['bookingInfo']['source_id'],
+                        "destination_id" =>  $request['bookingInfo']['destination_id'],
+                        "journey_date" =>  $request['bookingInfo']['journey_dt'],
+                        "boarding_point" =>   $request['bookingInfo']['boarding_point'],
+                        "dropping_point" =>   $request['bookingInfo']['dropping_point'],
+                        "boarding_time" =>  date('H:i', strtotime($request['bookingInfo']['boarding_time'])),
+                        "dropping_time" =>  date('H:i', strtotime($request['bookingInfo']['dropping_time'])),
+                        "app_type" =>  $request['bookingInfo']['app_type'],
+                        "typ_id" =>  $request['bookingInfo']['typ_id'],
+                        "total_fare" =>  $request['bookingInfo']['total_fare'],
+                        "specialFare" =>  $request['bookingInfo']['specialFare'],
+                        "addOwnerFare" =>  $request['bookingInfo']['addOwnerFare'],
+                        "festiveFare" =>  $request['bookingInfo']['festiveFare'],
+                        "owner_fare" =>  $request['bookingInfo']['owner_fare'],
+                        "transactionFee" => $request['bookingInfo']['odbus_gst'],
+                        "odbus_service_Charges" =>  $request['bookingInfo']['odbus_service_Charges'],
+                        "adj_note" =>  $request['bookingInfo']['adj_note'],
+                        "adjust_pnr" =>  $request['bookingInfo']['pnr'],
+                        "status" =>  '4',
+                        "booking_type" => 'Adjust',
+                        "created_by" =>  $request['bookingInfo']['created_by'],
+                        "bookingDetail" => $bookingDetailarr,
+                        "origin" =>  $request['bookingInfo']['origin'],
+                        "ReferenceNumber" => ($request['bookingInfo']['ReferenceNumber'] != null) ? $request['bookingInfo']['ReferenceNumber'] : '',
+                        "CompanyID" => ($request['bookingInfo']['CompanyID'] != null) ? $request['bookingInfo']['CompanyID'] : '',
+                        "PickupID" => ($request['bookingInfo']['PickupID'] != null) ? $request['bookingInfo']['PickupID'] : '',
+                        "DropID" => ($request['bookingInfo']['DropID'] != null) ? $request['bookingInfo']['DropID'] : '',
+                        "RouteTimeID" => ($request['bookingInfo']['RouteTimeID'] != null) ? $request['bookingInfo']['RouteTimeID'] : '',
 
-                  ],
+                    ],
                 ];
 
 
-                $url = $api_url.'BookTicket';
+                $url = $api_url . 'BookTicket';
             } else {
 
                 $BookTicketBody = [
 
-                "agentInfo" => [
-                    "email" => $request['bookingInfo']['agent_email'],
-                    "phone" => $request['bookingInfo']['agent_number'],
-                    "name" => $request['bookingInfo']['agent_name']
-                ],
+                    "agentInfo" => [
+                        "email" => $request['bookingInfo']['agent_email'],
+                        "phone" => $request['bookingInfo']['agent_number'],
+                        "name" => $request['bookingInfo']['agent_name']
+                    ],
 
-                "customerInfo" => [
-                    "email" => $request['customerInfo']['email'],
-                    "phone" => $request['customerInfo']['phone'],
-                    "name" => $request['customerInfo']['name']
-                ],
-                  "bookingInfo" => [
-                    "bus_id" => $request['bookingInfo']['bus_id'],
-                    "source_id" => $request['bookingInfo']['source_id'],
-                    "destination_id" =>  $request['bookingInfo']['destination_id'],
-                    "journey_dt" =>  $request['bookingInfo']['journey_dt'],
-                    "boarding_point" =>   $request['bookingInfo']['boarding_point'],
-                    "dropping_point" =>   $request['bookingInfo']['dropping_point'],
-                    "boarding_time" =>  date('H:i', strtotime($request['bookingInfo']['boarding_time'])),
-                    "dropping_time" =>  date('H:i', strtotime($request['bookingInfo']['dropping_time'])),
-                    "app_type" =>  $request['bookingInfo']['app_type'],
-                    "typ_id" =>  $request['bookingInfo']['typ_id'],
-                    "total_fare" =>  $request['bookingInfo']['total_fare'],
-                    "specialFare" =>  $request['bookingInfo']['specialFare'],
-                    "addOwnerFare" =>  $request['bookingInfo']['addOwnerFare'],
-                    "festiveFare" =>  $request['bookingInfo']['festiveFare'],
-                    "owner_fare" =>  $request['bookingInfo']['owner_fare'],
-                    "transactionFee" => $request['bookingInfo']['odbus_gst'],
-                    "odbus_service_Charges" =>  $request['bookingInfo']['odbus_service_Charges'],
-                    "adj_note" =>  $request['bookingInfo']['adj_note'],
-                    "adjust_pnr" =>  $request['bookingInfo']['pnr'],
-                    "status" =>  '4',
-                    "booking_type" => 'Adjust',
-                    "created_by" =>  $request['bookingInfo']['created_by'],
-                    "bookingDetail" => $bookingDetailarr,
-                    "origin" =>  $request['bookingInfo']['origin'],
-                    "ReferenceNumber" =>  ($request['bookingInfo']['ReferenceNumber'] != null) ? $request['bookingInfo']['ReferenceNumber'] : '',
-                    "CompanyID" => ($request['bookingInfo']['CompanyID'] != null) ? $request['bookingInfo']['CompanyID'] : '',
-                    "PickupID" => ($request['bookingInfo']['PickupID'] != null) ? $request['bookingInfo']['PickupID'] : '',
-                    "DropID" => ($request['bookingInfo']['DropID'] != null) ? $request['bookingInfo']['DropID'] : '',
-                    "RouteTimeID" => ($request['bookingInfo']['RouteTimeID'] != null) ? $request['bookingInfo']['RouteTimeID'] : '',
-                  ],
+                    "customerInfo" => [
+                        "email" => $request['customerInfo']['email'],
+                        "phone" => $request['customerInfo']['phone'],
+                        "name" => $request['customerInfo']['name']
+                    ],
+                    "bookingInfo" => [
+                        "bus_id" => $request['bookingInfo']['bus_id'],
+                        "source_id" => $request['bookingInfo']['source_id'],
+                        "destination_id" =>  $request['bookingInfo']['destination_id'],
+                        "journey_dt" =>  $request['bookingInfo']['journey_dt'],
+                        "boarding_point" =>   $request['bookingInfo']['boarding_point'],
+                        "dropping_point" =>   $request['bookingInfo']['dropping_point'],
+                        "boarding_time" =>  date('H:i', strtotime($request['bookingInfo']['boarding_time'])),
+                        "dropping_time" =>  date('H:i', strtotime($request['bookingInfo']['dropping_time'])),
+                        "app_type" =>  $request['bookingInfo']['app_type'],
+                        "typ_id" =>  $request['bookingInfo']['typ_id'],
+                        "total_fare" =>  $request['bookingInfo']['total_fare'],
+                        "specialFare" =>  $request['bookingInfo']['specialFare'],
+                        "addOwnerFare" =>  $request['bookingInfo']['addOwnerFare'],
+                        "festiveFare" =>  $request['bookingInfo']['festiveFare'],
+                        "owner_fare" =>  $request['bookingInfo']['owner_fare'],
+                        "transactionFee" => $request['bookingInfo']['odbus_gst'],
+                        "odbus_service_Charges" =>  $request['bookingInfo']['odbus_service_Charges'],
+                        "adj_note" =>  $request['bookingInfo']['adj_note'],
+                        "adjust_pnr" =>  $request['bookingInfo']['pnr'],
+                        "status" =>  '4',
+                        "booking_type" => 'Adjust',
+                        "created_by" =>  $request['bookingInfo']['created_by'],
+                        "bookingDetail" => $bookingDetailarr,
+                        "origin" =>  $request['bookingInfo']['origin'],
+                        "ReferenceNumber" => ($request['bookingInfo']['ReferenceNumber'] != null) ? $request['bookingInfo']['ReferenceNumber'] : '',
+                        "CompanyID" => ($request['bookingInfo']['CompanyID'] != null) ? $request['bookingInfo']['CompanyID'] : '',
+                        "PickupID" => ($request['bookingInfo']['PickupID'] != null) ? $request['bookingInfo']['PickupID'] : '',
+                        "DropID" => ($request['bookingInfo']['DropID'] != null) ? $request['bookingInfo']['DropID'] : '',
+                        "RouteTimeID" => ($request['bookingInfo']['RouteTimeID'] != null) ? $request['bookingInfo']['RouteTimeID'] : '',
+                    ],
                 ];
 
                 // Log::info($BookTicketBody);
 
-                $url = $api_url.'AgentBooking';
+                $url = $api_url . 'AgentBooking';
 
                 //////////// update agent wallet table if there is any rest amount
 
                 if ($request['bookingInfo']['rest_bal'] != 0) {
 
                     $AgentWallet =  new $this->AgentWallet();
-                    $AgentWallet->balance = $request['bookingInfo']['agent_wallet_balance'] + $request['bookingInfo']['rest_bal'] ;
-                    $AgentWallet->amount = $request['bookingInfo']['rest_bal']  ;
+                    $AgentWallet->balance = $request['bookingInfo']['agent_wallet_balance'] + $request['bookingInfo']['rest_bal'];
+                    $AgentWallet->amount = $request['bookingInfo']['rest_bal'];
                     $AgentWallet->user_id = $request['bookingInfo']['user_id'];
                     $AgentWallet->type = "Ticket Adjust";
                     $AgentWallet->status = 1;
@@ -960,15 +952,14 @@ class TicketInformationRepository
                     $AgentWallet->created_by = $request['bookingInfo']['created_by'];
                     $AgentWallet->transaction_id = time();
                     $AgentWallet->save();
-
                 }
             }
 
 
             $res = $client->request('POST', $url, [
-               'verify' => false,
-               'headers' => ['Authorization' =>   "Bearer " . $access_token],
-               'form_params' => $BookTicketBody
+                'verify' => false,
+                'headers' => ['Authorization' =>   "Bearer " . $access_token],
+                'form_params' => $BookTicketBody
             ]);
 
             $get_booking_data = json_decode($res->getBody());
@@ -979,11 +970,11 @@ class TicketInformationRepository
                 if ($request['bookingInfo']['origin'] == 'DOLPHIN') {
                     $dolphin_block_data['transaction_id'] = $get_booking_data->data->transaction_id;
 
-                    $res = $client->request('POST', $api_url.'BlockDolphinSeat', [
-                'verify' => false,
-                'headers' => ['Authorization' =>   "Bearer " . $access_token],
-                'form_params' => $dolphin_block_data
-            ]);
+                    $res = $client->request('POST', $api_url . 'BlockDolphinSeat', [
+                        'verify' => false,
+                        'headers' => ['Authorization' =>   "Bearer " . $access_token],
+                        'form_params' => $dolphin_block_data
+                    ]);
 
                     $get_block_status = json_decode($res->getBody());
                     if ($get_block_status->data->Status != 1) {
@@ -994,12 +985,12 @@ class TicketInformationRepository
                 }
 
                 /////////////// cancel pnr /////////////////////////
-                $id = $request['bookingInfo']['id'] ;
+                $id = $request['bookingInfo']['id'];
                 $cancelticket = $this->booking->find($id);
                 $cancelticket->cancel_reason = $request['bookingInfo']['reason'];
                 $cancelticket->cancel_by = $request['bookingInfo']['created_by'];
                 $cancelticket->cancel_type = "BOOKING ADJUSTMENT";
-                $cancelticket->status = 2 ;
+                $cancelticket->status = 2;
                 $cancelticket->update();
 
 
@@ -1007,22 +998,21 @@ class TicketInformationRepository
                 if ($cancelticket->origin == 'DOLPHIN') {
                     $pnr_data['pnr'] = $cancelticket->pnr; /////this for the cancellation of dolphine seat.
 
-                    $res = $client->request('POST', $api_url.'CancelDolphinSeat', [
-                'verify' => false,
-                'headers' => ['Authorization' =>   "Bearer " . $access_token],
-                'form_params' => $pnr_data
+                    $res = $client->request('POST', $api_url . 'CancelDolphinSeat', [
+                        'verify' => false,
+                        'headers' => ['Authorization' =>   "Bearer " . $access_token],
+                        'form_params' => $pnr_data
                     ]);
-
                 }
 
                 if ($request['bookingInfo']['user_id'] == 0) {
 
                     /////// update customer payment table with adjust keywork concat for 3 payment columns
-                    $customer_payment_id = $request['bookingInfo']['customer_payment_id'] ;
+                    $customer_payment_id = $request['bookingInfo']['customer_payment_id'];
                     $customerPayment = $this->customerPayment->find($customer_payment_id);
-                    $customerPayment->order_id  = 'ADJUST_'.time().'_'.$request['bookingInfo']['razorpay_order_id'];
-                    $customerPayment->razorpay_id  = 'ADJUST_'.time().'_'.$request['bookingInfo']['razorpay_payment_id'];
-                    $customerPayment->razorpay_signature = 'ADJUST-'.time().'_'.$request['bookingInfo']['razorpay_signature'];
+                    $customerPayment->order_id  = 'ADJUST_' . time() . '_' . $request['bookingInfo']['razorpay_order_id'];
+                    $customerPayment->razorpay_id  = 'ADJUST_' . time() . '_' . $request['bookingInfo']['razorpay_payment_id'];
+                    $customerPayment->razorpay_signature = 'ADJUST-' . time() . '_' . $request['bookingInfo']['razorpay_signature'];
                     $customerPayment->update();
                     ////////// insert latest booking id to customer payment table /////
 
@@ -1035,7 +1025,6 @@ class TicketInformationRepository
                     $user_pay->razorpay_signature = $request['bookingInfo']['razorpay_signature'];
                     $user_pay->payment_done = 1;
                     $user_pay->save();
-
                 }
 
 
@@ -1060,9 +1049,9 @@ class TicketInformationRepository
                 $smsData = array(
                     'phone' => $request['customerInfo']['phone'],
                     'PNR' => $pnr,
-                    'busdetails' => $busName.'-'.$busNumber,
+                    'busdetails' => $busName . '-' . $busNumber,
                     'doj' => $cancelticket->journey_dt,
-                    'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
+                    'route' => $request['bookingInfo']['source_name'] . '-' . $request['bookingInfo']['destination_name'],
                     'seat' => $request['bookingInfo']['seat_names'],
                     'refundAmount' => 0
                 );
@@ -1074,9 +1063,9 @@ class TicketInformationRepository
                 if ($request['bookingInfo']['origin'] == 'ODBUS') {
 
                     $busContactDetails = BusContacts::where('bus_id', $bus_id)
-                    ->where('status', '1')
-                    ->where('cancel_sms_send', '1')
-                    ->get('phone');
+                        ->where('status', '1')
+                        ->where('cancel_sms_send', '1')
+                        ->get('phone');
                     if ($busContactDetails->isNotEmpty()) {
                         $contact_number = collect($busContactDetails)->implode('phone', ',');
                         $this->channelRepository->sendSmsTicketCancelCMO($smsData, $contact_number);
@@ -1085,22 +1074,22 @@ class TicketInformationRepository
 
                 ///// send email
 
-                $subject = "TICKET CANCELLATION FROM ODBUS PNR ".$pnr;
+                $subject = "TICKET CANCELLATION FROM ODBUS PNR " . $pnr;
 
 
                 $current_date_time = date("Y-m-d H:i:s");
 
 
                 $data = array(
-                   'contactNo' => $request['customerInfo']['phone'],
-                   'pnr' => $pnr,
-                   'journeydate' => $cancelticket->journey_dt,
-                   'route' => $request['bookingInfo']['source_name'].'-'.$request['bookingInfo']['destination_name'],
-                   'seat_no' => $request['bookingInfo']['seat_names'],
-                   'cancellationDateTime' => $current_date_time,
-                   'deductionPercentage' => 100,
-                   'refundAmount' => 0,
-                   'totalfare' => $request['bookingInfo']['payable_amount'],
+                    'contactNo' => $request['customerInfo']['phone'],
+                    'pnr' => $pnr,
+                    'journeydate' => $cancelticket->journey_dt,
+                    'route' => $request['bookingInfo']['source_name'] . '-' . $request['bookingInfo']['destination_name'],
+                    'seat_no' => $request['bookingInfo']['seat_names'],
+                    'cancellationDateTime' => $current_date_time,
+                    'deductionPercentage' => 100,
+                    'refundAmount' => 0,
+                    'totalfare' => $request['bookingInfo']['payable_amount'],
                 );
 
                 if ($request['customerInfo']['email'] != '') {
@@ -1127,18 +1116,17 @@ class TicketInformationRepository
                     $final_arr =  [
                         "transaction_id" => $get_booking_data->data->transaction_id,
                         "razorpay_payment_id" => $request['bookingInfo']['razorpay_payment_id'],
-                         "razorpay_order_id" => $request['bookingInfo']['razorpay_order_id'],
-                         "razorpay_signature" => $request['bookingInfo']['razorpay_signature']
+                        "razorpay_order_id" => $request['bookingInfo']['razorpay_order_id'],
+                        "razorpay_signature" => $request['bookingInfo']['razorpay_signature']
                     ];
 
-                    $url = $api_url.'UpdateAdjustStatus';
+                    $url = $api_url . 'UpdateAdjustStatus';
                     $resp = $client->request('POST', $url, [
-                       'verify' => false,
-                       'headers' => ['Authorization' =>   "Bearer " . $access_token],
-                       'form_params' => $final_arr
-           ]);
+                        'verify' => false,
+                        'headers' => ['Authorization' =>   "Bearer " . $access_token],
+                        'form_params' => $final_arr
+                    ]);
                     return 'Booking is successful';
-
                 } else {
 
                     $final_arr =  [
@@ -1150,23 +1138,19 @@ class TicketInformationRepository
 
                     // log::info($final_arr);
 
-                    $url = $api_url.'AgentPaymentStatus';
+                    $url = $api_url . 'AgentPaymentStatus';
                     $resp = $client->request('POST', $url, [
-                       'verify' => false,
-                       'headers' => ['Authorization' =>   "Bearer " . $access_token],
-                       'form_params' => $final_arr
-           ]);
+                        'verify' => false,
+                        'headers' => ['Authorization' =>   "Bearer " . $access_token],
+                        'form_params' => $final_arr
+                    ]);
 
 
                     return 'Booking is successful';
-
-
                 }
-
             } else {
                 return 'ERROR OCCURRED';
             }
-
         } else {
             return 'SEAT NOT AVAIL';
         }
@@ -1174,15 +1158,15 @@ class TicketInformationRepository
 
     public function getDetailsSms($request)
     {
-        $pnr = $request['pnr'] ;
+        $pnr = $request['pnr'];
         $action = $request['action'];
 
         if ($action == 'smsToCustomer') {
             $type = 'customer';
 
             $sms_Details = $this->manageSMS->where('pnr', $pnr)
-                                           ->where('type', $type)
-                                           ->get();
+                ->where('type', $type)
+                ->get();
             if ($sms_Details == '[]') {
                 $data = $this->booking->with('Bus', 'Users', 'bus.busContacts', 'BookingDetail.BusSeats.seats')->where("pnr", $pnr)->get();
 
@@ -1214,7 +1198,7 @@ class TicketInformationRepository
                             break;
                     }
 
-                    $all_seats .= $pDetail->BusSeats->seats->seatText.',';
+                    $all_seats .= $pDetail->BusSeats->seats->seatText . ',';
                 }
 
                 if ($m > 0 && $f > 0 && $O > 0) {
@@ -1234,7 +1218,7 @@ class TicketInformationRepository
                 }
 
                 if (count($passengerDetails) > 1) {
-                    $restNo = count($passengerDetails) - 1 ;
+                    $restNo = count($passengerDetails) - 1;
                     $nameList = "{$nameList}+{$restNo}";
                 }
                 $nameList = substr($nameList, 1);
@@ -1249,30 +1233,42 @@ class TicketInformationRepository
                 $busNumber = $data[0]->Bus->bus_number;
                 $conductor_mobile = $data[0]->Bus->BusContacts[0]->phone;
                 $customer_mobile = $data[0]->Users->phone;
+                $customer_name = $data[0]->Users->name;
+                $boarding_point = $data[0]->boarding_point;
+                $dropping_point = $data[0]->dropping_point;
 
                 $smsData = array(
                     'PNR' => $pnr,
-                    'busdetails' => $busName.'-'.$busNumber,
+                    'busdetails' => $busName . '-' . $busNumber,
                     'DOJ' => date('d-m-Y', strtotime($data[0]->journey_dt)),
-                    'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                    'route' => $source_name[0]->name . '-' . $destination_name[0]->name,
+                    'source' => $source_name[0]->name,
+                    'destination' => $destination_name[0]->name,
+                    'busname' => $busName,
+                    'vechicle_no' => $busNumber,
                     'dep' => $data[0]->boarding_time,
                     'Name' => $nameList,
                     'Gender' => $genderList,
                     'seat' => $all_seats,
                     'fare' => $data[0]->total_fare,
                     'contactmob' => $conductor_mobile,
-                    'customermobile' => $customer_mobile
+                    'customermobile' => $customer_mobile,
+                    'customer_name' => $customer_name,
+                    'boarding_point' => $boarding_point,
+                    'dropping_point' => $dropping_point,
+                    'fare' => $data[0]->total_fare,
                 );
 
-                $sms_Details =  $this->channelRepository->createBookingTktFormatToCustomer($smsData);
+                // return $smsData;
 
+                $sms_Details =  $this->channelRepository->createBookingTktFormatToCustomer($smsData);
             }
         } elseif ($action == 'smsToConductor') {
             $type = 'cmo';
 
             $sms_Details = $this->manageSMS->where('pnr', $pnr)
-                                           ->where('type', $type)
-                                           ->get();
+                ->where('type', $type)
+                ->get();
 
             if ($sms_Details == '[]') {
                 $data = $this->booking->with('Bus', 'Users', 'bus.busContacts', 'BookingDetail.BusSeats.seats')->where("pnr", $pnr)->get();
@@ -1306,7 +1302,7 @@ class TicketInformationRepository
                             break;
                     }
 
-                    $all_seats .= $pDetail->BusSeats->seats->seatText.',';
+                    $all_seats .= $pDetail->BusSeats->seats->seatText . ',';
                 }
 
                 if ($m > 0 && $f > 0 && $O > 0) {
@@ -1326,7 +1322,7 @@ class TicketInformationRepository
                 }
 
                 if (count($passengerDetails) > 1) {
-                    $restNo = count($passengerDetails) - 1 ;
+                    $restNo = count($passengerDetails) - 1;
                     $nameList = "{$nameList}+{$restNo}";
                 }
                 $nameList = substr($nameList, 1);
@@ -1341,11 +1337,14 @@ class TicketInformationRepository
                 $busNumber = $data[0]->Bus->bus_number;
                 $conductor_mobile = $data[0]->Bus->BusContacts[0]->phone;
                 $customer_mobile = $data[0]->Users->phone;
+                $customer_name = $data[0]->Users->name;
+                $boarding_point = $data[0]->boarding_point;
+                $dropping_point = $data[0]->dropping_point;
 
                 $busContactDetails = BusContacts::where('bus_id', $bus_id)
-                                                ->where('status', '1')
-                                                ->where('booking_sms_send', '1')
-                                                ->get('phone');
+                    ->where('status', '1')
+                    ->where('booking_sms_send', '1')
+                    ->get('phone');
 
                 if ($busContactDetails->isNotEmpty()) {
                     $CMO_mobile = collect($busContactDetails)->implode('phone', ',');
@@ -1353,15 +1352,24 @@ class TicketInformationRepository
 
                 $smsData = array(
                     'PNR' => $pnr,
-                    'busdetails' => $busName.'-'.$busNumber,
+                    'busdetails' => $busName . '-' . $busNumber,
                     'DOJ' => date('d-m-Y', strtotime($data[0]->journey_dt)),
-                    'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                    'route' => $source_name[0]->name . '-' . $destination_name[0]->name,
+                    'source' => $source_name[0]->name,
+                    'destination' => $destination_name[0]->name,
+                    'busname' => $busName,
+                    'vechicle_no' => $busNumber,
                     'dep' => $data[0]->boarding_time,
                     'Name' => $nameList,
                     'Gender' => $genderList,
                     'seat' => $all_seats,
                     'contactmob' => $customer_mobile,
-                    'CMO_mobile' => $CMO_mobile
+                    'CMO_mobile' => $CMO_mobile,
+                    'customermobile' => $customer_mobile,
+                    'customer_name' => $customer_name,
+                    'boarding_point' => $boarding_point,
+                    'dropping_point' => $dropping_point,
+                    'fare' => $data[0]->total_fare,
                 );
 
                 //log::info($smsData);exit;
@@ -1377,8 +1385,8 @@ class TicketInformationRepository
     {
         $pnr = $request['pnr'];
         $BookingID = $this->booking->select('id')
-                                 ->where('pnr', $pnr)
-                                 ->get();
+            ->where('pnr', $pnr)
+            ->get();
         return $BookingID;
     }
 
@@ -1389,8 +1397,8 @@ class TicketInformationRepository
 
         if ($action == 'emailToCustomer' || $action == 'cancelemailToCustomer') {
             $result = $this->booking->with('users')
-                                 ->where('pnr', $pnr)
-                                 ->get();
+                ->where('pnr', $pnr)
+                ->get();
         } elseif ($action == 'emailToBooking') {
             $data = $this->booking->with('Bus', 'Users', 'bus.busContacts', 'BookingDetail.BusSeats.seats')->where("pnr", $pnr)->get();
 
@@ -1399,8 +1407,8 @@ class TicketInformationRepository
 
             foreach ($data[0]->BookingDetail as $k => $v) {
                 //log::info($v->BusSeats->seats->seatText);
-                $all_seats .= $v->BusSeats->seats->seatText.',';
-                $all_customers .= $v->passenger_name.'('.$v->passenger_gender.'),';
+                $all_seats .= $v->BusSeats->seats->seatText . ',';
+                $all_customers .= $v->passenger_name . '(' . $v->passenger_gender . '),';
             }
 
             $all_seats = rtrim($all_seats, ',');
@@ -1417,9 +1425,9 @@ class TicketInformationRepository
             $smsData = array(
                 'contactmob' => $data[0]->users->phone,
                 'PNR' => $pnr,
-                'busdetails' => $busName.'-'.$busNumber,
+                'busdetails' => $busName . '-' . $busNumber,
                 'DOJ' => $data[0]->journey_dt,
-                'routedetails' => $source_name[0]->name.'-'.$destination_name[0]->name,
+                'routedetails' => $source_name[0]->name . '-' . $destination_name[0]->name,
                 'dep' => date('h:i A', strtotime($data[0]->boarding_time)),
                 'seat' => $all_seats,
                 'fare' => $data[0]->total_fare,
@@ -1447,53 +1455,156 @@ class TicketInformationRepository
 
     public function save_customSMS($data)
     {
+        // Add by sahil
+        //--------------------------------------------------------
         $smsdata = array(
-                        'mobile_no' => $data['mobile_no'],
-                        'message' => $data['contents']
-                   );
+            'customer_mob' => $data['form_data']['customer_mob'],
+            'customer_name' => $data['sms_data']['customer_name'],
+            'pnr' => $data['sms_data']['PNR'],
+            'source' => $data['sms_data']['source'],
+            'destination' => $data['sms_data']['destination'],
+            'boarding_point' => $data['sms_data']['boarding_point'],
+            'dropping_point' => $data['sms_data']['dropping_point'],
+            'busname' => $data['sms_data']['busname'],
+            'vechicle_no' => $data['form_data']['vechicle_no'],
+            'doj' => $data['sms_data']['DOJ'],
+            'dep' => $data['sms_data']['dep'],
+            'passanger' => $data['sms_data']['Name'],
+            'seat' => $data['sms_data']['seat'],
+            'sleeper' => $data['sms_data']['seat'],
+            'fare' => $data['sms_data']['fare'],
+            'conductor_no' => $data['form_data']['conductor_no'],
+        );
+        // return $smsData;
 
-        $SMS = $this->channelRepository->sendSmsTicket($smsdata);
+        $SMS = $this->msg91Service->customer_ticket_booking($smsdata);
 
-        if ($SMS) {
-            $customSMS = new $this->customSMS();
-            $customSMS = $this->getModel($data, $customSMS);
-            $customSMS->save();
-            return $customSMS;
-        }
+        //--------------------------------------------------------------
+
+
+        // $smsdata = array(
+        //                 'mobile_no' => $data['mobile_no'],
+        //                 'message' => $data['contents']
+        //            );
+
+        // $SMS = $this->channelRepository->sendSmsTicket($smsdata);
+
+        // if ($SMS) {
+        //     $customSMS = new $this->customSMS();
+        //     $customSMS = $this->getModel($data, $customSMS);
+        //     $customSMS->save();
+        //     return $customSMS;
+        // }
+    }
+
+    public function smstomCmo($data)
+    {
+        // Add by sahil
+        //--------------------------------------------------------
+        $smsdata = array(
+            'customer_mob' => $data['form_data']['customer_no'],
+            'customer_name' => $data['sms_data']['customer_name'],
+            'pnr' => $data['sms_data']['PNR'],
+            'source' => $data['sms_data']['source'],
+            'destination' => $data['sms_data']['destination'],
+            'boarding_point' => $data['sms_data']['boarding_point'],
+            'dropping_point' => $data['sms_data']['dropping_point'],
+            'busname' => $data['sms_data']['busname'],
+            'vechicle_no' => $data['form_data']['vechicle_no'],
+            'doj' => $data['sms_data']['DOJ'],
+            'dep' => $data['sms_data']['dep'],
+            'passanger' => $data['sms_data']['Name'],
+            'seat' => $data['sms_data']['seat'],
+            'sleeper' => $data['sms_data']['seat'],
+            'fare' => $data['sms_data']['fare'],
+            'conductor_no' => $data['form_data']['cmo_mob'],
+        );
+        // return $smsdata;
+
+        $SMS = $this->msg91Service->cmo_ticket_booking($smsdata);
+
+        //--------------------------------------------------------------
+
+
+        // $smsdata = array(
+        //                 'mobile_no' => $data['mobile_no'],
+        //                 'message' => $data['contents']
+        //            );
+
+        // $SMS = $this->channelRepository->sendSmsTicket($smsdata);
+
+        // if ($SMS) {
+        //     $customSMS = new $this->customSMS();
+        //     $customSMS = $this->getModel($data, $customSMS);
+        //     $customSMS->save();
+        //     return $customSMS;
+        // }
     }
 
     public function save_CancelcustomSMSToCustomer($data)
     {
         $smsdata = array(
-                        'mobile_no' => $data['mobile_no'],
-                        'message' => $data['contents']
-                   );
+            'mobile_no' => $data['mobile_no'],
+            'message' => $data['contents'],
+        );
 
-        $SMS = $this->channelRepository->sendCancelSmsToCustomer($smsdata);
 
-        if ($SMS) {
-            $customSMS = new $this->customSMS();
-            $customSMS = $this->getModel($data, $customSMS);
-            $customSMS->save();
-            return $customSMS;
-        }
+        $data = array(
+            'customer_mob' => $data['smsData'][0]['smsData']['phone'],
+            'customer_name' => $data['smsData'][0]['smsData']['name'],
+            'pnr' => $data['smsData'][0]['smsData']['PNR'],
+            'source' => $data['smsData'][0]['smsData']['source'],
+            'destination' => $data['smsData'][0]['smsData']['destination'],
+            'busname' => $data['smsData'][0]['smsData']['bus_name'],
+            'vechicle_no' => $data['smsData'][0]['smsData']['bus_number'],
+            'doj' => $data['smsData'][0]['smsData']['doj'],
+            'seat' => $data['smsData'][0]['smsData']['seat'],
+            'refundAmount' => $data['smsData'][0]['smsData']['refundAmount'],
+        );
+
+        // return $data;
+
+        $sms = $this->msg91Service->sendSmsTicketCancel($data);
+
+        // $SMS = $this->channelRepository->sendCancelSmsToCustomer($smsdata);
+
+        // if ($SMS) {
+        //     $customSMS = new $this->customSMS();
+        //     $customSMS = $this->getModel($data, $customSMS);
+        //     $customSMS->save();
+        //     return $customSMS;
+        // }
     }
 
     public function save_CancelcustomSMSToCMO($data)
     {
         $smsdata = array(
-                        'mobile_no' => $data['mobile_no'],
-                        'message' => $data['contents']
-                   );
+            'mobile_no' => $data['mobile_no'],
+            'message' => $data['contents']
+        );
 
-        $SMS = $this->channelRepository->sendCancelSmsToCMO($smsdata);
 
-        if ($SMS) {
-            $customSMS = new $this->customSMS();
-            $customSMS = $this->getModel($data, $customSMS);
-            $customSMS->save();
-            return $customSMS;
-        }
+        $data = array(
+            'cmo_no' => $data['smsData'][0]['smsData']['cmo_number'],
+            'pnr' => $data['smsData'][0]['smsData']['PNR'],
+            'source' => $data['smsData'][0]['smsData']['source'],
+            'destination' => $data['smsData'][0]['smsData']['destination'],
+            'busname' => $data['smsData'][0]['smsData']['busname'],
+            'vehicle_no' => $data['smsData'][0]['smsData']['bus_number'],
+            'doj' => $data['smsData'][0]['smsData']['doj'],
+            'seat' => $data['smsData'][0]['smsData']['seat'],
+        );
+
+        $sms = $this->msg91Service->cmo_ticket_cancel($data);
+
+        // $SMS = $this->channelRepository->sendCancelSmsToCMO($smsdata);
+
+        // if ($SMS) {
+        //     $customSMS = new $this->customSMS();
+        //     $customSMS = $this->getModel($data, $customSMS);
+        //     $customSMS->save();
+        //     return $customSMS;
+        // }
     }
 
     public function GetCancelSmsToCustomer($request)
@@ -1505,7 +1616,7 @@ class TicketInformationRepository
         $all_seats = '';
         foreach ($data[0]->BookingDetail as $k => $v) {
             //log::info($v->BusSeats->seats->seatText);
-            $all_seats .= $v->BusSeats->seats->seatText.',';
+            $all_seats .= $v->BusSeats->seats->seatText . ',';
         }
         $all_seats = rtrim($all_seats, ',');
         $source_name = $this->location->where('id', $data[0]->source_id)->get();
@@ -1517,16 +1628,21 @@ class TicketInformationRepository
 
         $smsData = array(
             'phone' => $data[0]->users->phone,
+            'name' => $data[0]->users->name,
             'PNR' => $pnr,
-            'busdetails' => $busName.'-'.$busNumber,
+            'busdetails' => $busName . '-' . $busNumber,
+            'bus_name' => $busName,
+            'bus_number' => $busNumber,
             'doj' => $data[0]->journey_dt,
-            'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+            'route' => $source_name[0]->name . '-' . $destination_name[0]->name,
+            'source' => $source_name[0]->name,
+            'destination' => $destination_name[0]->name,
             'seat' => $all_seats,
             'refundAmount' => $data[0]->refund_amount
         );
 
         $result = $this->channelRepository->createCancelTktFormatToCustomer($smsData);
-        return $result ;
+        return $result;
     }
 
     public function GetCancelSmsToCMO($request)
@@ -1539,7 +1655,7 @@ class TicketInformationRepository
         $all_seats = '';
         foreach ($data[0]->BookingDetail as $k => $v) {
             //log::info($v->BusSeats->seats->seatText);
-            $all_seats .= $v->BusSeats->seats->seatText.',';
+            $all_seats .= $v->BusSeats->seats->seatText . ',';
         }
         $all_seats = rtrim($all_seats, ',');
 
@@ -1551,9 +1667,9 @@ class TicketInformationRepository
         $busNumber = $data[0]->Bus->bus_number;
 
         $busContactDetails = BusContacts::where('bus_id', $data[0]->bus_id)
-                        ->where('status', '1')
-                        ->where('cancel_sms_send', '1')
-                        ->get('phone');
+            ->where('status', '1')
+            ->where('cancel_sms_send', '1')
+            ->get('phone');
 
         if ($busContactDetails->isNotEmpty()) {
             $contact_number = collect($busContactDetails)->implode('phone', ',');
@@ -1561,18 +1677,24 @@ class TicketInformationRepository
 
         $smsData = array(
             'phone' => $contact_number,
+            'name' => $data[0]->users->name,
             'PNR' => $pnr,
-            'busdetails' => $busName.'-'.$busNumber,
+            'busdetails' => $busName . '-' . $busNumber,
+            'busname' => $busName,
+            'bus_number' => $busNumber,
             'doj' => $data[0]->journey_dt,
-            'route' => $source_name[0]->name.'-'.$destination_name[0]->name,
+            'route' => $source_name[0]->name . '-' . $destination_name[0]->name,
+            'source' => $source_name[0]->name,
+            'destination' => $destination_name[0]->name,
             'seat' => $all_seats,
-            'refundAmount' => $data[0]->refund_amount
+            'refundAmount' => $data[0]->refund_amount,
+            'cmo_number' => $contact_number
         );
 
         //log::info($smsData);exit;
 
         $result = $this->channelRepository->createCancelTktFormatToCMO($smsData);
-        return $result ;
+        return $result;
     }
 
     public function getBookingDetails($mobile, $pnr)
@@ -1584,7 +1706,7 @@ class TicketInformationRepository
                 $bs->with('BusType.busClass');
                 $bs->with('BusSitting');
                 $bs->with('busContacts');
-            } ]);
+            }]);
             $u->with(["bookingDetail" => function ($b) {
                 $b->with(["busSeats" => function ($s) {
                     $s->with("seats");
@@ -1605,10 +1727,9 @@ class TicketInformationRepository
             $u->with(["bookingDetail" => function ($b) {
                 $b->with(["busSeats" => function ($s) {
                     $s->with("seats");
-                } ]);
-            } ]);
+                }]);
+            }]);
         }])->get();
-
     }
 
     public function sendEmailToBooking($request)
@@ -1649,19 +1770,15 @@ class TicketInformationRepository
                 $main_source = Location::where('id', $ticketPrice->source_id)->first()->name;
 
                 $main_destination = Location::where('id', $ticketPrice->destination_id)->first()->name;
-
-
-
-
             }
 
             $source_nm = $this->GetLocationName($b->booking[0]->source_id);
             $destination_nm = $this->GetLocationName($b->booking[0]->destination_id);
 
             if ($main_source != '' && $main_destination != '') {
-                $routedetails = $main_source.'-to-'.$main_destination;
+                $routedetails = $main_source . '-to-' . $main_destination;
             } else {
-                $routedetails = $source_nm[0]->name.'-to-'.$destination_nm[0]->name;
+                $routedetails = $source_nm[0]->name . '-to-' . $destination_nm[0]->name;
             }
 
             $body = [
@@ -1670,21 +1787,21 @@ class TicketInformationRepository
                 'email' => $request['email'],
                 'pnr' => $b->booking[0]->pnr,
                 'bookingdate' => $b->booking[0]->created_at,
-                'journeydate' => $b->booking[0]->journey_dt ,
+                'journeydate' => $b->booking[0]->journey_dt,
                 'boarding_point' => $b->booking[0]->boarding_point,
                 'dropping_point' => $b->booking[0]->dropping_point,
                 'departureTime' => $b->booking[0]->boarding_time,
                 'arrivalTime' => $b->booking[0]->dropping_time,
                 'seat_no' => $seat_arr,
                 'busname' => $b->booking[0]->bus->name,
-                 "source" => $source_nm[0]->name ,
+                "source" => $source_nm[0]->name,
                 "destination" => $destination_nm[0]->name,
                 'busNumber' => $b->booking[0]->bus->bus_number,
                 'bustype' => $b->booking[0]->bus->busType->name,
                 'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
                 'sittingType' => $b->booking[0]->bus->busSitting->name,
                 'conductor_number' => $b->booking[0]->bus->busContacts[0]->phone,
-                'passengerDetails' => $passengerDetails ,
+                'passengerDetails' => $passengerDetails,
                 'totalfare' => $b->booking[0]->total_fare,
                 'discount' => $b->booking[0]->coupon_discount,
                 'payable_amount' => $b->booking[0]->payable_amount,
@@ -1718,12 +1835,10 @@ class TicketInformationRepository
                 $sendEmailTicket = SendEmailToCustomerJob::dispatch($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $body, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
             }
 
-            return "Email has been sent to ".$b->email;
-
+            return "Email has been sent to " . $b->email;
         } else {
             return "Invalid request";
         }
-
     }
 
     public function cancelTicketInfo($mobile, $pnr)
@@ -1760,17 +1875,17 @@ class TicketInformationRepository
             $destination_nm = $this->GetLocationName($b->booking[0]->destination_id);
 
             $Email_Data = [
-               'support_email' => $request['email'],
-               'pnr' => $b->booking[0]->pnr,
-               'email' => $b->email,
-               'contactNo' => $b->phone,
-               'route' => $source_nm[0]->name."-".$destination_nm[0]->name,
-               'journeydate' => $b->booking[0]->journey_dt,
-               'seat_no' => $seat_arr,
-               'totalfare' => $b->booking[0]->total_fare,
-               'deductionPercentage' => $b->booking[0]->deduction_percent,
-               'refundAmount' => $b->booking[0]->refund_amount,
-               'cancellationDateTime' => date('Y-m-d H:i:s',strtotime($b->booking[0]->updated_at))
+                'support_email' => $request['email'],
+                'pnr' => $b->booking[0]->pnr,
+                'email' => $b->email,
+                'contactNo' => $b->phone,
+                'route' => $source_nm[0]->name . "-" . $destination_nm[0]->name,
+                'journeydate' => $b->booking[0]->journey_dt,
+                'seat_no' => $seat_arr,
+                'totalfare' => $b->booking[0]->total_fare,
+                'deductionPercentage' => $b->booking[0]->deduction_percent,
+                'refundAmount' => $b->booking[0]->refund_amount,
+                'cancellationDateTime' => date('Y-m-d H:i:s', strtotime($b->booking[0]->updated_at))
             ];
 
             //log::info($Email_Data); exit;
@@ -1787,7 +1902,6 @@ class TicketInformationRepository
     public function sms_log()
     {
 
-        return DB::table("sms_log")->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(response, '$.status')) = 'Error'")->orderBy('id','DESC')->get();
+        return DB::table("sms_log")->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(response, '$.status')) = 'Error'")->orderBy('id', 'DESC')->get();
     }
-
 }

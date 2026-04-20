@@ -2,31 +2,198 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class Msg91Service
 {
-    public function sendBookingSms($mobile, $data)
+    public function customer_ticket_booking($data)
     {
-        $postData = array_merge([
-            "flow_id" => config('msg91.templates.booking'),
-            "mobiles" => "91" . $mobile,
-        ], $data);
+        // return $data;
+        $formattedDate = Carbon::parse($data['doj'])->format('d-M-Y');
+        $departureTime = Carbon::parse($data['dep'])->format('H:i');
+
+
+        $variables = [
+
+            "header_1" => [
+                "type" => "image",
+                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+            ],
+
+            "body_var_1" => ["type" => "text", "value" => $data['customer_name']],
+            "body_var_2" => ["type" => "text", "value" => $data['pnr']],
+            "body_var_3" => ["type" => "text", "value" => $data['source']],
+            "body_var_4" => ["type" => "text", "value" => $data['boarding_point']],
+            "body_var_5" => ["type" => "text", "value" => $data['destination']],
+            "body_var_6" => ["type" => "text", "value" => $data['dropping_point']],
+            "body_var_7" => ["type" => "text", "value" => $data['busname']],
+            "body_var_8" => ["type" => "text", "value" => $data['vechicle_no']],
+            "body_var_9" => ["type" => "text", "value" => $formattedDate],
+            "body_var_10" => ["type" => "text", "value" => $departureTime],
+            "body_var_11" => ["type" => "text", "value" => $data['passanger']],
+            "body_var_12" => ["type" => "text", "value" => $data['seat']],
+            "body_var_13" => ["type" => "text", "value" => $data['passanger']],
+            "body_var_14" => ["type" => "text", "value" => $data['conductor_no']],
+            "button_2" => ["type" => "text", "value" => $data['pnr']],
+
+
+            "var1" => ["type" => "text", "value" => $data['customer_name']],
+            "var2" => ["type" => "text", "value" => $data['pnr']],
+            "var3" => ["type" => "text", "value" => $data['source']],
+            "var4" => ["type" => "text", "value" => $data['destination']],
+            "var5" => ["type" => "text", "value" => $data['busname']],
+            "var6" => ["type" => "text", "value" => $data['vechicle_no']],
+            "var7" => ["type" => "text", "value" => $formattedDate],
+            "var8" => ["type" => "text", "value" => $departureTime],
+            "var9" => ["type" => "text", "value" => $data['passanger']],
+            "var10" => ["type" => "text", "value" => $data['seat']],
+            "var11" => ["type" => "text", "value" => $data['fare']],
+            "var12" => ["type" => "text", "value" => $data['conductor_no']],
+
+        ];
+
+
+        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/customer-ticket-booking/run";
+
+        $to[] = [
+            "mobiles" => "91" . $data['customer_mob'],
+            "variables" => $variables
+        ];
+
+        $postData = [
+            "data" => [
+                "sendTo" => [
+                    [
+                        "to" => $to,
+                        "variables" => $variables
+                    ]
+                ]
+            ]
+        ];
+
+        // return $postData;
+
 
         $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.msg91.com/api/v5/flow/',
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode($postData),
-            CURLOPT_HTTPHEADER => array(
+            CURLOPT_HTTPHEADER => [
                 'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
                 'Content-Type: application/json'
-            ),
-        ));
+            ],
+        ]);
 
         $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            return curl_error($curl);
+        }
+
+        curl_close($curl);
+
+        return json_decode($response, true);
+    }
+
+    public function cmo_ticket_booking($data)
+    {
+        // return $data;
+        $toNumbers = [];
+
+        if (!empty($data['conductor_no'])) {
+            $conductorNumbers = explode(',', $data['conductor_no']);
+
+            foreach ($conductorNumbers as $num) {
+                $num = trim($num);
+                if (!empty($num)) {
+                    $toNumbers[] = $num;
+                }
+            }
+        }
+
+        $formattedDate = Carbon::parse($data['doj'])->format('d-M-Y');
+        $departureTime = Carbon::parse($data['dep'])->format('H:i');
+
+        $variables = [
+
+            "header_1" => [
+                "type" => "image",
+                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+            ],
+
+            "body_var_1" => ["type" => "text", "value" => $data['pnr']],
+            "body_var_2" => ["type" => "text", "value" => $data['busname']],
+            "body_var_3" => ["type" => "text", "value" => $data['vechicle_no']],
+            "body_var_4" => ["type" => "text", "value" => $formattedDate],
+            "body_var_5" => ["type" => "text", "value" => $departureTime],
+            "body_var_6" => ["type" => "text", "value" => $data['source']],
+            "body_var_7" => ["type" => "text", "value" => $data['boarding_point']],
+            "body_var_8" => ["type" => "text", "value" => $data['destination']],
+            "body_var_9" => ["type" => "text", "value" => $data['dropping_point']],
+            "body_var_10" => ["type" => "text", "value" => $data['passanger']],
+            "body_var_11" => ["type" => "text", "value" => $data['seat']],
+            "body_var_12" => ["type" => "text", "value" => $data['customer_mob']],
+
+
+            "var1" => ["type" => "text", "value" => $data['pnr']],
+            "var2" => ["type" => "text", "value" => $data['busname']],
+            "var3" => ["type" => "text", "value" => $data['vechicle_no']],
+            "var4" => ["type" => "text", "value" => $formattedDate],
+            "var5" => ["type" => "text", "value" => $departureTime],
+            "var6" => ["type" => "text", "value" => $data['source']],
+            "var7" => ["type" => "text", "value" => $data['destination']],
+            "var8" => ["type" => "text", "value" => $data['passanger']],
+            "var9" => ["type" => "text", "value" => $data['seat']],
+            "var10" => ["type" => "text", "value" => $data['customer_mob']],
+
+        ];
+
+        $to = [];
+
+        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-booking-flow/run";
+
+        foreach ($toNumbers as $number) {
+            if (!empty($number)) {
+                $to[] = [
+                    "mobiles" => "91" . trim($number),
+                    "variables" => $variables
+                ];
+            }
+        }
+
+        $postData = [
+            "data" => [
+                "sendTo" => [
+                    [
+                        "to" => $to,
+                        "variables" => $variables
+                    ]
+                ]
+            ]
+        ];
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($postData),
+            CURLOPT_HTTPHEADER => [
+                'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
+                'Content-Type: application/json'
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            return curl_error($curl);
+        }
 
         curl_close($curl);
 
@@ -34,53 +201,171 @@ class Msg91Service
     }
 
 
-    public function sendWhatsappCampaign($numbers, $campaign, $variables)
+    //cancel ticket sms send to customer
+    public function sendSmsTicketCancel($data)
     {
-        return config('msg91.MSG91_AUTH_KEY');
-        // return $campaign;
-        // $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-booking-flow/run";
+        $journeydate = Carbon::parse($data['doj'])->format('d-M-Y');
+        $variables = [
 
-        // $to = [];
+            "header_1" => [
+                "type" => "image",
+                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+            ],
 
-        // foreach ($numbers as $num) {
-        //     $to[] = [
-        //         "mobiles" => "91" . $num,
-        //         "variables" => $variables
-        //     ];
-        // }
+            "body_var_1" => ["type" => "text", "value" => $data['customer_name']],
+            "body_var_2" => ["type" => "text", "value" => $data['pnr']],
+            "body_var_3" => ["type" => "text", "value" => $data['busname']],
+            "body_var_4" => ["type" => "text", "value" => $data['vechicle_no']],
+            "body_var_5" => ["type" => "text", "value" => $data['source']],
+            "body_var_6" => ["type" => "text", "value" => $data['destination']],
+            "body_var_7" => ["type" => "text", "value" => $journeydate],
+            "body_var_8" => ["type" => "text", "value" => $data['seat']],
+            "body_var_9" => ["type" => "text", "value" => $data['refundAmount']],
 
-        // $postData = [
-        //     "data" => [
-        //         "sendTo" => [
-        //             [
-        //                 "to" => $to,
-        //                 "variables" => $variables
-        //             ]
-        //         ]
-        //     ]
-        // ];
+            "button_1" => ["type" => "text", "value" => "https://odbus.in/cancel-ticket/" . $data['pnr']],
 
-        // $curl = curl_init();
 
-        // curl_setopt_array($curl, [
-        //     CURLOPT_URL => $url,
-        //     CURLOPT_RETURNTRANSFER => true,
-        //     CURLOPT_CUSTOMREQUEST => 'POST',
-        //     CURLOPT_POSTFIELDS => json_encode($postData),
-        //     CURLOPT_HTTPHEADER => [
-        //         'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
-        //         'Content-Type: application/json'
-        //     ],
-        // ]);
+            "var1" => ["type" => "text", "value" => $data['customer_name']],
+            "var2" => ["type" => "text", "value" => $data['pnr']],
+            "var3" => ["type" => "text", "value" => $data['busname']],
+            "var4" => ["type" => "text", "value" => $data['vechicle_no']],
+            "var5" => ["type" => "text", "value" => $data['source']],
+            "var6" => ["type" => "text", "value" => $data['destination']],
+            "var7" => ["type" => "text", "value" => $journeydate],
+            "var8" => ["type" => "text", "value" => $data['seat']],
+            "var9" => ["type" => "text", "value" => $data['refundAmount']],
 
-        // $response = curl_exec($curl);
+        ];
 
-        // if (curl_errno($curl)) {
-        //     return curl_error($curl);
-        // }
+        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/customer-ticket-cancellation-flow/run";
 
-        // curl_close($curl);
+        $to[] = [
+            "mobiles" => 919692066142,
+            "variables" => $variables
+        ];
 
-        // return json_decode($response, true);
+        $postData = [
+            "data" => [
+                "sendTo" => [
+                    [
+                        "to" => $to,
+                        "variables" => $variables
+                    ]
+                ]
+            ]
+        ];
+
+        // return $postData;
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($postData),
+            CURLOPT_HTTPHEADER => [
+                'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
+                'Content-Type: application/json'
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            return curl_error($curl);
+        }
+
+        curl_close($curl);
+
+        return json_decode($response, true);
+    }
+
+    //cancel ticket sms send to cmo
+
+    public function cmo_ticket_cancel($data)
+    {
+        // return $data;
+        $getNumber = explode(',', $data['cmo_no']);
+
+        $journeydate = Carbon::parse($data['doj'])->format('d-M-Y');
+        $variables = [
+
+            "header_1" => [
+                "type" => "image",
+                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+            ],
+
+            "body_var_1" => ["type" => "text", "value" => $data['pnr']],
+            "body_var_2" => ["type" => "text", "value" => $data['busname']],
+            "body_var_3" => ["type" => "text", "value" => $data['vehicle_no']],
+            "body_var_4" => ["type" => "text", "value" => $data['source']],
+            "body_var_5" => ["type" => "text", "value" => $data['destination']],
+            "body_var_6" => ["type" => "text", "value" => $journeydate],
+            "body_var_7" => ["type" => "text", "value" => $data['seat']],
+
+
+            "var1" => ["type" => "text", "value" => $data['pnr']],
+            "var2" => ["type" => "text", "value" => $data['busname']],
+            "var3" => ["type" => "text", "value" => $data['vehicle_no']],
+            "var4" => ["type" => "text", "value" => $data['source']],
+            "var5" => ["type" => "text", "value" => $data['destination']],
+            "var6" => ["type" => "text", "value" => $journeydate],
+            "var7" => ["type" => "text", "value" => $data['seat']],
+
+        ];
+
+        // return $variables;
+
+        $to = [];
+
+        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-cancellation/run";
+
+        foreach ($getNumber as $number) {
+            if (!empty($number)) {
+                $to[] = [
+                    "mobiles" => "91" . trim($number),
+                    "variables" => $variables
+                ];
+            }
+        }
+
+        $postData = [
+            "data" => [
+                "sendTo" => [
+                    [
+                        "to" => $to,
+                        "variables" => $variables
+                    ]
+                ]
+            ]
+        ];
+
+
+        // return $postData;
+
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($postData),
+            CURLOPT_HTTPHEADER => [
+                'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
+                'Content-Type: application/json'
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            return curl_error($curl);
+        }
+
+        curl_close($curl);
+
+        return json_decode($response, true);
     }
 }

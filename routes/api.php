@@ -220,6 +220,7 @@ Route::post('/getDetailsSms', [TicketInformationController::class, 'getDetailsSm
 Route::post('/getBookingID', [TicketInformationController::class, 'getBookingID']);
 Route::post('/getEmailID', [TicketInformationController::class, 'getEmailID']);
 Route::post('/save_customSMS', [TicketInformationController::class, 'save_customSMS']);
+Route::post('/smstomCmo', [TicketInformationController::class, 'smstomCmo']);
 Route::post('/sms_log', [TicketInformationController::class, 'sms_log']); // added on 7-sep-2025
 Route::post('/GetCancelSmsToCustomer', [TicketInformationController::class, 'GetCancelSmsToCustomer']);
 Route::post('/GetCancelSmsToCMO', [TicketInformationController::class, 'GetCancelSmsToCMO']);
@@ -518,6 +519,8 @@ Route::post('seatblockreport', [SeatBlockReportController::class, 'getData']);
 Route::post('extraseatopenreport', [ExtraSeatOpenReportController::class, 'getAllextraseatopen']);
 ///CompleteReport////
 Route::post('completereport', [CompleteReportController::class, 'getData']);
+///CancelReport////
+Route::post('cancelreport', [CompleteReportController::class, 'cancelData']);
 ///PendingPNRReport////
 Route::post('pendingpnrreport', [CompleteReportController::class, 'getPendingPNR']);
 ///FailledTransactionReport////
