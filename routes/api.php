@@ -154,6 +154,7 @@ use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\RouteWiseBookingController;
 use App\Http\Controllers\NotificationMasterController;
+use App\Http\Controllers\SeoController;
 
 use Illuminate\Support\Facades\Artisan;
 
@@ -1311,6 +1312,21 @@ Route::delete('campaignexcludeddatedetete/{id}', [CampaignController::class, 'ca
 // Campaign Excluded Dates Crud API by Jagan
 Route::post('campaigndiscountcreate', [CampaignController::class, "campaignDiscountCreate"]);
 Route::put('campaigndiscountupdate/{id}', [CampaignController::class, "campaignDiscountUpdate"]);
+
+//seo
+Route::post('manage-city-content',[SeoController::class,"cityContent"]);
+Route::post('update-city-content',[SeoController::class,"UpdateContent"]);
+
+Route::post('getroutes',[SeoController::class, 'getRoutes']);
+Route::post('getlocation',[SeoController::class, 'getLocation']);
+
+Route::post("updateDistance",[SeoController::class, "updateDistance"]);
+Route::post("route-wise-brd_drp",[SeoController::class, "brd_drp"]);
+Route::post("add-brd_drp",[SeoController::class, "addbrd_drp"]);
+Route::post("seo-content",[SeoController::class, "seoContent"]);
+Route::post("add-seo-content",[SeoController::class, "addSeoContent"]);
+Route::post("bus-count",[SeoController::class, "busCount"]);
+
 
 
 $router->get('/update-refund-status', function () {

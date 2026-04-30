@@ -13,9 +13,7 @@ class Msg91Service
         $formattedDate = Carbon::parse($data['doj'])->format('d-M-Y');
         $departureTime = Carbon::parse($data['dep'])->format('H:i');
 
-
         $variables = [
-
             "header_1" => [
                 "type" => "image",
                 "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
@@ -35,7 +33,10 @@ class Msg91Service
             "body_var_12" => ["type" => "text", "value" => $data['seat']],
             "body_var_13" => ["type" => "text", "value" => $data['passanger']],
             "body_var_14" => ["type" => "text", "value" => $data['conductor_no']],
-            "button_2" => ["type" => "text", "value" => $data['pnr']],
+
+            "button_1" => ["type" => "text", "value" => "https://play.google.com/store/apps/details?id=com.od.odbus&pli=1"],
+            "button_2" => ["type" => "text", "value" => "https://www.odbus.in/pnr/" . $data['pnr']],
+            // "button_2" => ["type" => "text", "value" => "https://www.odbus.in/pnr/ODM313R9749"],
 
 
             "var1" => ["type" => "text", "value" => $data['customer_name']],
@@ -101,9 +102,7 @@ class Msg91Service
 
     public function cmo_ticket_booking($data)
     {
-        // return $data;
         $toNumbers = [];
-
         if (!empty($data['conductor_no'])) {
             $conductorNumbers = explode(',', $data['conductor_no']);
 
@@ -204,6 +203,7 @@ class Msg91Service
     //cancel ticket sms send to customer
     public function sendSmsTicketCancel($data)
     {
+        // return "jkhbfdskjfdhsuj";
         $journeydate = Carbon::parse($data['doj'])->format('d-M-Y');
         $variables = [
 
@@ -237,10 +237,11 @@ class Msg91Service
 
         ];
 
+
         $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/customer-ticket-cancellation-flow/run";
 
         $to[] = [
-            "mobiles" => 919692066142,
+            "mobiles" => "91" . $data['customer_mob'],
             "variables" => $variables
         ];
 
@@ -282,7 +283,6 @@ class Msg91Service
     }
 
     //cancel ticket sms send to cmo
-
     public function cmo_ticket_cancel($data)
     {
         // return $data;
@@ -298,7 +298,7 @@ class Msg91Service
 
             "body_var_1" => ["type" => "text", "value" => $data['pnr']],
             "body_var_2" => ["type" => "text", "value" => $data['busname']],
-            "body_var_3" => ["type" => "text", "value" => $data['vehicle_no']],
+            "body_var_3" => ["type" => "text", "value" => $data['vechicle_no']],
             "body_var_4" => ["type" => "text", "value" => $data['source']],
             "body_var_5" => ["type" => "text", "value" => $data['destination']],
             "body_var_6" => ["type" => "text", "value" => $journeydate],
@@ -307,7 +307,7 @@ class Msg91Service
 
             "var1" => ["type" => "text", "value" => $data['pnr']],
             "var2" => ["type" => "text", "value" => $data['busname']],
-            "var3" => ["type" => "text", "value" => $data['vehicle_no']],
+            "var3" => ["type" => "text", "value" => $data['vechicle_no']],
             "var4" => ["type" => "text", "value" => $data['source']],
             "var5" => ["type" => "text", "value" => $data['destination']],
             "var6" => ["type" => "text", "value" => $journeydate],
@@ -340,10 +340,6 @@ class Msg91Service
                 ]
             ]
         ];
-
-
-        // return $postData;
-
 
         $curl = curl_init();
 

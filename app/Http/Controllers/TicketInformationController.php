@@ -98,7 +98,7 @@ class TicketInformationController extends Controller
     }
     public function adjustticket(Request $request)
     {
-        $pnr_details = $this->ticketInformationRepository->adjustticket($request);
+        return $pnr_details = $this->ticketInformationRepository->adjustticket($request);
         return $this->successResponse($pnr_details, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     
@@ -116,7 +116,13 @@ class TicketInformationController extends Controller
     
     public function save_customSMS(Request $request)
     {
-        $savedata = $this->ticketInformationRepository->save_customSMS($request);
+        return $savedata = $this->ticketInformationRepository->save_customSMS($request);
+        return $this->successResponse($savedata, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function smstomCmo(Request $request)
+    {
+        $savedata = $this->ticketInformationRepository->smstomCmo($request);
         return $this->successResponse($savedata, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
    
