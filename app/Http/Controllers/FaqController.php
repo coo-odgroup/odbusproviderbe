@@ -97,4 +97,10 @@ class FaqController extends Controller
         $faq = $this->faqRepository->changeStatus($id);
         return $this->successResponse($faq, "Status Updated", Response::HTTP_OK);
     }
+
+    public function getAllfaqcategory()
+    {
+        $faq = $this->faqRepository->getAllfaqcategory();
+        return $this->successResponse($faq, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 }
