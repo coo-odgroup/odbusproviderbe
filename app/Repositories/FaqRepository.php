@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Faq;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 /*Priyadarshi to Review*/
 class FaqRepository
@@ -53,6 +54,8 @@ class FaqRepository
 
     public function getModel($data, faq $faq)
     {
+        $faq->page_id = $data['page_id'];
+        $faq->faq_category_id = $data['faq_category_id'];
         $faq->title = $data['title'];
         $faq->content = $data['content'];
         $faq->created_by = $data['created_by'];
@@ -98,5 +101,8 @@ class FaqRepository
         return $faq;
     }
 
-
+    public function getAllfaqcategory()
+    {
+        return DB::table('faq_category')->where('status', 1)->get();
+    }
 }

@@ -88,7 +88,7 @@ use App\Http\Controllers\CouponUsedUserReportController;
 use App\Http\Controllers\CancelTicketReportController;
 use App\Http\Controllers\ContactReportController;
 
-// SettingController 
+// SettingController
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\FaqController;
@@ -205,7 +205,7 @@ Route::post('/allapiclientissuedata', [ApiClientIssueController::class, 'allapic
 Route::post('/apiclientissuestatue', [ApiClientIssueController::class, 'apiclientissuestatue']);
 
 
-//Ticket Information 
+//Ticket Information
 
 Route::post('/getPnrDetailsForSms', [TicketInformationController::class, 'getPnrDetailsForSms']);
 Route::post('/getApiPnrDetails', [TicketInformationController::class, 'getApiPnrDetails']);
@@ -283,7 +283,7 @@ Route::post('/addPushNotification', [AgentNotificationController::class, 'addNot
 Route::post('/allPushNotification', [AgentNotificationController::class, 'allPushNotification']);
 Route::delete('/deletePushNotification/{id}', [AgentNotificationController::class, 'deleteNotification']);
 
-// Agent Report 
+// Agent Report
 
 Route::post('/agentcompletereport', [AgentCompleteReportController::class, 'getalldata']);
 Route::post('/agentcommissionreport', [AgentCommissionReportController::class, 'getalldata']);
@@ -560,7 +560,8 @@ Route::put('faq/{id}', [FaqController::class, 'updatefaq']);
 Route::delete('faq/{id}', [FaqController::class, 'deletefaq']);
 Route::put('/changefaqStatus/{id}', [FaqController::class, 'changeStatus']);
 
-
+// Faq Category
+Route::get('/faqcategory', [FaqController::class, 'getAllfaqcategory']);
 
 //user Content
 // Route::get('/user',[UserContentController::class,'getAlluser']);
@@ -820,7 +821,7 @@ Route::post('/CouponTypeDT', [CouponTypeController::class, 'getCouponTypeDT']);
 Route::put('/changeStatusCouponType/{id}', [CouponTypeController::class, 'changeStatus']);
 
 
-//COUPON FOR BUS, ROUTE AND OPERATOR 
+//COUPON FOR BUS, ROUTE AND OPERATOR
 Route::post('/couponBus', [CouponController::class, 'createCouponBus']);
 Route::post('/couponRoute', [CouponController::class, 'createCouponRoute']);
 Route::post('/couponOperator', [CouponController::class, 'createCouponOperator']);
@@ -1056,7 +1057,7 @@ Route::post('/getOprAssignBus', [OprAssigBusController::class, 'getOprAssignBus'
 Route::post('/deleteOprAssignBus', [OprAssigBusController::class, 'deleteOprAssignBus']);
 Route::post('/getOperatorbuslist', [OprAssigBusController::class, 'getOperatorbuslist']);
 
-//Operator Assign Agent 
+//Operator Assign Agent
 Route::post('/addoprAssignAgent', [OprAssignAgentController::class, 'addAssignAgent']);
 Route::post('/getoprAssignAgent', [OprAssignAgentController::class, 'getAllAssignAgent']);
 Route::post('/deleteoprAssignAgent', [OprAssignAgentController::class, 'deleteOprAssignAgent']);
@@ -1133,7 +1134,7 @@ Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
 Route::post('scheduleRefundSelected', [SchedulerController::class, 'scheduleRefundSelected']);
 Route::post('apiLogReport', [ApiLogReportController::class, 'apiLogReport']);
 
-//Added by sahil 
+//Added by sahil
 //----------------------------------------------------------------------------------------------
 //For chats
 Route::post('top-route', [ChartController::class, "topRoutes"]);
@@ -1154,7 +1155,7 @@ Route::post('total-seatBlock', [ChartController::class, 'seateBlock']);
 // Each bus wise revenue
 Route::post('bus-wise-revenue', [ChartController::class, "busRevenue"]);
 
-//Route wise booking 
+//Route wise booking
 Route::post('route-wise-booking', [RouteWiseBookingController::class, "routewiseBooking"]);
 Route::post('route-wise-search', [RouteWiseBookingController::class, 'allData']);
 

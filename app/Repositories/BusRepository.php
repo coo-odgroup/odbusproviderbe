@@ -648,6 +648,43 @@ class BusRepository
             if ($data) {
                 foreach ($data as $v) {
                     foreach ($v->ticketPrice as $k => $a) {
+
+                    //  Total Booked Seats
+                    $a['total_booked'] = \DB::table('booking_detail as bd')
+                        ->join('booking as b', 'b.id', '=', 'bd.booking_id')
+                        ->where('b.bus_id', $a->id)
+                        ->where('b.status', 1)
+                        ->where('bd.status', 1)
+                        ->whereDate('b.journey_dt', '>=', date('Y-m-d'))
+                        ->count();
+
+                    //  Total Blocked Seats
+                    $a['total_blocked'] = \DB::table('bus_seats')
+                        ->where('bus_id', $a->id)
+                        ->where('type', 2)
+                        ->whereNotNull('operation_date')
+                        ->where('status', 1)
+                        ->whereDate('operation_date', '>=', date('Y-m-d'))
+                        ->count();
+
+                    //  Total Open Seats
+                    $a['total_open'] = \DB::table('bus_seats')
+                        ->where('bus_id', $a->id)
+                        ->where('type', 1)
+                        ->whereNotNull('operation_date')
+                        ->where('status', 1)
+                        ->whereDate('operation_date', '>=', date('Y-m-d'))
+                        ->count();
+
+                    //  Total Extra Seats
+                    $a['total_extra'] = \DB::table('bus_seats')
+                        ->where('bus_id', $a->id)
+                        ->whereNull('operation_date')
+                        ->whereNull('type')
+                        ->where('duration', '>', 0)
+                        ->where('status', 1)
+                        ->count();
+
                         $a['from_location'] = $this->location->where('id', $a->source_id)->get();
                         $a['to_location'] = $this->location->where('id', $a->destination_id)->get();
                     }

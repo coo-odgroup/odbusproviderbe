@@ -11,7 +11,8 @@ use App\Models\Bus;
 use App\Models\CouponType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
-use DB;
+// use DB;
+use Illuminate\Support\Facades\DB;
 
 class CouponRepository
 {
@@ -40,12 +41,24 @@ class CouponRepository
 
 
 
-        $data = $this->coupon->select(DB::raw('*,max(id) as max_id'))
-                                  ->where('status', 1)
-                                  ->where('to_date', '>', date('Y-m-d'))
-                                  ->orderBy('created_at', 'DESC')
-                                  ->groupBy('coupon_code')
-                                  ->with('couponType')->get();
+        // $data = $this->coupon->select(DB::raw('*,max(id) as max_id'))
+        //                           ->where('status', 1)
+        //                           ->where('to_date', '>', date('Y-m-d'))
+        //                           ->orderBy('created_at', 'DESC')
+        //                           ->groupBy('coupon_code')
+        //                           ->with('couponType')->get();
+
+        $subQuery = $this->coupon
+            ->select(DB::raw('MAX(id) as id'))
+            ->where('status', 1)
+            ->where('to_date', '>', date('Y-m-d'))
+            ->groupBy('coupon_code');
+
+        $data = $this->coupon
+            ->whereIn('id', $subQuery)
+            ->with('couponType')
+            ->orderBy('created_at', 'DESC')
+            ->get();
 
         // Log::info($data);
         return $data;
@@ -100,8 +113,8 @@ class CouponRepository
 
         $batch_insert_array = [];
 
-       
-       
+
+
         if ($data['all_route_check'] === true) {
            $batch_insert_array= $this->commonQuery($data);
 
@@ -132,9 +145,9 @@ class CouponRepository
                         }
                     }
 
-                }            
+                }
             }
-        }       
+        }
 
         return 'success';
     }
@@ -238,8 +251,8 @@ class CouponRepository
                         $error['message'] = 'Coupon is already added between '.$data['from_date']." - ".$data['to_date'];
 
                         return $error;
-                   }                      
-                                        
+                   }
+
 
                 }else{
 
