@@ -6,9 +6,10 @@ use App\Models\BusSchedule;
 use App\Models\BusScheduleDate;
 use App\Models\Location;
 use App\Models\Bus;
+use App\Models\BusSeats;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\DB;
 class BusScheduleRepository
 {
     protected $busSchedule;
@@ -134,17 +135,20 @@ class BusScheduleRepository
 
     public function scheduleCronJob()
     {
+
+    ini_set('memory_limit','2048M');
+    ini_set('max_execution_time','300');
+
         $msg = [];
         $count = 0;
         // $today='2022-09-21';
         $today = date('Y-m-d');
         $checkdate = date('Y-m-d', strtotime($today. ' + 15 days'));
-        $data = $this->busSchedule->with(['busScheduleDate' => function ($a) {
+        $data = $this->busSchedule->where('status', 1)->with(['busScheduleDate' => function ($a) {
             $a->orderBy('id', 'DESC')
             ;
         }])->get();
 
-        // log::info($data);
 
         foreach ($data as $v) {
             if (isset($v->busScheduleDate[0])) {
@@ -153,6 +157,21 @@ class BusScheduleRepository
                     $request['running_cycle'] = $v->running_cycle;
                     $request['created_by'] = 'server';
                     $request['entry_date'] = $checkdate;
+
+                    ////////// By Banashri :: May-05-2026 ////////////
+
+                     $busId = $v->bus_id;
+                    $totalSeats = BusSeats::where('bus_id', $busId)
+                                    ->where('status', 1)
+                                    ->whereNull('type')
+                                    ->whereNull('operation_date')
+                                    ->distinct('seats_id')
+                                    ->count('seats_id');
+
+                    $request['bus_id'] = $busId;
+                    $request['total_seat'] = $totalSeats;
+
+                    ////////////////////////////////////////////////////////
 
                     $this->serverSave($request);
                     $count++;
@@ -169,13 +188,13 @@ class BusScheduleRepository
 
     public function serverSave($request)
     {
+        $bus_id=$request['bus_id'];
+        $total_seat=$request['total_seat'];
+
         $entdate = date('Y-m-d', strtotime($request['entry_date']. ' + '.$request['running_cycle'].' days'));
         $this->busSchedule = $this->busSchedule->find($request['bus_schedule_id']);
-        // log::info($entdate);exit;
-        // exit;
-        //TOD Latter,Write Enhanced Query
-        // $this->busSchedule->BusScheduleDate()->delete();
         $busScheduleDateModels = [];
+        $bus_seat_count=[];
         $entryDate = $entdate;
         $busScheduleDate = new BusScheduleDate();
         $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
@@ -199,9 +218,35 @@ class BusScheduleRepository
                 $busScheduledateModels[] =  $busScheduleDate;
             }
 
+            ////////// Entry to bus_seat_count table //////// Banashri :: May-05-2026////////
+
+                $exists = DB::table('bus_seat_count')
+                            ->where('bus_id', $bus_id)
+                            ->where('date', $entryDate)
+                            ->exists();
+
+                if (!$exists) {
+                    $insert['bus_id'] = $bus_id;
+                    $insert['total_seat'] = $total_seat;
+                    $insert['date'] = $entryDate;
+                    $insert['updated_by'] = 'server';
+
+                    $bus_seat_count[] = $insert;
+                }
+
+                ///////////////////////////////////////////////////////////////////////
+
+
+        }
+
+        if (!empty($bus_seat_count)) {  ///////// Banashri :: May-05-2026
+            DB::table('bus_seat_count')->insert($bus_seat_count);
         }
 
         $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
+
+        ///insert to bus_seat_count table 
+
         return $busScheduledateModels;
     }
 
@@ -257,12 +302,6 @@ class BusScheduleRepository
                 ->orWhere('created_by', 'like', '%' .$name . '%')
                 ->orderBy('id', 'DESC');
 
-            // if($request['USER_BUS_OPERATOR_ID']!="")
-            // {
-            //     $data=$data->whereHas('bus', function ($query) use ($request){
-            //        $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);
-            //    });
-            // }
         }
         if ($bus_operator_id != null) {
             $data = $data->whereHas('bus', function ($query) use ($bus_operator_id) {
