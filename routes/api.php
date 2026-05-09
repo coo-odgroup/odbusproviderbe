@@ -1314,7 +1314,7 @@ Route::delete('campaignexcludeddatedetete/{id}', [CampaignController::class, 'ca
 Route::post('campaigndiscountcreate', [CampaignController::class, "campaignDiscountCreate"]);
 Route::put('campaigndiscountupdate/{id}', [CampaignController::class, "campaignDiscountUpdate"]);
 
-//seo
+//Seo Create By Sahil
 Route::post('manage-city-content',[SeoController::class,"cityContent"]);
 Route::post('update-city-content',[SeoController::class,"UpdateContent"]);
 

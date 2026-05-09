@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\BoardingDroping;
 use App\Models\Bus;
+use App\Models\BusSchedule;
+use App\Models\BusScheduleDate;
 use App\Models\CityContent;
 use App\Models\RouteDetail;
 use App\Models\RouteMap;
 use App\Models\SeoContent;
+use App\Models\TicketPrice;
 use App\Traits\ApiResponser;
 use Exception;
 use Illuminate\Http\Request;
@@ -162,32 +165,30 @@ class SeoController extends Controller
             $ids = [];
             $cases = [];
 
-            // 👇 get user_id (from payload or auth)
             $updatedBy = $data[0]['user_id'] ?? null;
+            $now = Carbon::now()->toDateTimeString();
 
             foreach ($data as $item) {
                 $id = (int) $item['id'];
-                $distance = (float) $item['distance'];
+                $distance = addslashes($item['distance']); // escape string
 
                 $ids[] = $id;
-                $cases[] = "WHEN id = $id THEN $distance";
+                $cases[] = "WHEN id = $id THEN '$distance'";
             }
 
-            $ids = implode(',', $ids);
-            $cases = implode(' ', $cases);
-
-            $now = Carbon::now()->toDateTimeString();
+            $idsString = implode(',', $ids);
+            $casesString = implode(' ', $cases);
 
             DB::statement("
-                UPDATE mst_routes_details
-                SET 
-                    distance = CASE
-                        $cases
-                    END,
-                    updated_at = '$now',
-                    updated_by = '$updatedBy'
-                WHERE id IN ($ids)
-            ");
+            UPDATE mst_routes_details
+            SET 
+                distance = CASE
+                    $casesString
+                END,
+                updated_at = '$now',
+                updated_by = '$updatedBy'
+            WHERE id IN ($idsString)
+        ");
 
             return response()->json([
                 'message' => 'Distance updated successfully'
@@ -371,8 +372,14 @@ class SeoController extends Controller
             ->select('mst_routes_operators.route_id', 'mst_routes_operators.url_genrated', 'mst_routes_operators.operator_id', 'bus_operator.organisation_name')
             ->get();
 
-        $bus_count = Bus::whereIn('bus_operator_id', $operator->pluck('operator_id'))->where('status', 1)->count('bus.id');
 
+
+        if ($route_details->bus_count == null) {
+            $bus_count = $this->busCount(new Request(['route_id' => $route_id]));
+            $route_details->update(['bus_count' => $bus_count]);
+        } else {
+            $bus_count = $route_details->bus_count;
+        }
 
         $bordingdroping = DB::table('mst_route_brd_drp')
             ->join('boarding_droping', 'boarding_droping.id', '=', 'mst_route_brd_drp.brd_drp_id')
@@ -386,6 +393,11 @@ class SeoController extends Controller
 
         $template = DB::table('mst_seo_templates')->find(1);
 
+        $meta_title = $template->meta_title;
+        $meta_description = $template->meta_description;
+
+
+
         // Clone query
         $bordingpoint = (clone $bordingdroping)->where('type', 1)->get();
         $dropingpoint = (clone $bordingdroping)->where('type', 2)->get();
@@ -395,14 +407,15 @@ class SeoController extends Controller
         $first_bus_timing = date('h:i A', strtotime($route_details->first_bus_timing));
         $last_bus_timing = date('h:i A', strtotime($route_details->last_bus_timing));
         $duration = str_replace('-', ' to ', $route_details->duration_in_hours);
-        $min_fare = "₹". $route_details->min_fare;
-        $max_fare = "₹". $route_details->max_fare;
+        $min_fare = "₹" . $route_details->min_fare;
+        $max_fare = "₹" . $route_details->max_fare;
         $bus_types = $route_details->bus_type_comma_separaed;
         $operators = $operator;
         $boarding_points = $bordingpoint;
         $droping_points = $dropingpoint;
-        $price_range ="₹". $min_fare . ' - ' . "₹". $max_fare;
+        $price_range = "₹" . $min_fare . ' - ' . "₹" . $max_fare;
 
+        $return_journey = "http://localhost:4200/routes/".strtolower($source)."-".strtolower($destination)."-bus-services";
 
         // $operator_list = $operators->pluck('organisation_name')->implode(', ');
         $operator_list = $operators->map(function ($item) {
@@ -416,10 +429,42 @@ class SeoController extends Controller
         })->implode('');
 
 
-         $dropping_points_list = $dropingpoint->map(function ($item) {
+        $dropping_points_list = $dropingpoint->map(function ($item) {
             return '<li>' . e($item->boarding_point) . '</li>';
         })->implode('');
 
+        //For Meta Titl
+        //----------------------------------------------------
+
+        $replacemetaData = [
+            '{{source}}' => $source,
+            '{{destination}}' => $destination
+        ];
+
+
+        $finalMetaTitle = str_replace(
+            array_keys($replacemetaData),
+            array_values($replacemetaData),
+            $meta_title
+        );
+
+        //-------------------------------------------------------
+
+        //For Meta Description
+        $replacemetaDescData = [
+            '{{source}}' => $source,
+            '{{destination}}' => $destination,
+            '{{bus_type_comma_separated}}' => $bus_types,
+            '{{min_fare}}' => $min_fare,
+        ];
+
+
+        $finalMetaDescription = str_replace(
+            array_keys($replacemetaDescData),
+            array_values($replacemetaDescData),
+            $meta_description
+        );
+        //------------------------------------------------------- 
 
         // return $operator_list;
 
@@ -445,6 +490,7 @@ class SeoController extends Controller
             '{{source_content}}' => $source_content->content ?? '',
             '{{destination_content}}' => $destination_content->content ?? '',
             '{{price_range}}' => $price_range,
+            '{{return_journey}}' => $return_journey,
         ];
 
         $templateContent = $template->content;
@@ -456,16 +502,17 @@ class SeoController extends Controller
             $templateContent
         );
 
-            $breadcrumb_schema = json_decode(json_decode($route_details->breadcrumb_schema, true), true);
-            $faq_schema = json_decode(json_decode($route_details->faq_schema, true), true);
+        $breadcrumb_schema = json_decode(json_decode($route_details->breadcrumb_schema, true), true);
+        $faq_schema = json_decode(json_decode($route_details->faq_schema, true), true);
 
         return response()->json([
             'seo_content' => $finalContent,
             'breadcrumb_schema' => $breadcrumb_schema,
-            'faq_schema' => $faq_schema
-        ]);
+            'faq_schema' => $faq_schema,
+            'meta_title' => $finalMetaTitle,
+            'meta_description' => $finalMetaDescription,
 
-        // return $destination;
+        ]);
     }
 
 
@@ -474,11 +521,15 @@ class SeoController extends Controller
         try {
             $route_id = $request->route_id;
             $content = $request->seo_content;
+            $meta_title = $request->meta_title;
+            $meta_description = $request->meta_description;
             $updated_by = $request->updated_by;
 
             $data = [
                 'route_id' => $route_id,
                 'content' => $content,
+                'meta_title' => $meta_title,
+                'meta_description' => $meta_description,
                 'updated_by' => $updated_by,
                 'is_publised' => $updated_by,
             ];
@@ -502,19 +553,37 @@ class SeoController extends Controller
         }
     }
 
-    public function busCount(Request $request){
+
+    public function busCount(Request $request)
+    {
         $route_id = $request->route_id;
-        $route_details = RouteDetail::find($route_id);
 
-        $operator = DB::table('mst_routes_operators')->join('bus_operator', 'bus_operator.id', '=', 'mst_routes_operators.operator_id')
-            ->where('mst_routes_operators.route_id', $route_id)
-            ->select('mst_routes_operators.route_id', 'mst_routes_operators.url_genrated', 'mst_routes_operators.operator_id', 'bus_operator.organisation_name')
-            ->get();
+        $location = RouteDetail::where('id', $route_id)->select('source_id', 'destination_id')->first();
+
+        $exist_bus = TicketPrice::where('source_id', $location->source_id)
+            ->where('destination_id', $location->destination_id)
+            ->where('status', 1)
+            ->distinct('bus_id')
+            ->get('bus_id');
 
 
-        $bus_count = Bus::whereIn('bus_operator_id', $operator->pluck('operator_id'))->where('status', 1)->get('bus_number')->count('bus_number');
+        $bus = Bus::whereIn('id', $exist_bus->pluck('bus_id'))
+            ->where('status', 1)
+            ->distinct('bus_number')
+            ->get('id');
 
 
-        return $bus_count;
+        $bus_schedule_date_count = BusScheduleDate::whereIn('bus_schedule_id', function ($query) use ($bus) {
+            $query->select('id')
+                ->from('bus_schedule')
+                ->whereIn('bus_id', $bus->pluck('id'))
+                ->where('status', 1);
+        })
+            ->where('status', 1)
+            ->where('entry_date', '>=', date('Y-m-d'))
+            ->distinct()
+            ->count('bus_schedule_id');
+
+        return $bus_schedule_date_count;
     }
 }
