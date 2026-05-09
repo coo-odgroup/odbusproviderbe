@@ -167,8 +167,7 @@ class BusScheduleRepository
                                     ->whereNull('operation_date')
                                     ->distinct('seats_id')
                                     ->count('seats_id');
-
-                    $request['bus_id'] = $busId;
+                  
                     $request['total_seat'] = $totalSeats;
 
                     ////////////////////////////////////////////////////////
@@ -188,7 +187,7 @@ class BusScheduleRepository
 
     public function serverSave($request)
     {
-        $bus_id=$request['bus_id'];
+        
         $total_seat=$request['total_seat'];
 
         $entdate = date('Y-m-d', strtotime($request['entry_date']. ' + '.$request['running_cycle'].' days'));
@@ -209,6 +208,7 @@ class BusScheduleRepository
             }
             $entryDate = date("Y-m-d", $entryDate);
             $busScheduleDate->entry_date = $entryDate;
+            $busScheduleDate->total_seat = $total_seat;
             $busScheduleDate->created_by = $request['created_by'];
             $busScheduleDate->status = 1;
 
@@ -217,30 +217,6 @@ class BusScheduleRepository
             if (count($dbl_check) == 0) {
                 $busScheduledateModels[] =  $busScheduleDate;
             }
-
-            ////////// Entry to bus_seat_count table //////// Banashri :: May-05-2026////////
-
-                $exists = DB::table('bus_seat_count')
-                            ->where('bus_id', $bus_id)
-                            ->where('date', $entryDate)
-                            ->exists();
-
-                if (!$exists) {
-                    $insert['bus_id'] = $bus_id;
-                    $insert['total_seat'] = $total_seat;
-                    $insert['date'] = $entryDate;
-                    $insert['updated_by'] = 'server';
-
-                    $bus_seat_count[] = $insert;
-                }
-
-                ///////////////////////////////////////////////////////////////////////
-
-
-        }
-
-        if (!empty($bus_seat_count)) {  ///////// Banashri :: May-05-2026
-            DB::table('bus_seat_count')->insert($bus_seat_count);
         }
 
         $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);

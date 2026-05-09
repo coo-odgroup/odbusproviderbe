@@ -10,7 +10,7 @@ class BusScheduleDate extends Model
 {
     use HasFactory;
     protected $table = 'bus_schedule_date';
-    protected $fillable = ['bus_schedule_id','entry_date'];
+    protected $fillable = ['bus_schedule_id','entry_date','total_seat'];
     public function busSchedule()
     {
         return $this->belongsTo(busSchedule::class);
