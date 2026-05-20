@@ -10,18 +10,30 @@ use App\Models\Booking;
 class AgentWallet extends Model
 {
     use HasFactory;
-    protected $table = 'agent_wallet';
-    protected $fillable = ['transaction_id','reference_id','payment_via','amount','remarks','user_id','reject_reason'];
 
+    protected $table = 'agent_wallet';
+
+    protected $fillable = [
+        'transaction_id',
+        'reference_id',
+        'payment_via',
+        'amount',
+        'remarks',
+        'user_id',
+        'reject_reason'
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function Booking()
+    public function pnrDetails()
     {
-        return $this->belongsTo(Booking::class);
+        return $this->belongsTo(
+            Booking::class,
+            'booking_id',
+            'id'
+        );
     }
-
 }

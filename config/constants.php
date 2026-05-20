@@ -9,7 +9,7 @@ return [
     'RECORD_NOT_FOUND' => 'Record Not Found',
     'INVALID_ARGUMENT_PASSED' => 'Invalid Argument Passed',
     'UNABLE_CHANGE_STATUS' => 'Unable to Change Status',
-    'ALL_RECORDS'=>10000,
+    'ALL_RECORDS' => 10000,
     'OTP_GEN' => 'OTP generated',
     'OTP_NULL' => 'No Value provided in OTP',
     'OTP_INVALID' => 'Invalid OTP',
@@ -23,13 +23,13 @@ return [
     'INACTIVE_USER' => 'User Not Active. ',
     'LOGIN_SUCCESSFUL' => 'Login successful',
     'VERIFIED' => 'otp verification is successful',
-    'REGT_SUCCESS' => 'Registration Successful',    
+    'REGT_SUCCESS' => 'Registration Successful',
     // 'CONSUMER_API_URL' => 'https://testing.odbus.co.in/api/',    
-    'CONSUMER_API_URL' => 'http://localhost:7001/ODBUS/odbusconsumerbesmsIntegration/api/',    
+    'CONSUMER_API_URL' => 'http://localhost:7001/ODBUS/odbusconsumerbesmsIntegration/api/',
     // 'CONSUMER_API_URL' => 'https://dolphinapi.odbus.co.in/api/',    
     //'CONSUMER_API_URL' => 'http://127.0.0.1:8000/api/',    
-    'EXCEPTION_ERROR' => 'Error Occured',   
-    'CONSUMER_FRONT_URL' => 'https://www.odbus.in/', 
+    'EXCEPTION_ERROR' => 'Error Occured',
+    'CONSUMER_FRONT_URL' => 'https://www.odbus.in/',
 
 
     #PhonePe
@@ -38,8 +38,8 @@ return [
     'CLIENT_VERSION' => env('CLIENT_VERSION', 1),
     'CLIENT_SECRET' => env('CLIENT_SECRET', 'NGYyMjVmYTAtMjU2My00NWIxLTg1MzItZjhjNjRjZDQwNDRk'),
     'GRANT_TYPE' => env('GRANT_TYPE', 'client_credentials'),
-    'PHONPE_API_URL' => env('PHONPE_API_URL','https://api-preprod.phonepe.com/apis/pg-sandbox/'),
-    'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL','https://odtesting.odbus.co.in/payment-status'),
+    'PHONPE_API_URL' => env('PHONPE_API_URL', 'https://api-preprod.phonepe.com/apis/pg-sandbox/'),
+    'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL', 'https://odtesting.odbus.co.in/payment-status'),
 
     'REFUND_STATUS_CODE' => [
         'INITIATED' => 0,
@@ -49,4 +49,3 @@ return [
         'FAILED'    => 4,
     ],
 ];
-
