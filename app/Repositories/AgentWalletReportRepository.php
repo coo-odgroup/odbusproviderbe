@@ -36,19 +36,32 @@ class AgentWalletReportRepository
 
     public function Filter($data, $name)
     {
-        return  $data->where('transaction_id', 'like', '%' .$name . '%')
-                          ->orWhere('reference_id', 'like', '%' .$name . '%')
-                          ->orWhere('amount', 'like', '%' .$name . '%')
-                          ->orWhere('remarks', 'like', '%' .$name . '%')
-                          ->orWhere('payment_via', 'like', '%' .$name . '%')
-        ;
+        return  $data->where('transaction_id', 'like', '%' . $name . '%')
+            ->orWhere('reference_id', 'like', '%' . $name . '%')
+            ->orWhere('amount', 'like', '%' . $name . '%')
+            ->orWhere('remarks', 'like', '%' . $name . '%')
+            ->orWhere('payment_via', 'like', '%' . $name . '%')
+
+            ->orWhereHas('pnrDetails', function ($q) use ($name) {
+                $q->where('pnr', 'like', '%' . $name . '%');
+            });
+    }
+
+    public function FilterDate($data, $start_date, $end_date)
+    {
+        return $data
+            ->whereBetween(
+                'created_at',
+                [
+                    $start_date . ' 00:00:00',
+                    $end_date . ' 23:59:59'
+                ]
+            )
+            ->orderBy('created_at', 'DESC');
     }
 
     public function tranType($data, $tran_type)
     {
         return  $data->where('transaction_type', $tran_type);
     }
-
-
-
 }

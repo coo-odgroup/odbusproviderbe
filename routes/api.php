@@ -1184,6 +1184,7 @@ Route::post('add-blogcategory', [BlogController::class, 'addCategory']);
 Route::post('blogcategory', [BlogController::class, 'allCategory']);
 Route::post('/blogcategory/{id}', [BlogController::class, 'updatecategory']);
 Route::delete('/delete-blogcategory/{id}', [BlogController::class, 'deletecategory']);
+Route::post('change-blogcategory-status', [BlogController::class, 'changeCategoryStatus']);
 
 //Blog
 Route::post('add-blog', [BlogController::class, 'addblog']);

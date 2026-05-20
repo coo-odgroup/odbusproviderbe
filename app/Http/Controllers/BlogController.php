@@ -125,6 +125,28 @@ class BlogController extends Controller
         }
     }
 
+    public function changeCategoryStatus(Request $request)
+    {
+        $category = BlogCategory::find($request->id);
+
+        if (!$category) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Category not found'
+            ]);
+        }
+
+        $category->active_status =
+            $category->active_status == 1 ? 0 : 1;
+
+        $category->save();
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Status updated successfully'
+        ]);
+    }
+
 
     //Blog
     // ----------------------------------------------------------------------------------
@@ -199,12 +221,43 @@ class BlogController extends Controller
         }
     }
 
-    public function allblog()
+    public function allblog(Request $request)
     {
-        $data = Blog::join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
-            ->select('blogs.*', 'blog_categories.category_name')
-            ->get();
-        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        $query = Blog::join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
+            ->select(
+                'blogs.*',
+                'blog_categories.category_name'
+            );
+
+        // Search
+        if ($request->searchBy != '') {
+
+            $query->where(function ($q) use ($request) {
+
+                $q->where('blogs.title', 'LIKE', '%' . $request->searchBy . '%')
+                    ->orWhere('blogs.slug', 'LIKE', '%' . $request->searchBy . '%')
+                    ->orWhere('blog_categories.category_name', 'LIKE', '%' . $request->searchBy . '%');
+            });
+        }
+
+        // Status filter
+        if ($request->status !== '' && $request->status !== null) {
+
+            $query->where('blogs.active_status', $request->status);
+        }
+
+        // Per page
+        $per_page = $request->per_page ?? 10;
+
+        $data = $query->orderBy('blogs.id', 'DESC')
+            ->paginate($per_page);
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Record Fetched Successfully',
+            'data' => $data->items(),
+            'total' => $data->total()
+        ]);
     }
 
 
@@ -349,7 +402,8 @@ class BlogController extends Controller
     }
 
     //Author
-    public function getAllAuthors(){
+    public function getAllAuthors()
+    {
         try {
             $data = Author::where('status', 1)->get();
             return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);

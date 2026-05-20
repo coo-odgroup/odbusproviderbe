@@ -455,9 +455,6 @@ class TicketInformationRepository
 
     public function cancelticket($request)
     {
-
-
-
         $res_sts = '';
         $pnr = $request->pnr;
         $id = $request->id;
@@ -572,18 +569,36 @@ class TicketInformationRepository
             }
 
 
+            // $smsData = array(
+            //     'phone' =>  $PNR_Details[0]->users->phone,
+            //     'PNR' => $pnr,
+            //     'busdetails' => $busName . '-' . $busNumber,
+            //     'doj' => date('d-m-Y', strtotime($PNR_Details[0]->journey_dt)),
+            //     'route' => $source_name[0]->name . '-' . $destination_name[0]->name,
+            //     'seat' => explode(',', $all_seats),
+            //     'refundAmount' => $request->refund_amount
+            // );
+
+            // //Send SMS To Customer
+            // $this->channelRepository->sendSmsTicketCancel($smsData, $PNR_Details[0]->users->phone);
+
             $smsData = array(
-                'phone' =>  $PNR_Details[0]->users->phone,
-                'PNR' => $pnr,
+                'customer_name' => $PNR_Details[0]->users->name,
+                'customer_mob' => $PNR_Details[0]->users->phone,
+                // 'PNR' => $pnr,
+                'pnr' => $pnr,
                 'busdetails' => $busName . '-' . $busNumber,
-                'doj' => date('d-m-Y', strtotime($PNR_Details[0]->journey_dt)),
+                'busname' => $busName,
+                'vechicle_no' => $busNumber,
+                'doj' => $PNR_Details[0]->journey_dt,
                 'route' => $source_name[0]->name . '-' . $destination_name[0]->name,
-                'seat' => explode(',', $all_seats),
+                'source' => $source_name[0]->name,
+                'destination' => $destination_name[0]->name,
+                'seat' => $all_seats,
                 'refundAmount' => $request->refund_amount
             );
 
-            //Send SMS To Customer
-            $this->channelRepository->sendSmsTicketCancel($smsData, $PNR_Details[0]->users->phone);
+            $this->msg91Service->sendSmsTicketCancel($smsData);
 
             //Send SMS to CMO
             if ($cancelticket->origin != 'DOLPHIN') {
@@ -594,7 +609,9 @@ class TicketInformationRepository
 
                 if ($busContactDetails->isNotEmpty()) {
                     $contact_number = collect($busContactDetails)->implode('phone', ',');
-                    $this->channelRepository->sendSmsTicketCancelCMO($smsData, $contact_number);
+                    $smsData['cmo_no'] = $contact_number;
+                    $this->msg91Service->cmo_ticket_cancel($smsData);
+                    // $this->channelRepository->sendSmsTicketCancelCMO($smsData, $contact_number);
                 }
             }
 
