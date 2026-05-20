@@ -116,7 +116,7 @@ class TicketInformationController extends Controller
     
     public function save_customSMS(Request $request)
     {
-        return $savedata = $this->ticketInformationRepository->save_customSMS($request);
+        $savedata = $this->ticketInformationRepository->save_customSMS($request);
         return $this->successResponse($savedata, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
