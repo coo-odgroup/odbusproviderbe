@@ -21,6 +21,38 @@ class AgentWalletReportRepository
         return $this->agentWallet->where('user_id', $user_id)->orderBy('id', 'DESC')->whereNotIn('status', [2]);
     }
 
+    public function selectType($data, $select_type)
+    {
+        if ($select_type == 'wallet_recharge') {
+
+            return $data
+                ->where('payment_via', '!=', '')
+                ->where('transaction_type', 'c');
+        }
+
+        if ($select_type == 'pnr_booking') {
+
+            return $data
+                ->where('payment_via', '')
+                ->where('transaction_type', 'd')
+                ->whereNull('type');
+        }
+
+        if ($select_type == 'cancelled_pnr') {
+
+            return $data
+                ->where('type', 'Refund');
+        }
+
+        if ($select_type == 'commission') {
+
+            return $data
+                ->where('type', 'Commission');
+        }
+
+        return $data;
+    }
+    
     public function Pagination($data, $paginate)
     {
         $data =  $data->paginate($paginate);
