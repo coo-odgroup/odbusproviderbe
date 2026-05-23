@@ -369,6 +369,7 @@ class SeoController extends Controller
 
         $operator = DB::table('mst_routes_operators')->join('bus_operator', 'bus_operator.id', '=', 'mst_routes_operators.operator_id')
             ->where('mst_routes_operators.route_id', $route_id)
+            ->where('active_status', 1)
             ->select('mst_routes_operators.route_id', 'mst_routes_operators.url_genrated', 'mst_routes_operators.operator_id', 'bus_operator.organisation_name')
             ->get();
 
@@ -415,7 +416,7 @@ class SeoController extends Controller
         $droping_points = $dropingpoint;
         $price_range = "₹" . $min_fare . ' - ' . "₹" . $max_fare;
 
-        $return_journey = "http://localhost:4200/routes/".strtolower($source)."-".strtolower($destination)."-bus-services";
+        $return_journey = "http://localhost:4200/routes/" . strtolower($source) . "-" . strtolower($destination) . "-bus-services";
 
         // $operator_list = $operators->pluck('organisation_name')->implode(', ');
         $operator_list = $operators->map(function ($item) {
@@ -585,5 +586,60 @@ class SeoController extends Controller
             ->count('bus_schedule_id');
 
         return $bus_schedule_date_count;
+    }
+
+    public function routeTemplate(Request $request)
+    {
+        $query = SeoContent::join(
+            'mst_routes_details',
+            'mst_routes_details.id',
+            '=',
+            'mst_seo_content.route_id'
+        )
+            ->select(
+                'mst_seo_content.route_id',
+                'mst_routes_details.source',
+                'mst_routes_details.destination'
+            );
+
+        // Filter by route_id
+        if ($request->filled('route_id')) {
+            $query->where('mst_seo_content.route_id', $request->route_id);
+        }
+
+        $data = $query->get();
+
+        return response()->json($data);
+    }
+
+    public function templateDetails(Request $request)
+    {
+        $data = SeoContent::join(
+            'mst_routes_details',
+            'mst_routes_details.id',
+            '=',
+            'mst_seo_content.route_id'
+        )
+            ->select(
+                'mst_seo_content.route_id',
+                'mst_seo_content.meta_title',
+                'mst_seo_content.meta_description',
+                'mst_seo_content.content',
+                'mst_routes_details.source',
+                'mst_routes_details.destination',
+                'mst_routes_details.breadcrumb_schema',
+                'mst_routes_details.faq_schema'
+            )
+            ->where('mst_seo_content.route_id', $request->route_id)
+            ->first();
+
+        if ($data) {
+
+            $data->breadcrumb_schema = json_decode(json_decode($data->breadcrumb_schema));
+
+            $data->faq_schema = json_decode(json_decode($data->faq_schema));
+        }
+
+        return response()->json($data);
     }
 }
