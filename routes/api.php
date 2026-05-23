@@ -794,6 +794,12 @@ Route::get('/unscheduledbuslist', [BusScheduleController::class, 'unscheduledbus
 Route::put('/changeStatusBusSchedule/{id}', [BusScheduleController::class, 'changeStatus']);
 
 Route::get('/busschedulecronjob', [BusScheduleController::class, 'scheduleCronJob']);
+
+//////////// CRON JOB FOR bus seat count every 5 min  ////////////
+Route::get('/syncBusSeatCount', [BusScheduleController::class, 'syncBusSeatCount']);
+
+//////////////////////////////////////////////////////////////////////
+
 Route::get('/removeOldBusScheduleCronjob', [BusScheduleController::class, 'removeOldBusScheduleCronjob']);
 
 

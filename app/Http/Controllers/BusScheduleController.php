@@ -40,6 +40,13 @@ class BusScheduleController extends Controller
         return $this->successResponse($busSchedule, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
+    public function syncBusSeatCount()
+    {
+
+        $syncBusSeatCount = $this->busScheduleRepository->syncBusSeatCount();
+        return $this->successResponse($syncBusSeatCount, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
     public function removeOldBusScheduleCronjob()
     {
 
