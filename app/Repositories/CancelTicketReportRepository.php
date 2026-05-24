@@ -139,6 +139,18 @@ class CancelTicketReportRepository
         if ($data) {
             foreach ($data as $key => $v) {
 
+           $v->created_at = !empty($v->created_at)
+                ? \Carbon\Carbon::parse($v->created_at)->format('Y-m-d')
+                : '';
+
+            $v->journey_dt = !empty($v->journey_dt)
+                ? \Carbon\Carbon::parse($v->journey_dt)->format('Y-m-d')
+                : '';
+
+            $v->updated_at = !empty($v->updated_at)
+                ? \Carbon\Carbon::parse($v->updated_at)->format('Y-m-d')
+                : '';
+
                 $v['from_location'] = $this->location->where('id', $v->source_id)->get();
                 $v['to_location'] = $this->location->where('id', $v->destination_id)->get();
 
