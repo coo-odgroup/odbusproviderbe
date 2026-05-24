@@ -1207,6 +1207,7 @@ Route::post('/get-allAuthors', [BlogController::class, 'getAllAuthors']);
 Route::post('add-tag', [BlogController::class, 'addtag']);
 Route::post('tag', [BlogController::class, 'alltags']);
 Route::post('/tag/{id}', [BlogController::class, 'updatetag']);
+Route::post('/change-tag-status/{id}', [BlogController::class, 'changetagstatus']);
 Route::delete('/tag/{id}', [BlogController::class, 'deletetag']);
 
 //Tags map
@@ -1334,6 +1335,10 @@ Route::post("add-brd_drp",[SeoController::class, "addbrd_drp"]);
 Route::post("seo-content",[SeoController::class, "seoContent"]);
 Route::post("add-seo-content",[SeoController::class, "addSeoContent"]);
 Route::post("bus-count",[SeoController::class, "busCount"]);
+
+Route::post("all-Route-template",[SeoController::class, "routeTemplate"]);
+Route::post("templateDetails",[SeoController::class, "templateDetails"]);
+
 
 
 

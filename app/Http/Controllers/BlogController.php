@@ -57,10 +57,41 @@ class BlogController extends Controller
         }
     }
 
-    public function allCategory()
+    // public function allCategory()
+    // {
+    //     $data = Blogcategory::all();
+    //     return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    // }
+
+    public function allCategory(Request $request)
     {
-        $data = Blogcategory::all();
-        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        $query = BlogCategory::query();
+
+        // Search
+        if ($request->searchBy != '') {
+
+            $query->where('category_name', 'LIKE', '%' . $request->searchBy . '%')
+                ->orWhere('slug', 'LIKE', '%' . $request->searchBy . '%');
+        }
+
+        // Status Filter
+        if ($request->status !== '' && $request->status !== null) {
+
+            $query->where('active_status', $request->status);
+        }
+
+        // Per Page
+        $per_page = $request->per_page ?? 10;
+
+        $data = $query->orderBy('id', 'DESC')
+            ->paginate($per_page);
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Record Fetched Successfully',
+            'data' => $data->items(),
+            'total' => $data->total()
+        ]);
     }
 
     public function updatecategory(Request $request, $id)
@@ -242,8 +273,15 @@ class BlogController extends Controller
 
         // Status filter
         if ($request->status !== '' && $request->status !== null) {
-
             $query->where('blogs.active_status', $request->status);
+        }
+
+        if ($request->category_id !== '' && $request->category_id !== null) {
+            $query->where('blogs.category_id', $request->category_id);
+        }
+
+        if ($request->author_id !== '' && $request->author_id !== null) {
+            $query->where('blogs.author_id', $request->author_id);
         }
 
         // Per page
@@ -433,10 +471,28 @@ class BlogController extends Controller
         }
     }
 
-    public function alltags()
+    public function alltags(Request $request)
     {
-        $data = Tag::all();
-        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        $query = Tag::query();
+
+        if ($request->searchBy != '' && $request->searchBy != null) {
+            $query->where('tag_name', 'LIKE', '%' . $request->searchBy . '%')
+                ->orWhere('slug', 'LIKE', '%' . $request->searchBy . '%');
+        }
+        if ($request->status !== '' && $request->status !== null) {
+
+            $query->where('active_status', $request->status);
+        }
+
+        $per_page = $request->per_page ?? 10;
+        $data = $query->orderBy('id', 'DESC')
+            ->paginate($per_page);
+        return response()->json([
+            'status' => 1,
+            'message' => Config::get('constants.RECORD_FETCHED'),
+            'data' => $data->items(),
+            'total' => $data->total()
+        ]);
     }
 
 
@@ -455,6 +511,25 @@ class BlogController extends Controller
             return $this->successResponse("Blog Updated", Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+    }
+
+    public function changetagstatus(Request $request, $id)
+    {
+        try {
+            $tag = Tag::find($id);
+
+            if (!$tag) {
+                return $this->errorResponse("Tag not found", 404);
+            }
+
+            $tag->active_status = $tag->active_status == 1 ? 0 : 1;
+
+            $tag->save();
+
+            return $this->successResponse("Tag Status Updated", Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -499,13 +574,44 @@ class BlogController extends Controller
         }
     }
 
-    public function alltagmaps()
+    public function alltagmaps(Request $request)
     {
-        $data = Tagmap::join('blogs', 'blogs.id', 'blog_tag_map.blog_id')
-            ->join('blog_tags', 'blog_tags.id', 'blog_tag_map.tag_id')
-            ->select('blogs.title', 'blog_tags.tag_name', 'blog_tag_map.*')
-            ->get();
-        return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        $query = Tagmap::join('blogs', 'blogs.id', '=', 'blog_tag_maps.blog_id')
+            ->join('blog_tags', 'blog_tags.id', '=', 'blog_tag_maps.tag_id')
+            ->select(
+                'blog_tag_maps.*',
+                'blogs.title',
+                'blog_tags.tag_name'
+            );
+
+        // Search Filter
+        if ($request->searchBy != '' && $request->searchBy != null) {
+
+            $query->where(function ($q) use ($request) {
+
+                $q->where('blogs.title', 'LIKE', '%' . $request->searchBy . '%')
+                    ->orWhere('blog_tags.tag_name', 'LIKE', '%' . $request->searchBy . '%');
+            });
+        }
+
+        // Status Filter
+        // if ($request->status !== '' && $request->status !== null) {
+
+        //     $query->where('blog_tag_maps.active_status', $request->status);
+        // }
+
+        // Per Page
+        $per_page = $request->per_page ?? 10;
+
+        $data = $query->orderBy('blog_tag_maps.id', 'DESC')
+            ->paginate($per_page);
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Record Fetched Successfully',
+            'data' => $data->items(),
+            'total' => $data->total()
+        ]);
     }
 
 

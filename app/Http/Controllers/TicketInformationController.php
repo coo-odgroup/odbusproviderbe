@@ -98,7 +98,7 @@ class TicketInformationController extends Controller
     }
     public function adjustticket(Request $request)
     {
-        return $pnr_details = $this->ticketInformationRepository->adjustticket($request);
+        $pnr_details = $this->ticketInformationRepository->adjustticket($request);
         return $this->successResponse($pnr_details, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
     
