@@ -370,8 +370,8 @@ class SchedulerRepository
         ]);
     }
 
-    public function phonpeToken()
-    {
-        return PhonePayToken::first();
-    }
+    // public function phonpeToken()
+    // {
+    //     return PhonePayToken::first();
+    // }
 }
