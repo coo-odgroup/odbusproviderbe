@@ -106,4 +106,10 @@ class PageContentController extends Controller
         $pagecontent = $this->pagecontentRepository->deletepagecontent($id);
         return $this->successResponse($pagecontent, "Page Content Deleted", Response::HTTP_OK);
     }
+
+    public function changeStatus($id)
+    {
+        $pagecontent = $this->pagecontentRepository->changeStatus($id);
+        return $this->successResponse($pagecontent, "Page Content Status Changed", Response::HTTP_OK);
+    }
 }

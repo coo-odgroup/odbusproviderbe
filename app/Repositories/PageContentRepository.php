@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
 /*Priyadarshi to Review*/
+
 class PageContentRepository
 {
     protected $pagecontent;
@@ -18,7 +19,7 @@ class PageContentRepository
 
     public function __construct(PageContent $pagecontent)
     {
-        $this->pagecontent = $pagecontent ;
+        $this->pagecontent = $pagecontent;
     }
     public function getAll()
     {
@@ -30,17 +31,17 @@ class PageContentRepository
     {
         // Log::info($request);
 
-        $paginate = $request['rows_number'] ;
-        $user_id = $request['user_id'] ;
-        $role_id = $request['role_id'] ;
-        $name = $request['name'] ;
+        $paginate = $request['rows_number'];
+        $user_id = $request['user_id'];
+        $role_id = $request['role_id'];
+        $name = $request['name'];
 
 
         $data = $this->pagecontent->with('User')->where('status', '!=', 2)->orderBy('id', 'DESC');
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         if ($user_id != null && $role_id != 1) {
@@ -53,10 +54,10 @@ class PageContentRepository
 
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
         return $response;
     }
 
@@ -73,6 +74,7 @@ class PageContentRepository
         $pagecontent->extra_meta = $data['extra_meta'];
         $pagecontent->canonical_url = $data['canonical_url'];
         $pagecontent->created_by = $data['created_by'];
+        $pagecontent->status = 1;
         return $pagecontent;
     }
     public function addpagecontent($data)
@@ -83,7 +85,6 @@ class PageContentRepository
         $pagecontent = $this->getModel($data, $pagecontent);
         $pagecontent->save();
         return $pagecontent;
-
     }
     public function updatepagecontent($data, $id)
     {
@@ -104,5 +105,16 @@ class PageContentRepository
         return $pagecontent;
     }
 
+    public function changeStatus($id)
+    {
+        $pagecontent = $this->pagecontent->find($id);
+        if ($pagecontent->status == 1) {
+            $pagecontent->status = 0;
+        } elseif ($pagecontent->status == 0) {
+            $pagecontent->status = 1;
+        }
+        $pagecontent->update();
 
+        return $pagecontent;
+    }
 }
