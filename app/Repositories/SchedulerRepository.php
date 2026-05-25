@@ -249,6 +249,7 @@ class SchedulerRepository
 
     public function scheduleRefundSelected($request)
     {
+        // return Config::get('constants.CASHFREE_API_URL');
         $booking_ids = $request->booking_ids;
 
         $data = $this->booking::with('CustomerPayment')

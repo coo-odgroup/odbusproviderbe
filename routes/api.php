@@ -559,6 +559,7 @@ Route::post('pagecontentData', [PageContentController::class, 'getAllData']);
 Route::post('pagecontent', [PageContentController::class, 'addpagecontent']);
 Route::put('pagecontent/{id}', [PageContentController::class, 'updatepagecontent']);
 Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);
+Route::put('changePageContentStatus/{id}', [PageContentController::class, 'changeStatus']);
 
 //Faq
 Route::get('/faq', [FaqController::class, 'getAllfaq']);
