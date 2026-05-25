@@ -24,10 +24,10 @@ return [
     'LOGIN_SUCCESSFUL' => 'Login successful',
     'VERIFIED' => 'otp verification is successful',
     'REGT_SUCCESS' => 'Registration Successful',
-    // 'CONSUMER_API_URL' => 'https://testing.odbus.co.in/api/',    
+    // 'CONSUMER_API_URL' => 'https://testing.odbus.co.in/api/',
     'CONSUMER_API_URL' => 'http://localhost:7001/ODBUS/odbusconsumerbesmsIntegration/api/',
-    // 'CONSUMER_API_URL' => 'https://dolphinapi.odbus.co.in/api/',    
-    //'CONSUMER_API_URL' => 'http://127.0.0.1:8000/api/',    
+    // 'CONSUMER_API_URL' => 'https://dolphinapi.odbus.co.in/api/',
+    //'CONSUMER_API_URL' => 'http://127.0.0.1:8000/api/',
     'EXCEPTION_ERROR' => 'Error Occured',
     'CONSUMER_FRONT_URL' => 'https://www.odbus.in/',
 
@@ -48,4 +48,8 @@ return [
         'COMPLETED' => 3,
         'FAILED'    => 4,
     ],
+
+    'CASHFREE_KEY' => env('CASHFREE_KEY', 'TEST108577409ff7eb8e2b1cb161978f04775801'),
+    'CASHFREE_SECRET' => env('CASHFREE_SECRET', 'cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced'),
+    'CASHFREE_API_URL' => env('CASHFREE_API_URL', 'https://sandbox.cashfree.com/pg/orders/')
 ];

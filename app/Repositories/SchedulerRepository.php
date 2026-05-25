@@ -256,8 +256,6 @@ class SchedulerRepository
             ->whereIn('id', $booking_ids)
             ->get();
 
-        // return $data;
-
         $results = [];
 
         foreach ($data as $booking) {
@@ -284,15 +282,8 @@ class SchedulerRepository
 
                 $orderId = $payment->order_id;
 
-                // return $orderId;
-
                 // Cashfree amount should be in normal rupees
                 $amount = round($booking->refund_amount, 2);
-
-                Log::info("Cashfree Refund totaal amount", [$booking->total_fare]);
-                Log::info("Cashfree Refund amount", [$amount]);
-
-                // return $amount;
 
                 $refundId = "REFUND_" . time() . "_" . $booking->id;
 
@@ -305,14 +296,14 @@ class SchedulerRepository
                 Log::info("Cashfree Refund Payload", $payload);
 
                 // Sandbox URL
-                $url = "https://sandbox.cashfree.com/pg/orders/" . $orderId . "/refunds";
+                $url = Config::get('constants.CASHFREE_API_URL') . "/" . $orderId . "/refunds";
 
                 // Production URL
                 // $url = "https://api.cashfree.com/pg/orders/" . $orderId . "/refunds";
 
                 $response = Http::withHeaders([
-                    'x-client-id'     => env('CASHFREE_APP_ID'), // TEST108577409ff7eb8e2b1cb161978f04775801
-                    'x-client-secret' => env('CASHFREE_SECRET_KEY'), // cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced
+                    'x-client-id'     => Config::get('constants.CASHFREE_KEY'), // TEST108577409ff7eb8e2b1cb161978f04775801
+                    'x-client-secret' => Config::get('constants.CASHFREE_SECRET'), // cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced
                     'x-api-version'   => '2023-08-01',
                     'Content-Type'    => 'application/json'
                 ])->post($url, $payload);
