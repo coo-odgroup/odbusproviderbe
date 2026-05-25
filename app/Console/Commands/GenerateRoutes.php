@@ -5,16 +5,13 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class GenerateRoutes extends Command
 {
     protected $signature = 'generate:routes';
     protected $description = 'Generate routes for SEO';
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
+  
 
     public function handle()
     {
@@ -27,15 +24,17 @@ class GenerateRoutes extends Command
             $rows = DB::table('ticket_price as tp')
                         ->select('id','source_id','destination_id','bus_id')
                         ->where('status', 1)
-                        ->where('is_new_route', 0)
+                        // ->where('is_new_route', 0)
                          ->whereExists(function ($query) {
                             $query->select(DB::raw(1))
                                 ->from('bus as bs')
                                 ->whereColumn('bs.id', 'tp.bus_id')
                                 ->where('bs.status', 1);
                          })
-                        ->limit(100)
+                        // ->limit(100)
                         ->get();
+
+            // log::info($rows);exit;            
 
 
             if ($rows->isEmpty()) {
@@ -43,49 +42,99 @@ class GenerateRoutes extends Command
                 return;
             }
 
+            $busIds = $rows->pluck('bus_id')->unique()->toArray();
+
             // 3. Filter already existing routes (OPTIMIZED)
-            $filteredRoutes = DB::table('ticket_price as rt')
-                                    ->leftJoin('mst_routes_details as r', function ($join) {
-                                        $join->on('rt.source_id', '=', 'r.source_id')
-                                            ->on('rt.destination_id', '=', 'r.destination_id');
-                                    })
-                                    ->leftJoin('location as src', 'src.id', '=', 'rt.source_id')
-                                    ->leftJoin('location as dest', 'dest.id', '=', 'rt.destination_id')
-                                    ->where('rt.status', 1)
-                                    ->where('rt.is_new_route', 0)
-                                    ->whereNull('r.id')
-                                    ->whereExists(function ($query) {
-                                        $query->select(DB::raw(1))
-                                            ->from('bus as b')
-                                            ->whereColumn('b.id', 'rt.bus_id')
-                                            ->where('b.status', 1);
-                                     })
-                                    ->select('rt.source_id', 'rt.destination_id','rt.bus_id','r.id',
-                                             DB::raw('src.name as source_name'),
-                                             DB::raw('dest.name as destination_name'))
-                                    ->distinct()
-                                    ->limit(100)
-                                    ->get();
+        //    DB::statement("
+        //                 INSERT INTO mst_routes_details 
+        //                     (source_id, destination_id, source, destination, active_status, created_at)
 
-            
+        //                 SELECT 
+        //                     x.source_id,
+        //                     x.destination_id,
+        //                     src.name as source,
+        //                     dest.name as destination,
+        //                     1,
+        //                     NOW()
 
-            $insertData = [];
+        //                 FROM (
+        //                     SELECT DISTINCT 
+        //                         source_id, 
+        //                         destination_id
+        //                     FROM (
+        //                         SELECT 
+        //                             t.bus_id,
+        //                             SUBSTRING_INDEX(
+        //                                 GROUP_CONCAT(t.location_id ORDER BY t.sequence ASC), ',', 1
+        //                             ) AS source_id,
+        //                             SUBSTRING_INDEX(
+        //                                 GROUP_CONCAT(t.location_id ORDER BY t.sequence DESC), ',', 1
+        //                             ) AS destination_id
+        //                         FROM bus_location_sequence t
+        //                         INNER JOIN bus b ON b.id = t.bus_id
+        //                         WHERE b.status = 1
+        //                         AND t.bus_id IN (" . implode(',', $busIds) . ")
+        //                         GROUP BY t.bus_id
+        //                     ) temp
+        //                 ) x
 
-            foreach ($filteredRoutes as $route) {
-                $insertData[] = [
-                    'source_id' => $route->source_id,
-                    'destination_id' => $route->destination_id,
-                    'source' => ucwords(strtolower($route->source_name)),
-                    'destination' => ucwords(strtolower($route->destination_name)),
-                    'active_status' => 1
-                ];
-            }
+        //                 LEFT JOIN mst_routes_details r
+        //                     ON r.source_id = x.source_id
+        //                     AND r.destination_id = x.destination_id
 
-            // log::info($insertData); exit;
+        //                 LEFT JOIN location src ON src.id = x.source_id
+        //                 LEFT JOIN location dest ON dest.id = x.destination_id
 
-            if (!empty($insertData)) {
-                DB::table('mst_routes_details')->insertOrIgnore($insertData);
-            }
+        //                 WHERE r.id IS NULL
+        //             ");
+
+        DB::statement("
+                INSERT INTO mst_routes_details 
+                    (source_id, destination_id, source, destination, active_status, created_at)
+
+                SELECT DISTINCT
+                    tp.source_id,
+                    tp.destination_id,
+                    src.name as source,
+                    dest.name as destination,
+                    1,
+                    NOW()
+
+                FROM ticket_price tp
+
+                INNER JOIN bus b ON b.id = tp.bus_id
+
+                -- MAIN ROUTE (first & last stop per bus)
+                INNER JOIN (
+                    SELECT 
+                        t.bus_id,
+                        SUBSTRING_INDEX(GROUP_CONCAT(t.location_id ORDER BY t.sequence ASC), ',', 1) AS main_source,
+                        SUBSTRING_INDEX(GROUP_CONCAT(t.location_id ORDER BY t.sequence DESC), ',', 1) AS main_destination
+                    FROM bus_location_sequence t
+                    WHERE t.bus_id IN (" . implode(',', $busIds) . ")
+                    GROUP BY t.bus_id
+                ) main_route 
+                    ON main_route.bus_id = tp.bus_id
+
+                LEFT JOIN mst_routes_details r
+                    ON r.source_id = tp.source_id
+                    AND r.destination_id = tp.destination_id
+
+                LEFT JOIN location src ON src.id = tp.source_id
+                LEFT JOIN location dest ON dest.id = tp.destination_id
+
+                WHERE b.status = 1
+                AND tp.status = 1
+                AND tp.bus_id IN (" . implode(',', $busIds) . ")
+
+                
+                AND NOT (
+                    tp.source_id = main_route.main_source
+                    AND tp.destination_id = main_route.main_destination
+                )
+                
+                AND r.id IS NULL
+            ");
 
             // 5. Update ONLY those 100 rows processed
             $ids = $rows->pluck('id')->toArray();
@@ -98,6 +147,8 @@ class GenerateRoutes extends Command
 
             DB::commit();
 
+            // Artisan::call('generate:routes-buses');
+
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error: ' . $e->getMessage());
@@ -107,7 +158,7 @@ class GenerateRoutes extends Command
             Log::info('New routes for SEO: ' . $countids .' Nos' );
             Log::info('Generate routes for SEO ended at: ' . now());
             Log::info("Execution time: {$executionTime} seconds");
-            $this->info("Processed 10000 records in {$executionTime} sec");
+            $this->info("Processed 100 records in {$executionTime} sec");
         }
     }
 }
