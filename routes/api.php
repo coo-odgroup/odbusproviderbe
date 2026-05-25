@@ -276,6 +276,9 @@ Route::post('/agentAllTransaction', [AgentWalletController::class, 'agentAllTran
 Route::put('/changeAgentWalletStatus/{id}', [AgentWalletController::class, 'changeStatus']);
 Route::put('/declineWlletReqStatus/{id}', [AgentWalletController::class, 'declineWlletReqStatus']);
 
+Route::post('/walletMakePayment', [AgentWalletController::class, 'walletMakePayment']);
+Route::post('/walletWebhook',[AgentWalletController::class, 'walletWebhook']);
+
 
 //Agent Notification
 Route::post('/agentnotification', [AgentNotificationController::class, 'getData']);

@@ -48,4 +48,8 @@ return [
         'COMPLETED' => 3,
         'FAILED'    => 4,
     ],
+
+    'CASHFREE_KEY' => env('CASHFREE_KEY','TEST108577409ff7eb8e2b1cb161978f04775801'),
+    'CASHFREE_SECRET'=> env('CASHFREE_SECRET','cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced'),
+    'CASHFREE_API_URL' => env('CASHFREE_API_URL','https://sandbox.cashfree.com/pg/orders'),
 ];

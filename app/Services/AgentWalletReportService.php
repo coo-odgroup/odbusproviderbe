@@ -56,7 +56,7 @@ class AgentWalletReportService
         // NEW DATE FILTER
         if (!empty($start_date) && !empty($end_date)) {
             $data = $this->agentWalletReportRepository
-                ->FilterDate(
+                ->filterDate(
                     $data,
                     $start_date,
                     $end_date
