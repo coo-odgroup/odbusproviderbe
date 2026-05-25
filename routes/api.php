@@ -279,6 +279,11 @@ Route::put('/declineWlletReqStatus/{id}', [AgentWalletController::class, 'declin
 Route::post('/walletMakePayment', [AgentWalletController::class, 'walletMakePayment']);
 Route::post('/walletWebhook',[AgentWalletController::class, 'walletWebhook']);
 
+Route::get(
+    '/verifyWalletPayment/{orderId}',
+    [AgentWalletController::class, 'verifyWalletPayment']
+);
+
 
 //Agent Notification
 Route::post('/agentnotification', [AgentNotificationController::class, 'getData']);
@@ -797,6 +802,12 @@ Route::get('/unscheduledbuslist', [BusScheduleController::class, 'unscheduledbus
 Route::put('/changeStatusBusSchedule/{id}', [BusScheduleController::class, 'changeStatus']);
 
 Route::get('/busschedulecronjob', [BusScheduleController::class, 'scheduleCronJob']);
+
+//////////// CRON JOB FOR bus seat count every 5 min  ////////////
+Route::get('/syncBusSeatCount', [BusScheduleController::class, 'syncBusSeatCount']);
+
+//////////////////////////////////////////////////////////////////////
+
 Route::get('/removeOldBusScheduleCronjob', [BusScheduleController::class, 'removeOldBusScheduleCronjob']);
 
 
@@ -1204,6 +1215,7 @@ Route::post('/get-allAuthors', [BlogController::class, 'getAllAuthors']);
 Route::post('add-tag', [BlogController::class, 'addtag']);
 Route::post('tag', [BlogController::class, 'alltags']);
 Route::post('/tag/{id}', [BlogController::class, 'updatetag']);
+Route::post('/change-tag-status/{id}', [BlogController::class, 'changetagstatus']);
 Route::delete('/tag/{id}', [BlogController::class, 'deletetag']);
 
 //Tags map
@@ -1331,6 +1343,10 @@ Route::post("add-brd_drp",[SeoController::class, "addbrd_drp"]);
 Route::post("seo-content",[SeoController::class, "seoContent"]);
 Route::post("add-seo-content",[SeoController::class, "addSeoContent"]);
 Route::post("bus-count",[SeoController::class, "busCount"]);
+
+Route::post("all-Route-template",[SeoController::class, "routeTemplate"]);
+Route::post("templateDetails",[SeoController::class, "templateDetails"]);
+
 
 
 

@@ -5,16 +5,13 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class GenerateRoutesBuses extends Command
 {
     protected $signature = 'generate:routes-buses';
     protected $description = 'Generate routes buses for SEO';
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
+   
 
     public function handle()
     {
@@ -41,8 +38,11 @@ class GenerateRoutesBuses extends Command
                                 ->where('r.is_bus_added', 0)
                                 ->where('tp.status', 1)
                                 ->where('b.status', 1)
+                                ->limit(1000)
                                 ->distinct()
                                 ->get();
+
+            // log::info($routeBusData); exit;
 
             $busIds = collect($routeBusData)->pluck('bus_id')->unique()->toArray();
             $busFareMap = $this->getBusFareMap($busIds);
@@ -62,7 +62,7 @@ class GenerateRoutesBuses extends Command
                         'bus_id' => $item->bus_id,
                         'dep_time'=>$item->dep_time,
                         'arr_time'=>$item->arr_time,
-                        'duration'=>$item->duration_hours,
+                        'duration_hours'=>$item->duration_hours,
                         'min_fare' => $fare['min_fare'],
                         'max_fare' => $fare['max_fare']
                     ];
@@ -126,6 +126,8 @@ class GenerateRoutesBuses extends Command
 
             DB::commit();
 
+           Artisan::call('generate:routes-operators');
+
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error: ' . $e->getMessage());
@@ -135,7 +137,7 @@ class GenerateRoutesBuses extends Command
             
             Log::info('Generate routes buses for SEO ended at: ' . now());
             Log::info("Execution time: {$executionTime} seconds");
-            // $this->info("Processed 10000 records in {$executionTime} sec");
+            Log::info("Processed 10000 records in {$executionTime} sec");
         }
     }
 
@@ -153,7 +155,7 @@ class GenerateRoutesBuses extends Command
                 'b.id as bus_id',
 
                 DB::raw('MIN(
-                    CASE 
+                    CASE
                         WHEN bs.new_fare IS NOT NULL AND bs.new_fare != 0.00
                         THEN bs.new_fare
                         ELSE tp.base_seat_fare
@@ -161,7 +163,7 @@ class GenerateRoutesBuses extends Command
                 ) as min_fare'),
 
                 DB::raw('MAX(
-                    CASE 
+                    CASE
                         WHEN bs.new_fare IS NOT NULL AND bs.new_fare != 0.00
                         THEN bs.new_fare
                         ELSE tp.base_seat_fare
