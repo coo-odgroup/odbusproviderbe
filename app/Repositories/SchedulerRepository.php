@@ -311,10 +311,10 @@ class SchedulerRepository
                 // $url = "https://api.cashfree.com/pg/orders/" . $orderId . "/refunds";
 
                 $response = Http::withHeaders([
-                    // 'x-client-id'     => env('CASHFREE_APP_ID'),
-                    // 'x-client-secret' => env('CASHFREE_SECRET_KEY'),
-                    'x-client-id'     => 'TEST108577409ff7eb8e2b1cb161978f04775801',
-                    'x-client-secret' => 'cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced',
+                    'x-client-id'     => env('CASHFREE_APP_ID'),
+                    'x-client-secret' => env('CASHFREE_SECRET_KEY'),
+                    // 'x-client-id'     => 'TEST108577409ff7eb8e2b1cb161978f04775801',
+                    // 'x-client-secret' => 'cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced',
                     'x-api-version'   => '2023-08-01',
                     'Content-Type'    => 'application/json'
                 ])->post($url, $payload);
