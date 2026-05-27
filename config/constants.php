@@ -49,13 +49,7 @@ return [
         'FAILED'    => 4,
     ],
 
-<<<<<<< HEAD
     'CASHFREE_KEY' => env('CASHFREE_KEY','TEST108577409ff7eb8e2b1cb161978f04775801'),
     'CASHFREE_SECRET'=> env('CASHFREE_SECRET','cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced'),
     'CASHFREE_API_URL' => env('CASHFREE_API_URL','https://sandbox.cashfree.com/pg/orders'),
-=======
-    'CASHFREE_KEY' => env('CASHFREE_KEY', 'TEST108577409ff7eb8e2b1cb161978f04775801'),
-    'CASHFREE_SECRET' => env('CASHFREE_SECRET', 'cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced'),
-    'CASHFREE_API_URL' => env('CASHFREE_API_URL', 'https://sandbox.cashfree.com/pg/orders/')
->>>>>>> 78616148dbe0aaedc041547d77efa4f5e6daf094
 ];

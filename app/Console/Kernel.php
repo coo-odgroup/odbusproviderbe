@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\ClearOldLogs::class,
         \App\Console\Commands\RunAutoCrons::class,
         \App\Console\Commands\PhonePeRefundStatus::class,
+        \App\Console\Commands\LowWalletBalanceNotification::class,
     ];
 
     /**
@@ -41,13 +42,16 @@ class Kernel extends ConsoleKernel
         // $schedule->command('booking:archive-failed')->daily();
 
         $schedule->command('phonepe:refund-status')->everyFiveMinutes();
-        
+
 
         $crons = Cron::with('cron_frequencies')
             ->where('run_type', 'auto')
             ->where('is_active', 1)
             ->get();
 
+
+        $schedule->command('wallet:low-balance')
+            ->everyFifteenMinutes();
         // Log::info($crons);
         // return;
 
@@ -69,4 +73,6 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
+
 }
