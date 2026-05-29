@@ -126,10 +126,12 @@ class AgentWalletController extends Controller
                 ]);
             }
 
+
             $receiptId = 'WALLET_' . time() . rand(1000, 9999);
-            $key = env('CASHFREE_KEY');
-            $secretKey = env('CASHFREE_SECRET');
-            $apiUrl = env('CASHFREE_API_URL');
+            $key = 'TEST108577409ff7eb8e2b1cb161978f04775801';
+            $secretKey = 'cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced';
+            $apiUrl = 'https://sandbox.cashfree.com/pg/orders';
+
             $response = Http::withHeaders([
 
                 'x-client-id' => $key,
@@ -152,8 +154,9 @@ class AgentWalletController extends Controller
                 ],
                 "order_meta" => [
 
-                    "notify_url" =>
-                    url('/api/walletWebhook')
+                    "notify_url" => url('/api/walletWebhook'),
+
+                    "return_url" => "http://localhost:4200/#/agent/wallet?order_id={order_id}"
 
                 ],
 
@@ -266,6 +269,20 @@ class AgentWalletController extends Controller
                 $orderId = $res->data->order->order_id;
                 $paymentId = $res->data->payment->cf_payment_id;
                 $paymentAmount = $res->data->payment->payment_amount;
+
+                $alreadyCredited = AgentWallet::where('reference_id', $paymentId)
+                    ->where('transaction_id', $orderId)
+                    ->exists();
+
+                if ($alreadyCredited) {
+
+                    DB::rollBack();
+
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Payment already processed'
+                    ]);
+                }
 
                 $walletRequest = DB::table('wallet_request')
 
@@ -533,4 +550,57 @@ class AgentWalletController extends Controller
             ], 500);
         }
     }
+
+    public function verifyWalletPayment($orderId)
+    {
+        try {
+
+            $wallet = DB::table('wallet_request')
+                ->where('transaction_id', $orderId)
+                ->first();
+
+            if (!$wallet) {
+
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Order not found'
+                ]);
+            }
+
+            if ($wallet->payment_status == 1) {
+
+                $lastWallet = AgentWallet::where(
+                    'user_id',
+                    $wallet->user_id
+                )
+                    ->latest()
+                    ->first();
+
+                return response()->json([
+
+                    'status' => true,
+
+                    'amount' => $wallet->credited_amount,
+
+                    'balance' => $lastWallet
+                        ? $lastWallet->balance
+                        : 0
+
+                ]);
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Payment failed'
+            ]);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
 }
+
+
