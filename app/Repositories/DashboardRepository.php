@@ -6,6 +6,7 @@ use App\Models\Bus;
 use App\Models\Booking;
 use App\Models\Location;
 use App\Models\BusOperator;
+use App\Models\User;
 use DB;
 // use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
@@ -19,14 +20,16 @@ class DashboardRepository
     protected $booking;
     protected $location;
     protected $busoperator;
+    protected $users;
 
 
-    public function __construct(Booking $booking, Bus $bus, BusOperator $busoperator, Location $location)
+    public function __construct(Booking $booking, Bus $bus, BusOperator $busoperator, Location $location, User $users)
     {
         $this->booking = $booking;
         $this->bus = $bus;
         $this->location = $location;
         $this->busoperator = $busoperator;
+        $this->users = $users;
     }
 
     public function getAll($request)
@@ -289,60 +292,151 @@ class DashboardRepository
                 ->where('created_at', 'LIKE', $current_month . '%');
         }
 
+        // CUSTOM
+        if ($request['rangeFor'] == 'Custom') {
+
+            $fromDate = $request['rangeFrom'] . ' 00:00:00';
+            $toDate   = $request['rangeTo'] . ' 23:59:59';
+
+            $today_data = $today_data
+                ->whereBetween('created_at', [$fromDate, $toDate])
+                ->get();
+
+            $upcoming_data = $upcoming_data
+                ->where('journey_dt', '>', $current_date)
+                ->get();
+            $booking_data = $agent_commission->whereBetween('created_at', [$fromDate, $toDate]);
+            $customer_data = $customer_commission->whereBetween('created_at', [$fromDate, $toDate]);
+            $sales_data = $sales_data->whereBetween('created_at', [$fromDate, $toDate]);
+        }
+
+
+
 
         $today_data = count($today_data);
-
         $upcoming_data = count($upcoming_data);
-
         $data_arr['today_pnr'] = $today_data;
-
         $data_arr['upcoming_pnr'] = $upcoming_data;
-
         $data_arr['booking_profit'] = $booking_data->get();
-
         $data_arr['customer_profit'] = $customer_data->get();
-
         $data_arr['cancellation_profit'] = 1641;
-
         $data_arr['sales_data'] = $sales_data->get();
 
         return $data_arr;
     }
-    
-    public function getRoute($request)
+
+
+    public function getBookings($request)
     {
-        // log::info($request);
-        $dt = date('Y-m-d', strtotime('today - 30 days'));
+        $currentDate = date('Y-m-d');
+        $currentMonth = date('Y-m');
+        $weekDate = date('Y-m-d', strtotime('today - 7 days'));
+
         if ($request->ROLE_ID == 1) {
-            $route_data = $this->booking
-                ->select(['source_id', 'destination_id'])
-                ->selectRaw('count(*) as pnr_count')
-                ->selectRaw('sum(total_fare) as amount')
-                ->groupBy(['source_id', 'destination_id'])
-                ->orderBy('pnr_count', 'DESC')
-                ->where('journey_dt', '>', $dt)
-                ->where('status', '1')
-                ->limit(10)
-                ->get();
+            $query = $this->booking
+                ->where('status', '1');
         } else {
-            $route_data = $this->booking
-                ->select(['source_id', 'destination_id'])
-                ->selectRaw('count(*) as pnr_count')
-                ->selectRaw('sum(total_fare) as amount')
-                ->groupBy(['source_id', 'destination_id'])
-                ->orderBy('pnr_count', 'DESC')->where('user_id', $request->USERID)
-                ->where('journey_dt', '>', $dt)
+
+            $query = $this->booking
                 ->where('status', '1')
-                ->limit(10)
-                ->get();
+                ->where('user_id', $request->USERID);
         }
-        $data_arr = array();
-        foreach ($route_data as $key => $v) {
-            $data_arr[] = $v->toArray();
-            $data_arr[$key]['from_location'] = $this->location->where('id', $v->source_id)->get();
-            $data_arr[$key]['to_location'] = $this->location->where('id', $v->destination_id)->get();
+
+        // TODAY
+        if ($request->rangeFor == 'Today') {
+            $query->whereDate('created_at', $currentDate);
         }
+
+        // THIS WEEK
+        if ($request->rangeFor == 'This Week') {
+
+            $query->whereBetween('created_at', [
+                $weekDate,
+                $currentDate
+            ]);
+        }
+
+        // THIS MONTH
+        if ($request->rangeFor == 'This Month') {
+            $query->where('created_at', 'LIKE', $currentMonth . '%');
+        }
+
+        // CUSTOM
+        if (
+            $request->rangeFor == 'Custom' &&
+            !empty($request->rangeFrom) &&
+            !empty($request->rangeTo)
+        ) {
+
+            $query->whereBetween('created_at', [
+                $request->rangeFrom . ' 00:00:00',
+                $request->rangeTo . ' 23:59:59'
+            ]);
+        }
+
+        $booking_data = $query
+            ->orderBy('id', 'DESC')
+            ->limit(100)
+            ->get();
+
+        $data_arr = [];
+
+        foreach ($booking_data as $key => $v) {
+
+            $passengerNames = DB::table('booking_detail')
+                ->where('booking_id', $v->id)
+                ->pluck('passenger_name')
+                ->toArray();
+
+            $bus = DB::table('bus')
+                ->where('id', $v->bus_id)
+                ->select('name')
+                ->first();
+
+            $from = $this->location
+                ->where('id', $v->source_id)
+                ->first();
+
+            $to = $this->location
+                ->where('id', $v->destination_id)
+                ->first();
+
+            $commissionAmount = (float)$v->agent_commission + (float)$v->customer_comission;
+
+
+
+            $data_arr[$key] = [
+                'pnr' => $v->pnr,
+                'bus_name' => $bus ? $bus->name : '-',
+                'journey_dt' => $v->journey_dt,
+                'route' => ($from ? $from->name : '') . ' - ' . ($to ? $to->name : ''),
+                'passenger_name' => implode(', ', $passengerNames),
+                'commission_amount' => round($commissionAmount, 2),
+                'amount' => $v->total_fare,
+                'source_name' => $from ? $from->name : '',
+                'destination_name' => $to ? $to->name : '',
+            ];
+        }
+
         return $data_arr;
+    }
+
+
+    public function lastWalletTransactions($request)
+    {
+        return DB::table('agent_wallet')
+            ->where('user_id', $request->user_id)
+            ->orderBy('id', 'DESC')
+            ->limit(10)
+            ->get([
+                'transaction_id',
+                'payment_via',
+                'amount',
+                'transaction_type',
+                'balance',
+                'remarks',
+                'created_at'
+            ]);
     }
 
     public function getOperatorName($busId)

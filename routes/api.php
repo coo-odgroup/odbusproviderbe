@@ -324,11 +324,12 @@ Route::get('/busDisplayInfo', [BusController::class, 'busDisplayInfo']);
 
 Route::post('/dashboarddata', [DashboardController::class, 'getAll']);
 Route::post('/agentdashboarddata', [DashboardController::class, 'getAllAgentData']);
-Route::post('/toproutedata', [DashboardController::class, 'getRoute']);
+Route::post('/bookingDetails', [DashboardController::class, 'getBookings']);
 Route::get('/operatordata', [DashboardController::class, 'getOperator']);
 Route::get('/ticketstaticsdata', [DashboardController::class, 'getticketstatics']);
 Route::get('/bookingbydevicedata', [DashboardController::class, 'getbookingbydevice']);
 Route::post('/pnrstaticsdata', [DashboardController::class, 'getpnrstatics']);
+Route::post('/lastWalletTransactions', [DashboardController::class, 'lastWalletTransactions']);
 
 //Route::middleware(['api'])->group(function ($router) {
 
