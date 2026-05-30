@@ -74,6 +74,8 @@ class PageContentRepository
         $pagecontent->extra_meta = $data['extra_meta'];
         $pagecontent->canonical_url = $data['canonical_url'];
         $pagecontent->created_by = $data['created_by'];
+        $pagecontent->breadcrumb_schema = $data['breadcrumb_schema'];
+        $pagecontent->faq_schema = $data['faq_schema'];
         $pagecontent->status = 1;
         return $pagecontent;
     }

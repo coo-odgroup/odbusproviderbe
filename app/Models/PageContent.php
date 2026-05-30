@@ -11,7 +11,7 @@ class PageContent extends Model
 {
     use HasFactory;
     protected $table = 'page_content';
-    protected $fillable = ['page_name', 'page_url', 'page_description', 'meta_title', 'meta_keyword', 'meta_description', 'extra_meta', 'canonical_url', 'status'];
+    protected $fillable = ['page_name', 'page_url', 'page_description', 'meta_title', 'meta_keyword', 'meta_description', 'extra_meta', 'canonical_url', 'status', 'breadcrumb_schema', 'faq_schema'];
 
     public function BusOperator()
     {
