@@ -38,10 +38,21 @@ class DashboardController extends Controller
         return $this->successResponse($dashboarddata, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function getRoute(Request $request)
+    public function getBookings(Request $request)
     {
-        $routedata = $this->dashboardRepository->getRoute($request);
+        $routedata = $this->dashboardRepository->getBookings($request);
         return $this->successResponse($routedata, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function lastWalletTransactions(Request $request)
+    {
+        $data = $this->dashboardRepository->lastWalletTransactions($request);
+
+        return $this->successResponse(
+            $data,
+            Config::get('constants.RECORD_FETCHED'),
+            Response::HTTP_OK
+        );
     }
 
     public function getOperator()
@@ -332,6 +343,85 @@ class DashboardController extends Controller
     }
 
     //OPERATOR BUS WISE REVENUE
+    // public function opRevenue(Request $request)
+    // {
+    //     $operatorId = $request->operator_id;
+
+    //     $filter = $request->rangeFor ?? 'Today';
+
+    //     $fromDate = Carbon::today()->startOfDay();
+    //     $toDate   = Carbon::today()->endOfDay();
+
+    //     // Example date range
+    //     // $fromDate = '2025-01-01 00:00:00';
+    //     // $toDate   = '2025-06-01 23:59:59';
+
+    //     if ($filter === 'This Week') {
+    //         $fromDate = Carbon::today()->subDays(6)->startOfDay();
+    //         $toDate   = Carbon::today()->endOfDay();
+    //     }
+
+    //     if ($filter === 'This Month') {
+    //         $fromDate = Carbon::now()->startOfMonth()->startOfDay();
+    //         $toDate   = Carbon::now()->endOfDay();
+    //     }
+    //         $fromDate->format('Y-m-d H:i:s');
+    //         $toDate->format('Y-m-d H:i:s');
+
+    //     // Get active bus IDs for operator
+    //     $busIds = $this->activeBus($operatorId)->pluck('id');
+
+    //     if ($busIds->isEmpty()) {
+    //         return response()->json([
+    //             'status' => 200,
+    //             'data'   => []
+    //         ]);
+    //     }
+
+    //     return [$fromDate, $toDate];
+
+    //     $ticketPriceSub = DB::table('ticket_price')
+    //         ->select('bus_id', DB::raw('MIN(id) as tp_id'))
+    //         ->groupBy('bus_id');
+
+    //     $booking = Booking::query()
+    //         ->join('bus', 'bus.id', '=', 'booking.bus_id')
+    //         ->joinSub($ticketPriceSub, 'tp1', function ($join) {
+    //             $join->on('tp1.bus_id', '=', 'bus.id');
+    //         })
+    //         ->join('ticket_price as tp', 'tp.id', '=', 'tp1.tp_id')
+    //         ->join('location as src', 'src.id', '=', 'tp.source_id')
+    //         ->join('location as dst', 'dst.id', '=', 'tp.destination_id')
+    //         ->whereIn('booking.bus_id', $busIds)
+    //         ->whereBetween('booking.created_at', [$fromDate, $toDate])
+    //         ->select(
+    //             'booking.bus_id',
+    //             'bus.name as bus_name',
+    //             'bus.bus_number',
+    //             'src.id as source_id',
+    //             'src.name as source',
+    //             'dst.id as destination_id',
+    //             'dst.name as destination',
+    //             DB::raw('SUM(booking.owner_fare) as total_revenue')
+    //         )
+    //         ->groupBy(
+    //             'booking.bus_id',
+    //             'bus.name',
+    //             'bus.bus_number',
+    //             'src.id',
+    //             'src.name',
+    //             'dst.id',
+    //             'dst.name'
+    //         )
+    //         ->get();
+
+    //     return response()->json([
+    //         'status' => 200,
+    //         'data'   => $booking
+    //     ]);
+    // }
+
+
     public function opRevenue(Request $request)
     {
         $operatorId = $request->operator_id;

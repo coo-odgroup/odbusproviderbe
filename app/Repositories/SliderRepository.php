@@ -6,6 +6,7 @@ use App\Models\Slider;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class SliderRepository
 {
@@ -81,7 +82,7 @@ class SliderRepository
             $slide->coupon_id  = 0;
         }
 
-
+        $slide->unique_id = strtoupper(Str::random(8));
         $slide->slider_description = $data['slider_description'];
         $slide->created_by = $data['created_by'];
         return $slide;

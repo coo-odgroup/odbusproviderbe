@@ -43,13 +43,14 @@ class AgentWalletRepository
         $AgentWalletRequest->user_id = $data['user_id'];
         $AgentWalletRequest->transaction_type = $data['transaction_type'];
         $AgentWalletRequest->created_by = $data['user_name'];
-        $AgentWalletRequest->otp = $otp ;
+        $AgentWalletRequest->otp = $otp;
         $AgentWalletRequest->status = 0;
 
         return $AgentWalletRequest;
     }
 
-    public function phonpeToken(){
+    public function phonpeToken()
+    {
         $token = PhonePayToken::first();
         return $token;
     }
@@ -71,7 +72,7 @@ class AgentWalletRepository
         // return $getToken->token_type;
 
 
-        $url = $phonpe_url."checkout/v2/order/{$transactionId}/status";
+        $url = $phonpe_url . "checkout/v2/order/{$transactionId}/status";
         // dd( 'Authorization'. $getToken->token_type . " " . $getToken->access_token);
         $response = Http::withHeaders([
             'Authorization' => $getToken->token_type . " " . $getToken->access_token,
@@ -84,12 +85,12 @@ class AgentWalletRepository
         // return $data;
 
 
-        if($datas['state'] == "COMPLETED"){
+        if ($datas['state'] == "COMPLETED") {
             // return $data['amount'];
             // $AgentWalletRequest->save();
-            $balance = 0 ;
+            $balance = 0;
 
-            $agentWallet = $this->agentWallet->where('user_id',$user_id)->where('status', 1)->orderBy('id', 'DESC')->limit(1)->get();
+            $agentWallet = $this->agentWallet->where('user_id', $user_id)->where('status', 1)->orderBy('id', 'DESC')->limit(1)->get();
             // return $agentWallet;
             // $user = $this->user->find($ext_data->user_id);
 
@@ -126,42 +127,42 @@ class AgentWalletRepository
         // {
         //      $agentWallet->balance =  $balance[0]->balance; 
         // } 
-        
+
 
         $notification = new $this->notification();
-        $notification->notification_heading = "Wallet Recharge of Rs.".$data['amount']." Request";
-        $notification->notification_details = " Dear ".$user->name.", Your Request of Rs.".$data['amount'].
-        " through ".$data['payment_via']." with transaction.id-".$data['transaction_id']." has been received.You will be notified once it will approved.";
+        $notification->notification_heading = "Wallet Recharge of Rs." . $data['amount'] . " Request";
+        $notification->notification_details = " Dear " . $user->name . ", Your Request of Rs." . $data['amount'] .
+            " through " . $data['payment_via'] . " with transaction.id-" . $data['transaction_id'] . " has been received.You will be notified once it will approved.";
         $notification->created_by = $data['user_name'];
         $notification->save();
 
         $userNotification[0] = new UserNotification();
         $userNotification[0]['user_id'] = $data['user_id'];
-        $userNotification[0]['created_by'] = $data['user_name'] ;
+        $userNotification[0]['created_by'] = $data['user_name'];
 
         $notification->userNotification()->saveMany($userNotification);
 
-        $to_user = $user->email ;
-        $subject = "Wallet recharge request - ".$user->name;
+        $to_user = $user->email;
+        $subject = "Wallet recharge request - " . $user->name;
         $agentData = [
-                 'userName' => $user->name,
-                 'amount' => $data['amount'],
-                 'via' => $data['payment_via'],
-                 'tran_id' => $data['transaction_id']
-                ] ;
+            'userName' => $user->name,
+            'amount' => $data['amount'],
+            'via' => $data['payment_via'],
+            'tran_id' => $data['transaction_id']
+        ];
 
         SendWalletEmailJob::dispatch($to_user, $subject, $agentData);
 
         //$to_support = "support@odbus.in";
         // $to_support = "bishal.seofied@gmail.com";
-        $subject = "Wallet recharge request From ".$user->name;
+        $subject = "Wallet recharge request From " . $user->name;
         $supportData = [
-                 'userName' => $user->name,
-                 'amount' => $data['amount'],
-                 'via' => $data['payment_via'],
-                 'tran_id' => $data['transaction_id'],
-                 'otp' => $AgentWalletRequest->otp,
-                ] ;
+            'userName' => $user->name,
+            'amount' => $data['amount'],
+            'via' => $data['payment_via'],
+            'tran_id' => $data['transaction_id'],
+            'otp' => $AgentWalletRequest->otp,
+        ];
         SendSuperAdminEmailJob::dispatch("support@odbus.in", $subject, $supportData);
         SendSuperAdminEmailJob::dispatch("agent@odbus.in", $subject, $supportData);
 
@@ -169,12 +170,12 @@ class AgentWalletRepository
         // $to_superadmin ="bishal.seofied@gmail.com";
         $subject = "Wallet recharge request From Agent";
         $superAdminData = [
-                 'userName' => $user->name,
-                 'amount' => $data['amount'],
-                 'via' => $data['payment_via'],
-                 'tran_id' => $data['transaction_id'],
-                 'otp' => $AgentWalletRequest->otp,
-                ] ;
+            'userName' => $user->name,
+            'amount' => $data['amount'],
+            'via' => $data['payment_via'],
+            'tran_id' => $data['transaction_id'],
+            'otp' => $AgentWalletRequest->otp,
+        ];
         SendSuperAdminEmailJob::dispatch($to_superadmin, $subject, $superAdminData);
 
 
@@ -183,17 +184,18 @@ class AgentWalletRepository
 
 
 
-     public function agentTransByAdmin($data){
+    public function agentTransByAdmin($data)
+    {
         $user = $this->user->find($data['user_id']);
-        $balance = 0 ;
-     
-         $agentWallet = $this->agentWallet->where('user_id',$data['user_id'])
-                                          ->where('status',1)->orderBy('id','DESC')->limit(1)
-                                          ->get();
+        $balance = 0;
 
         $agentWallet = $this->agentWallet->where('user_id', $data['user_id'])
-                                         ->where('status', 1)->orderBy('id', 'DESC')->limit(1)
-                                         ->get();
+            ->where('status', 1)->orderBy('id', 'DESC')->limit(1)
+            ->get();
+
+        $agentWallet = $this->agentWallet->where('user_id', $data['user_id'])
+            ->where('status', 1)->orderBy('id', 'DESC')->limit(1)
+            ->get();
         // Log::info($agentWallet);
 
         if (count($agentWallet) > 0) {
@@ -202,7 +204,6 @@ class AgentWalletRepository
             } elseif ($data['transaction_type'] == 'd') {
                 $balance = $agentWallet[0]->balance - $data['amount'];
             }
-
         } else {
             $balance = $data['amount'];
         }
@@ -228,8 +229,9 @@ class AgentWalletRepository
 
 
 
-    public function balance($id){
-        return $this->agentWallet->where('user_id',$id)->where('status',1)->orderBy('id','DESC')->limit(1)->get();
+    public function balance($id)
+    {
+        return $this->agentWallet->where('user_id', $id)->where('status', 1)->orderBy('id', 'DESC')->limit(1)->get();
     }
 
 
@@ -248,56 +250,49 @@ class AgentWalletRepository
         $end_date  =  $request->rangeToDate;
 
         $data = $this->agentWallet->select('user_id', (DB::raw('max(id) as max_id')))
-                                  ->where('status', 1)
-                                  // ->orderBy('created_at','DESC')
-                                  ->groupBy('user_id')
-                                  ->with('user');
-                                  
-        if(!empty($user_id))
-        {
-            $data = $data->where('user_id', $user_id );
+            ->where('status', 1)
+            // ->orderBy('created_at','DESC')
+            ->groupBy('user_id')
+            ->with('user');
+
+        if (!empty($user_id)) {
+            $data = $data->where('user_id', $user_id);
         }
 
-        if($start_date != NULL && $end_date != NULL)
-        {
-            if($start_date == $end_date)
-            {
-                $data = $data->where('created_at','like','%'.$start_date.'%');
-            }
-            else{
+        if ($start_date != NULL && $end_date != NULL) {
+            if ($start_date == $end_date) {
+                $data = $data->where('created_at', 'like', '%' . $start_date . '%');
+            } else {
                 $data = $data->whereBetween('created_at', [$start_date, $end_date]);
             }
         }
 
-        if($paginate=='all')
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
-    
-        $data=$data->paginate($paginate);
-        if($data)
-        {
-            foreach ($data as $v)
-            {
-                $v['wallet'] = $this->agentWallet->where('id',$v->max_id)->get();
+
+        $data = $data->paginate($paginate);
+        if ($data) {
+            foreach ($data as $v) {
+                $v['wallet'] = $this->agentWallet->where('id', $v->max_id)->get();
             }
         }
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           ); 
-           return $response;
-
+        );
+        return $response;
     }
 
-    public function agentAllTransaction($request){
-        
-        $start_date="";
-        $end_date="";
+    public function agentAllTransaction($request)
+    {
+
+        $start_date = "";
+        $end_date = "";
         $paginate = $request->rows_number;
         $name = $request->name;
         $user_id = $request->user_id;
@@ -307,33 +302,29 @@ class AgentWalletRepository
 
         $data = $this->agentWallet->with('user')->with('Booking')->where('status', 1)->orderBy('id', 'DESC');
 
-        if($paginate=='all')
-        {
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
         if (!empty($name)) {
             $data = $data->where('transaction_id', $name)
-                     ->orwhereHas('user', function ($query) use ($name) {
-                         $query->where('name', 'like', '%' .$name . '%')
-                         ->orWhere('email', 'like', '%' .$name . '%')
-                         ->orWhere('phone', 'like', '%' .$name . '%');
-                     });
+                ->orwhereHas('user', function ($query) use ($name) {
+                    $query->where('name', 'like', '%' . $name . '%')
+                        ->orWhere('email', 'like', '%' . $name . '%')
+                        ->orWhere('phone', 'like', '%' . $name . '%');
+                });
         }
         if ($start_date != null && $end_date != null) {
             if ($start_date == $end_date) {
-                $data = $data->where('created_at', 'like', '%'.$start_date.'%')
-                        ->orderBy('created_at', 'DESC');
-
+                $data = $data->where('created_at', 'like', '%' . $start_date . '%')
+                    ->orderBy('created_at', 'DESC');
             } else {
                 $data = $data->whereBetween('created_at', [$start_date, $end_date]);
             }
-
         }
         if ($user_id != null) {
             $data = $data->where('user_id', $user_id);
-
         }
 
         if ($tranType != null && $tranType != 'all_transaction') {
@@ -341,23 +332,22 @@ class AgentWalletRepository
             if ($tranType == 'wallet_recharge') {
                 $data = $data->where('payment_via', '!=', '')->where('transaction_type', 'c');
             } elseif ($tranType == 'commission_received') {
-                $data = $data->where('type', 'Commission')->where('transaction_type', 'c') ;
+                $data = $data->where('type', 'Commission')->where('transaction_type', 'c');
             } elseif ($tranType == 'pnr_booking') {
-                $data = $data->where('payment_via', '')->where('transaction_type', 'd') ;
+                $data = $data->where('payment_via', '')->where('transaction_type', 'd');
             } elseif ($tranType == 'cancel_ticket') {
-                $data = $data->where('type', 'Refund')->where('transaction_type', 'c') ;
+                $data = $data->where('type', 'Refund')->where('transaction_type', 'c');
             }
-
         }
 
         $data = $data->paginate($paginate);
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
-           return $response;
+        );
+        return $response;
     }
 
     public function getWalletRequestRecord($user_id)
@@ -384,43 +374,44 @@ class AgentWalletRepository
     //                     ;
     // }
 
-    public function Filter($data,$name){
-       return  $data->where('transaction_id', 'like', '%' .$name . '%')
-                         // ->orWhere('reference_id', 'like', '%' .$name . '%')
-                         // ->orWhere('amount', 'like', '%' .$name . '%')
-                         // ->orWhere('remarks', 'like', '%' .$name . '%')
-                        
-                        ;
+    public function Filter($data, $name)
+    {
+        return  $data->where('transaction_id', 'like', '%' . $name . '%')
+            // ->orWhere('reference_id', 'like', '%' .$name . '%')
+            // ->orWhere('amount', 'like', '%' .$name . '%')
+            // ->orWhere('remarks', 'like', '%' .$name . '%')
+
+        ;
     }
 
-    public function FilterDate($data,$start_date,$end_date){
-           
-         if($start_date == $end_date)
-         { 
-           
-                $data =$data->where('created_at','like','%'.$start_date.'%')
-                        ->orderBy('created_at','DESC');
-                       
-            }else{
-                
-                 $data =$data->whereBetween('created_at', [$start_date, $end_date]);
-            }
-            return  $data;
+    public function FilterDate($data, $start_date, $end_date)
+    {
 
+        if ($start_date == $end_date) {
+
+            $data = $data->where('created_at', 'like', '%' . $start_date . '%')
+                ->orderBy('created_at', 'DESC');
+        } else {
+
+            $data = $data->whereBetween('created_at', [$start_date, $end_date]);
+        }
+        return  $data;
     }
-    public function Filter_user($data,$user_id){
+    public function Filter_user($data, $user_id)
+    {
         return  $data->where('user_id', $user_id);
     }
-    public function payViaFilter($data,$name){
-       return  $data->Where('payment_via', 'like', '%' .$name . '%');   
+    public function payViaFilter($data, $name)
+    {
+        return  $data->Where('payment_via', 'like', '%' . $name . '%');
     }
 
-    public function Otp($id,$data)
+    public function Otp($id, $data)
     {
-        return  $data->where('id', 'like', '%' .$name . '%')
-                          // ->orWhere('reference_id', 'like', '%' .$name . '%')
-                          // ->orWhere('amount', 'like', '%' .$name . '%')
-                          // ->orWhere('remarks', 'like', '%' .$name . '%')
+        return  $data->where('id', 'like', '%' . $name . '%')
+            // ->orWhere('reference_id', 'like', '%' .$name . '%')
+            // ->orWhere('amount', 'like', '%' .$name . '%')
+            // ->orWhere('remarks', 'like', '%' .$name . '%')
 
         ;
     }
@@ -459,7 +450,7 @@ class AgentWalletRepository
     public function update_Status($id, $ext_data, $data)
     {
         // return $id;
-        $balance = 0 ;
+        $balance = 0;
 
         $agentWallet = $this->agentWallet->where('user_id', $ext_data->user_id)->where('status', 1)->orderBy('id', 'DESC')->limit(1)->get();
         $user = $this->user->find($ext_data->user_id);
@@ -516,7 +507,6 @@ class AgentWalletRepository
         // SendWalletApproveEmailJob::dispatch($to_user, $subject, $superAdminData);
 
         return $agentWallet;
-
     }
 
     public function declineWalletReq($data, $id)
@@ -533,14 +523,13 @@ class AgentWalletRepository
         $agentWallet = $this->agentWallet->find($id);
         $user = $this->user->find($agentWallet->user_id);
         $lastrow = $this->agentWallet->where('user_id', $agentWallet->user_id)
-                                     ->where('status', 1)
-                                     ->orderBy('id', 'DESC')
-                                     ->limit(1)
-                                     ->get();
+            ->where('status', 1)
+            ->orderBy('id', 'DESC')
+            ->limit(1)
+            ->get();
         $agentWallet->balance = $balance;
         $agentWallet->update();
-        if ($lastrow[0]->id != $agentWallet->id);
-        {
+        if ($lastrow[0]->id != $agentWallet->id); {
             $agentWalletLastRow = $this->agentWallet->find($lastrow[0]->id);
             $agentWalletLastRow->balance = $balance;
             $agentWalletLastRow->update();
@@ -549,31 +538,29 @@ class AgentWalletRepository
 
 
         $notification = new $this->notification();
-        $notification->notification_heading = "Wallet Recharge of Rs.".$otpdata[0]->amount." Approved";
-        $notification->notification_details = " Dear ".$user->name.", Your Request of Rs.".$otpdata[0]->amount.
-        " through ".$otpdata[0]->payment_via." with transaction.id-".$otpdata[0]->transaction_id." has been approved.Your Current balance is ".$balance ;
-        $notification->created_by = $data->user_name ;
+        $notification->notification_heading = "Wallet Recharge of Rs." . $otpdata[0]->amount . " Approved";
+        $notification->notification_details = " Dear " . $user->name . ", Your Request of Rs." . $otpdata[0]->amount .
+            " through " . $otpdata[0]->payment_via . " with transaction.id-" . $otpdata[0]->transaction_id . " has been approved.Your Current balance is " . $balance;
+        $notification->created_by = $data->user_name;
         $notification->save();
 
         $userNotification[0] = new UserNotification();
         $userNotification[0]['user_id'] = $otpdata[0]->user_id;
-        $userNotification[0]['created_by'] = $data->user_name ;
+        $userNotification[0]['created_by'] = $data->user_name;
 
         $notification->userNotification()->saveMany($userNotification);
 
         $to_user = $user->email;
         $subject = "Wallet recharge request Approved";
         $superAdminData = [
-                 'userName' => $user->name,
-                 'amount' => $otpdata[0]->amount,
-                 'via' => $otpdata[0]->payment_via,
-                 'tran_id' => $otpdata[0]->transaction_id,
-                 'balance' => $balance
-                ] ;
+            'userName' => $user->name,
+            'amount' => $otpdata[0]->amount,
+            'via' => $otpdata[0]->payment_via,
+            'tran_id' => $otpdata[0]->transaction_id,
+            'balance' => $balance
+        ];
         SendWalletApproveEmailJob::dispatch($to_user, $subject, $superAdminData);
 
         return $agentWallet;
-
     }
-
 }

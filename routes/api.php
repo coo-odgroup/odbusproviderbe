@@ -276,6 +276,14 @@ Route::post('/agentAllTransaction', [AgentWalletController::class, 'agentAllTran
 Route::put('/changeAgentWalletStatus/{id}', [AgentWalletController::class, 'changeStatus']);
 Route::put('/declineWlletReqStatus/{id}', [AgentWalletController::class, 'declineWlletReqStatus']);
 
+Route::post('/walletMakePayment', [AgentWalletController::class, 'walletMakePayment']);
+Route::post('/walletWebhook',[AgentWalletController::class, 'walletWebhook']);
+
+Route::get(
+    '/verifyWalletPayment/{orderId}',
+    [AgentWalletController::class, 'verifyWalletPayment']
+);
+
 
 //Agent Notification
 Route::post('/agentnotification', [AgentNotificationController::class, 'getData']);
@@ -316,11 +324,12 @@ Route::get('/busDisplayInfo', [BusController::class, 'busDisplayInfo']);
 
 Route::post('/dashboarddata', [DashboardController::class, 'getAll']);
 Route::post('/agentdashboarddata', [DashboardController::class, 'getAllAgentData']);
-Route::post('/toproutedata', [DashboardController::class, 'getRoute']);
+Route::post('/bookingDetails', [DashboardController::class, 'getBookings']);
 Route::get('/operatordata', [DashboardController::class, 'getOperator']);
 Route::get('/ticketstaticsdata', [DashboardController::class, 'getticketstatics']);
 Route::get('/bookingbydevicedata', [DashboardController::class, 'getbookingbydevice']);
 Route::post('/pnrstaticsdata', [DashboardController::class, 'getpnrstatics']);
+Route::post('/lastWalletTransactions', [DashboardController::class, 'lastWalletTransactions']);
 
 //Route::middleware(['api'])->group(function ($router) {
 
@@ -551,6 +560,7 @@ Route::post('pagecontentData', [PageContentController::class, 'getAllData']);
 Route::post('pagecontent', [PageContentController::class, 'addpagecontent']);
 Route::put('pagecontent/{id}', [PageContentController::class, 'updatepagecontent']);
 Route::delete('pagecontent/{id}', [PageContentController::class, 'deletepagecontent']);
+Route::put('changePageContentStatus/{id}', [PageContentController::class, 'changeStatus']);
 
 //Faq
 Route::get('/faq', [FaqController::class, 'getAllfaq']);

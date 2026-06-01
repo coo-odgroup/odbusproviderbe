@@ -522,44 +522,34 @@ class BusScheduleRepository
     }
 
 
-    //////////// sync bus seat count every 5 min cron job ////////////
+    //////////// sync bus seat count every 15 min cron job ////////////
 
     public function syncBusSeatCount()
     {
         ini_set('memory_limit', '2048M');
-        ini_set('max_execution_time', 0);
+        ini_set('max_execution_time', 600);
 
         try {
 
-            $endDate = date('Y-m-d', strtotime('+30 days'));
+            $startDate = date('Y-m-d');
+            $endDate   = date('Y-m-d', strtotime('+30 days'));
 
-            /*
-            |--------------------------------------------------------------------------
-            | GET ALL ACTIVE BUSES
-            |--------------------------------------------------------------------------
-            */
+            $busIds = DB::table('ticket_price as tp')
 
-            $busIds = DB::table('ticket_price')
-                ->where('status', 1)
+                ->join('bus as b', 'b.id', '=', 'tp.bus_id')
+
+                ->where('tp.status', 1)
+
+                ->where('b.status', 1)
+
                 ->distinct()
-                ->pluck('bus_id');
 
+                ->pluck('tp.bus_id');
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | LOOP BUS WISE
-            |--------------------------------------------------------------------------
-            */
 
             foreach ($busIds as $busId) {
 
-                /*
-                |--------------------------------------------------------------------------
-                | TOTAL SEAT
-                |--------------------------------------------------------------------------
-                */
-
+               
                 $baseTotalSeat = DB::table('bus_seats')
 
                     ->where('bus_id', $busId)
@@ -589,15 +579,8 @@ class BusScheduleRepository
                     })
 
                     ->distinct('seats_id')
+
                     ->count('seats_id');
-
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | TEMP OPEN SEAT
-                |--------------------------------------------------------------------------
-                */
 
                 $tempOpenSeats = DB::table('bus_seats')
 
@@ -620,13 +603,6 @@ class BusScheduleRepository
 
                     ->keyBy('operation_date');
 
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | BLOCKED SEAT
-                |--------------------------------------------------------------------------
-                */
 
                 $blockedSeats = DB::table('bus_seats')
 
@@ -668,15 +644,11 @@ class BusScheduleRepository
 
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | GET ALL INVENTORY ROWS
-                |--------------------------------------------------------------------------
-                */
-
                 $seatCounts = DB::table('bus_seat_count as bsc')
 
                     ->join('ticket_price as tp', 'tp.id', '=', 'bsc.ticket_price_id')
+
+                    ->join('bus as b', 'b.id', '=', 'tp.bus_id')
 
                     ->select(
                         'bsc.id',
@@ -684,32 +656,24 @@ class BusScheduleRepository
                         'bsc.journey_date'
                     )
 
+                    ->where('b.status', 1)
+
+                    ->where('tp.status', 1)
+
                     ->where('tp.bus_id', $busId)
 
                     ->whereBetween('bsc.journey_date', [
-                        date('Y-m-d'),
+                        $startDate,
                         $endDate
                     ])
 
                     ->get();
 
 
-
-                /*
-                |--------------------------------------------------------------------------
-                | PROCESS EACH INVENTORY ROW
-                |--------------------------------------------------------------------------
-                */
-
                 foreach ($seatCounts as $row) {
 
                     $journeyDate = $row->journey_date;
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | TOTAL SEAT
-                    |--------------------------------------------------------------------------
-                    */
 
                     $totalSeat = $baseTotalSeat;
 
@@ -720,12 +684,6 @@ class BusScheduleRepository
 
 
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | BLOCKED SEAT
-                    |--------------------------------------------------------------------------
-                    */
-
                     $blockedSeat = 0;
 
                     if (isset($blockedSeats[$journeyDate])) {
@@ -735,13 +693,9 @@ class BusScheduleRepository
 
 
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | BOOKED SEAT
-                    |--------------------------------------------------------------------------
-                    */
-
                     $bookedSeat = DB::table('booking as b')
+
+                        ->join('bus as bus_main', 'bus_main.id', '=', 'b.bus_id')
 
                         ->join('booking_detail as bd', function ($join) {
 
@@ -764,7 +718,7 @@ class BusScheduleRepository
 
                         })
 
-                        ->join('ticket_price as tp2', function ($join) use ($row){
+                        ->join('ticket_price as tp2', function ($join) use ($row) {
 
                             $join->on('tp2.bus_id', '=', 'b.bus_id')
                                 ->where('tp2.id', '=', $row->ticket_price_id);
@@ -785,6 +739,8 @@ class BusScheduleRepository
 
                         })
 
+                        ->where('bus_main.status', 1)
+
                         ->where('b.status', 1)
 
                         ->whereDate('b.journey_dt', $journeyDate)
@@ -797,13 +753,9 @@ class BusScheduleRepository
 
 
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | HOLD SEAT
-                    |--------------------------------------------------------------------------
-                    */
-
                     $holdSeat = DB::table('booking as b')
+
+                        ->join('bus as bus_main', 'bus_main.id', '=', 'b.bus_id')
 
                         ->join('booking_detail as bd', 'bd.booking_id', '=', 'b.id')
 
@@ -842,6 +794,8 @@ class BusScheduleRepository
 
                         })
 
+                        ->where('bus_main.status', 1)
+
                         ->where('b.status', 4)
 
                         ->whereDate('b.journey_dt', $journeyDate)
@@ -853,13 +807,6 @@ class BusScheduleRepository
                         ->count();
 
 
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | AVAILABLE SEAT
-                    |--------------------------------------------------------------------------
-                    */
-
                     $availableSeat = max(
                         $totalSeat
                         - $bookedSeat
@@ -869,12 +816,6 @@ class BusScheduleRepository
                     );
 
 
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | UPDATE INVENTORY ROW
-                    |--------------------------------------------------------------------------
-                    */
 
                     DB::table('bus_seat_count')
 
@@ -892,7 +833,9 @@ class BusScheduleRepository
 
                             'available_seat' => $availableSeat,
 
-                            'updated_at'     => now()
+                            'updated_at'   => now(),
+
+                            'updated_by'     => 'cron'
 
                         ]);
 

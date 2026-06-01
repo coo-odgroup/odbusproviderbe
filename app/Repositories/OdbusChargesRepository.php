@@ -124,6 +124,7 @@ class OdbusChargesRepository
         $odbusCharges->operator_home_content = ($data['operator_home_content'] != '' && $data['operator_home_content'] != 'null') ? $data['operator_home_content'] : null;
 
         $odbusCharges->created_by = $data['created_by'];
+        $odbusCharges->organization_schema = $data['organization_schema'];
 
         // Log::info($odbusCharges);exit;
 

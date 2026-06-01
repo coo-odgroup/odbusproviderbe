@@ -14,6 +14,7 @@ class AgentNotificationRepository
     public function __construct(UserNotification $userNotification, Notification $notification)
     {
         $this->notification = $notification;
+        $this->userNotification = $userNotification;
     }
 
     public function getallnotification($id)

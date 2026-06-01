@@ -25,34 +25,28 @@ class AgentWalletReportRepository
     {
         if ($select_type == 'wallet_recharge') {
 
-            return $data
+            $data = $data
                 ->where('payment_via', '!=', '')
                 ->where('transaction_type', 'c');
-        }
+        } elseif ($select_type == 'pnr_booking') {
 
-        if ($select_type == 'pnr_booking') {
-
-            return $data
+            $data = $data
                 ->where('payment_via', '')
                 ->where('transaction_type', 'd')
                 ->whereNull('type');
-        }
+        } elseif ($select_type == 'cancelled_pnr') {
 
-        if ($select_type == 'cancelled_pnr') {
-
-            return $data
+            $data = $data
                 ->where('type', 'Refund');
-        }
+        } elseif ($select_type == 'commission') {
 
-        if ($select_type == 'commission') {
-
-            return $data
+            $data = $data
                 ->where('type', 'Commission');
         }
 
         return $data;
     }
-    
+
     public function Pagination($data, $paginate)
     {
         $data =  $data->paginate($paginate);
@@ -79,7 +73,7 @@ class AgentWalletReportRepository
             });
     }
 
-    public function FilterDate($data, $start_date, $end_date)
+    public function filterDate($data, $start_date, $end_date)
     {
         return $data
             ->whereBetween(

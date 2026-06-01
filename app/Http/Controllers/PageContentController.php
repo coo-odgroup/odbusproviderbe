@@ -52,7 +52,9 @@ class PageContentController extends Controller
             'meta_keyword',
             'meta_description',
             'extra_meta',
-            'canonical_url'
+            'canonical_url',
+            'breadcrumb_schema',
+            'faq_schema'
         ]);
 
         $pagecontent = $this->pagecontentValidator->validate($data);
@@ -82,7 +84,9 @@ class PageContentController extends Controller
             'meta_keyword',
             'meta_description',
             'extra_meta',
-            'canonical_url'
+            'canonical_url',
+            'breadcrumb_schema',
+            'faq_schema'
         ]);
 
         $pagecontent = $this->pagecontentValidator->validate($data);
@@ -105,5 +109,11 @@ class PageContentController extends Controller
     {
         $pagecontent = $this->pagecontentRepository->deletepagecontent($id);
         return $this->successResponse($pagecontent, "Page Content Deleted", Response::HTTP_OK);
+    }
+
+    public function changeStatus($id)
+    {
+        $pagecontent = $this->pagecontentRepository->changeStatus($id);
+        return $this->successResponse($pagecontent, "Page Content Status Changed", Response::HTTP_OK);
     }
 }

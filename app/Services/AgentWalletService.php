@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\AgentWallet;
-use App\Models\AgentWalletRequest;
 use App\Models\BusOwnerFare;
 use App\Repositories\AgentWalletRepository;
 use Exception;
@@ -15,6 +13,7 @@ use InvalidArgumentException;
 
 class AgentWalletService
 {
+
     protected $agentWalletRepository;
 
 
@@ -32,6 +31,8 @@ class AgentWalletService
         $start_date  =  $request['rangeFromDate'];
         $end_date  =  $request['rangeToDate'];
         $reqs_status  =  $request['status'];
+
+        // Log::info($request);
 
         $data = $this->agentWalletRepository->getAllWalletRecord();
 
@@ -54,19 +55,23 @@ class AgentWalletService
         }
         if ($reqs_status != null) {
             if ($reqs_status == 0) {
-                $data = $data->where('status', 0)->orderBy('created_at', 'DESC');
+                $data = $data->where('status', 0)
+                    ->orderBy('created_at', 'DESC');
             }
             if ($reqs_status == 1) {
-                $data = $data->where('status', 1)->orderBy('created_at', 'DESC');
+                $data = $data->where('status', 1)
+                    ->orderBy('created_at', 'DESC');
             }
 
             if ($reqs_status == 3) {
-                $data = $data->where('status', 3)->orderBy('created_at', 'DESC');
+                $data = $data->where('status', 3)
+                    ->orderBy('created_at', 'DESC');
             }
         }
 
         $data = $this->agentWalletRepository->Pagination($data, $paginate);
 
+        // log::info($data);
         $response = array(
             "count" => $data->count(),
             "total" => $data->total(),
@@ -74,18 +79,21 @@ class AgentWalletService
         );
 
         return $response;
+
+        //return $this->agentWalletRepository->getData($request);
     }
 
 
     public function getData($request)
     {
+        // Log::info($request);
         $paginate = $request['rows_number'];
         $name = $request['name'];
         $payment_via = $request['payment_via'];
         $user_id = $request['user_id'];
-
         $start_date = $request['from_date'];
-        $end_date   = $request['to_date'];
+        $end_date = $request['to_date'];
+
 
         $data = $this->agentWalletRepository->getWalletRequestRecord($user_id);
 
@@ -102,11 +110,11 @@ class AgentWalletService
         if ($payment_via != null) {
             $data = $this->agentWalletRepository->payViaFilter($data, $payment_via);
         }
-        if (!empty($start_date) && !empty($end_date)) {
+
+        if ($start_date != null && $end_date != null) {
             $data = $this->agentWalletRepository
                 ->FilterDate($data, $start_date, $end_date);
         }
-
         $data = $this->agentWalletRepository->Pagination($data, $paginate);
 
         $response = array(
@@ -115,15 +123,29 @@ class AgentWalletService
             "data" => $data
         );
 
+        // Log::info($response);
         return $response;
-    }
 
+
+        //return $this->agentWalletRepository->getData($request);
+    }
     public function agentWalletBalance($id)
     {
 
         return $this->agentWalletRepository->balance($id);
     }
 
+    public function agentAllTransaction($id)
+    {
+
+        return $this->agentWalletRepository->agentAllTransaction($id);
+    }
+
+    public function agentWalletBalancedetails($request)
+    {
+
+        return $this->agentWalletRepository->agentWalletBalancedetails($request);
+    }
 
     public function savePostData($data)
     {
@@ -141,9 +163,10 @@ class AgentWalletService
 
     public function changeStatus($data, $id)
     {
-        $otp_status =  AgentWalletRequest::where("id", $id)->get();
+        $otp_status = $this->agentWalletRepository->Otp($id, $data);
+        // log::info($otp_status);
+        // exit;
 
-        // return $otp_status = $this->agentWalletRepository->Otp($id, $data);
         if (sizeof($otp_status) > 0) {
 
             return $post = $this->agentWalletRepository->update_Status($id, $otp_status[0], $data);
@@ -153,16 +176,16 @@ class AgentWalletService
             // $prvious_balance = $this->agentWalletRepository->balance($user_id);
 
             // if($post->transaction_type == "c")
-            //  {
+            //  {           
             //      $balance=$prvious_balance[0]->balance + (int)$post->amount;
 
             //  }
             //  else if($post->transaction_type == "d")
-            //  {
+            //  {        
             //      $balance=$prvious_balance[0]->balance - (int)$post->amount;
-            //  }
+            //  } 
 
-            //   return $updated_balance =$this->agentWalletRepository->update_balance($id,$balance,$otp_status,$data);
+            //   return $updated_balance =$this->agentWalletRepository->update_balance($id,$balance,$otp_status,$data);   
         } else {
             return 'Invalid OTP';
         }
