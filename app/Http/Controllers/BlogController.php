@@ -13,7 +13,9 @@ use App\Traits\ApiResponser;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -183,6 +185,7 @@ class BlogController extends Controller
     // ----------------------------------------------------------------------------------
     public function addblog(Request $request)
     {
+        // return $request->all();
         try {
 
             $path = null;
@@ -192,29 +195,30 @@ class BlogController extends Controller
             // Featured Image
             if ($request->hasFile('featured_image')) {
                 $file = $request->file('featured_image');
-                $filename = $file->getClientOriginalName();
-                $picture = rand() . '-' . $filename;
-
+                $extension = $file->getClientOriginalExtension();
+                $picture = time() . '_' . Str::random(20) . '.' . $extension;
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
                 $path = "blogs/blog_image/" . $picture;
             }
 
+
             // Thumb Image
             if ($request->hasFile('thumb_image')) {
-                $file = $request->file('thumb_image');
-                $filename = $file->getClientOriginalName();
-                $picture = rand() . '-' . $filename;
 
+                $file = $request->file('thumb_image');
+                $extension = $file->getClientOriginalExtension();
+                $picture = time() . '_' . Str::random(20) . '.' . $extension;
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
                 $thumpath = "blogs/blog_image/" . $picture;
             }
 
+
             // OG Image
             if ($request->hasFile('og_image')) {
-                $file = $request->file('og_image');
-                $filename = $file->getClientOriginalName();
-                $picture = rand() . '-' . $filename;
 
+                $file = $request->file('og_image');
+                $extension = $file->getClientOriginalExtension();
+                $picture = time() . '_' . Str::random(20) . '.' . $extension;
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
                 $ogpath = "blogs/blog_image/" . $picture;
             }
@@ -236,6 +240,8 @@ class BlogController extends Controller
                 "meta_description" => $request->meta_description,
                 "meta_keywords" => $request->meta_keywords,
                 "canonical_url" => $request->canonical_url,
+                "og_title" => $request->og_title,
+                "og_desc" => $request->og_desc,
                 "og_image" => $ogpath,
                 "breadcrumb_schema" => $request->breadcrumb_schema ? json_encode($request->breadcrumb_schema) : null,
                 "faq_schema" => $request->faq_schema ? json_encode($request->faq_schema) : null,
@@ -327,8 +333,9 @@ class BlogController extends Controller
                 "meta_description" => $request->meta_description,
                 "meta_keywords" => $request->meta_keywords,
                 "canonical_url" => $request->canonical_url,
+                "og_title" => $request->og_title,
+                "og_desc" => $request->og_desc,
 
-                // ✅ Store JSON properly
                 "breadcrumb_schema" => $request->breadcrumb_schema ? json_encode($request->breadcrumb_schema) : null,
                 "faq_schema" => $request->faq_schema ? json_encode($request->faq_schema) : null,
                 "service_schema" => $request->service_schema ? json_encode($request->service_schema) : null,
@@ -336,61 +343,62 @@ class BlogController extends Controller
                 "updated_by" => 1,
             ];
 
-            // ✅ Featured Image
+            // Featured Image
             if ($request->hasFile('featured_image')) {
 
                 $file = $request->file('featured_image');
-                $picture = time() . '_' . $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $picture = time() . '_' . Str::random(20) . '.' . $extension;
 
                 if ($blog->featured_image) {
+
                     $existing_image = public_path($blog->featured_image);
+
                     if (file_exists($existing_image)) {
                         unlink($existing_image);
                     }
                 }
-
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
                 $data['featured_image'] = "blogs/blog_image/" . $picture;
             }
 
-            // ✅ Thumb Image
+
+            // Thumb Image
             if ($request->hasFile('thumb_image')) {
-
                 $file = $request->file('thumb_image');
-                $picture = time() . '_' . $file->getClientOriginalName();
-
+                $extension = $file->getClientOriginalExtension();
+                $picture = time() . '_' . Str::random(20) . '.' . $extension;
                 if ($blog->thumb_image) {
                     $existing_image = public_path($blog->thumb_image);
                     if (file_exists($existing_image)) {
                         unlink($existing_image);
                     }
                 }
-
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
                 $data['thumb_image'] = "blogs/blog_image/" . $picture;
             }
 
-            // ✅ OG Image
+
+            // OG Image
             if ($request->hasFile('og_image')) {
 
                 $file = $request->file('og_image');
-                $picture = time() . '_' . $file->getClientOriginalName();
-
+                $extension = $file->getClientOriginalExtension();
+                $picture = time() . '_' . Str::random(20) . '.' . $extension;
                 if ($blog->og_image) {
+
                     $existing_image = public_path($blog->og_image);
+
                     if (file_exists($existing_image)) {
                         unlink($existing_image);
                     }
                 }
-
                 $file->move(public_path('uploads/blogs/blog_image'), $picture);
                 $data['og_image'] = "blogs/blog_image/" . $picture;
             }
 
-            // ✅ Update
             $blog->update($data);
 
-            // ✅ Proper JSON response (VERY IMPORTANT)
             return response()->json([
                 'status' => true,
                 'message' => 'Blog Updated Successfully',
@@ -574,14 +582,22 @@ class BlogController extends Controller
         }
     }
 
+
     public function alltagmaps(Request $request)
     {
         $query = Tagmap::join('blogs', 'blogs.id', '=', 'blog_tag_maps.blog_id')
             ->join('blog_tags', 'blog_tags.id', '=', 'blog_tag_maps.tag_id')
             ->select(
-                'blog_tag_maps.*',
+                'blog_tag_maps.blog_id',
+                'blog_tag_maps.created_by',
                 'blogs.title',
-                'blog_tags.tag_name'
+                DB::raw("GROUP_CONCAT(blog_tags.tag_name SEPARATOR ', ') as tags"),
+                DB::raw("GROUP_CONCAT(blog_tags.id) as tag_ids")
+            )
+            ->groupBy(
+                'blog_tag_maps.blog_id',
+                'blogs.title',
+                'blog_tag_maps.created_by'
             );
 
         // Search Filter
@@ -594,16 +610,10 @@ class BlogController extends Controller
             });
         }
 
-        // Status Filter
-        // if ($request->status !== '' && $request->status !== null) {
-
-        //     $query->where('blog_tag_maps.active_status', $request->status);
-        // }
-
         // Per Page
         $per_page = $request->per_page ?? 10;
 
-        $data = $query->orderBy('blog_tag_maps.id', 'DESC')
+        $data = $query->orderBy('blog_tag_maps.blog_id', 'DESC')
             ->paginate($per_page);
 
         return response()->json([
@@ -618,17 +628,35 @@ class BlogController extends Controller
     public function updatetagmap(Request $request, $id)
     {
         try {
-            $data = [
-                "blog_id" => $request->blog_id,
-                "tag_id" => $request->tag_id,
-                "created_by" => 1,
-                "updated_by" => 1,
-            ];
 
-            Tagmap::where('id', $id)->update($data);
-            return $this->successResponse("Tag map Updated", Response::HTTP_CREATED);
+            // Delete old tags of this blog
+            Tagmap::where('blog_id', $request->blog_id)->delete();
+
+            $insertData = [];
+            foreach ($request->tag_id as $tagId) {
+                $insertData[] = [
+                    "blog_id"   => $request->blog_id,
+                    "tag_id"    => $tagId,
+                    "created_by" => 1,
+                    "updated_by" => 1,
+                    "created_at" => now(),
+                    "updated_at" => now(),
+                ];
+            }
+
+            // Insert new selected tags
+            Tagmap::insert($insertData);
+
+            return $this->successResponse(
+                "Tag map Updated Successfully",
+                Response::HTTP_CREATED
+            );
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+
+            return $this->errorResponse(
+                $e->getMessage(),
+                Response::HTTP_PARTIAL_CONTENT
+            );
         }
     }
 

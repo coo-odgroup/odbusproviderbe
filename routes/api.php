@@ -1338,6 +1338,7 @@ Route::post("bus-count",[SeoController::class, "busCount"]);
 
 Route::post("all-Route-template",[SeoController::class, "routeTemplate"]);
 Route::post("templateDetails",[SeoController::class, "templateDetails"]);
+Route::post("manageroute",[SeoController::class, "manageroute"]);
 
 
 
