@@ -209,7 +209,6 @@ class SchedulerRepository
     function scheduleRefund($request)
     {
         $paginate = $request->rows_number ?? 100;
-        // $cancel_by = $request->cancel_by;
 
         $data = $this->booking->with(
             'BookingDetail.BusSeats.seats',
@@ -225,26 +224,28 @@ class SchedulerRepository
             ->with('ClientWallet')
             ->where('status', 2)
             ->where('refund_amount', '!=', 0)
+            ->whereDate('created_at', '>=', '2026-06-01')
             ->whereHas('CustomerPayment', function ($q) {
                 $q->whereNotNull('order_id')
                     ->whereNotNull('razorpay_id')
                     ->where('payment_done', 1);
-            });
+            })
+            ->when($request->journey_dt, function ($q, $journey_dt) {
+                $q->whereDate('journey_dt', $journey_dt);
+            })
+            ->when($request->updated_at, function ($q, $updated_at) {
+                $q->whereDate('updated_at', $updated_at);
+            })
+            ->when($request->pnr, function ($q, $pnr) {
+                $q->where('pnr', $pnr);
+            })
+            ->paginate($paginate);
 
-        // $data = $data->where('user_type', 1);
-        $data = $data->where('pnr', 'ODW989907K4');
-
-        $data = $data->paginate($paginate);
-
-        $response = array(
+        return array(
             "count" => $data->count(),
             "total" => $data->total(),
             "data" => $data
         );
-
-        // ScheduleRefundJob::dispatch();
-
-        return $response;
     }
 
     public function scheduleRefundSelected($request)
@@ -325,7 +326,7 @@ class SchedulerRepository
 
                     CustomerPayment::where('id', $payment->id)->update([
                         'payment_done' => 2,
-                        'refund_mode' => 2,
+                        'refund_mode' => 1,
                         'refund_id' => $res['cf_refund_id'],
                         'refund_status' => $refundStatus
                     ]);
