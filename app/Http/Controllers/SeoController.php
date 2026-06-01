@@ -7,6 +7,7 @@ use App\Models\Bus;
 use App\Models\BusSchedule;
 use App\Models\BusScheduleDate;
 use App\Models\CityContent;
+use App\Models\Location;
 use App\Models\RouteDetail;
 use App\Models\RouteMap;
 use App\Models\SeoContent;
@@ -362,86 +363,278 @@ class SeoController extends Controller
         }
     }
 
+    // public function seoContent(Request $request)
+    // {
+    //     $route_id = $request->route_id;
+    //     $route_details = RouteDetail::find($route_id);
+
+    //     $operator = DB::table('mst_routes_operators')->join('bus_operator', 'bus_operator.id', '=', 'mst_routes_operators.operator_id')
+    //         ->where('mst_routes_operators.route_id', $route_id)
+    //         ->where('active_status', 1)
+    //         ->select('mst_routes_operators.route_id', 'mst_routes_operators.url_genrated', 'mst_routes_operators.operator_id', 'bus_operator.organisation_name')
+    //         ->get();
+
+
+
+    //     if ($route_details->bus_count == null) {
+    //         $bus_count = $this->busCount(new Request(['route_id' => $route_id]));
+    //         $route_details->update(['bus_count' => $bus_count]);
+    //     } else {
+    //         $bus_count = $route_details->bus_count;
+    //     }
+
+    //     $bordingdroping = DB::table('mst_route_brd_drp')
+    //         ->join('boarding_droping', 'boarding_droping.id', '=', 'mst_route_brd_drp.brd_drp_id')
+    //         ->select('mst_route_brd_drp.*', 'boarding_droping.boarding_point')
+    //         ->where('route_id', $route_id);
+
+
+    //     $source_content = CityContent::where('city_id', $route_details->source_id)->first();
+    //     $destination_content = CityContent::where('city_id', $route_details->destination_id)->first();
+
+
+    //     $template = DB::table('mst_seo_templates')->find(1);
+
+    //     $meta_title = $template->meta_title;
+    //     $meta_description = $template->meta_description;
+
+
+
+    //     // Clone query
+    //     $bordingpoint = (clone $bordingdroping)->where('type', 1)->get();
+    //     $dropingpoint = (clone $bordingdroping)->where('type', 2)->get();
+
+    //     $source = $route_details->source;
+    //     $destination = $route_details->destination;
+    //     $first_bus_timing = date('h:i A', strtotime($route_details->first_bus_timing));
+    //     $last_bus_timing = date('h:i A', strtotime($route_details->last_bus_timing));
+    //     $duration = str_replace('-', ' to ', $route_details->duration_in_hours);
+    //     $min_fare = "₹" . $route_details->min_fare;
+    //     $max_fare = "₹" . $route_details->max_fare;
+    //     $bus_types = $route_details->bus_type_comma_separaed;
+    //     $operators = $operator;
+    //     $boarding_points = $bordingpoint;
+    //     $droping_points = $dropingpoint;
+    //     $price_range = "₹" . $min_fare . ' - ' . "₹" . $max_fare;
+
+    //     $return_journey = "http://localhost:4200/routes/" . strtolower($destination) . "-" . strtolower($source) . "-bus-services";
+    //     $booking_url = "http://localhost:4200/routes/" . strtolower($source) . "-" . strtolower($destination) . "-bus-services";
+
+    //     // $operator_list = $operators->pluck('organisation_name')->implode(', ');
+    //     $operator_list = $operators->map(function ($item) {
+    //         return '<li><a href="' . $item->url_genrated . '" target="_blank">'
+    //             . e($item->organisation_name) .
+    //             '</a></li>';
+    //     })->implode('');
+
+    //     $boarding_points_list = $bordingpoint->map(function ($item) {
+    //         return '<li>' . e($item->boarding_point) . '</li>';
+    //     })->implode('');
+
+
+    //     $dropping_points_list = $dropingpoint->map(function ($item) {
+    //         return '<li>' . e($item->boarding_point) . '</li>';
+    //     })->implode('');
+
+    //     //For Meta Title
+    //     //----------------------------------------------------
+
+    //     $replacemetaData = [
+    //         '{{source}}' => $source,
+    //         '{{destination}}' => $destination
+    //     ];
+
+
+    //     $finalMetaTitle = str_replace(
+    //         array_keys($replacemetaData),
+    //         array_values($replacemetaData),
+    //         $meta_title
+    //     );
+
+    //     //-------------------------------------------------------
+
+    //     //For Meta Description
+    //     $replacemetaDescData = [
+    //         '{{source}}' => $source,
+    //         '{{destination}}' => $destination,
+    //         '{{bus_type_comma_separated}}' => $bus_types,
+    //         '{{min_fare}}' => $min_fare,
+    //     ];
+
+
+    //     $finalMetaDescription = str_replace(
+    //         array_keys($replacemetaDescData),
+    //         array_values($replacemetaDescData),
+    //         $meta_description
+    //     );
+    //     //------------------------------------------------------- 
+
+    //     $replaceData = [
+    //         '{{source}}' => $source,
+    //         '{{destination}}' => $destination,
+    //         '{{first_bus_timing}}' => $first_bus_timing,
+    //         '{{last_bus_timing}}' => $last_bus_timing,
+    //         '{{duration}}' => $duration,
+    //         '{{distance}}' => $route_details->distance,
+    //         '{{min_fare}}' => $min_fare,
+    //         '{{max_fare}}' => $max_fare,
+    //         '{{bus_types}}' => $bus_types,
+    //         '{{operator_list}}' => $operator_list,
+    //         '{{operators_count}}' => $operator->count(),
+    //         '{{boarding_points_list}}' => $boarding_points_list,
+    //         '{{bus_count}}' => $bus_count ?? 0,
+    //         '{{dropping_points_list}}' => $dropping_points_list,
+    //         '{{source_content}}' => $source_content->content ?? '',
+    //         '{{destination_content}}' => $destination_content->content ?? '',
+    //         '{{price_range}}' => $price_range,
+    //         '{{return_journey}}' => $return_journey,
+    //         '{{booking_url}}' => $booking_url,
+    //     ];
+
+    //     $templateContent = $template->content;
+
+
+    //     $finalContent = str_replace(
+    //         array_keys($replaceData),
+    //         array_values($replaceData),
+    //         $templateContent
+    //     );
+
+    //     $breadcrumb_schema = json_decode(json_decode($route_details->breadcrumb_schema, true), true);
+    //     $faq_schema = json_decode(json_decode($route_details->faq_schema, true), true);
+
+    //     return response()->json([
+    //         'seo_content' => $finalContent,
+    //         'breadcrumb_schema' => $breadcrumb_schema,
+    //         'faq_schema' => $faq_schema,
+    //         'meta_title' => $finalMetaTitle,
+    //         'meta_description' => $finalMetaDescription,
+
+    //     ]);
+    // }
+
+
     public function seoContent(Request $request)
     {
         $route_id = $request->route_id;
+
         $route_details = RouteDetail::find($route_id);
 
-        $operator = DB::table('mst_routes_operators')->join('bus_operator', 'bus_operator.id', '=', 'mst_routes_operators.operator_id')
+        $operator = DB::table('mst_routes_operators')
+            ->join('bus_operator', 'bus_operator.id', '=', 'mst_routes_operators.operator_id')
             ->where('mst_routes_operators.route_id', $route_id)
             ->where('active_status', 1)
-            ->select('mst_routes_operators.route_id', 'mst_routes_operators.url_genrated', 'mst_routes_operators.operator_id', 'bus_operator.organisation_name')
+            ->select(
+                'mst_routes_operators.route_id',
+                'mst_routes_operators.url_genrated',
+                'mst_routes_operators.operator_id',
+                'bus_operator.organisation_name'
+            )
             ->get();
 
-
-
         if ($route_details->bus_count == null) {
-            $bus_count = $this->busCount(new Request(['route_id' => $route_id]));
-            $route_details->update(['bus_count' => $bus_count]);
+
+            $bus_count = $this->busCount(
+                new Request(['route_id' => $route_id])
+            );
+
+            $route_details->update([
+                'bus_count' => $bus_count
+            ]);
         } else {
+
             $bus_count = $route_details->bus_count;
         }
 
         $bordingdroping = DB::table('mst_route_brd_drp')
-            ->join('boarding_droping', 'boarding_droping.id', '=', 'mst_route_brd_drp.brd_drp_id')
-            ->select('mst_route_brd_drp.*', 'boarding_droping.boarding_point')
+            ->join(
+                'boarding_droping',
+                'boarding_droping.id',
+                '=',
+                'mst_route_brd_drp.brd_drp_id'
+            )
+            ->select(
+                'mst_route_brd_drp.*',
+                'boarding_droping.boarding_point'
+            )
             ->where('route_id', $route_id);
 
+        $bordingpoint = (clone $bordingdroping)
+            ->where('type', 1)
+            ->get();
 
-        $source_content = CityContent::where('city_id', $route_details->source_id)->first();
-        $destination_content = CityContent::where('city_id', $route_details->destination_id)->first();
+        $dropingpoint = (clone $bordingdroping)
+            ->where('type', 2)
+            ->get();
 
+        $source_content = CityContent::where(
+            'city_id',
+            $route_details->source_id
+        )->first();
+
+        $destination_content = CityContent::where(
+            'city_id',
+            $route_details->destination_id
+        )->first();
 
         $template = DB::table('mst_seo_templates')->find(1);
 
         $meta_title = $template->meta_title;
         $meta_description = $template->meta_description;
 
-
-
-        // Clone query
-        $bordingpoint = (clone $bordingdroping)->where('type', 1)->get();
-        $dropingpoint = (clone $bordingdroping)->where('type', 2)->get();
-
         $source = $route_details->source;
         $destination = $route_details->destination;
-        $first_bus_timing = date('h:i A', strtotime($route_details->first_bus_timing));
-        $last_bus_timing = date('h:i A', strtotime($route_details->last_bus_timing));
-        $duration = str_replace('-', ' to ', $route_details->duration_in_hours);
+
+        $first_bus_timing = date(
+            'h:i A',
+            strtotime($route_details->first_bus_timing)
+        );
+
+        $last_bus_timing = date(
+            'h:i A',
+            strtotime($route_details->last_bus_timing)
+        );
+
+        $duration = str_replace(
+            '-',
+            ' to ',
+            $route_details->duration_in_hours
+        );
+
         $min_fare = "₹" . $route_details->min_fare;
         $max_fare = "₹" . $route_details->max_fare;
+
         $bus_types = $route_details->bus_type_comma_separaed;
-        $operators = $operator;
-        $boarding_points = $bordingpoint;
-        $droping_points = $dropingpoint;
-        $price_range = "₹" . $min_fare . ' - ' . "₹" . $max_fare;
 
-        $return_journey = "http://localhost:4200/routes/" . strtolower($source) . "-" . strtolower($destination) . "-bus-services";
+        $price_range = $min_fare . ' - ' . $max_fare;
 
-        // $operator_list = $operators->pluck('organisation_name')->implode(', ');
-        $operator_list = $operators->map(function ($item) {
-            return '<li><a href="' . $item->url_genrated . '" target="_blank">'
-                . e($item->organisation_name) .
-                '</a></li>';
+        $return_journey = Config::get('constants.BASE_URL') . "routes/" . strtolower($destination) . "-" . strtolower($source) . "-bus-services";
+        $booking_url = Config::get('constants.BASE_URL') . "routes/" . strtolower($source) . "-" . strtolower($destination) . "-bus-services";
+
+        $operator_list = $operator->map(function ($item) {
+
+            return '<li>
+                    <a href="' . $item->url_genrated . '" target="_blank">
+                        ' . e($item->organisation_name) . '
+                    </a>
+                </li>';
         })->implode('');
 
         $boarding_points_list = $bordingpoint->map(function ($item) {
+
             return '<li>' . e($item->boarding_point) . '</li>';
         })->implode('');
-
 
         $dropping_points_list = $dropingpoint->map(function ($item) {
+
             return '<li>' . e($item->boarding_point) . '</li>';
         })->implode('');
 
-        //For Meta Titl
-        //----------------------------------------------------
-
+        /* META TITLE */
         $replacemetaData = [
             '{{source}}' => $source,
             '{{destination}}' => $destination
         ];
-
 
         $finalMetaTitle = str_replace(
             array_keys($replacemetaData),
@@ -449,29 +642,40 @@ class SeoController extends Controller
             $meta_title
         );
 
-        //-------------------------------------------------------
-
-        //For Meta Description
+        /* META DESCRIPTION */
         $replacemetaDescData = [
             '{{source}}' => $source,
             '{{destination}}' => $destination,
-            '{{bus_type_comma_separated}}' => $bus_types,
             '{{min_fare}}' => $min_fare,
         ];
-
 
         $finalMetaDescription = str_replace(
             array_keys($replacemetaDescData),
             array_values($replacemetaDescData),
             $meta_description
         );
-        //------------------------------------------------------- 
 
-        // return $operator_list;
+        /* TEMPLATE CONTENT */
+        $templateContent = $template->content;
 
-        // $boarding_points_list = $boarding_points->pluck('boarding_point')->implode(', ');
+        if (empty($source_content) || empty($source_content->content)) {
 
-        // $dropping_points_list = $droping_points->pluck('boarding_point')->implode(', ');
+            $templateContent = preg_replace(
+                '/<h2>Know More About \{\{source\}\}<\/h2>\s*<p>\{\{source_content\}\}<\/p>/is',
+                '',
+                $templateContent
+            );
+        }
+
+
+        if (empty($destination_content) || empty($destination_content->content)) {
+
+            $templateContent = preg_replace(
+                '/<h2>Know More About \{\{destination\}\}<\/h2>\s*<p>\{\{destination_content\}\}<\/p>/is',
+                '',
+                $templateContent
+            );
+        }
 
         $replaceData = [
             '{{source}}' => $source,
@@ -492,10 +696,8 @@ class SeoController extends Controller
             '{{destination_content}}' => $destination_content->content ?? '',
             '{{price_range}}' => $price_range,
             '{{return_journey}}' => $return_journey,
+            '{{booking_url}}' => $booking_url,
         ];
-
-        $templateContent = $template->content;
-
 
         $finalContent = str_replace(
             array_keys($replaceData),
@@ -503,8 +705,15 @@ class SeoController extends Controller
             $templateContent
         );
 
-        $breadcrumb_schema = json_decode(json_decode($route_details->breadcrumb_schema, true), true);
-        $faq_schema = json_decode(json_decode($route_details->faq_schema, true), true);
+        $breadcrumb_schema = json_decode(
+            json_decode($route_details->breadcrumb_schema, true),
+            true
+        );
+
+        $faq_schema = json_decode(
+            json_decode($route_details->faq_schema, true),
+            true
+        );
 
         return response()->json([
             'seo_content' => $finalContent,
@@ -512,7 +721,6 @@ class SeoController extends Controller
             'faq_schema' => $faq_schema,
             'meta_title' => $finalMetaTitle,
             'meta_description' => $finalMetaDescription,
-
         ]);
     }
 
@@ -532,7 +740,7 @@ class SeoController extends Controller
                 'meta_title' => $meta_title,
                 'meta_description' => $meta_description,
                 'updated_by' => $updated_by,
-                'is_publised' => $updated_by,
+                'is_publised' => 1,
             ];
 
 
@@ -641,5 +849,59 @@ class SeoController extends Controller
         }
 
         return response()->json($data);
+    }
+
+
+    public function manageroute(Request $request)
+    {
+        // Get unique bus ids
+        $busIds = TicketPrice::where('source_id', $request->source_id)
+            ->where('destination_id', $request->destination_id)
+            ->where('status', 1)
+            ->pluck('bus_id')
+            ->unique();
+
+        $allRoutes = collect();
+
+        foreach ($busIds as $busId) {
+
+            $busRoutes = TicketPrice::where('bus_id', $busId)
+                ->where('status', 1)
+                ->select('source_id', 'destination_id')
+                ->get();
+
+            $allRoutes = $allRoutes->merge($busRoutes);
+        }
+
+        // Remove duplicate routes
+        $uniqueRoutes = $allRoutes->unique(function ($item) {
+            return $item->source_id . '-' . $item->destination_id;
+        })->values();
+
+        // Check route exists and get location names
+        $finalData = $uniqueRoutes->map(function ($route) {
+
+            $exists = RouteDetail::where('source_id', $route->source_id)
+                ->where('destination_id', $route->destination_id)
+                ->exists();
+
+            // Get source name
+            $sourceName = Location::where('id', $route->source_id)
+                ->value('name');
+
+            // Get destination name
+            $destinationName = Location::where('id', $route->destination_id)
+                ->value('name');
+
+            return [
+                'source_id'        => $route->source_id,
+                'source_name'      => $sourceName,
+                'destination_id'   => $route->destination_id,
+                'destination_name' => $destinationName,
+                'already_exist'    => $exists
+            ];
+        });
+
+        return $finalData;
     }
 }
