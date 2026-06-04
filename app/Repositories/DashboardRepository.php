@@ -200,7 +200,8 @@ class DashboardRepository
             ->selectRaw('
             IFNULL(SUM(customer_comission),0) as customer_amount
         ')
-            ->where('status', '1');
+            ->where('status', '1')
+            ->where('user_id', $request->USERID);
 
         $sales_data = $this->booking
             ->selectRaw('
@@ -390,7 +391,7 @@ class DashboardRepository
 
             $bus = DB::table('bus')
                 ->where('id', $v->bus_id)
-                ->select('name')
+                ->select('name', 'bus_number')
                 ->first();
 
             $from = $this->location
@@ -401,19 +402,28 @@ class DashboardRepository
                 ->where('id', $v->destination_id)
                 ->first();
 
-            $commissionAmount = (float)$v->agent_commission + (float)$v->customer_comission;
+            if (count($passengerNames) > 1) {
+                $displayPassenger = $passengerNames[0] . ' +' . (count($passengerNames) - 1);
+            } else {
+                $displayPassenger = $passengerNames[0] ?? '-';
+            }
 
 
 
             $data_arr[$key] = [
                 'pnr' => $v->pnr,
                 'bus_name' => $bus ? $bus->name : '-',
+                'bus_number' => $bus ? $bus->bus_number : '-',
+                'transaction_id' => $v->transaction_id,
                 'journey_dt' => $v->journey_dt,
                 'route' => ($from ? $from->name : '') . ' - ' . ($to ? $to->name : ''),
-                'passenger_name' => implode(', ', $passengerNames),
-                'commission_amount' => round($commissionAmount, 2),
+                'passenger_name' => $displayPassenger,
+                'all_passengers' => implode(', ', $passengerNames),
+                'agent_commission' => (float) $v->agent_commission,
+                'customer_comission' => (float) $v->customer_comission,
                 'amount' => $v->total_fare,
                 'source_name' => $from ? $from->name : '',
+                'booking_date' => $v->created_at,
                 'destination_name' => $to ? $to->name : '',
             ];
         }
@@ -433,6 +443,7 @@ class DashboardRepository
                 'payment_via',
                 'amount',
                 'transaction_type',
+                'type',
                 'balance',
                 'remarks',
                 'created_at'

@@ -62,15 +62,22 @@ class AgentWalletReportRepository
 
     public function Filter($data, $name)
     {
-        return  $data->where('transaction_id', 'like', '%' . $name . '%')
-            ->orWhere('reference_id', 'like', '%' . $name . '%')
-            ->orWhere('amount', 'like', '%' . $name . '%')
-            ->orWhere('remarks', 'like', '%' . $name . '%')
-            ->orWhere('payment_via', 'like', '%' . $name . '%')
+        $bookingIds = $this->booking
+            ->where('pnr', 'like', '%' . $name . '%')
+            ->pluck('id')
+            ->toArray();
 
-            ->orWhereHas('pnrDetails', function ($q) use ($name) {
-                $q->where('pnr', 'like', '%' . $name . '%');
-            });
+        return $data->where(function ($query) use ($name, $bookingIds) {
+
+            $query->where('transaction_id', 'like', '%' . $name . '%')
+                ->orWhere('reference_id', 'like', '%' . $name . '%')
+                ->orWhere('remarks', 'like', '%' . $name . '%')
+                ->orWhere('payment_via', 'like', '%' . $name . '%');
+
+            if (!empty($bookingIds)) {
+                $query->orWhereIn('booking_id', $bookingIds);
+            }
+        });
     }
 
     public function filterDate($data, $start_date, $end_date)
