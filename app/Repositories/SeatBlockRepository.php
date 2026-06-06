@@ -66,7 +66,7 @@ class SeatBlockRepository
     //     return $data ;
     // }
 
- public function addseatBlock($data)
+   public function addseatBlock($data)
     {
         DB::beginTransaction();
 
@@ -173,6 +173,23 @@ class SeatBlockRepository
                     }
                 }
             }
+
+            $inventory = app(\App\Services\InventoryService::class);
+
+            $seatCount = count($selectedSeats);
+
+            foreach ($data['busRoute'] as $ticketPriceId) {
+
+                foreach ($dates as $dt) {
+
+                    $inventory->blockSeatsByTicketPrice(
+                        $ticketPriceId,
+                        $dt,
+                        $seatCount
+                    );
+                }
+            }
+
 
             DB::commit();
             return ['status' => 'success'];
@@ -291,6 +308,24 @@ class SeatBlockRepository
                     }
                 }
             }
+
+
+            $inventory = app(\App\Services\InventoryService::class);
+
+            $seatCount = count($selectedSeats);
+
+            foreach ($data['busRoute'] as $ticketPriceId) {
+
+                foreach ($dates as $dt) {
+
+                    $inventory->blockSeatsByTicketPrice(
+                        $ticketPriceId,
+                        $dt,
+                        $seatCount
+                    );
+                }
+            }
+
 
             DB::commit();
             return ['status' => 'success'];

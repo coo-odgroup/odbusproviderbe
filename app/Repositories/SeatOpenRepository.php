@@ -44,81 +44,13 @@ class SeatOpenRepository
     }
     public function getAll()
     {
-        // return $this->seatOpen->with('seatOpenSeats')->with('bus','bus.busOperator')->get();
         return $this->busSeats->with('seats')->with('bus', 'bus.busOperator')->get();
 
     }
-    //  public function addseatopen($data)
-    // {
-    // Log::info($data);
-    // exit();
-    //     $seatopen = new $this->seatOpen;
-    //     $seatopen->bus_id = $data['bus_id'];
-    //     $seatopen->operator_id = $data['bus_operator_id'];
-    //     $seatopen->reason = $data['reason'];
-    //     $seatopen->date_applied = $data['date'];
-    //     $seatopen->created_by = $data['created_by'];
-    //     $seatopen->save();
-    //     $seats = [];
-    //     foreach ($data['bus_seat_layout_data'] as $slayout)
-    //     {
-
-    //         foreach ($slayout['lowerBerth'] as $lberth)
-    //         {
-    //             $seat = new SeatOpenSeats();
-    //             if(isset($lberth['seatChecked']))
-    //             {
-    //                 if($lberth["seatChecked"] == true)
-    //                 {
-    //                     $seat['seats_id'] = $lberth['seatId'];
-    //                     $seat['created_by'] = $data['created_by'];
-
-    //                     $seats[]=$seat;
-    //                 }
-    //             }
-
-
-    //         }
-
-    //         foreach ($slayout['upperBerth'] as $uberth)
-    //         {
-    //             $seat = new SeatOpenSeats();
-    //             //Log::info($uberth);
-    //             if(isset($uberth['seatChecked']))
-    //             {
-    //                 if($uberth["seatChecked"] == true)
-    //                 {
-    //                     $seat['seats_id'] = $uberth['seatId'];
-    //                     $seat['created_by'] = $data['created_by'];
-
-    //                     $seats[]=$seat;
-    //                 }
-    //             }
-    //         }
-
-    //     }
-    //      $seatopen->seatOpenSeats()->saveMany($seats);
-    //      return $seatopen;
-    // }
+   
     public function addseatopen($data)
     {
-        // $date= $data->date;
-        // $all_date=[];
-        // if(!empty($date))
-        // {
-        //     foreach ($date as  $d) {
-        //         if(strlen($d['month'])==1)
-        //         {
-        //             $d['month']="0".$d['month'];
-        //         }
-        //         if(strlen($d['day'])==1)
-        //         {
-        //             $d['day']="0".$d['day'];
-        //         }
-
-        //         $all_date[] = $d['year'].'-'.$d['month'].'-'.$d['day'] ;
-        //     }
-        // }
+       
         $date = $data->date;
         $all_date = [];
 
@@ -201,6 +133,8 @@ class SeatOpenRepository
             }
         }
 
+        $inventory = app(\App\Services\InventoryService::class);
+        $seatCount = 0;
 
         ///////////////////////////////////////
         foreach ($layoutArray as $sLayoutData) {
@@ -211,6 +145,7 @@ class SeatOpenRepository
                     foreach ($sLayoutData['upperBerth'] as $upperBerthData) {
                         if (isset($upperBerthData['seatChecked'])) {
                             if ($upperBerthData['seatChecked'] == "true") {
+                                $seatCount++;
                                 foreach ($get_ticket_price_id as $ticketpriceID) {
                                     foreach ($all_date as $dt) {
                                         $busseats = new $this->busSeats();
@@ -240,6 +175,7 @@ class SeatOpenRepository
                     foreach ($sLayoutData['lowerBerth'] as $lowerBerthData) {
                         if (isset($lowerBerthData['seatChecked'])) {
                             if ($lowerBerthData['seatChecked'] == "true") {
+                                $seatCount++;
                                 foreach ($get_ticket_price_id as $ticketpriceID) {
                                     foreach ($all_date as $dt) {
                                         $busseats = new $this->busSeats();
@@ -256,7 +192,6 @@ class SeatOpenRepository
 
                                         // Log::info($busseats);
                                         $busseats->save();
-
                                     }
 
                                 }
@@ -264,6 +199,21 @@ class SeatOpenRepository
                         }
                     }
                 }
+            }
+        }
+
+
+        foreach ($get_ticket_price_id as $ticketpriceID) {
+
+            $ticketPrice = TicketPrice::find($ticketpriceID);
+
+            foreach ($all_date as $dt) {
+
+                 $inventory->openSeatsByTicketPrice(
+                            $ticketpriceID,
+                            $dt,
+                            $seatCount
+                        );
             }
         }
         return $data;
@@ -355,6 +305,8 @@ class SeatOpenRepository
 
         ////////////////////////////////
 
+        $inventory = app(\App\Services\InventoryService::class);
+        $seatCount = 0;
 
         foreach ($layoutArray as $sLayoutData) {
             if (isset($sLayoutData['upperBerth'])) {
@@ -364,6 +316,7 @@ class SeatOpenRepository
                     foreach ($sLayoutData['upperBerth'] as $upperBerthData) {
                         if (isset($upperBerthData['seatChecked'])) {
                             if ($upperBerthData['seatChecked'] == "true") {
+                                $seatCount++;
                                 foreach ($get_ticket_price_id as $ticketpriceID) {
                                     foreach ($all_date as $dt) {
                                         $busseats = new $this->busSeats();
@@ -393,6 +346,8 @@ class SeatOpenRepository
                     foreach ($sLayoutData['lowerBerth'] as $lowerBerthData) {
                         if (isset($lowerBerthData['seatChecked'])) {
                             if ($lowerBerthData['seatChecked'] == "true") {
+                                $seatCount++;
+
                                 foreach ($get_ticket_price_id as $ticketpriceID) {
                                     foreach ($all_date as $dt) {
                                         $busseats = new $this->busSeats();
@@ -417,6 +372,20 @@ class SeatOpenRepository
                         }
                     }
                 }
+            }
+        }
+
+        foreach ($get_ticket_price_id as $ticketpriceID) {
+
+            $ticketPrice = TicketPrice::find($ticketpriceID);
+
+            foreach ($all_date as $dt) {
+
+                 $inventory->openSeatsByTicketPrice(
+                            $ticketpriceID,
+                            $dt,
+                            $seatCount
+                        );
             }
         }
         return $data;
