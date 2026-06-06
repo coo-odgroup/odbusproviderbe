@@ -52,7 +52,9 @@ class PageContentController extends Controller
             'meta_keyword',
             'meta_description',
             'extra_meta',
-            'canonical_url'
+            'canonical_url',
+            'breadcrumb_schema',
+            'faq_schema'
         ]);
 
         $pagecontent = $this->pagecontentValidator->validate($data);
@@ -82,7 +84,9 @@ class PageContentController extends Controller
             'meta_keyword',
             'meta_description',
             'extra_meta',
-            'canonical_url'
+            'canonical_url',
+            'breadcrumb_schema',
+            'faq_schema'
         ]);
 
         $pagecontent = $this->pagecontentValidator->validate($data);
