@@ -44,50 +44,39 @@ class InventoryService
             ]);
     }
 
-   public function openSeatsByTicketPrice(
-    int $ticketPriceId,
-    string $journeyDate,
-    int $seatCount
-    ) {
-        BusSeatCount::where('ticket_price_id', $ticketPriceId)
-            ->where('journey_date', $journeyDate)
-            ->increment('total_seat', $seatCount);
+    public function openSeatsByTicketPrice(int $ticketPriceId,string $journeyDate,int $openSeatCount) {
 
         BusSeatCount::where('ticket_price_id', $ticketPriceId)
             ->where('journey_date', $journeyDate)
             ->update([
-                'available_seat' => DB::raw("
-                    total_seat
-                    - booked_seat
-                    - blocked_seat
-                    - hold_seat
-                ")
-            ]);
-    }
-
-    public function blockSeatsByTicketPrice(
-    int $ticketPriceId,
-    string $journeyDate,
-    int $seatCount
-    ) {
-
-        BusSeatCount::where('ticket_price_id', $ticketPriceId)
-            ->where('journey_date', $journeyDate)
-            ->increment('blocked_seat', $seatCount);
-
-        BusSeatCount::where('ticket_price_id', $ticketPriceId)
-            ->where('journey_date', $journeyDate)
-            ->update([
-                'available_seat' => DB::raw("
+                'total_seat' => DB::raw("
                     GREATEST(
-                        total_seat
-                        - booked_seat
-                        - blocked_seat
-                        - hold_seat,
+                        total_seat + {$openSeatCount},
                         0
                     )
                 ")
             ]);
+
+        $this->refreshAvailableSeats(
+            [$ticketPriceId],
+            $journeyDate
+        );
+    }
+
+    public function blockSeatsByTicketPrice(int $ticketPriceId,string $journeyDate,int $blockedSeatCount) {
+
+        BusSeatCount::where('ticket_price_id', $ticketPriceId)
+            ->where('journey_date', $journeyDate)
+           ->update([
+            'blocked_seat' => DB::raw(
+                "GREATEST({$blockedSeatCount}, 0)"
+            )
+        ]);
+
+        $this->refreshAvailableSeats(
+            [$ticketPriceId],
+            $journeyDate
+        );
     }
 
    
@@ -147,4 +136,5 @@ class InventoryService
             ->pluck('ticket_price.id')
             ->toArray();
     }
+
 }

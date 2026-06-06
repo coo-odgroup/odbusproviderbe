@@ -11,6 +11,7 @@ use App\Models\Location;
 use App\Models\TicketPrice;
 use App\Models\Booking;
 use App\Models\BookingDetail;
+use App\Models\BusSeatCount;
 // use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -684,7 +685,7 @@ class SeatOpenRepository
         return $data;
     }
 
-    public function updateSeatOpenData($data)
+    public function updateSeatOpenData_old($data)
     {
         DB::beginTransaction();
 
@@ -791,6 +792,153 @@ class SeatOpenRepository
             ];
 
         } catch (\Exception $e) {
+            DB::rollBack();
+
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function updateSeatOpenData($data)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $requestedSeats = [];
+
+            foreach ($data['bus_seat_layout_data'] as $layout) {
+
+                foreach (['upperBerth', 'lowerBerth'] as $berth) {
+
+                    if (!empty($layout[$berth])) {
+
+                        foreach ($layout[$berth] as $seat) {
+
+                            $requestedSeats[$seat['seatId']] =
+                                filter_var(
+                                    $seat['seatChecked'] ?? false,
+                                    FILTER_VALIDATE_BOOLEAN
+                                );
+                        }
+                    }
+                }
+            }
+
+            foreach ($data['busRoute'] as $ticketPriceId) {
+
+                $oldOpenSeatCount = $this->busSeats
+                                ->where('bus_id', $data['bus_id'])
+                                ->where('ticket_price_id', $ticketPriceId)
+                                ->where('operation_date', $data['date'])
+                                ->where('type', 1)
+                                ->where('status', 1)
+                                ->count();
+
+                $existingSeats = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('operation_date', $data['date'])
+                    ->where('type', 1)
+                    ->get()
+                    ->groupBy('seats_id');
+
+                foreach ($requestedSeats as $seatId => $isChecked) {
+
+                    $seatRows = $existingSeats->get($seatId, collect());
+
+                    if ($isChecked) {
+
+                        if ($seatRows->count() > 0) {
+
+                            $first = $seatRows->first();
+
+                            $first->update([
+                                'status' => 1,
+                                'reason' => $data['reason']
+                            ]);
+
+                            if ($seatRows->count() > 1) {
+
+                                $duplicateIds = $seatRows
+                                    ->pluck('id')
+                                    ->slice(1);
+
+                                $this->busSeats
+                                    ->whereIn('id', $duplicateIds)
+                                    ->delete();
+                            }
+
+                        } else {
+
+                            $this->busSeats->create([
+                                'bus_id'          => $data['bus_id'],
+                                'category'        => 0,
+                                'seats_id'        => $seatId,
+                                'ticket_price_id' => $ticketPriceId,
+                                'operation_date'  => $data['date'],
+                                'status'          => 1,
+                                'type'            => 1,
+                                'created_by'      => $data['created_by'],
+                                'reason'          => $data['reason'],
+                                'other_reason'    => $data['other_reson'],
+                            ]);
+                        }
+
+                    } else {
+
+                        if ($seatRows->count()) {
+
+                            $this->busSeats
+                                ->whereIn('id', $seatRows->pluck('id'))
+                                ->update([
+                                    'status' => 2
+                                ]);
+                        }
+                    }
+                }
+
+
+                 // Recalculate after updates
+                $newOpenSeatCount = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('operation_date', $data['date'])
+                    ->where('type', 1)
+                    ->where('status', 1)
+                    ->count();
+
+               BusSeatCount::where('ticket_price_id', $ticketPriceId)
+                            ->where('journey_date', $data['date'])
+                            ->update([
+                                'total_seat' => DB::raw("
+                                    GREATEST(
+                                        total_seat - {$oldOpenSeatCount} + {$newOpenSeatCount},
+                                        0
+                                    )
+                                ")
+                            ]);
+
+                app(\App\Services\InventoryService::class)
+                    ->refreshAvailableSeats(
+                        [$ticketPriceId],
+                        $data['date']
+                    );
+
+            }
+
+
+            DB::commit();
+
+            return [
+                'status' => 'success',
+                'message' => 'Seat open updated successfully'
+            ];
+
+        } catch (\Exception $e) {
+
             DB::rollBack();
 
             return [
@@ -1065,8 +1213,6 @@ class SeatOpenRepository
         }
         $seatopen->seatOpenSeats()->saveMany($seats);
         return $seatopen;
-
-
     }
 
     public function delete($request)
