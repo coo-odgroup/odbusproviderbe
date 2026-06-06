@@ -1841,7 +1841,7 @@ class SeatBlockRepository
          return $seatBlock;
     }
 
-   public function delete($request)
+    public function delete($request)
     {
         $inventory = app(\App\Services\InventoryService::class);
 

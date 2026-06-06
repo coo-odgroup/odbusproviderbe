@@ -1218,12 +1218,18 @@ class SeatOpenRepository
     public function delete($request)
     {
 
+         $routeCount = TicketPrice::where('bus_id', $request['bus_id'])->count();
+
         $activeOpenCount = $this->busSeats
-                        ->where('bus_id', $request['bus_id'])
-                        ->where('operation_date', $request['operationDate'])
-                        ->where('type', $request['type'])
-                        ->where('status', 1)
-                        ->count();
+            ->where('bus_id', $request['bus_id'])
+            ->where('operation_date', $request['operationDate'])
+            ->where('type', $request['type'])
+            ->where('status', 1)
+            ->count();
+
+        $actualSeatCount = $routeCount > 0
+            ? ($activeOpenCount / $routeCount)
+            : 0;
 
         $seatOpen = $this->busSeats
                          ->where('bus_id', $request['bus_id'])
@@ -1232,20 +1238,31 @@ class SeatOpenRepository
                          ->update(['status' => '2']);
 
         
-           BusSeatCount::where('journey_date', $request['operationDate'])
-                            ->whereIn(
-                                'ticket_price_id',
-                                TicketPrice::where('bus_id', $request['bus_id'])
-                                    ->pluck('id')
+         BusSeatCount::where('journey_date', $request['operationDate'])
+                    ->whereIn(
+                        'ticket_price_id',
+                        TicketPrice::where('bus_id', $request['bus_id'])
+                            ->pluck('id')
+                    )
+                    ->update([
+                        'total_seat' => DB::raw("
+                            GREATEST(
+                                total_seat - {$actualSeatCount},
+                                0
                             )
-                            ->update([
-                                'total_seat' => DB::raw("
-                                    GREATEST(
-                                        total_seat - {$activeOpenCount},
-                                        0
-                                    )
-                                ")
-                            ]);
+                        ")
+                    ]);
+
+             $routeIds = TicketPrice::where('bus_id', $request['bus_id'])
+                ->pluck('id')
+                ->toArray();
+
+            app(\App\Services\InventoryService::class)
+                ->refreshAvailableSeats(
+                    $routeIds,
+                    $request['operationDate']
+                );     
+
         return $seatOpen;
     }
 
