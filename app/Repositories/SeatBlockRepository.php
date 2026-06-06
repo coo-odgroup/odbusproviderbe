@@ -1841,14 +1841,51 @@ class SeatBlockRepository
          return $seatBlock;
     }
 
-    public function delete($request)
-    {   
-        // log::info($request);exit;
+   public function delete($request)
+    {
+        $inventory = app(\App\Services\InventoryService::class);
+
         $seatBlock = $this->busSeats
-                         ->where('bus_id',$request['bus_id'])
-                         ->where('operation_date',$request['operationDate'])
-                         ->where('type',$request['type'])
-                         ->delete();
+            ->where('bus_id', $request['bus_id'])
+            ->where('operation_date', $request['operationDate'])
+            ->where('type', $request['type'])
+            ->delete();
+
+        $routeIds = TicketPrice::where('bus_id', $request['bus_id'])
+            ->pluck('id')
+            ->toArray();
+
+        foreach ($routeIds as $ticketPriceId) {
+
+            $normalBlocked = $this->busSeats
+                ->where('bus_id', $request['bus_id'])
+                ->where('ticket_price_id', $ticketPriceId)
+                ->where('operation_date', $request['operationDate'])
+                ->where('type', 2)
+                ->where('status', 1)
+                ->count();
+
+            $extraBlocked = $this->busSeats
+                ->where('bus_id', $request['bus_id'])
+                ->where('ticket_price_id', $ticketPriceId)
+                ->where('operation_date', $request['operationDate'])
+                ->whereNull('type')
+                ->whereNotNull('duration')
+                ->where('status', 1)
+                ->count();
+
+            BusSeatCount::where('ticket_price_id', $ticketPriceId)
+                ->where('journey_date', $request['operationDate'])
+                ->update([
+                    'blocked_seat' => ($normalBlocked + $extraBlocked)
+                ]);
+
+            $inventory->refreshAvailableSeats(
+                [$ticketPriceId],
+                $request['operationDate']
+            );
+        }
+
         return $seatBlock;
     }
 

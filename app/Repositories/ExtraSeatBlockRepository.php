@@ -13,6 +13,7 @@ use App\Models\Booking;
 use App\Models\BusSeatCount;
 use App\Models\BookingDetail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
@@ -872,14 +873,48 @@ class ExtraSeatBlockRepository
     }
 
 
-    public function deleteExtraSeatBlock($request)
+   public function deleteExtraSeatBlock($request)
     {
+        $inventory = app(\App\Services\InventoryService::class);
+
+        // Count active extra blocked seats before delete
+        $extraBlockedCount = $this->busSeats
+            ->where('bus_id', $request['bus_id'])
+            ->where('operation_date', $request['operationDate'])
+            ->whereNull('type')
+            ->whereNotNull('duration')
+            ->where('status', 1)
+            ->count();
+
+        // Delete records
         $seatBlock = $this->busSeats
-                         ->where('bus_id', $request['bus_id'])
-                         // ->where('ticket_price_id',$request['ticketPriceId'])
-                         ->where('operation_date', $request['operationDate'])
-                         ->delete();
-        ;
+            ->where('bus_id', $request['bus_id'])
+            ->where('operation_date', $request['operationDate'])
+            ->whereNull('type')
+            ->whereNotNull('duration')
+            ->delete();
+
+        // Update inventory for all routes of this bus
+        $routeIds = TicketPrice::where('bus_id', $request['bus_id'])
+            ->pluck('id')
+            ->toArray();
+
+        BusSeatCount::whereIn('ticket_price_id', $routeIds)
+            ->where('journey_date', $request['operationDate'])
+            ->update([
+                'blocked_seat' => DB::raw("
+                    GREATEST(
+                        blocked_seat - {$extraBlockedCount},
+                        0
+                    )
+                ")
+            ]);
+
+        $inventory->refreshAvailableSeats(
+            $routeIds,
+            $request['operationDate']
+        );
+
         return $seatBlock;
     }
 

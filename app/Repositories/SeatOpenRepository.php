@@ -1217,11 +1217,35 @@ class SeatOpenRepository
 
     public function delete($request)
     {
+
+        $activeOpenCount = $this->busSeats
+                        ->where('bus_id', $request['bus_id'])
+                        ->where('operation_date', $request['operationDate'])
+                        ->where('type', $request['type'])
+                        ->where('status', 1)
+                        ->count();
+
         $seatOpen = $this->busSeats
                          ->where('bus_id', $request['bus_id'])
                          ->where('operation_date', $request['operationDate'])
                          ->where('type', $request['type'])
                          ->update(['status' => '2']);
+
+        
+           BusSeatCount::where('journey_date', $request['operationDate'])
+                            ->whereIn(
+                                'ticket_price_id',
+                                TicketPrice::where('bus_id', $request['bus_id'])
+                                    ->pluck('id')
+                            )
+                            ->update([
+                                'total_seat' => DB::raw("
+                                    GREATEST(
+                                        total_seat - {$activeOpenCount},
+                                        0
+                                    )
+                                ")
+                            ]);
         return $seatOpen;
     }
 
