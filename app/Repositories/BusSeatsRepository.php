@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Bus;
 use App\Models\BusSeats;
 use App\Models\TicketPrice;
+use App\Models\BusSeatCount;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use DB;
@@ -144,7 +145,167 @@ class BusSeatsRepository
         }
         return $data;
     }
+
     public function updateBusSeatsExtra($data, $id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $inventory = app(\App\Services\InventoryService::class);
+
+            $layoutArray = $data['bus_seat_layout_data'];
+
+            $ticketPrices = $this->ticketPrice
+                ->where('bus_id', $data['bus_id'])
+                ->get();
+
+            /*
+            |--------------------------------------------------------------------------
+            | OLD EXTRA SEAT COUNT
+            |--------------------------------------------------------------------------
+            */
+
+            $oldExtraSeatCounts = [];
+
+            foreach ($ticketPrices as $ticketPrice) {
+
+                $oldExtraSeatCounts[$ticketPrice->id] = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPrice->id)
+                    ->where('duration', '>', 0)
+                    ->where('status', 1)
+                    ->count();
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | DEACTIVATE OLD EXTRA SEATS
+            |--------------------------------------------------------------------------
+            */
+
+            $this->busSeats
+                ->where('bus_id', $data['bus_id'])
+                ->where('duration', '>', 0)
+                ->update([
+                    'status' => 2
+                ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | INSERT NEW EXTRA SEATS
+            |--------------------------------------------------------------------------
+            */
+
+            foreach ($layoutArray as $sLayoutData) {
+
+                foreach (['upperBerth', 'lowerBerth'] as $berthType) {
+
+                    if (empty($sLayoutData[$berthType])) {
+                        continue;
+                    }
+
+                    foreach ($sLayoutData[$berthType] as $seatData) {
+
+                        if (
+                            !isset($seatData['seatChecked']) ||
+                            $seatData['seatChecked'] != "true"
+                        ) {
+                            continue;
+                        }
+
+                        foreach ($ticketPrices as $ticketPrice) {
+
+                            $busSeat = new $this->busSeats();
+
+                            $data['ticket_price_id'] = $ticketPrice->id;
+                            $data['category'] = 0;
+
+                            $busSeat = $this->getModel(
+                                $busSeat,
+                                $data,
+                                $seatData
+                            );
+
+                            $busSeat->save();
+                        }
+                    }
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE INVENTORY
+            |--------------------------------------------------------------------------
+            */
+
+            foreach ($ticketPrices as $ticketPrice) {
+
+                $newExtraSeatCount = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPrice->id)
+                    ->where('duration', '>', 0)
+                    ->where('status', 1)
+                    ->count();
+
+                $diff = $newExtraSeatCount -
+                    ($oldExtraSeatCounts[$ticketPrice->id] ?? 0);
+
+                if ($diff != 0) {
+
+                    BusSeatCount::where(
+                        'ticket_price_id',
+                        $ticketPrice->id
+                    )
+                    ->update([
+                        'total_seat' => DB::raw("
+                            GREATEST(
+                                total_seat + ({$diff}),
+                                0
+                            )
+                        ")
+                    ]);
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Refresh all dates for this route
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $journeyDates = BusSeatCount::where(
+                            'ticket_price_id',
+                            $ticketPrice->id
+                        )
+                        ->pluck('journey_date');
+
+                    foreach ($journeyDates as $journeyDate) {
+
+                        $inventory->refreshAvailableSeats(
+                            [$ticketPrice->id],
+                            $journeyDate
+                        );
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return $data;
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            \Log::error(
+                'updateBusSeatsExtra Error : ' .
+                $e->getMessage()
+            );
+
+            throw $e;
+        }
+    }
+
+    public function updateBusSeatsExtra_old($data, $id)
     {
         $layoutArray = $data['bus_seat_layout_data'];
         $get_ticket_price_id = $this->ticketPrice->where('bus_id', $data['bus_id'])->get();

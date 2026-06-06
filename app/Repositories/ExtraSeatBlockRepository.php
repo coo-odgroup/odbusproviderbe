@@ -10,6 +10,7 @@ use App\Models\Bus;
 use App\Models\Location;
 use App\Models\TicketPrice;
 use App\Models\Booking;
+use App\Models\BusSeatCount;
 use App\Models\BookingDetail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
@@ -418,6 +419,45 @@ class ExtraSeatBlockRepository
                 }
             }
         }
+
+        $inventory = app(\App\Services\InventoryService::class);
+
+        foreach ($get_ticket_price_id as $ticketPriceId) {
+
+            foreach ($all_date as $dt) {
+
+                $normalBlocked = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('operation_date', $dt)
+                    ->where('type', 2)
+                    ->where('status', 1)
+                    ->count();
+
+                $extraBlocked = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('operation_date', $dt)
+                    ->whereNotNull('duration')
+                    ->whereNull('type')
+                    ->where('status', 1)
+                    ->count();
+
+                $totalBlocked = $normalBlocked + $extraBlocked;
+
+                BusSeatCount::where('ticket_price_id', $ticketPriceId)
+                    ->where('journey_date', $dt)
+                    ->update([
+                        'blocked_seat' => $totalBlocked
+                    ]);
+
+                $inventory->refreshAvailableSeats(
+                    [$ticketPriceId],
+                    $dt
+                );
+            }
+        }
+
         return $data;
     }
 
@@ -789,11 +829,47 @@ class ExtraSeatBlockRepository
                 }
             }
         }
+
+        $inventory = app(\App\Services\InventoryService::class);
+
+        foreach ($get_ticket_price_id as $ticketPriceId) {
+
+            foreach ($all_date as $dt) {
+
+                $normalBlocked = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('operation_date', $dt)
+                    ->where('type', 2)
+                    ->where('status', 1)
+                    ->count();
+
+                $extraBlocked = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('operation_date', $dt)
+                    ->whereNotNull('duration')
+                    ->whereNull('type')
+                    ->where('status', 1)
+                    ->count();
+
+                $totalBlocked = $normalBlocked + $extraBlocked;
+
+                BusSeatCount::where('ticket_price_id', $ticketPriceId)
+                    ->where('journey_date', $dt)
+                    ->update([
+                        'blocked_seat' => $totalBlocked
+                    ]);
+
+                $inventory->refreshAvailableSeats(
+                    [$ticketPriceId],
+                    $dt
+                );
+            }
+        }
+
         return $data;
     }
-
-
-
 
 
     public function deleteExtraSeatBlock($request)
