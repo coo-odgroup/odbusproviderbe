@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
 /*Priyadarshi to Review*/
+
 class FaqRepository
 {
     protected $faq;
@@ -15,7 +16,7 @@ class FaqRepository
 
     public function __construct(Faq $faq)
     {
-        $this->faq = $faq ;
+        $this->faq = $faq;
     }
     public function getAll()
     {
@@ -25,31 +26,46 @@ class FaqRepository
 
     public function getAllData($request)
     {
-        $paginate = $request['rows_number'] ;
-        $title = $request['title'] ;
+        $paginate = $request['rows_number'];
+        $title = $request['title'];
+        $page_id = $request['page_id'];
+        $faq_category_id = $request['faq_category_id'];
 
-
-        $data = $this->faq->where('status', '!=', 2)->orderBy('id', 'DESC');
+        $data = $this->faq
+            ->leftJoin('page_content', 'faq.page_id', '=', 'page_content.id')
+            ->leftJoin('faq_category', 'faq.faq_category_id', '=', 'faq_category.id')
+            ->where('faq.status', '!=', 2)
+            ->orderBy('faq.id', 'DESC')
+            ->select(
+                'faq.*',
+                'page_content.page_name',
+                'faq_category.category_name'
+            );
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
-
 
         if ($title != null) {
             $data = $data->Where('title', $title);
         }
 
-        $data = $data->paginate($paginate);
-        // log::info($data);
+        if ($page_id != null) {
+            $data = $data->Where('page_id', $page_id);
+        }
 
-        $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+        if ($faq_category_id != null) {
+            $data = $data->Where('faq_category_id', $faq_category_id);
+        }
+
+        $data = $data->paginate($paginate);
+
+        return array(
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
-        return $response;
+        );
     }
 
     public function getModel($data, faq $faq)
@@ -68,7 +84,6 @@ class FaqRepository
         $faq = $this->getModel($data, $faq);
         $faq->save();
         return $faq;
-
     }
     public function updatefaq($data, $id)
     {

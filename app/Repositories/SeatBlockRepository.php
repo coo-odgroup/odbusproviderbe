@@ -10,14 +10,14 @@ use App\Models\Bus;
 use App\Models\Location;
 use App\Models\TicketPrice;
 use App\Models\Booking;
+use App\Models\BusSeatCount;
 use App\Models\BookingDetail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-
-     use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
 
 
 /*Priyadarshi to Review*/
@@ -66,7 +66,7 @@ class SeatBlockRepository
     //     return $data ;
     // }
 
- public function addseatBlock($data)
+   public function addseatBlock($data)
     {
         DB::beginTransaction();
 
@@ -173,6 +173,23 @@ class SeatBlockRepository
                     }
                 }
             }
+
+            $inventory = app(\App\Services\InventoryService::class);
+
+            $seatCount = count($selectedSeats);
+
+            foreach ($data['busRoute'] as $ticketPriceId) {
+
+                foreach ($dates as $dt) {
+
+                    $inventory->blockSeatsByTicketPrice(
+                        $ticketPriceId,
+                        $dt,
+                        $seatCount
+                    );
+                }
+            }
+
 
             DB::commit();
             return ['status' => 'success'];
@@ -291,6 +308,24 @@ class SeatBlockRepository
                     }
                 }
             }
+
+
+            $inventory = app(\App\Services\InventoryService::class);
+
+            $seatCount = count($selectedSeats);
+
+            foreach ($data['busRoute'] as $ticketPriceId) {
+
+                foreach ($dates as $dt) {
+
+                    $inventory->blockSeatsByTicketPrice(
+                        $ticketPriceId,
+                        $dt,
+                        $seatCount
+                    );
+                }
+            }
+
 
             DB::commit();
             return ['status' => 'success'];
@@ -1164,7 +1199,7 @@ class SeatBlockRepository
 
 
     
-    public function updateSeatBlockData($data)
+    public function updateSeatBlockData_old($data)
     {
        // log::info($data);
        // exit;
@@ -1574,6 +1609,190 @@ class SeatBlockRepository
         return $data;
     }    
 
+    public function updateSeatBlockData($data)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $requestedSeats = [];
+
+            foreach ($data['bus_seat_layout_data'] as $layout) {
+
+                foreach (['upperBerth', 'lowerBerth'] as $berth) {
+
+                    if (!empty($layout[$berth])) {
+
+                        foreach ($layout[$berth] as $seat) {
+
+                            $requestedSeats[$seat['seatId']] =
+                                filter_var(
+                                    $seat['seatChecked'] ?? false,
+                                    FILTER_VALIDATE_BOOLEAN
+                                );
+                        }
+                    }
+                }
+            }
+
+            foreach ($data['busRoute'] as $ticketPriceId) {
+
+                $oldBlockedSeatCount = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('operation_date', $data['date'])
+                    ->where('type', 2)
+                    ->where('status', 1)
+                    ->count();
+
+
+                $route = $this->ticketPrice->find($ticketPriceId);
+
+                // booked seats cannot be blocked
+                $bookedSeatIds = $this->bookingDetail
+                    ->whereHas('booking', function ($q) use ($data, $route) {
+
+                        $q->where('bus_id', $data['bus_id'])
+                            ->where('journey_dt', $data['date'])
+                            ->where('source_id', $route->source_id)
+                            ->where('destination_id', $route->destination_id)
+                            ->whereIn('status', [1, 4]);
+
+                    })
+                    ->pluck('bus_seats_id')
+                    ->toArray();
+
+                $existingSeats = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('operation_date', $data['date'])
+                    ->where('type', 2) // block seat
+                    ->get()
+                    ->groupBy('seats_id');
+
+                foreach ($requestedSeats as $seatId => $isChecked) {
+
+                    // skip booked seats
+                    if (in_array($seatId, $bookedSeatIds)) {
+                        continue;
+                    }
+
+                    $seatRows = $existingSeats->get($seatId, collect());
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | BLOCK SEAT
+                    |--------------------------------------------------------------------------
+                    */
+                    if ($isChecked) {
+
+                        if ($seatRows->count() > 0) {
+
+                            $first = $seatRows->first();
+
+                            $first->update([
+                                'status' => 1,
+                                'reason' => $data['reason'],
+                                'other_reason' => $data['other_reson']
+                            ]);
+
+                            // remove duplicates
+                            if ($seatRows->count() > 1) {
+
+                                $duplicateIds = $seatRows
+                                    ->pluck('id')
+                                    ->slice(1)
+                                    ->values()
+                                    ->toArray();
+
+                                $this->busSeats
+                                    ->whereIn('id', $duplicateIds)
+                                    ->delete();
+                            }
+
+                        } else {
+
+                            $this->busSeats->create([
+                                'bus_id'          => $data['bus_id'],
+                                'category'        => 0,
+                                'seats_id'        => $seatId,
+                                'ticket_price_id' => $ticketPriceId,
+                                'operation_date'  => $data['date'],
+                                'status'          => 1,
+                                'type'            => 2,
+                                'created_by'      => $data['created_by'],
+                                'reason'          => $data['reason'],
+                                'other_reason'    => $data['other_reson'],
+                            ]);
+                        }
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | UNBLOCK SEAT
+                    |--------------------------------------------------------------------------
+                    */
+                    else {
+
+                        if ($seatRows->count()) {
+
+                            $this->busSeats
+                                ->whereIn(
+                                    'id',
+                                    $seatRows->pluck('id')->toArray()
+                                )
+                                ->update([
+                                    'status' => 2
+                                ]);
+                        }
+                    }
+                }
+
+                $newBlockedSeatCount = $this->busSeats
+                                    ->where('bus_id', $data['bus_id'])
+                                    ->where('ticket_price_id', $ticketPriceId)
+                                    ->where('operation_date', $data['date'])
+                                    ->where('type', 2)
+                                    ->where('status', 1)
+                                    ->count();
+
+                   BusSeatCount::where('ticket_price_id', $ticketPriceId)
+                                ->where('journey_date', $data['date'])
+                                ->update([
+                                    'blocked_seat' => $newBlockedSeatCount
+                                ]);
+
+                    $inventory = app(\App\Services\InventoryService::class);
+
+                    $inventory->refreshAvailableSeats(
+                        [$ticketPriceId],
+                        $data['date']
+                    );
+            }
+
+            DB::commit();
+
+            return [
+                'status' => 'success',
+                'message' => 'Seat block data synced successfully'
+            ];
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            \Log::error(
+                'updateSeatBlockData Error : ' .
+                $e->getMessage()
+            );
+
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
     public function updateseatBlock($data, $id)
     {
          $setblock = $this->seatBlock->find($id);
@@ -1623,13 +1842,50 @@ class SeatBlockRepository
     }
 
     public function delete($request)
-    {   
-        // log::info($request);exit;
+    {
+        $inventory = app(\App\Services\InventoryService::class);
+
         $seatBlock = $this->busSeats
-                         ->where('bus_id',$request['bus_id'])
-                         ->where('operation_date',$request['operationDate'])
-                         ->where('type',$request['type'])
-                         ->delete();
+            ->where('bus_id', $request['bus_id'])
+            ->where('operation_date', $request['operationDate'])
+            ->where('type', $request['type'])
+            ->delete();
+
+        $routeIds = TicketPrice::where('bus_id', $request['bus_id'])
+            ->pluck('id')
+            ->toArray();
+
+        foreach ($routeIds as $ticketPriceId) {
+
+            $normalBlocked = $this->busSeats
+                ->where('bus_id', $request['bus_id'])
+                ->where('ticket_price_id', $ticketPriceId)
+                ->where('operation_date', $request['operationDate'])
+                ->where('type', 2)
+                ->where('status', 1)
+                ->count();
+
+            $extraBlocked = $this->busSeats
+                ->where('bus_id', $request['bus_id'])
+                ->where('ticket_price_id', $ticketPriceId)
+                ->where('operation_date', $request['operationDate'])
+                ->whereNull('type')
+                ->whereNotNull('duration')
+                ->where('status', 1)
+                ->count();
+
+            BusSeatCount::where('ticket_price_id', $ticketPriceId)
+                ->where('journey_date', $request['operationDate'])
+                ->update([
+                    'blocked_seat' => ($normalBlocked + $extraBlocked)
+                ]);
+
+            $inventory->refreshAvailableSeats(
+                [$ticketPriceId],
+                $request['operationDate']
+            );
+        }
+
         return $seatBlock;
     }
 

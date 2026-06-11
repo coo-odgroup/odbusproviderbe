@@ -522,7 +522,7 @@ class BusScheduleRepository
     }
 
 
-    //////////// sync bus seat count every 5 min cron job ////////////
+    //////////// sync bus seat count every 15 min cron job ////////////
 
     public function syncBusSeatCount()
     {
