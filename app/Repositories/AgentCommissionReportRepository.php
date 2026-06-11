@@ -18,14 +18,14 @@ class AgentCommissionReportRepository
     protected $bus;
     protected $agentWallet;
 
-    public function __construct(Booking $booking ,AgentWallet $agentWallet ,Location $location ,Bus $bus)
+    public function __construct(Booking $booking, AgentWallet $agentWallet, Location $location, Bus $bus)
     {
         $this->booking = $booking;
         $this->location = $location;
         $this->bus = $bus;
         $this->agentWallet = $agentWallet;
     }
-    
+
     public function      getData($request)
     {
         $paginate = $request->rows_number;
@@ -39,29 +39,32 @@ class AgentCommissionReportRepository
 
         $user_id  =  $request->user_id;
 
-        $data = $this->booking->with(  
+        $data = $this->booking->with(
             'BookingDetail.BusSeats.seats',
             'BookingDetail.BusSeats.ticketPrice',
             'Bus'
         )
-                             ->with('bus.busstoppage')
-                             // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
-                             ->where('user_id', $user_id )
-                             ->where('status','!=',0)
-                             ->orderBy('id','DESC');
-        if($paginate=='all')
-        {
+            ->with('bus.busstoppage')
+            // ->whereHas('CustomerPayment', function ($query) {$query->where('payment_done', 1 );})
+            ->where('user_id', $user_id)
+            ->where('status', '!=', 0)
+            ->orderBy('id', 'DESC');
+        if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         if (!empty($bus_operator_id)) {
-            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id);});
+            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {
+                $query->where('id', $bus_operator_id);
+            });
         }
 
         if (!empty($payment_id)) {
-            $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id);});
+            $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id) {
+                $query->where('razorpay_id', $payment_id);
+            });
         }
 
         if (!empty($source_id) && !empty($destination_id)) {
@@ -69,27 +72,45 @@ class AgentCommissionReportRepository
         }
 
 
-        if ($date_type == 'booking' && $start_date == null && $end_date == null) {
-            $data = $data->orderBy('created_at', 'DESC');
-        } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
-            if ($start_date == $end_date) {
-                $data = $data->where('created_at', 'like', '%'.$start_date.'%')
-                        ->orderBy('created_at', 'DESC');
+        // Default current month if no date selected
+        if (empty($start_date) && empty($end_date)) {
+            $start_date = now()->startOfMonth()->format('Y-m-d');
+            $end_date = now()->endOfMonth()->format('Y-m-d');
+        }
 
+        if ($date_type == 'journey') {
+
+            if ($start_date == $end_date) {
+
+                $data = $data
+                    ->whereDate('journey_dt', $start_date)
+                    ->orderByDesc('journey_dt');
             } else {
-                $data = $data->whereBetween('created_at', [$start_date, $end_date])
-                        ->orderBy('created_at', 'DESC');
+
+                $data = $data
+                    ->whereBetween('journey_dt', [
+                        $start_date,
+                        $end_date
+                    ])
+                    ->orderByDesc('journey_dt');
             }
+        } else {
 
-        } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
-            $data = $data->orderBy('journey_dt', 'DESC');
-        } elseif ($date_type == 'journey' && $start_date != null && $end_date != null) {
+            // booking date default
+
             if ($start_date == $end_date) {
-                $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')
-                        ->orderBy('journey_dt', 'DESC');
+
+                $data = $data
+                    ->whereDate('created_at', $start_date)
+                    ->orderByDesc('created_at');
             } else {
-                $data = $data-> whereBetween('journey_dt', [$start_date, $end_date])
-                       ->orderBy('journey_dt', 'DESC');
+
+                $data = $data
+                    ->whereBetween('created_at', [
+                        $start_date . ' 00:00:00',
+                        $end_date . ' 23:59:59'
+                    ])
+                    ->orderByDesc('created_at');
             }
         }
 
@@ -119,12 +140,10 @@ class AgentCommissionReportRepository
 
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
         return $response;
-
     }
-
 }

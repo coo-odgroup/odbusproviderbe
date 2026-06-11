@@ -463,7 +463,7 @@ class DashboardRepository
     {
         $dt = date('Y-m-d', strtotime('today - 30 days'));
         // $operator_data = $this->booking->where('journey_dt','>',$dt)->get();
-
+   
         $busIds = $this->booking
             ->select('bus_id', (DB::raw('count(*) as count')))
             ->selectRaw('sum(owner_fare) as amount')

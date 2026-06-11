@@ -9,18 +9,20 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
 /*Priyadarshi to Review*/
+
 class AgentCancelTicketReportRepository
 {
     protected $booking;
     protected $location;
     protected $bus;
 
-    public function __construct(Booking $booking ,Location $location ,Bus $bus){
+    public function __construct(Booking $booking, Location $location, Bus $bus)
+    {
         $this->booking = $booking;
         $this->location = $location;
         $this->bus = $bus;
     }
-    
+
     public function getData($request)
     {
         $paginate = $request->rows_number;
@@ -30,9 +32,15 @@ class AgentCancelTicketReportRepository
         $source_id = $request->source_id;
         $destination_id = $request->destination_id;
 
-        $start_date  =  $request->rangeFromDate;
-        $end_date  =  $request->rangeToDate;
-        $user_id  =  $request->user_id;
+        $start_date = $request->rangeFromDate;
+        $end_date = $request->rangeToDate;
+        $user_id = $request->user_id;
+
+        // Default current month
+        if (empty($start_date) && empty($end_date)) {
+            $start_date = now()->startOfMonth()->format('Y-m-d');
+            $end_date = now()->endOfMonth()->format('Y-m-d');
+        }
 
 
 
@@ -41,23 +49,25 @@ class AgentCancelTicketReportRepository
             'BookingDetail.BusSeats.ticketPrice',
             'Bus'
         )
-                             ->with('bus.busstoppage')
-                             ->where('status', 2)
-                             ->where('user_id', $user_id)
-                             ->where('user_id', '!=', "")
-                             ->orderBy('id', 'DESC');
+            ->with('bus.busstoppage')
+            ->where('status', 2)
+            ->where('user_id', $user_id);
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         if (!empty($bus_operator_id)) {
-            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {$query->where('id', $bus_operator_id);});
+            $data = $data->whereHas('bus.busOperator', function ($query) use ($bus_operator_id) {
+                $query->where('id', $bus_operator_id);
+            });
         }
 
         if (!empty($payment_id)) {
-            $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id) {$query->where('razorpay_id', $payment_id);});
+            $data = $data->whereHas('CustomerPayment', function ($query) use ($payment_id) {
+                $query->where('razorpay_id', $payment_id);
+            });
         }
 
         if (!empty($source_id) && !empty($destination_id)) {
@@ -66,41 +76,45 @@ class AgentCancelTicketReportRepository
 
 
 
-        if ($date_type == 'booking' && $start_date == null && $end_date == null) {
-            $data = $data->orderBy('created_at', 'DESC');
-        } elseif ($date_type == 'booking' && $start_date != null && $end_date != null) {
-            if ($start_date == $end_date) {
-                $data = $data->where('created_at', 'like', '%'.$start_date.'%')
-                        ->orderBy('created_at', 'DESC');
+        // Default month filter already set above if dates are empty
 
+        if ($date_type == 'journey') {
+
+            if ($start_date == $end_date) {
+
+                $data = $data
+                    ->whereDate('journey_dt', $start_date)
+                    ->orderByDesc('journey_dt');
             } else {
-                $data = $data->whereBetween('created_at', [$start_date, $end_date])
-                        ->orderBy('created_at', 'DESC');
+
+                $data = $data
+                    ->whereBetween('journey_dt', [
+                        $start_date,
+                        $end_date
+                    ])
+                    ->orderByDesc('journey_dt');
             }
+        } else {
 
-        } elseif ($date_type == 'journey' && $start_date == null && $end_date == null) {
-            $data = $data->orderBy('journey_dt', 'DESC');
-        } elseif ($date_type == 'journey' && $start_date != null && $end_date != null) {
+            // booking date (default)
+
             if ($start_date == $end_date) {
-                $data = $data->where('journey_dt', 'like', '%'.$start_date.'%')
-                        ->orderBy('journey_dt', 'DESC');
+
+                $data = $data
+                    ->whereDate('created_at', $start_date)
+                    ->orderByDesc('created_at');
             } else {
-                $data = $data-> whereBetween('journey_dt', [$start_date, $end_date])
-                       ->orderBy('journey_dt', 'DESC');
+
+                $data = $data
+                    ->whereBetween('created_at', [
+                        $start_date . ' 00:00:00',
+                        $end_date . ' 23:59:59'
+                    ])
+                    ->orderByDesc('created_at');
             }
         }
-        
-        $data=$data->paginate($paginate);
-        
-        
-   
-        if($data){
-            foreach($data as $v){
-                $data = $data->paginate($paginate);
-            }
-        }
 
-
+        $data = $data->paginate($paginate);
 
         if ($data) {
             foreach ($data as $key => $v) {
@@ -128,8 +142,6 @@ class AgentCancelTicketReportRepository
         }
 
 
-            return array("count" => $data->count(),"total" => $data->total(),"data" => $data);
-
+        return array("count" => $data->count(), "total" => $data->total(), "data" => $data);
     }
-
 }

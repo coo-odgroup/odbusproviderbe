@@ -16,9 +16,23 @@ class AgentWalletReportRepository
         $this->booking = $booking;
     }
 
-    public function getWalletRecord($user_id)
-    {
-        return $this->agentWallet->where('user_id', $user_id)->orderBy('id', 'DESC')->whereNotIn('status', [2]);
+    public function getWalletRecord(
+        $user_id,
+        $start_date = null,
+        $end_date = null
+    ) {
+        $query = $this->agentWallet
+            ->where('user_id', $user_id)
+            ->whereNotIn('status', [2]);
+
+        if ($start_date && $end_date) {
+            $query->whereBetween('created_at', [
+                $start_date . ' 00:00:00',
+                $end_date . ' 23:59:59'
+            ]);
+        }
+
+        return $query->orderByDesc('id');
     }
 
     public function selectType($data, $select_type)
