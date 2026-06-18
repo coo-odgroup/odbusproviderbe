@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Services\BookingService;
 use Exception;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
@@ -260,6 +261,10 @@ class BookingController extends Controller
             ->get();
 
         $bus = Bus::find($booking->bus_id);
+        $conductor = DB::table('bus_contacts')
+            ->where('bus_id', $booking->bus_id)
+            ->where('type', 2)
+            ->first();
         $source = Location::find($booking->source_id);
         $destination = Location::find($booking->destination_id);
         $agent = User::find($booking->user_id);
@@ -272,7 +277,8 @@ class BookingController extends Controller
                 'source' => $source,
                 'destination' => $destination,
                 'agent' => $agent,
-                'passengers' => $passengers
+                'passengers' => $passengers,
+                'conductor' => $conductor
             ]
         ], Response::HTTP_OK);
     }
