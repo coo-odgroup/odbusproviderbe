@@ -1210,15 +1210,15 @@ Route::delete('/delete-blog/{id}', [BlogController::class, 'deleteblog']);
 Route::post('/change-blogstatus/{id}', [BlogController::class, 'changeblogstatus']);
 Route::post('/get-allAuthors', [BlogController::class, 'getAllAuthors']);
 
-
-
-
 //Tags
 Route::post('add-tag', [BlogController::class, 'addtag']);
 Route::post('tag', [BlogController::class, 'alltags']);
 Route::post('/tag/{id}', [BlogController::class, 'updatetag']);
 Route::post('/change-tag-status/{id}', [BlogController::class, 'changetagstatus']);
 Route::delete('/tag/{id}', [BlogController::class, 'deletetag']);
+
+Route::post('gettag', [BlogController::class, 'getTag']);
+
 
 //Tags map
 Route::post('add-tagmap', [BlogController::class, 'addtagmap']);
@@ -1231,6 +1231,7 @@ Route::post('add-blogroute', [BlogController::class, 'addblogroute']);
 Route::post('blogroute', [BlogController::class, 'allblogroute']);
 Route::post('/blogroute/{id}', [BlogController::class, 'updateblogroute']);
 Route::delete('/delete-blogroute/{id}', [BlogController::class, 'deleteblogroute']);
+
 
 
 
@@ -1349,6 +1350,11 @@ Route::post("bus-count",[SeoController::class, "busCount"]);
 Route::post("all-Route-template",[SeoController::class, "routeTemplate"]);
 Route::post("templateDetails",[SeoController::class, "templateDetails"]);
 Route::post("manageroute",[SeoController::class, "manageroute"]);
+
+//Missing routes
+Route::post("missing-routes",[SeoController::class, "getMissingRoutesByLocation"]);
+Route::post("missing-single-routes",[SeoController::class, "getRouteBuses"]);
+
 
 
 

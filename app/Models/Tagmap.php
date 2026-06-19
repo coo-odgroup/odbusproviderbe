@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Tagmap extends Model
 {
     use SoftDeletes;
-    protected $table = "blog_tag_maps";
+    protected $table = "blog_tag_map";
     use HasFactory;
 
     protected $guarded;

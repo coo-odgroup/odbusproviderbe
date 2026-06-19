@@ -47,6 +47,7 @@ class BlogController extends Controller
                 "banner_image" => $path,
                 "meta_title" => $request->meta_title,
                 "meta_description" => $request->meta_description,
+                "breadcrumb_schema" => $request->breadcrumb_schema,
                 "created_by" => 1,
                 "updated_by" => 1,
             ];
@@ -107,6 +108,7 @@ class BlogController extends Controller
                 "icon" => $request->icon,
                 "meta_title" => $request->meta_title,
                 "meta_description" => $request->meta_description,
+                "breadcrumb_schema" => $request->breadcrumb_schema,
                 "updated_by" => 1,
             ];
 
@@ -503,6 +505,17 @@ class BlogController extends Controller
         ]);
     }
 
+    public function getTag(Request $request)
+    {
+        $data = Tag::where('active_status', 1)->get();
+
+        return response()->json([
+            'status' => 1,
+            'message' => Config::get('constants.RECORD_FETCHED'),
+            'data' => $data
+        ]);
+    }
+
 
     public function updatetag(Request $request, $id)
     {
@@ -585,19 +598,19 @@ class BlogController extends Controller
 
     public function alltagmaps(Request $request)
     {
-        $query = Tagmap::join('blogs', 'blogs.id', '=', 'blog_tag_maps.blog_id')
-            ->join('blog_tags', 'blog_tags.id', '=', 'blog_tag_maps.tag_id')
+        $query = Tagmap::join('blogs', 'blogs.id', '=', 'blog_tag_map.blog_id')
+            ->join('blog_tags', 'blog_tags.id', '=', 'blog_tag_map.tag_id')
             ->select(
-                'blog_tag_maps.blog_id',
-                'blog_tag_maps.created_by',
+                'blog_tag_map.blog_id',
+                'blog_tag_map.created_by',
                 'blogs.title',
                 DB::raw("GROUP_CONCAT(blog_tags.tag_name SEPARATOR ', ') as tags"),
                 DB::raw("GROUP_CONCAT(blog_tags.id) as tag_ids")
             )
             ->groupBy(
-                'blog_tag_maps.blog_id',
+                'blog_tag_map.blog_id',
                 'blogs.title',
-                'blog_tag_maps.created_by'
+                'blog_tag_map.created_by'
             );
 
         // Search Filter
@@ -613,7 +626,7 @@ class BlogController extends Controller
         // Per Page
         $per_page = $request->per_page ?? 10;
 
-        $data = $query->orderBy('blog_tag_maps.blog_id', 'DESC')
+        $data = $query->orderBy('blog_tag_map.blog_id', 'DESC')
             ->paginate($per_page);
 
         return response()->json([
@@ -660,18 +673,37 @@ class BlogController extends Controller
         }
     }
 
-    public function deletetagmap($id)
+    // public function deletetagmap($id)
+    // {
+    //     try {
+    //         $tag = Tagmap::find($id);
+    //         $tag->update([
+    //             'deleted_by' => 1
+    //         ]);
+    //         $tag->delete();
+
+    //         return $this->successResponse("Tag Map Deleted", Response::HTTP_OK);
+    //     } catch (Exception $e) {
+    //         return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
+    public function deletetagmap($blogId)
     {
         try {
-            $tag = Tagmap::find($id);
-            $tag->update([
-                'deleted_by' => 1
-            ]);
-            $tag->delete();
 
-            return $this->successResponse("Tag Map Deleted", Response::HTTP_OK);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            Tagmap::where('blog_id', $blogId)->delete();
+
+            return $this->successResponse(
+                "Tag Map Deleted Successfully",
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+
+            return $this->errorResponse(
+                $e->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 

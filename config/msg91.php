@@ -7,10 +7,14 @@ return [
         'booking' => env('MSG91_BOOKING_TEMPLATE'),
     ],
 
+    'campaign_base_url' => 'https://control.msg91.com/api/v5/campaign/api/campaigns/',
+    'template_image_url' => 'https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg',
+    'pdf_url' => 'https://odtestingssr.odbus.co.in/pnr/',
+
     'campaigns' => [
         'otp' => 'sign-and-login-otp',
         'cmo_ticket_booking' => 'cmo-ticket-booking-flow',
-        'customer_ticket_booking' => 'test',
+        'customer_ticket_booking' => 'customer-ticket-booking',
         'customer_ticket_cancellation' => 'customer-ticket-cancellation-flow',
         'cmo_ticket_cancellation' => 'cmo-ticket-cancellation',
         'agent_ticket_booking' => 'agent-ticket-booking',
