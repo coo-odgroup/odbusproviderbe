@@ -1151,6 +1151,7 @@ Route::get('/PaytmBookingCancel/{pnr}', [TicketInformationController::class, 'Pa
 Route::post('scheduleRefund', [SchedulerController::class, 'scheduleRefund']);
 Route::post('scheduleRefundSelected', [SchedulerController::class, 'scheduleRefundSelected']);
 Route::post('apiLogReport', [ApiLogReportController::class, 'apiLogReport']);
+Route::post('completeRefund', [SchedulerController::class, 'completeRefund']);
 
 //Added by sahil
 //----------------------------------------------------------------------------------------------
