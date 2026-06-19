@@ -10,6 +10,7 @@ use App\Models\BusSeats;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 class BusScheduleRepository
 {
     protected $busSchedule;
@@ -133,55 +134,83 @@ class BusScheduleRepository
     }
 
 
-    public function scheduleCronJob()
+     public function scheduleCronJob()
     {
+        try{
+           
+             $startTime = microtime(true);
+             Log::info('Schedule cron job for bus started at: ' . now());
+                
+             $count = 0;
 
-        ini_set('memory_limit','2048M');
-        ini_set('max_execution_time','300');
+             $data = DB::table('bus_schedule as bs')
+                                ->join('bus_schedule_date as bsd', 'bsd.bus_schedule_id', '=', 'bs.id')
+                                ->select(
+                                    'bs.id',
+                                    'bs.running_cycle',
+                                    DB::raw('MAX(bsd.entry_date) as last_date'),
+                                    DB::raw('DATEDIFF(MAX(bsd.entry_date), CURDATE()) as days_ahead')
+                                )
+                                ->where('bs.status', 1)
+                                ->groupBy('bs.id', 'bs.running_cycle')
+                                ->havingRaw('DATEDIFF(MAX(bsd.entry_date), CURDATE()) < 30')
+                                ->get();
 
-        $msg = [];
-        $count = 0;
-        // $today='2022-09-21';
-        $today = date('Y-m-d');
-        $checkdate = date('Y-m-d', strtotime($today. ' + 15 days'));
-        $data = $this->busSchedule->where('status', 1)->with(['busScheduleDate' => function ($a) {
-            $a->orderBy('id', 'DESC')
-            ;
-        }])->get();
 
+                $today = Carbon::today();
+                    
+                foreach ($data as $schedule) {
 
-        foreach ($data as $v) {
-            if (isset($v->busScheduleDate[0])) {
-                if ($checkdate == $v->busScheduleDate[0]->entry_date) {
-                    $request['bus_schedule_id'] = $v->busScheduleDate[0]->bus_schedule_id ;
-                    $request['running_cycle'] = $v->running_cycle;
-                    $request['created_by'] = 'server';
-                    $request['entry_date'] = $checkdate;
-                    $this->serverSave($request);
+                    $lastDate = Carbon::parse($schedule->last_date);
+
+                    $daysAhead = $today->diffInDays($lastDate, false);
+
+                    if ($daysAhead < 30) {
+
+                        $request = [
+                            'bus_schedule_id' => $schedule->id,
+                            'running_cycle'   => $schedule->running_cycle,
+                            'created_by'      => 'server',
+                            'entry_date'      => $schedule->last_date,
+                            'missing_days'    => 30 - $daysAhead
+                        ];
+
+                        $this->serverSave($request);
+                    }
+
                     $count++;
-
                 }
-            }
+             
+                Log::info($count.' bus scheduled today');
 
+                return $count.' bus scheduled today';
+        } catch (\Throwable $e) {
+            Log::error('Error: ' . $e->getMessage());
+        } finally {
+            $endTime = microtime(true);
+            $executionTime = round($endTime - $startTime, 2);
+
+            Log::info('UpdateMinPriceForBus ended at: ' . now());
+            Log::info("Total execution time: {$executionTime} seconds");
+            Log::info("Execution completed in {$executionTime} seconds");
         }
-
-        Log::info($count.' bus scheduled today');
-
-        return $count.' bus scheduled today';
+       
     }
 
     public function serverSave($request)
     {
 
-        $entdate = date('Y-m-d', strtotime($request['entry_date']. ' + '.$request['running_cycle'].' days'));
+        $entryDate = date('Y-m-d', strtotime($request['entry_date']. ' + '.$request['running_cycle'].' days'));
+       
         $this->busSchedule = $this->busSchedule->find($request['bus_schedule_id']);
-        $busScheduleDateModels = [];
-        $bus_seat_count=[];
-        $entryDate = $entdate;
         $busScheduleDate = new BusScheduleDate();
         $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
         $busScheduleDate->entry_date = $entryDate;
-        for ($dateCount = 0;$dateCount < 30;$dateCount++) {
+        
+        $busScheduledateModels = [];
+        
+        for ($dateCount = 0;$dateCount < $request['missing_days'];$dateCount++) {
+
             $busScheduleDate = new BusScheduleDate();
             $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
             if ($dateCount != 0) {
@@ -200,6 +229,7 @@ class BusScheduleRepository
                 $busScheduledateModels[] =  $busScheduleDate;
             }
         }
+
 
         $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
 
@@ -249,34 +279,23 @@ class BusScheduleRepository
                     $insertData[] = [
 
                         'bus_id'           => $busId,
-
                         'ticket_price_id'  => $tp->id,
-
                         'journey_date'     => $scheduleDate->entry_date,
-
                         'total_seat'       => $totalSeats,
-
                         'available_seat'   => $totalSeats,
-
                         'booked_seat'      => 0,
                         'blocked_seat'     => 0,
                         'hold_seat'        => 0,
-
                         'created_at'       => now(),
                         'updated_at'       => now(),
-
                         'updated_by'       => 'server'
-
                     ];
-
                 }
-
             }
-
 
             if (!empty($insertData)) {
 
-                DB::table('bus_seat_count')->insert($insertData);
+             //   DB::table('bus_seat_count')->insert($insertData);
 
             }
 

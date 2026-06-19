@@ -68,8 +68,7 @@ class SeoController extends Controller
     public function getRoutes()
     {
         try {
-            $data = RouteDetail::where('is_main_route', 1)
-                ->where('active_status', 1)
+            $data = RouteDetail::where('active_status', 1)
                 ->select(
                     'id',
                     'source',
@@ -88,68 +87,198 @@ class SeoController extends Controller
     // {
     //     try {
     //         $id = $request->route_id;
-    //         $data = RouteMap::where('parent_route_id', $id)->join('mst_routes_details', 'mst_routes_details.id', '=', 'mst_route_map.route_id')
-    //             ->select('mst_routes_details.id', 'mst_routes_details.source', 'mst_routes_details.destination')
+    //         $data = RouteMap::where('parent_route_id', $id)
+    //             ->join('mst_routes_details as r', 'r.id', '=', 'mst_route_map.route_id')
+    //             ->select(
+    //                 'r.id',
+    //                 'r.source_id',
+    //                 'r.destination_id',
+    //                 'r.source',
+    //                 'r.destination',
+    //                 'r.distance',
+    //             )
     //             ->get();
-    //         return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-    //     } catch (Exception $e) {
-    //         return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+
+    //         // Prepare reverse conditions
+    //         $reverseConditions = [];
+    //         foreach ($data as $route) {
+    //             $reverseConditions[] = [
+    //                 'source_id' => $route->destination_id,
+    //                 'destination_id' => $route->source_id
+    //             ];
+    //         }
+
+    //         // Fetch reverse routes
+    //         $reverseRoutes = RouteDetail::where(function ($query) use ($reverseConditions) {
+    //             foreach ($reverseConditions as $cond) {
+    //                 $query->orWhere(function ($q) use ($cond) {
+    //                     $q->where('source_id', $cond['source_id'])
+    //                         ->where('destination_id', $cond['destination_id']);
+    //                 });
+    //             }
+    //         })
+    //             ->select('id', 'source_id', 'destination_id', 'source', 'destination', 'distance')
+    //             ->get();
+
+    //         // Merge & remove duplicates
+    //         $finalData = $data->merge($reverseRoutes)->unique('id')->values();
+
+    //         $grouped = collect($finalData)->groupBy(function ($item) {
+    //             $ids = [$item['source_id'], $item['destination_id']];
+    //             sort($ids); // ensures same key for forward & reverse
+    //             return implode('-', $ids);
+    //         });
+
+    //         $result = $grouped->map(function ($items) {
+    //             return $items->values(); // gives pair (forward + reverse)
+    //         })->values();
+
+    //         return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()]);
     //     }
     // }
 
     public function getLocation(Request $request)
     {
         try {
-            $id = $request->route_id;
-            $data = RouteMap::where('parent_route_id', $id)
-                ->join('mst_routes_details as r', 'r.id', '=', 'mst_route_map.route_id')
-                ->select(
-                    'r.id',
-                    'r.source_id',
-                    'r.destination_id',
-                    'r.source',
-                    'r.destination',
-                    'r.distance',
-                )
-                ->get();
+            // ROUTE ID SEARCH
+            if ($request->filled('route_id')) {
 
-            // Prepare reverse conditions
-            $reverseConditions = [];
-            foreach ($data as $route) {
-                $reverseConditions[] = [
-                    'source_id' => $route->destination_id,
-                    'destination_id' => $route->source_id
-                ];
+                $id = $request->route_id;
+
+                $data = RouteMap::where('parent_route_id', $id)
+                    ->join('mst_routes_details as r', 'r.id', '=', 'mst_route_map.route_id')
+                    ->select(
+                        'r.id',
+                        'r.source_id',
+                        'r.destination_id',
+                        'r.source',
+                        'r.destination',
+                        'r.distance'
+                    )
+                    ->get();
+
+                // Find reverse routes
+                $reverseConditions = [];
+
+                foreach ($data as $route) {
+                    $reverseConditions[] = [
+                        'source_id' => $route->destination_id,
+                        'destination_id' => $route->source_id
+                    ];
+                }
+
+                $reverseRoutes = RouteDetail::where(function ($query) use ($reverseConditions) {
+                    foreach ($reverseConditions as $cond) {
+                        $query->orWhere(function ($q) use ($cond) {
+                            $q->where('source_id', $cond['source_id'])
+                                ->where('destination_id', $cond['destination_id']);
+                        });
+                    }
+                })
+                    ->select(
+                        'id',
+                        'source_id',
+                        'destination_id',
+                        'source',
+                        'destination',
+                        'distance'
+                    )
+                    ->get();
+
+                $finalData = $data->merge($reverseRoutes)
+                    ->unique('id')
+                    ->values();
+
+                $grouped = $finalData->groupBy(function ($item) {
+                    $ids = [$item->source_id, $item->destination_id];
+                    sort($ids);
+                    return implode('-', $ids);
+                });
+
+                $result = $grouped->map(function ($items) {
+
+                    $items = $items->values();
+
+                    if ($items->count() == 1) {
+                        $items->push((object)[
+                            'id' => null,
+                            'source_id' => null,
+                            'destination_id' => null,
+                            'source' => '',
+                            'destination' => '',
+                            'distance' => $items[0]->distance
+                        ]);
+                    }
+
+                    return $items;
+                })->values();
+
+                return $this->successResponse(
+                    $result,
+                    Config::get('constants.RECORD_FETCHED'),
+                    Response::HTTP_OK
+                );
             }
 
-            // Fetch reverse routes
-            $reverseRoutes = RouteDetail::where(function ($query) use ($reverseConditions) {
-                foreach ($reverseConditions as $cond) {
-                    $query->orWhere(function ($q) use ($cond) {
-                        $q->where('source_id', $cond['source_id'])
-                            ->where('destination_id', $cond['destination_id']);
-                    });
-                }
-            })
-                ->select('id', 'source_id', 'destination_id', 'source', 'destination', 'distance')
-                ->get();
+            // LOCATION ID SEARCH
+            if ($request->filled('location_id')) {
 
-            // Merge & remove duplicates
-            $finalData = $data->merge($reverseRoutes)->unique('id')->values();
+                $locationId = $request->location_id;
 
-            $grouped = collect($finalData)->groupBy(function ($item) {
-                $ids = [$item['source_id'], $item['destination_id']];
-                sort($ids); // ensures same key for forward & reverse
-                return implode('-', $ids);
-            });
+                $data = RouteDetail::where(function ($q) use ($locationId) {
+                    $q->where('source_id', $locationId)
+                        ->orWhere('destination_id', $locationId);
+                })
+                    ->select(
+                        'id',
+                        'source_id',
+                        'destination_id',
+                        'source',
+                        'destination',
+                        'distance'
+                    )
+                    ->get();
 
-            $result = $grouped->map(function ($items) {
-                return $items->values(); // gives pair (forward + reverse)
-            })->values();
+                $grouped = $data->groupBy(function ($item) {
+                    $ids = [$item->source_id, $item->destination_id];
+                    sort($ids);
+                    return implode('-', $ids);
+                });
 
-            return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+                $result = $grouped->map(function ($items) {
+
+                    $items = $items->values();
+
+                    if ($items->count() == 1) {
+                        $items->push((object)[
+                            'id' => null,
+                            'source_id' => null,
+                            'destination_id' => null,
+                            'source' => '',
+                            'destination' => '',
+                            'distance' => $items[0]->distance
+                        ]);
+                    }
+
+                    return $items;
+                })->values();
+
+                return $this->successResponse(
+                    $result,
+                    Config::get('constants.RECORD_FETCHED'),
+                    Response::HTTP_OK
+                );
+            }
+
+            return response()->json([
+                'message' => 'route_id or location_id is required'
+            ], 422);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
+            return response()->json([
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
@@ -171,7 +300,7 @@ class SeoController extends Controller
 
             foreach ($data as $item) {
                 $id = (int) $item['id'];
-                $distance = addslashes($item['distance']); // escape string
+                $distance = addslashes($item['distance']);
 
                 $ids[] = $id;
                 $cases[] = "WHEN id = $id THEN '$distance'";
@@ -904,4 +1033,79 @@ class SeoController extends Controller
 
         return $finalData;
     }
+
+
+    //Missing Routes
+    public function getMissingRoutesByLocation(Request $request)
+    {
+        try {
+
+            $locationId = $request->location_id;
+
+            $data = DB::table('mst_routes_details as r1')
+                ->leftJoin('mst_routes_details as r2', function ($join) {
+                    $join->on('r1.source_id', '=', 'r2.destination_id')
+                        ->on('r1.destination_id', '=', 'r2.source_id');
+                })
+                ->whereNull('r2.id')
+                ->where(function ($query) use ($locationId) {
+                    $query->where('r1.source_id', $locationId)
+                        ->orWhere('r1.destination_id', $locationId);
+                })
+                ->select(
+                    DB::raw('r1.destination_id as source_id'),
+                    DB::raw('r1.source_id as destination_id'),
+                    DB::raw('r1.destination as source'),
+                    DB::raw('r1.source as destination'),
+                    'r1.distance'
+                )
+                ->distinct()
+                ->get();
+
+            return $this->successResponse(
+                $data,
+                'Missing routes',
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getRouteBuses(Request $request)
+    {
+        $sourceId = $request->source_id;
+        $destinationId = $request->destination_id;
+
+        $data = DB::table('ticket_price as tp')
+            ->join('bus as b', 'b.id', '=', 'tp.bus_id')
+            ->where('tp.source_id', $sourceId)
+            ->where('tp.destination_id', $destinationId)
+            ->where('tp.status', 1)
+            ->where('b.status', 1)
+            ->select(
+                'tp.id',
+                'tp.bus_id',
+                'tp.base_seat_fare',
+                'b.name',
+                'b.bus_number'
+            )
+            ->get();
+
+        return response()->json($data);
+    }
+
+    //check bus raw query
+    /*
+        SELECT tp.*
+        FROM ticket_price tp
+        LEFT JOIN bus b ON b.id = tp.bus_id
+        WHERE tp.source_id = 32
+        AND tp.destination_id = 98
+        AND tp.status = 1
+        AND b.status = 1;
+    */
 }
