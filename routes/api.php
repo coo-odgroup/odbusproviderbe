@@ -869,6 +869,8 @@ Route::post('/booking', [BookingController::class, 'createBooking']);
 Route::put('/booking/{id}', [BookingController::class, 'updateBooking']);
 Route::delete('/booking/{id}', [BookingController::class, 'deleteBooking']);
 Route::get('/booking/{id}', [BookingController::class, 'getBooking']);
+Route::get('/PrintTicket/{pnr}', [BookingController::class, 'PrintTicket']);
+
 
 Route::get('/bookingDetail', [BookingDetailController::class, 'getAllBookingDetail']);
 Route::post('/bookingDetail', [BookingDetailController::class, 'createBookingDetail']);

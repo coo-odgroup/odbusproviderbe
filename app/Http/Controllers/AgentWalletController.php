@@ -132,6 +132,17 @@ class AgentWalletController extends Controller
             $secretKey = 'cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced';
             $apiUrl = 'https://sandbox.cashfree.com/pg/orders';
 
+            $frontendUrl = rtrim($request->frontend_url ?? '', '/');
+
+            $returnUrl = $frontendUrl . "/#/agent/wallet?order_id={order_id}";
+
+            Log::info('WALLET PAYMENT REQUEST', [
+                'frontend_url' => $request->frontend_url,
+                'frontendUrl'  => $frontendUrl,
+                'returnUrl'    => $returnUrl,
+                'request'      => $request->all()
+            ]);
+
             $response = Http::withHeaders([
 
                 'x-client-id' => $key,
@@ -155,8 +166,7 @@ class AgentWalletController extends Controller
                 "order_meta" => [
 
                     "notify_url" => url('/api/walletWebhook'),
-
-                    "return_url" => "http://agent.odbus.in/#/agent/wallet?order_id={order_id}"
+                    "return_url" => $returnUrl
 
                 ],
 
@@ -602,5 +612,3 @@ class AgentWalletController extends Controller
         }
     }
 }
-
-
