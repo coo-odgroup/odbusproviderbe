@@ -4,7 +4,8 @@ namespace App\Repositories;
 
 use Illuminate\Support\Facades\Log;
 use App\Models\ApiUserManageOperator;
-
+use App\Models\ApiUserManageOperatorDatewise;
+use Illuminate\Support\Facades\DB;
 class ApiUserManageOperatorRepository
 {
     /**
@@ -57,7 +58,7 @@ class ApiUserManageOperatorRepository
 
 
 
-    public function manageClientOperator($data)
+    public function manageClientOperator_old($data)
     {
         $insertData = [];
 
@@ -72,6 +73,63 @@ class ApiUserManageOperatorRepository
             return $apiOperator;
         }
     }
+
+    public function manageClientOperator($data)
+    {
+        foreach ($data->bus_operator_id as $operatorId) {
+
+            if ($data->restriction_type == 'permanent') {
+
+                $exists = ApiUserManageOperator::where('user_id', $data->user_id)
+                    ->where('bus_operator_id', $operatorId)
+                    ->where('restriction_type', 'permanent')
+                    ->exists();
+
+                if (!$exists) {
+
+                    $apiOperator = new $this->ApiUserManageOperator();
+                    $apiOperator->user_id = $data->user_id;
+                    $apiOperator->bus_operator_id = $operatorId;
+                    $apiOperator->restriction_type = 'permanent';
+                    $apiOperator->journey_date = null;
+                    $apiOperator->created_by = $data->created_by;
+                    $apiOperator->save();
+                }
+
+            } else {
+
+                foreach ($data->journey_dates as $date) {
+
+                    $journeyDate =
+                        $date['year'] . '-' .
+                        str_pad($date['month'], 2, '0', STR_PAD_LEFT) . '-' .
+                        str_pad($date['day'], 2, '0', STR_PAD_LEFT);
+
+                    $exists = ApiUserManageOperator::where('user_id', $data->user_id)
+                        ->where('bus_operator_id', $operatorId)
+                        ->where('restriction_type', 'datewise')
+                        ->where('journey_date', $journeyDate)
+                        ->exists();
+
+                    if (!$exists) {
+
+                        $apiOperator = new $this->ApiUserManageOperator();
+                        $apiOperator->user_id = $data->user_id;
+                        $apiOperator->bus_operator_id = $operatorId;
+                        $apiOperator->restriction_type = 'datewise';
+                        $apiOperator->journey_date = $journeyDate;
+                        $apiOperator->created_by = $data->created_by;
+                        $apiOperator->save();
+                    }
+                }
+            }
+        }
+
+        return true;
+
+    }
+
+
 
     public function deletemanageClientOperator($id)
     {

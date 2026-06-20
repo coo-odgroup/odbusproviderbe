@@ -43,8 +43,7 @@ class ApiUserManageOperatorController extends Controller
     {
 
         try {
-            $res=$this->ApiUserManageOperatorRepository->manageClientOperatorData($request);
-            // }
+            $res=$this->ApiUserManageOperatorRepository->manageClientOperator($request);          
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }

@@ -11,7 +11,14 @@ class ApiUserManageOperator extends Model
 {
     use HasFactory;
     protected $table = 'manageclientoperator';
-    protected $fillable = ['user_id ','bus_operator_id '];
+    
+    protected $fillable = [
+        'user_id',
+        'bus_operator_id',
+        'restriction_type',
+        'journey_date',
+        'created_by'
+    ];
 
 
     public function user()
