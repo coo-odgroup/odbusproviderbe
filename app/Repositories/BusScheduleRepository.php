@@ -242,27 +242,19 @@ class BusScheduleRepository
             $totalSeats = DB::table('bus_seats')
                 ->where('bus_id', $busId)
                 ->where('status', 1)
-
                 ->where(function ($q) {
-
                     $q->where(function ($qq) {
-
                         // Normal seats
                         $qq->whereNull('type')
                             ->whereNull('operation_date')
                             ->where('duration', 0);
-
                     })->orWhere(function ($qq) {
-
                         // Extra permanent open seats
                         $qq->whereNull('type')
                             ->whereNull('operation_date')
                             ->where('duration', '>', 0);
-
                     });
-
                 })
-
                 ->distinct('seats_id')
                 ->count('seats_id');
 
@@ -295,7 +287,7 @@ class BusScheduleRepository
 
             if (!empty($insertData)) {
 
-             //   DB::table('bus_seat_count')->insert($insertData);
+                DB::table('bus_seat_count')->insert($insertData);
 
             }
 
@@ -541,29 +533,42 @@ class BusScheduleRepository
     }
 
 
-    //////////// sync bus seat count every 15 min cron job ////////////
+    //////////// sync bus seat count every night cron job ////////////
 
     public function syncBusSeatCount()
     {
-        ini_set('memory_limit', '2048M');
+        ini_set('memory_limit', '3072M');
         ini_set('max_execution_time', 600);
+
+        if(empty($_REQUEST['day']) || empty($_REQUEST['start_date']))
+		{
+		    return 'Please provide day and start_date.';
+		}
+
+		$day        = (int) $_REQUEST['day'];
+		$startDate  = date('Y-m-d', strtotime($_REQUEST['start_date']));
+		$endDate    = date('Y-m-d', strtotime($startDate . " +{$day} days"));
+
+		$busId = !empty($_REQUEST['bus_id'])
+		    ? (int) $_REQUEST['bus_id']
+		    : null;
 
         try {
 
-            $startDate = date('Y-m-d');
-            $endDate   = date('Y-m-d', strtotime('+30 days'));
+            $busIdsQuery = DB::table('ticket_price as tp')
+						    ->join('bus as b', 'b.id', '=', 'tp.bus_id')
+						    ->where('tp.status', 1)
+						    ->where('b.status', 1);
 
-            $busIds = DB::table('ticket_price as tp')
+			if (!empty($busId)) {
+			    $busIdsQuery->where('tp.bus_id', $busId);
+			}
 
-                ->join('bus as b', 'b.id', '=', 'tp.bus_id')
+			$busIds = $busIdsQuery
+			    ->distinct()
+			    ->pluck('tp.bus_id');
 
-                ->where('tp.status', 1)
-
-                ->where('b.status', 1)
-
-                ->distinct()
-
-                ->pluck('tp.bus_id');
+                $updatedCount = 0;
 
 
             foreach ($busIds as $busId) {
@@ -836,7 +841,7 @@ class BusScheduleRepository
 
 
 
-                    DB::table('bus_seat_count')
+                    $updated = DB::table('bus_seat_count')
 
                         ->where('id', $row->id)
 
@@ -858,17 +863,29 @@ class BusScheduleRepository
 
                         ]);
 
+
+                        if ($updated) {
+                            $updatedCount++;
+                        }
+
                 }
 
             }
 
-            Log::info('Bus Seat Count Sync Completed');
+            Log::info("Bus Seat Count Sync Completed. Total Updated Records: {$updatedCount}");
 
-            return true;
+            return [
+                'status' => true,
+                'updated_records' => $updatedCount
+            ];
+
+           
 
         } catch (\Exception $e) {
 
             Log::error('Bus Seat Count Sync Failed : '.$e->getMessage());
+
+            dd($e->getMessage());
 
             return false;
         }
