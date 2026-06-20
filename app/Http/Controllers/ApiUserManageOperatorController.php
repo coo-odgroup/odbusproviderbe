@@ -43,12 +43,12 @@ class ApiUserManageOperatorController extends Controller
     {
 
         try {
-            $this->ApiUserManageOperatorRepository->manageClientOperatorData($request);
+            $res=$this->ApiUserManageOperatorRepository->manageClientOperatorData($request);
             // }
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Data Added Successfully", Response::HTTP_ACCEPTED);
+        return $this->successResponse($res, "Data Added Successfully", Response::HTTP_OK);
     }
 
 
@@ -60,6 +60,6 @@ class ApiUserManageOperatorController extends Controller
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Agent has been deleted Successfully", Response::HTTP_ACCEPTED);
+        return $this->successResponse(null, "Agent has been deleted Successfully", Response::HTTP_OK);
     }
 }
