@@ -568,7 +568,7 @@ class TicketInformationRepository
                 $busNumber = $getBus_id[0]->Bus->bus_number;
             }
 
-            $passanger_name =$PNR_Details[0]->BookingDetail[0]->passenger_name;
+            $passanger_name = $PNR_Details[0]->BookingDetail[0]->passenger_name;
 
 
             // $smsData = array(
@@ -1226,13 +1226,13 @@ class TicketInformationRepository
                 }
 
                 if ($m > 0 && $f > 0 && $O > 0) {
-                    $genderList = "{$m}M/{$f}F/{$O}O";
+                    $genderList = "{$m}M,{$f}F,{$O}O";
                 } elseif ($m > 0 && $f > 0 && $O == 0) {
-                    $genderList = "{$m}M/{$f}F";
+                    $genderList = "{$m}M,{$f}F";
                 } elseif ($m > 0 && $f == 0 && $O > 0) {
-                    $genderList = "{$m}M/{$O}O";
+                    $genderList = "{$m}M,{$O}O";
                 } elseif ($m == 0 && $f > 0 && $O > 0) {
-                    $genderList = "{$f}F/{$O}O";
+                    $genderList = "{$f}F,{$O}O";
                 } elseif ($m > 0 && $f == 0 && $O == 0) {
                     $genderList = "{$m}M";
                 } elseif ($m == 0 && $f > 0 && $O == 0) {
@@ -1241,11 +1241,11 @@ class TicketInformationRepository
                     $genderList = "{$O}O";
                 }
 
-                if (count($passengerDetails) > 1) {
-                    $restNo = count($passengerDetails) - 1;
-                    $nameList = "{$nameList}+{$restNo}";
-                }
                 $nameList = substr($nameList, 1);
+
+                if (!empty($genderList)) {
+                    $nameList .= "({$genderList})";
+                }
                 $all_seats = rtrim($all_seats, ',');
                 //log::info($genderList); exit;
 
@@ -1330,13 +1330,13 @@ class TicketInformationRepository
                 }
 
                 if ($m > 0 && $f > 0 && $O > 0) {
-                    $genderList = "{$m}M/{$f}F/{$O}O";
+                    $genderList = "{$m}M,{$f}F,{$O}O";
                 } elseif ($m > 0 && $f > 0 && $O == 0) {
-                    $genderList = "{$m}M/{$f}F";
+                    $genderList = "{$m}M,{$f}F";
                 } elseif ($m > 0 && $f == 0 && $O > 0) {
-                    $genderList = "{$m}M/{$O}O";
+                    $genderList = "{$m}M,{$O}O";
                 } elseif ($m == 0 && $f > 0 && $O > 0) {
-                    $genderList = "{$f}F/{$O}O";
+                    $genderList = "{$f}F,{$O}O";
                 } elseif ($m > 0 && $f == 0 && $O == 0) {
                     $genderList = "{$m}M";
                 } elseif ($m == 0 && $f > 0 && $O == 0) {
@@ -1345,11 +1345,11 @@ class TicketInformationRepository
                     $genderList = "{$O}O";
                 }
 
-                if (count($passengerDetails) > 1) {
-                    $restNo = count($passengerDetails) - 1;
-                    $nameList = "{$nameList}+{$restNo}";
-                }
                 $nameList = substr($nameList, 1);
+
+                if (!empty($genderList)) {
+                    $nameList .= "({$genderList})";
+                }
                 $all_seats = rtrim($all_seats, ',');
                 //log::info($genderList); exit;
 
