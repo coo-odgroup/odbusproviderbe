@@ -232,21 +232,31 @@ class BusSeatsRepository
                 if ($diff != 0) {
 
                     BusSeatCount::where(
-                        'ticket_price_id',
-                        $ticketPrice->id
-                    )
-                    ->update([
-                        'total_seat' => DB::raw("
-                            GREATEST(
-                                total_seat + ({$diff}),
-                                0
-                            )
-                        ")
-                    ]);
+                            'ticket_price_id',
+                            $ticketPrice->id
+                        )
+                        ->whereDate(
+                            'journey_date',
+                            '>=',
+                            now()->toDateString()
+                        )
+                        ->update([
+                            'total_seat' => DB::raw("
+                                GREATEST(
+                                    total_seat + ({$diff}),
+                                    0
+                                )
+                            ")
+                        ]);
 
                     $journeyDates = BusSeatCount::where(
                             'ticket_price_id',
                             $ticketPrice->id
+                        )
+                        ->whereDate(
+                            'journey_date',
+                            '>=',
+                            now()->toDateString()
                         )
                         ->pluck('journey_date');
 
@@ -494,7 +504,7 @@ class BusSeatsRepository
         }
 
 
-        $inventory = app(\App\Services\InventoryService::class);
+       $inventory = app(\App\Services\InventoryService::class);
 
         foreach ($get_ticket_price_id as $ticketPrice) {
 
@@ -506,17 +516,18 @@ class BusSeatsRepository
                 ->where('duration', 0)
                 ->count();
 
-            BusSeatCount::where(
-                'ticket_price_id',
-                $ticketPrice->id
-            )->update([
-                'total_seat' => $seatCount
-            ]);
+            // Update only today and future dates
+            BusSeatCount::where('ticket_price_id', $ticketPrice->id)
+                ->whereDate('journey_date', '>=', now()->toDateString())
+                ->update([
+                    'total_seat' => $seatCount
+                ]);
 
             $journeyDates = BusSeatCount::where(
                     'ticket_price_id',
                     $ticketPrice->id
                 )
+                ->whereDate('journey_date', '>=', now()->toDateString())
                 ->pluck('journey_date');
 
             foreach ($journeyDates as $journeyDate) {
