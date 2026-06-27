@@ -160,11 +160,6 @@ class BusSeatsRepository
                 ->where('bus_id', $data['bus_id'])
                 ->get();
 
-            /*
-            |--------------------------------------------------------------------------
-            | OLD EXTRA SEAT COUNT
-            |--------------------------------------------------------------------------
-            */
 
             $oldExtraSeatCounts = [];
 
@@ -178,12 +173,6 @@ class BusSeatsRepository
                     ->count();
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | DEACTIVATE OLD EXTRA SEATS
-            |--------------------------------------------------------------------------
-            */
-
             $this->busSeats
                 ->where('bus_id', $data['bus_id'])
                 ->where('duration', '>', 0)
@@ -191,11 +180,6 @@ class BusSeatsRepository
                     'status' => 2
                 ]);
 
-            /*
-            |--------------------------------------------------------------------------
-            | INSERT NEW EXTRA SEATS
-            |--------------------------------------------------------------------------
-            */
 
             foreach ($layoutArray as $sLayoutData) {
 
@@ -233,12 +217,6 @@ class BusSeatsRepository
                 }
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE INVENTORY
-            |--------------------------------------------------------------------------
-            */
-
             foreach ($ticketPrices as $ticketPrice) {
 
                 $newExtraSeatCount = $this->busSeats
@@ -265,12 +243,6 @@ class BusSeatsRepository
                             )
                         ")
                     ]);
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Refresh all dates for this route
-                    |--------------------------------------------------------------------------
-                    */
 
                     $journeyDates = BusSeatCount::where(
                             'ticket_price_id',
@@ -520,6 +492,42 @@ class BusSeatsRepository
                 }
             }
         }
+
+
+        $inventory = app(\App\Services\InventoryService::class);
+
+        foreach ($get_ticket_price_id as $ticketPrice) {
+
+            $seatCount = $this->busSeats
+                ->where('bus_id', $bus_id)
+                ->where('ticket_price_id', $ticketPrice->id)
+                ->where('status', 1)
+                ->whereNull('operation_date')
+                ->where('duration', 0)
+                ->count();
+
+            BusSeatCount::where(
+                'ticket_price_id',
+                $ticketPrice->id
+            )->update([
+                'total_seat' => $seatCount
+            ]);
+
+            $journeyDates = BusSeatCount::where(
+                    'ticket_price_id',
+                    $ticketPrice->id
+                )
+                ->pluck('journey_date');
+
+            foreach ($journeyDates as $journeyDate) {
+
+                $inventory->refreshAvailableSeats(
+                    [$ticketPrice->id],
+                    $journeyDate
+                );
+            }
+        }
+
         return $data;
     }
 
