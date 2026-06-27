@@ -83,8 +83,7 @@ class SeatOpenController extends Controller
     {
         $res = $this->seatopenRepository->updateSeatOpenData($request);
         if (isset($res['status']) && $res['status'] == 'error') {
-
-            return $this->errorResponse($res['message'], Response::HTTP_OK);
+            return $this->errorResponse($res['message'], Response::HTTP_PARTIAL_CONTENT);
         } else {
             return $this->successResponse($res, "Seat Open  Updated", Response::HTTP_OK);
         }
@@ -128,8 +127,14 @@ class SeatOpenController extends Controller
     public function deleteseatopen(Request $request)
     {
         try {
-            $this->seatopenRepository->delete($request);
-            return $this->successResponse(null, "Seat Open Deleted", Response::HTTP_OK);
+            $res=$this->seatopenRepository->delete($request);
+            if(isset($res['status']) && $res['status'] == 'error'){
+                return $this->errorResponse(
+                    $res['message'],
+                    Response::HTTP_PARTIAL_CONTENT
+                );
+            }
+            return $this->successResponse($res, "Seat Open Deleted", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }

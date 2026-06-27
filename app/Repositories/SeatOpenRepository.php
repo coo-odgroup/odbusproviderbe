@@ -827,6 +827,71 @@ class SeatOpenRepository
                 }
             }
 
+
+            // Find seats being unchecked
+            $uncheckedSeatIds = [];
+
+            foreach ($requestedSeats as $seatId => $isChecked) {
+                if (!$isChecked) {
+                    $uncheckedSeatIds[] = $seatId;
+                }
+            }
+
+            if (!empty($uncheckedSeatIds)) {
+
+                $busSeatIds = $this->busSeats
+                    ->where('bus_id', $data['bus_id'])
+                    ->whereDate('operation_date', $data['date'])
+                    ->where('type', 1)
+                    ->where('status', 1)
+                    ->whereIn('seats_id', $uncheckedSeatIds)
+                    ->pluck('id');
+
+                $bookingExists = BookingDetail::join(
+                        'booking',
+                        'booking.id',
+                        '=',
+                        'booking_detail.booking_id'
+                    )
+                    ->join(
+                        'bus_seats',
+                        'bus_seats.id',
+                        '=',
+                        'booking_detail.bus_seats_id'
+                    )
+                    ->join(
+                        'seats',
+                        'seats.id',
+                        '=',
+                        'bus_seats.seats_id'
+                    )
+                    ->select(
+                        'booking.pnr',
+                        'seats.seatText'
+                    )
+                    ->whereIn('booking_detail.bus_seats_id', $busSeatIds)
+                    ->where('booking_detail.status', 1)
+                    ->where('booking.status', 1)
+                    ->distinct()
+                    ->get();
+
+                if ($bookingExists->isNotEmpty()) {
+
+                    $seatDetails = $bookingExists->map(function ($item) {
+                        return $item->seatText . ' (PNR: ' . $item->pnr . ')';
+                    })->implode(', ');
+
+                    DB::rollBack();
+
+                    return [
+                        'status' => 'error',
+                        'message' =>
+                            'The following seats cannot be removed because bookings already exist: '
+                            . $seatDetails
+                    ];
+                }
+            }
+
             foreach ($data['busRoute'] as $ticketPriceId) {
 
                 $oldOpenSeatCount = $this->busSeats
@@ -1215,7 +1280,7 @@ class SeatOpenRepository
         return $seatopen;
     }
 
-    public function delete($request)
+    public function delete_old($request)
     {
 
          $routeCount = TicketPrice::where('bus_id', $request['bus_id'])->count();
@@ -1266,6 +1331,105 @@ class SeatOpenRepository
         return $seatOpen;
     }
 
+    public function delete($request)
+    {
+
+         $seatIds = BusSeats::where('bus_id', $request['bus_id'])
+            ->whereDate('operation_date', $request['operationDate'])
+            ->where('type', $request['type'])
+            ->where('status', 1)
+            ->pluck('id');
+
+
+       $bookingExists = BookingDetail::join(
+            'booking',
+            'booking.id',
+            '=',
+            'booking_detail.booking_id'
+        )
+        ->join(
+            'bus_seats',
+            'bus_seats.id',
+            '=',
+            'booking_detail.bus_seats_id'
+        )
+        ->join(
+            'seats',
+            'seats.id',
+            '=',
+            'bus_seats.seats_id'
+        )
+        ->select(
+            'booking.pnr',
+            'seats.seatText'
+        )
+        ->whereIn('booking_detail.bus_seats_id', $seatIds)
+        ->where('booking_detail.status', 1)
+        ->where('booking.status', 1)
+        ->distinct()
+        ->get();
+
+    if ($bookingExists->isNotEmpty()) {
+
+        $seatDetails = $bookingExists->map(function ($item) {
+            return $item->seatText . ' (PNR: ' . $item->pnr . ')';
+        })->implode(', ');
+
+        return [
+            'status' => 'error',
+            'message' => 'Seat open cannot be deleted because bookings already exist for this date. Booked Seats: ' . $seatDetails
+        ];
+    }
+
+         $routeCount = TicketPrice::where('bus_id', $request['bus_id'])->count();
+
+        $activeOpenCount = $this->busSeats
+            ->where('bus_id', $request['bus_id'])
+            ->where('operation_date', $request['operationDate'])
+            ->where('type', $request['type'])
+            ->where('status', 1)
+            ->count();
+
+        $actualSeatCount = $routeCount > 0
+            ? ($activeOpenCount / $routeCount)
+            : 0;
+
+        $seatOpen = $this->busSeats
+                         ->where('bus_id', $request['bus_id'])
+                         ->where('operation_date', $request['operationDate'])
+                         ->where('type', $request['type'])
+                         ->update(['status' => '2']);
+
+        
+         BusSeatCount::where('journey_date', $request['operationDate'])
+                    ->whereIn(
+                        'ticket_price_id',
+                        TicketPrice::where('bus_id', $request['bus_id'])
+                            ->pluck('id')
+                    )
+                    ->update([
+                        'total_seat' => DB::raw("
+                            GREATEST(
+                                total_seat - {$actualSeatCount},
+                                0
+                            )
+                        ")
+                    ]);
+
+             $routeIds = TicketPrice::where('bus_id', $request['bus_id'])
+                ->pluck('id')
+                ->toArray();
+
+            app(\App\Services\InventoryService::class)
+                ->refreshAvailableSeats(
+                    $routeIds,
+                    $request['operationDate']
+                );     
+
+        return $seatOpen;
+    }
+
+   
 
     public function editseatOpen($request)
     {
