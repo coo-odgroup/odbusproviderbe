@@ -463,7 +463,7 @@ class DashboardRepository
     {
         $dt = date('Y-m-d', strtotime('today - 30 days'));
         // $operator_data = $this->booking->where('journey_dt','>',$dt)->get();
-   
+
         $busIds = $this->booking
             ->select('bus_id', (DB::raw('count(*) as count')))
             ->selectRaw('sum(owner_fare) as amount')
@@ -540,6 +540,42 @@ class DashboardRepository
         $data_arr['date'] = $date_arr;
         $data_arr['pnr'] = $pnr_count;
 
+        return $data_arr;
+    }
+
+    public function getRoute($request)
+    {
+        // log::info($request);
+        $dt = date('Y-m-d', strtotime('today - 30 days'));
+        if ($request->ROLE_ID == 1) {
+            $route_data = $this->booking
+                ->select(['source_id', 'destination_id'])
+                ->selectRaw('count(*) as pnr_count')
+                ->selectRaw('sum(total_fare) as amount')
+                ->groupBy(['source_id', 'destination_id'])
+                ->orderBy('pnr_count', 'DESC')
+                ->where('journey_dt', '>', $dt)
+                ->where('status', '1')
+                ->limit(10)
+                ->get();
+        } else {
+            $route_data = $this->booking
+                ->select(['source_id', 'destination_id'])
+                ->selectRaw('count(*) as pnr_count')
+                ->selectRaw('sum(total_fare) as amount')
+                ->groupBy(['source_id', 'destination_id'])
+                ->orderBy('pnr_count', 'DESC')->where('user_id', $request->USERID)
+                ->where('journey_dt', '>', $dt)
+                ->where('status', '1')
+                ->limit(10)
+                ->get();
+        }
+        $data_arr = array();
+        foreach ($route_data as $key => $v) {
+            $data_arr[] = $v->toArray();
+            $data_arr[$key]['from_location'] = $this->location->where('id', $v->source_id)->get();
+            $data_arr[$key]['to_location'] = $this->location->where('id', $v->destination_id)->get();
+        }
         return $data_arr;
     }
 }

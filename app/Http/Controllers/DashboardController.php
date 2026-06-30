@@ -81,7 +81,7 @@ class DashboardController extends Controller
 
     public function AlertDuplicateBooking()
     {
-        $sql = "SELECT 
+        $sql = "SELECT
             bkg.journey_dt,
             bkg.bus_id,
             bus.name       AS bus_name,
@@ -98,11 +98,11 @@ class DashboardController extends Controller
         JOIN seats s           ON s.id = bs.seats_id
         JOIN bus               ON bus.id = bkg.bus_id
         LEFT JOIN users u      ON u.id = bkg.users_id
-        WHERE 
+        WHERE
             bkg.status IN (1,4)   -- Booked / Hold
             AND bd.status = 1    -- Seat booked
             and bkg.journey_dt >= CURDATE()
-        GROUP BY 
+        GROUP BY
             bkg.journey_dt,
             bkg.bus_id,
             bus.name,
@@ -493,5 +493,11 @@ class DashboardController extends Controller
             'status' => 200,
             'data'   => $booking
         ]);
+    }
+
+    public function getRoute(Request $request)
+    {
+        $routedata = $this->dashboardRepository->getRoute($request);
+        return $this->successResponse($routedata, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 }
