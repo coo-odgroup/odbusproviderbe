@@ -36,4 +36,9 @@ class AgentWallet extends Model
             'id'
         );
     }
+
+    public function Booking()
+    {
+        return $this->belongsTo(Booking::class);
+    }
 }
