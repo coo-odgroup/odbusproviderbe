@@ -369,8 +369,11 @@ class UserRepository
 
             $user = $this->user->where([
                 ['email', $request['email']],
-                ['email', '<>', null]
+                ['email', '<>', null],
+                ['status', '<>', 2]
             ])->first();
+
+   
 
             if (!$user) {
                 return "un_registered_agent";
