@@ -134,7 +134,7 @@ class BusScheduleRepository
     }
 
 
-     public function scheduleCronJob()
+    public function scheduleCronJob()
     {
         try{
            
@@ -190,7 +190,7 @@ class BusScheduleRepository
             $endTime = microtime(true);
             $executionTime = round($endTime - $startTime, 2);
 
-            Log::info('UpdateMinPriceForBus ended at: ' . now());
+            Log::info('Schedule cron job For Bus ended at: ' . now());
             Log::info("Total execution time: {$executionTime} seconds");
             Log::info("Execution completed in {$executionTime} seconds");
         }
@@ -242,19 +242,27 @@ class BusScheduleRepository
             $totalSeats = DB::table('bus_seats')
                 ->where('bus_id', $busId)
                 ->where('status', 1)
+
                 ->where(function ($q) {
+
                     $q->where(function ($qq) {
+
                         // Normal seats
                         $qq->whereNull('type')
                             ->whereNull('operation_date')
                             ->where('duration', 0);
+
                     })->orWhere(function ($qq) {
+
                         // Extra permanent open seats
                         $qq->whereNull('type')
                             ->whereNull('operation_date')
                             ->where('duration', '>', 0);
+
                     });
+
                 })
+
                 ->distinct('seats_id')
                 ->count('seats_id');
 
@@ -287,7 +295,7 @@ class BusScheduleRepository
 
             if (!empty($insertData)) {
 
-                DB::table('bus_seat_count')->insert($insertData);
+               DB::table('bus_seat_count')->insert($insertData);
 
             }
 
@@ -533,7 +541,7 @@ class BusScheduleRepository
     }
 
 
-    //////////// sync bus seat count every night cron job ////////////
+    //////////// sync bus seat count every 15 min cron job ////////////
 
     public function syncBusSeatCount()
     {
@@ -665,6 +673,53 @@ class BusScheduleRepository
                     ->get()
 
                     ->keyBy('operation_date');
+
+
+                    // Insert missing records in bus_seat_count
+                    $ticketPrices = DB::table('ticket_price')
+                        ->where('bus_id', $busId)
+                        ->where('status', 1)
+                        ->get();
+
+                    $scheduleIds = DB::table('bus_schedule')
+                        ->where('bus_id', $busId)
+                        ->where('status', 1)
+                        ->pluck('id');
+
+                    $scheduleDates = DB::table('bus_schedule_date')
+                        ->whereIn('bus_schedule_id', $scheduleIds)
+                        ->whereBetween('entry_date', [$startDate, $endDate])
+                        ->where('status', 1)
+                        ->pluck('entry_date');
+
+                    $insertData = [];
+
+
+                    
+
+                    foreach ($ticketPrices as $ticketPrice) {
+
+                        foreach ($scheduleDates as $journeyDate) {
+
+                            $insertData[] = [
+                                'bus_id' => $busId,
+                                'ticket_price_id' => $ticketPrice->id,
+                                'journey_date'    => $journeyDate,
+                                'total_seat'      => 0,
+                                'booked_seat'     => 0,
+                                'blocked_seat'    => 0,
+                                'hold_seat'       => 0,
+                                'available_seat'  => 0,
+                                'created_at'      => now(),
+                                'updated_at'      => now(),
+                                'created_by'      => 'cron',
+                                'updated_by'      => 'cron',
+                            ];
+                        }
+                    }
+
+
+                    DB::table('bus_seat_count')->insertOrIgnore($insertData);
 
 
 
