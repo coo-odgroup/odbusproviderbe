@@ -344,6 +344,7 @@ class AgentWalletController extends Controller
                     'user_id' => $walletRequest->user_id,
                     'created_by' => $walletRequest->created_by,
                     'status' => 1,
+                    'payment_response' => json_encode($res),
                     'created_at' => now(),
                     'updated_at' => now(),
 

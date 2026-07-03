@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use DB;
 
+
+
+
 class BusStoppageRepository
 {
     protected $busStoppage;
-    protected $location;
     public function __construct(BusStoppage $busStoppage, Location $location)
     {
         $this->busStoppage = $busStoppage;
@@ -41,14 +43,13 @@ class BusStoppageRepository
     public function getbusRoutebyBusId($busid)
     {
         $data = $this->busStoppage->where('bus_id', $busid)->where('status', '!=', 2)->get();
-        foreach ($data as $a) {
+        foreach ($data as  $a) {
             $a['source'] = $this->location->where('id', $a->source_id)->get();
             $a['destination'] = $this->location->where('id', $a->destination_id)->get();
         }
 
         return $data;
     }
-
 
     public function getModel(BusStoppage $busStoppage, $data)
     {
@@ -88,7 +89,7 @@ class BusStoppageRepository
     }
     public function save($data)
     {
-        $busStoppage = new $this->busStoppage();
+        $busStoppage = new $this->busStoppage;
         $busStoppage = $this->getModel($busStoppage, $data);
         $busStoppage->save();
         return $busStoppage->id;
@@ -128,7 +129,7 @@ class BusStoppageRepository
         return $this->location->where('id', $sourceId)->get();
     }
 
-    public function AllRoute_old($data)
+    public function AllRoute($data)
     {
         // log::info($data)
         $allRoutes = array();
@@ -164,44 +165,4 @@ class BusStoppageRepository
         }
         return $allRoutes;
     }
-
-    public function AllRoute($data = null)
-    {
-        $query = $this->busStoppage
-            ->select('source_id', 'destination_id')
-            ->groupBy('source_id', 'destination_id');
-
-        if (!empty($data->USER_BUS_OPERATOR_ID)) {
-            $query->where('bus_operator_id', $data->USER_BUS_OPERATOR_ID);
-        }
-
-        $routes = $query->get();
-
-        // Collect unique city IDs
-        $cityIds = $routes
-            ->flatMap(fn ($r) => [$r->source_id, $r->destination_id])
-            ->unique()
-            ->values();
-
-        // Fetch all cities in ONE query
-        $cities = $this->location   // or City model
-            ->whereIn('id', $cityIds)
-            ->pluck('name', 'id');
-
-        $allRoutes = [];
-
-        foreach ($routes as $route) {
-            if (isset($cities[$route->source_id], $cities[$route->destination_id])) {
-                $allRoutes[] = [
-                    'route' => $cities[$route->source_id] . ' - ' . $cities[$route->destination_id],
-                    'id'    => $route->source_id . '-' . $route->destination_id,
-                ];
-            }
-        }
-
-        Log::info($allRoutes);
-
-        return $allRoutes;
-    }
-
 }

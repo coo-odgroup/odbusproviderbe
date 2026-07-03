@@ -31,6 +31,7 @@ return [
     'EXCEPTION_ERROR' => 'Error Occured',
     'CONSUMER_FRONT_URL' => 'https://www.odbus.in/',
     'BASE_URL' => 'https://odtestingssr.odbus.co.in/',
+    'PUBLIC_PATH_URL' => 'https://consumer.odbus.co.in/public/',
 
 
     #PhonePe

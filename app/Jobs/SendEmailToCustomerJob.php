@@ -91,7 +91,7 @@ class SendEmailToCustomerJob implements ShouldQueue
         $bk_dtl = Booking::with(["bus" => function ($bs) {
             $bs->with('BusType.busClass');
             $bs->with('BusSitting');
-        } ])->where('pnr', $email_pnr)->first();
+        }])->where('pnr', $email_pnr)->first();
 
         $this->bus_sitting = $bk_dtl->bus->BusSitting->name;
         $this->bus_type = $bk_dtl->bus->BusType->name;
@@ -160,15 +160,17 @@ class SendEmailToCustomerJob implements ShouldQueue
         // ->format('png')
         // ->generate($this->qrCodeText, public_path('qrcode/'.$this->email_pnr.'.png'));
 
-        $this->subject = '';
-        $this->qrcode_image_path = 'https://consumer.odbus.co.in/public/qrcode/'.$this->email_pnr.'.png';
+        $baseUrl = Config::get('constants.PUBLIC_PATH_URL');
 
-        $this->gstpdf = 'https://consumer.odbus.co.in/public/gst/'.$bk_dtl->gst_invoice_no;
-        $this->email_pdf = 'https://consumer.odbus.co.in/public/ticketpdf/'.$this->email_pnr.'.pdf';
+        $this->subject = '';
+        $this->qrcode_image_path = $baseUrl . '/qrcode/' . $this->email_pnr . '.png';
+
+        $this->gstpdf = $baseUrl . '/gst/' . $bk_dtl->gst_invoice_no;
+        $this->email_pdf = $baseUrl . '/ticketpdf/' . $this->email_pnr . '.pdf';
 
         $p_name = [];
         foreach ($request['passengerDetails'] as $p) {
-            $pp = $p['passenger_name']." (".$p['passenger_gender'].") ";
+            $pp = $p['passenger_name'] . " (" . $p['passenger_gender'] . ") ";
             array_push($p_name, $pp);
         }
 
@@ -179,7 +181,6 @@ class SendEmailToCustomerJob implements ShouldQueue
         }
 
         $this->p_names = $pp_names;
-
     }
 
     /**
@@ -198,7 +199,7 @@ class SendEmailToCustomerJob implements ShouldQueue
             'name' => $this->name,
             'pnr' => $this->email_pnr,
             'bookingdate' => $this->bookingdate,
-            'journeydate' => $this->journeydate ,
+            'journeydate' => $this->journeydate,
             'boarding_point' => $this->boarding_point,
             'dropping_point' => $this->dropping_point,
             'departureTime' => $this->departureTime,
@@ -214,10 +215,10 @@ class SendEmailToCustomerJob implements ShouldQueue
             'conductor_number' => $this->conductor_number,
             'customer_number' => $this->customer_number,
             'agent_number' => $this->agent_number,
-            'passengerDetails' => $this->passengerDetails ,
+            'passengerDetails' => $this->passengerDetails,
             'totalfare' => $this->totalfare,
             'discount' =>  $this->discount,
-            'payable_amount' => $this->payable_amount ,
+            'payable_amount' => $this->payable_amount,
             'odbus_gst' => $this->odbus_gst,
             'odbus_charges' => $this->odbus_charges,
             'owner_fare' => $this->owner_fare,
@@ -230,18 +231,18 @@ class SendEmailToCustomerJob implements ShouldQueue
             'customer_gst_percent' => $this->customer_gst_percent,
             'customer_gst_amount' => $this->customer_gst_amount,
             'coupon_discount' => $this->coupon_discount,
-            'total_seats' =>  $this->total_seats ,
-            'seat_names' =>  $this->seat_names ,
+            'total_seats' =>  $this->total_seats,
+            'seat_names' =>  $this->seat_names,
             'customer_comission' => $this->customer_comission,
-            'qrcode_image_path' => $this->qrcode_image_path ,
+            'qrcode_image_path' => $this->qrcode_image_path,
             'cancelation_policy' => $this->cancelation_policy,
             'p_names' => $this->p_names,
-            'routedetails' => $this->routedetails ,
+            'routedetails' => $this->routedetails,
             'start' => $rr[0],
             'end' => $rr[1],
             'add_festival_fare' => $this->add_festival_fare,
             'add_special_fare' => $this->add_special_fare,
-            'gst_name' => str_replace('.pdf', '', $this->gst_name) ,
+            'gst_name' => str_replace('.pdf', '', $this->gst_name),
             'bus_sitting' => $this->bus_sitting,
             'bus_type' => $this->bus_type
         ];
@@ -252,25 +253,50 @@ class SendEmailToCustomerJob implements ShouldQueue
         $this->subject = str_replace("<PNR>", $this->email_pnr, $this->subject);
 
         if ($this->customer_gst_status == 0) {
-
-            Mail::send('EmailToCustomer', $data, function ($messageNew) {
-                $messageNew->from(config('mail.contact.address'))
-                ->attach($this->email_pdf)
-                ->to($this->to)
-                ->subject($this->subject);
-                return 'Email Sent';
-            });
+            if (file_exists($this->email_pdf)) {
+                Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                    $messageNew->from(config('mail.contact.address'))
+                        ->attach($this->email_pdf)
+                        ->to($this->to)
+                        ->subject($this->subject);
+                    return 'Email Sent';
+                });
+            } else {
+                Log::error('Email PDF does not exist: ' . $this->email_pdf);
+                Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                    $messageNew->from(config('mail.contact.address'))
+                        ->to($this->to)
+                        ->subject($this->subject);
+                });
+            }
         }
 
         /////////////// pdf attach ///////////////////////
 
         elseif ($this->customer_gst_status == 1) {
-            Mail::send('EmailToCustomer', $data, function ($messageNew) {
-                $messageNew->from(config('mail.contact.address'));
-                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
-                ->subject($this->subject);
-            });
-
+            if (file_exists($this->gstpdf) && file_exists($this->email_pdf)) {
+                Log::info('GST PDF exists: ' . $this->gstpdf);
+                Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                    $messageNew->from(config('mail.contact.address'));
+                    $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
+                        ->subject($this->subject);
+                });
+            } elseif (file_exists($this->email_pdf)) {
+                Log::warning('GST PDF does not exist: ' . $this->gstpdf);
+                Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                    $messageNew->from(config('mail.contact.address'))
+                        ->attach($this->email_pdf)
+                        ->to($this->to)
+                        ->subject($this->subject);
+                });
+            } else {
+                Log::error('Neither GST PDF nor email PDF exists: ' . $this->gstpdf . ', ' . $this->email_pdf);
+                Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                    $messageNew->from(config('mail.contact.address'))
+                        ->to($this->to)
+                        ->subject($this->subject);
+                });
+            }
         }
 
 

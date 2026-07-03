@@ -13,15 +13,10 @@ use InvalidArgumentException;
 class LocationService
 {
     /**
-     * @var $postRepository
+     * @var $locationRepository
      */
     protected $locationRepository;
-
-    /**
-     * PostService constructor.
-     *
-     * @param PostRepository $postRepository
-     */
+   
     public function __construct(LocationRepository $locationRepository)
     {
         $this->locationRepository = $locationRepository;
@@ -164,18 +159,18 @@ class LocationService
     // }
 
 
-    // public function changeStatus($id)
-    // {
-    //     try {
-    //         $post = $this->LocationRepository->changeStatus($id);
+    public function changeStatus($id)
+    {
+        try {
+            $post = $this->locationRepository->changeStatus($id);
 
-    //     } catch (Exception $e) {
-    //         DB::rollBack();
-    //         Log::info($e->getMessage());
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
 
-    //         throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
-    //     }
-    //     return $post;
+            throw new InvalidArgumentException(Config::get('constants.UNABLE_CHANGE_STATUS'));
+        }
+        return $post;
 
-    // }
+    }
 }
