@@ -1354,6 +1354,10 @@ Route::post("all-Route-template",[SeoController::class, "routeTemplate"]);
 Route::post("templateDetails",[SeoController::class, "templateDetails"]);
 Route::post("manageroute",[SeoController::class, "manageroute"]);
 
+
+Route::post("all-Route",[SeoController::class, "allRoute"]);
+
+
 //Missing routes
 Route::post("missing-routes",[SeoController::class, "getMissingRoutesByLocation"]);
 Route::post("missing-single-routes",[SeoController::class, "getRouteBuses"]);
