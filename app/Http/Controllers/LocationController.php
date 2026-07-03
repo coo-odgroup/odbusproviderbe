@@ -15,6 +15,7 @@ use App\AppValidator\LocationValidator;
 use App\Repositories\LocationRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\LocationService;
 
 class LocationController extends Controller
 {
@@ -27,9 +28,9 @@ class LocationController extends Controller
     protected $locationRepository;
 
 
-    public function __construct(LocationRepository $locationRepository, LocationValidator $locationValidator)
+    public function __construct(LocationRepository $locationRepository, LocationValidator $locationValidator,LocationService $locationService)
     {
-
+        $this->locationService = $locationService;
         $this->locationValidator = $locationValidator;
         $this->locationRepository = $locationRepository;
     }
@@ -149,7 +150,7 @@ class LocationController extends Controller
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse(null, "Location Status Updated", Response::HTTP_ACCEPTED);
+        return $this->successResponse(null, "Location Status Updated", Response::HTTP_OK);
     }
 
     public function filterLocation(request $request)
