@@ -949,6 +949,21 @@ class SeoController extends Controller
         return response()->json($data);
     }
 
+
+    public function allRoute(Request $request)
+    {
+        $query = RouteDetail::select('id', 'source', 'destination', 'is_popular_routes', 'is_top_routes','sequence');
+
+        // Filter by route_id
+        if ($request->filled('route_id')) {
+            $query->where('id', $request->route_id);
+        }
+
+        $data = $query->get();
+
+        return response()->json($data);
+    }
+
     public function templateDetails(Request $request)
     {
         $data = SeoContent::join(
