@@ -253,34 +253,48 @@ class SendEmailToCustomerJob implements ShouldQueue
         $this->subject = str_replace("<PNR>", $this->email_pnr, $this->subject);
 
         if ($this->customer_gst_status == 0) {
-
-            Mail::send('EmailToCustomer', $data, function ($messageNew) {
-                $messageNew->from(config('mail.contact.address'))
-                    ->attach($this->email_pdf)
-                    ->to($this->to)
-                    ->subject($this->subject);
-                return 'Email Sent';
-            });
-        }
-
-        /////////////// pdf attach ///////////////////////
-
-        else if ($this->customer_gst_status == 1) {
-            if (file_exists($this->gstpdf)) {
-                Log::info('GST PDF exists: ' . $this->gstpdf);
-                Mail::send('EmailToCustomer', $data, function ($messageNew) {
-                    $messageNew->from(config('mail.contact.address'));
-                    $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
-                        ->subject($this->subject);
-                });
-            } else {
-                Log::warning('GST PDF does not exist: ' . $this->gstpdf);
+            if (file_exists($this->email_pdf)) {
                 Mail::send('EmailToCustomer', $data, function ($messageNew) {
                     $messageNew->from(config('mail.contact.address'))
                         ->attach($this->email_pdf)
                         ->to($this->to)
                         ->subject($this->subject);
                     return 'Email Sent';
+                });
+            } else {
+                Log::error('Email PDF does not exist: ' . $this->email_pdf);
+                Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                    $messageNew->from(config('mail.contact.address'))
+                        ->to($this->to)
+                        ->subject($this->subject);
+                });
+            }
+        }
+
+        /////////////// pdf attach ///////////////////////
+
+        elseif ($this->customer_gst_status == 1) {
+            if (file_exists($this->gstpdf) && file_exists($this->email_pdf)) {
+                Log::info('GST PDF exists: ' . $this->gstpdf);
+                Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                    $messageNew->from(config('mail.contact.address'));
+                    $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
+                        ->subject($this->subject);
+                });
+            } elseif (file_exists($this->email_pdf)) {
+                Log::warning('GST PDF does not exist: ' . $this->gstpdf);
+                Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                    $messageNew->from(config('mail.contact.address'))
+                        ->attach($this->email_pdf)
+                        ->to($this->to)
+                        ->subject($this->subject);
+                });
+            } else {
+                Log::error('Neither GST PDF nor email PDF exists: ' . $this->gstpdf . ', ' . $this->email_pdf);
+                Mail::send('EmailToCustomer', $data, function ($messageNew) {
+                    $messageNew->from(config('mail.contact.address'))
+                        ->to($this->to)
+                        ->subject($this->subject);
                 });
             }
         }
