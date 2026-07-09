@@ -461,9 +461,7 @@ class TicketInformationRepository
         $user_id = $request->user_id;
         $full_refund = $request->full_refund;
 
-
         $cancelticket = $this->booking->find($id);
-        // log::info($cancelticket);
 
         if ($cancelticket->origin == 'DOLPHIN' && $full_refund == false) {
             $client = new \GuzzleHttp\Client();
@@ -533,6 +531,7 @@ class TicketInformationRepository
             $cancelticket->cancel_reason = $request['reason'];
             $cancelticket->cancel_by = $request['cancelled_by'];
             $cancelticket->status = $request['status'];
+            $cancelticket->is_customer_req = $request['is_customer_req'] == 1 ? 1 : 0;
             $cancelticket->update();
 
             $PNR_Details = $this->CancelPNRDetails($pnr);

@@ -43,7 +43,10 @@ class SchedulerRepository
         )
             ->with('bus.busstoppage')
             ->with('ClientWallet')
-            ->where('user_type', 1)
+            ->where(function ($q) {
+                $q->where('user_type', 1)
+                ->orWhere('is_customer_req', 1);
+            })
             ->where('status', 2)
             ->where('refund_amount', '!=', 0)
             ->whereDate('created_at', '>=', '2026-06-01')
@@ -201,8 +204,11 @@ class SchedulerRepository
         )
             ->with('bus.busstoppage')
             ->with('ClientWallet')
+            ->where(function ($q) {
+                $q->where('user_type', 1)
+                  ->orWhere('is_customer_req', 1);
+            })
             ->where('status', 2)
-            ->where('user_type', 1)
             ->where('refund_amount', '!=', 0)
             ->whereDate('created_at', '>=', '2026-06-01')
             ->whereHas('CustomerPayment', function ($q) {
