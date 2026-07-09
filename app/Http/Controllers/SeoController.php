@@ -952,11 +952,34 @@ class SeoController extends Controller
 
     public function allRoute(Request $request)
     {
-        $query = RouteDetail::select('id', 'source', 'destination', 'is_popular_routes', 'is_top_routes','sequence');
+        $query = RouteDetail::select(
+            'id',
+            'source',
+            'destination',
+            'is_popular_routes',
+            'is_top_routes',
+            'sequence'
+        );
 
         // Filter by route_id
         if ($request->filled('route_id')) {
             $query->where('id', $request->route_id);
+        }
+
+        // Filter by route type
+        if ($request->filled('route_type')) {
+            if ($request->route_type == 'is_popular_routes') {
+                $query->where('is_popular_routes', 1);
+            } elseif ($request->route_type == 'is_top_routes') {
+                $query->where('is_top_routes', 1);
+            }
+        }
+
+        // Order by sequence
+        if ($request->filled('order_by') && in_array(strtolower($request->order_by), ['asc', 'desc'])) {
+            $query->orderBy('sequence', $request->order_by);
+        } else {
+            $query->orderBy('sequence', 'asc');
         }
 
         $data = $query->get();
