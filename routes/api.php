@@ -1356,6 +1356,7 @@ Route::post("manageroute",[SeoController::class, "manageroute"]);
 
 
 Route::post("all-Route",[SeoController::class, "allRoute"]);
+Route::post("popularRouteUpdate",[SeoController::class, "popularRouteUpdate"]);
 
 
 //Missing routes
