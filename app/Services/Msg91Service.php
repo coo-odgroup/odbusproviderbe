@@ -223,7 +223,7 @@ class Msg91Service
             "body_var_8" => ["type" => "text", "value" => $data['seat']],
             "body_var_9" => ["type" => "text", "value" => $data['refundAmount']],
 
-            "button_1" => ["type" => "text", "value" => "https://odbus.in/cancel-ticket/" . $data['pnr']],
+            "button_1" => ["type" => "text", "value" => "https://play.google.com/store/apps/details?id=com.od.odbus&pli=1"],
 
 
             "var1" => ["type" => "text", "value" => $data['customer_name']],

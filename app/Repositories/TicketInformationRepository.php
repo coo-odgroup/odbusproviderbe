@@ -1573,7 +1573,7 @@ class TicketInformationRepository
 
 
         $data = array(
-            'customer_mob' => $data['smsData'][0]['smsData']['phone'],
+            'customer_mob' => $data['mobile_no'],
             'customer_name' => $data['smsData'][0]['smsData']['name'],
             'pnr' => $data['smsData'][0]['smsData']['PNR'],
             'source' => $data['smsData'][0]['smsData']['source'],
@@ -1608,7 +1608,7 @@ class TicketInformationRepository
 
 
         $data = array(
-            'cmo_no' => $data['smsData'][0]['smsData']['cmo_number'],
+            'cmo_no' => $data['mobile_no'],
             'pnr' => $data['smsData'][0]['smsData']['PNR'],
             'source' => $data['smsData'][0]['smsData']['source'],
             'destination' => $data['smsData'][0]['smsData']['destination'],

@@ -128,9 +128,9 @@ class AgentWalletController extends Controller
 
 
             $receiptId = 'WALLET_' . time() . rand(1000, 9999);
-            $key = 'TEST108577409ff7eb8e2b1cb161978f04775801';
-            $secretKey = 'cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced';
-            $apiUrl = 'https://sandbox.cashfree.com/pg/orders';
+            $key = Config::get('constants.CASHFREE_KEY');
+            $secretKey = Config::get('constants.CASHFREE_SECRET');
+            $apiUrl = Config::get('constants.CASHFREE_API_URL');
 
             $frontendUrl = rtrim($request->frontend_url ?? '', '/');
 
