@@ -367,13 +367,27 @@ class UserRepository
     {
         try {
 
-            $user = $this->user->where([
-                ['email', $request['email']],
-                ['email', '<>', null],
-                ['status', '<>', 2]
-            ])->first();
+            // $user = $this->user->where([
+            //     ['email', $request['email']],
+            //     ['email', '<>', null],
+            //     ['status', '<>', 2]
+            // ])->first();
 
-   
+            if (filter_var($request['email'], FILTER_VALIDATE_EMAIL)) {
+                // Login using email
+                $user = $this->user->where([
+                    ['email', $request['email']],
+                    ['email', '<>', null],
+                    ['status', '<>', 2]
+                ])->first();
+            } else {
+                // Login using phone
+                $user = $this->user->where([
+                    ['phone', $request['email']],
+                    ['phone', '<>', null],
+                    ['status', '<>', 2]
+                ])->first();
+            }
 
             if (!$user) {
                 return "un_registered_agent";
@@ -415,7 +429,7 @@ class UserRepository
             return "something_went_wrong";
         }
     }
-    
+
     public function login_old($request)
     {
         $query = $this->user->where([
