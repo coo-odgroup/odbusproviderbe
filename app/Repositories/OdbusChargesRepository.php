@@ -125,6 +125,7 @@ class OdbusChargesRepository
 
         $odbusCharges->created_by = $data['created_by'];
         $odbusCharges->organization_schema = $data['organization_schema'];
+        $odbusCharges->storage_version = $data['storage_version'];
 
         // Log::info($odbusCharges);exit;
 
@@ -314,7 +315,6 @@ class OdbusChargesRepository
                 }
             } else {
                 $odbusCharges = $this->getModel($data, $odbusCharges);
-                ;
             }
 
             $odbusCharges->update();
