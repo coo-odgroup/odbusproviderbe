@@ -123,7 +123,7 @@ class BusScheduleController extends Controller
         try {
 
             $response = $this->busScheduleRepository->delete($id);
-            return $this->successResponse($response, "Bus Schedule Deleted", Response::HTTP_ACCEPTED);
+            return $this->successResponse($response, "Bus Schedule Deleted", Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
@@ -147,7 +147,7 @@ class BusScheduleController extends Controller
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
-        return $this->successResponse($response, "Bus Schedule Status Updated", Response::HTTP_ACCEPTED);
+        return $this->successResponse($response, "Bus Schedule Status Updated", Response::HTTP_OK);
     }
 
 

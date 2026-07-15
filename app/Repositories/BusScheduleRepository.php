@@ -451,6 +451,8 @@ class BusScheduleRepository
                     $busScheduledateModels[] =  $busScheduleDate;
                 }
                 $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
+                //Update Seat Count
+                $this->syncBusSeatCount($data['entry_date'],30,$data['bus_id']);
                 return $busScheduledateModels;
             } else {
                 return 'Bus Schedule Already Exist';
@@ -500,7 +502,11 @@ class BusScheduleRepository
                 $busScheduleDate->status = 1;
                 $busScheduledateModels[] =  $busScheduleDate;
             }
+
             $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
+          
+            //Update Seat Count
+            $this->syncBusSeatCount($data['entry_date'],30,$data['bus_id']);
             return $busScheduledateModels;
         } else {
             return 'Can Not Add Old Date';
@@ -543,23 +549,26 @@ class BusScheduleRepository
 
     //////////// sync bus seat count every 15 min cron job ////////////
 
-    public function syncBusSeatCount()
+    public function syncBusSeatCount($startDate = null, $day = null, $busId = null)
     {
+        
         ini_set('memory_limit', '3072M');
         ini_set('max_execution_time', 600);
+        
+        $startDate = $startDate ?? request()->input('start_date');
+        $day       = $day ?? request()->input('day');
+        $busId     = $busId ?? request()->input('bus_id');
 
-        if(empty($_REQUEST['day']) || empty($_REQUEST['start_date']))
+        if(empty($day) || empty($startDate))
 		{
 		    return 'Please provide day and start_date.';
 		}
 
-		$day        = (int) $_REQUEST['day'];
-		$startDate  = date('Y-m-d', strtotime($_REQUEST['start_date']));
+		$day        = (int) $day;
+		$startDate  = date('Y-m-d', strtotime($startDate));
 		$endDate    = date('Y-m-d', strtotime($startDate . " +{$day} days"));
 
-		$busId = !empty($_REQUEST['bus_id'])
-		    ? (int) $_REQUEST['bus_id']
-		    : null;
+		$busId = !empty($busId)  ? (int) $busId  : null;
 
         try {
 
@@ -572,108 +581,67 @@ class BusScheduleRepository
 			    $busIdsQuery->where('tp.bus_id', $busId);
 			}
 
-			$busIds = $busIdsQuery
-			    ->distinct()
-			    ->pluck('tp.bus_id');
-
-                $updatedCount = 0;
-
+			$busIds = $busIdsQuery->distinct()->pluck('tp.bus_id');
+          
+            $updatedCount = 0;
 
             foreach ($busIds as $busId) {
-
                
                 $baseTotalSeat = DB::table('bus_seats')
-
                     ->where('bus_id', $busId)
-
                     ->where('status', 1)
-
                     ->where(function ($q) {
-
                         $q->where(function ($qq) {
-
                             // Normal Seat
                             $qq->whereNull('type')
                                 ->whereNull('operation_date')
                                 ->where('duration', 0);
-
                         })
 
                         ->orWhere(function ($qq) {
-
                             // Extra Permanent Open Seat
                             $qq->whereNull('type')
                                 ->whereNull('operation_date')
                                 ->where('duration', '>', 0);
-
                         });
-
                     })
 
                     ->distinct('seats_id')
-
                     ->count('seats_id');
 
                 $tempOpenSeats = DB::table('bus_seats')
 
-                    ->select(
-                        'operation_date',
-                        DB::raw('COUNT(DISTINCT seats_id) as open_seat')
-                    )
-
+                    ->select('operation_date', DB::raw('COUNT(DISTINCT seats_id) as open_seat'))
                     ->where('bus_id', $busId)
-
                     ->where('status', 1)
-
                     ->where('type', 1)
-
                     ->whereNotNull('operation_date')
-
                     ->groupBy('operation_date')
-
                     ->get()
-
                     ->keyBy('operation_date');
-
 
                 $blockedSeats = DB::table('bus_seats')
 
-                    ->select(
-                        'operation_date',
-                        DB::raw('COUNT(DISTINCT seats_id) as blocked_seat')
-                    )
-
+                    ->select('operation_date', DB::raw('COUNT(DISTINCT seats_id) as blocked_seat'))
                     ->where('bus_id', $busId)
-
                     ->where('status', 1)
-
                     ->where(function ($q) {
-
                         $q->where(function ($qq) {
-
                             // Temporary Seat Block
                             $qq->where('type', 2)
                                 ->whereNotNull('operation_date');
-
                         })
 
                         ->orWhere(function ($qq) {
-
                             // Extra Seat Block
                             $qq->whereNull('type')
                                 ->where('duration', 0)
                                 ->whereNotNull('operation_date');
-
                         });
-
                     })
-
                     ->groupBy('operation_date')
-
                     ->get()
-
                     ->keyBy('operation_date');
-
 
                     // Insert missing records in bus_seat_count
                     $ticketPrices = DB::table('ticket_price')
@@ -694,13 +662,9 @@ class BusScheduleRepository
 
                     $insertData = [];
 
-
-                    
-
                     foreach ($ticketPrices as $ticketPrice) {
 
                         foreach ($scheduleDates as $journeyDate) {
-
                             $insertData[] = [
                                 'bus_id' => $busId,
                                 'ticket_price_id' => $ticketPrice->id,
@@ -718,230 +682,141 @@ class BusScheduleRepository
                         }
                     }
 
-
-                    DB::table('bus_seat_count')->insertOrIgnore($insertData);
-
-
+                DB::table('bus_seat_count')->insertOrIgnore($insertData);
 
                 $seatCounts = DB::table('bus_seat_count as bsc')
 
                     ->join('ticket_price as tp', 'tp.id', '=', 'bsc.ticket_price_id')
-
                     ->join('bus as b', 'b.id', '=', 'tp.bus_id')
-
                     ->select(
                         'bsc.id',
                         'bsc.ticket_price_id',
                         'bsc.journey_date'
                     )
-
                     ->where('b.status', 1)
-
                     ->where('tp.status', 1)
-
                     ->where('tp.bus_id', $busId)
-
-                    ->whereBetween('bsc.journey_date', [
-                        $startDate,
-                        $endDate
-                    ])
-
+                    ->whereBetween('bsc.journey_date', [$startDate,$endDate])
                     ->get();
-
 
                 foreach ($seatCounts as $row) {
 
                     $journeyDate = $row->journey_date;
-
-
                     $totalSeat = $baseTotalSeat;
 
                     if (isset($tempOpenSeats[$journeyDate])) {
-
                         $totalSeat += $tempOpenSeats[$journeyDate]->open_seat;
                     }
-
-
 
                     $blockedSeat = 0;
 
                     if (isset($blockedSeats[$journeyDate])) {
-
                         $blockedSeat = $blockedSeats[$journeyDate]->blocked_seat;
                     }
-
-
 
                     $bookedSeat = DB::table('booking as b')
 
                         ->join('bus as bus_main', 'bus_main.id', '=', 'b.bus_id')
-
                         ->join('booking_detail as bd', function ($join) {
-
                             $join->on('bd.booking_id', '=', 'b.id')
-                                ->where('bd.status', 1);
-
+                                 ->where('bd.status', 1);
                         })
 
                         ->join('bus_location_sequence as req_start', function ($join) {
-
                             $join->on('req_start.bus_id', '=', 'b.bus_id')
                                 ->on('req_start.location_id', '=', 'b.source_id');
-
                         })
 
                         ->join('bus_location_sequence as req_end', function ($join) {
-
                             $join->on('req_end.bus_id', '=', 'b.bus_id')
-                                ->on('req_end.location_id', '=', 'b.destination_id');
-
+                                 ->on('req_end.location_id', '=', 'b.destination_id');
                         })
 
                         ->join('ticket_price as tp2', function ($join) use ($row) {
-
                             $join->on('tp2.bus_id', '=', 'b.bus_id')
                                 ->where('tp2.id', '=', $row->ticket_price_id);
-
                         })
 
                         ->join('bus_location_sequence as seg_start', function ($join) {
-
                             $join->on('seg_start.bus_id', '=', 'tp2.bus_id')
-                                ->on('seg_start.location_id', '=', 'tp2.source_id');
-
+                                 ->on('seg_start.location_id', '=', 'tp2.source_id');
                         })
 
                         ->join('bus_location_sequence as seg_end', function ($join) {
-
                             $join->on('seg_end.bus_id', '=', 'tp2.bus_id')
                                 ->on('seg_end.location_id', '=', 'tp2.destination_id');
-
                         })
 
                         ->where('bus_main.status', 1)
-
                         ->where('b.status', 1)
-
                         ->whereDate('b.journey_dt', $journeyDate)
-
                         ->where('seg_start.sequence', '<', DB::raw('req_end.sequence'))
-
                         ->where('req_start.sequence', '<', DB::raw('seg_end.sequence'))
-
                         ->count();
-
-
 
                     $holdSeat = DB::table('booking as b')
 
                         ->join('bus as bus_main', 'bus_main.id', '=', 'b.bus_id')
-
                         ->join('booking_detail as bd', 'bd.booking_id', '=', 'b.id')
-
                         ->join('bus_location_sequence as req_start', function ($join) {
-
                             $join->on('req_start.bus_id', '=', 'b.bus_id')
                                 ->on('req_start.location_id', '=', 'b.source_id');
-
                         })
 
                         ->join('bus_location_sequence as req_end', function ($join) {
-
                             $join->on('req_end.bus_id', '=', 'b.bus_id')
                                 ->on('req_end.location_id', '=', 'b.destination_id');
-
                         })
 
                         ->join('ticket_price as tp2', function ($join) use ($row) {
-
                             $join->on('tp2.bus_id', '=', 'b.bus_id')
                                 ->where('tp2.id', '=', $row->ticket_price_id);
-
                         })
 
                         ->join('bus_location_sequence as seg_start', function ($join) {
-
                             $join->on('seg_start.bus_id', '=', 'tp2.bus_id')
                                 ->on('seg_start.location_id', '=', 'tp2.source_id');
-
                         })
 
                         ->join('bus_location_sequence as seg_end', function ($join) {
-
                             $join->on('seg_end.bus_id', '=', 'tp2.bus_id')
                                 ->on('seg_end.location_id', '=', 'tp2.destination_id');
-
                         })
 
                         ->where('bus_main.status', 1)
-
                         ->where('b.status', 4)
-
                         ->whereDate('b.journey_dt', $journeyDate)
-
                         ->where('seg_start.sequence', '<', DB::raw('req_end.sequence'))
-
                         ->where('req_start.sequence', '<', DB::raw('seg_end.sequence'))
-
                         ->count();
 
 
-                    $availableSeat = max(
-                        $totalSeat
-                        - $bookedSeat
-                        - $blockedSeat
-                        - $holdSeat,
-                        0
-                    );
-
-
+                    $availableSeat = max($totalSeat - $bookedSeat - $blockedSeat - $holdSeat,0);
 
                     $updated = DB::table('bus_seat_count')
-
-                        ->where('id', $row->id)
-
-                        ->update([
-
-                            'total_seat'     => $totalSeat,
-
-                            'booked_seat'    => $bookedSeat,
-
-                            'blocked_seat'   => $blockedSeat,
-
-                            'hold_seat'      => $holdSeat,
-
-                            'available_seat' => $availableSeat,
-
-                            'updated_at'   => now(),
-
-                            'updated_by'     => 'cron'
-
-                        ]);
-
+                                ->where('id', $row->id)
+                                ->update([
+                                    'total_seat'     => $totalSeat,
+                                    'booked_seat'    => $bookedSeat,
+                                    'blocked_seat'   => $blockedSeat,
+                                    'hold_seat'      => $holdSeat,
+                                    'available_seat' => $availableSeat,
+                                    'updated_at'   => now(),
+                                    'updated_by'     => 'cron'
+                                ]);
 
                         if ($updated) {
                             $updatedCount++;
                         }
-
                 }
-
             }
 
             Log::info("Bus Seat Count Sync Completed. Total Updated Records: {$updatedCount}");
 
-            return [
-                'status' => true,
-                'updated_records' => $updatedCount
-            ];
-
-           
-
+            return ['status' => true,'updated_records' => $updatedCount ];
         } catch (\Exception $e) {
-
             Log::error('Bus Seat Count Sync Failed : '.$e->getMessage());
-
             dd($e->getMessage());
-
             return false;
         }
     }
