@@ -651,7 +651,7 @@ class BusScheduleRepository
 
                     $scheduleIds = DB::table('bus_schedule')
                         ->where('bus_id', $busId)
-                        ->where('status', 1)
+                        ->whereIn('status', [0,1])
                         ->pluck('id');
 
                     $scheduleDates = DB::table('bus_schedule_date')
