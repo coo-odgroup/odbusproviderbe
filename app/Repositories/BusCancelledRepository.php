@@ -12,6 +12,7 @@ use App\Models\Booking;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendOwnerCancelBusEmailJob;
+use Illuminate\Support\Facades\Mail;
 
 class BusCancelledRepository
 {
@@ -413,7 +414,8 @@ class BusCancelledRepository
                             'dates' => $dates,
                         ];
 
-                        SendOwnerCancelBusEmailJob::dispatch($to_user, $subject, $agentData);
+                        // SendOwnerCancelBusEmailJob::dispatch($to_user, $subject, $agentData);
+                        $this->sendOwnerCancelBusEmail($to_user, $subject, $agentData);
 
                         return $message;
                     }
@@ -531,5 +533,42 @@ class BusCancelledRepository
         }
         $buscancel->update();
         return $buscancel;
+    }
+
+    public function sendOwnerCancelBusEmail($to, $subject, $req)
+    {
+        try {
+
+            $data = [
+                'month'         => $req['month'],
+                'year'          => $req['year'],
+                'cancelled_by'  => $req['cancelled_by'],
+                'reason'        => $req['reason'],
+                'other_reson'   => $req['other_reson'],
+                'busName'       => $req['busName'],
+                'dates'         => $req['dates'],
+            ];
+
+            Mail::send('sendOwnerCancelBusEmailJob', $data, function ($message) use ($to, $subject) {
+                $message->from(config('mail.contact.address'))
+                    ->to($to)
+                    ->subject($subject);
+            });
+
+            Log::info('Owner Cancel Bus Email sent successfully.', [
+                'to' => $to,
+                'subject' => $subject
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+
+            Log::error('Owner Cancel Bus Email failed.', [
+                'message' => $e->getMessage(),
+                'to' => $to
+            ]);
+
+            return false;
+        }
     }
 }

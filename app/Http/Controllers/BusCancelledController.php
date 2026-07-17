@@ -110,9 +110,8 @@ class BusCancelledController extends Controller
 
             $response = $this->busCancelledRepository->busCancelledbyowner($request);
 
-
             if ($response['msg'] == 'Some seat already booked on') {
-                $message = $response['msg'] . ' ' . $response['dt'] . 'for cancellation of bus plz contact ODBUS Support team';
+                $message = $response['msg'] . ' ' . $response['dt'] . ' for cancellation of bus plz contact ODBUS Support team';
                 return $this->errorResponse($message, Response::HTTP_PARTIAL_CONTENT);
             } else {
                 return $this->successResponse($response['msg'], "Bus Cancelled Successfully", Response::HTTP_CREATED);
