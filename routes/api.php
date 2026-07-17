@@ -812,7 +812,6 @@ Route::get('/syncBusSeatCount', [BusScheduleController::class, 'syncBusSeatCount
 
 Route::get('/removeOldBusScheduleCronjob', [BusScheduleController::class, 'removeOldBusScheduleCronjob']);
 
-
 Route::get('/busSlots', [BusSlotsController::class, 'getAllBusSlots']);
 Route::post('/busSlots', [BusSlotsController::class, 'createBusSlots']);
 Route::put('/busSlots/{id}', [BusSlotsController::class, 'updateBusSlots']);
@@ -841,7 +840,6 @@ Route::put('/changeStatusCouponType/{id}', [CouponTypeController::class, 'change
 Route::post('/couponBus', [CouponController::class, 'createCouponBus']);
 Route::post('/couponRoute', [CouponController::class, 'createCouponRoute']);
 Route::post('/couponOperator', [CouponController::class, 'createCouponOperator']);
-
 
 // Route::get('/couponAssignedBus', [CouponAssignedBusController::class, 'getAllCouponAssignedBus']);
 // Route::post('/couponAssignedBus', [CouponAssignedBusController::class, 'createCouponAssignedBus']);
@@ -906,7 +904,6 @@ Route::get('/extclosinghour', [ExtendedBusClosingHoursController::class, 'getAll
 Route::delete('/extclosinghour/{id}', [ExtendedBusClosingHoursController::class, 'deleteExtendedClosingHours']);
 Route::get('/extclosinghour/{id}', [ExtendedBusClosingHoursController::class, 'getExtendedClosingHours']);
 
-
 Route::post('/userOperators', [BusOperatorController::class, 'userOperators']);
 Route::post('/busoperatorsDT', [BusOperatorController::class, 'getAllBusOperatorsDT']);
 Route::post('/busoperator', [BusOperatorController::class, 'createBusOperator']);
@@ -940,7 +937,6 @@ Route::post('/busOwnerFareDT', [BusOwnerFareController::class, 'getBusOwnerFareD
 Route::put('/changeStatusbusOwnerFare/{id}', [BusOwnerFareController::class, 'changeStatus']);
 //Route::get('/relations/{id}', [BusOwnerFareController::class, 'getPivotData']);
 
-
 Route::get('/festivalFare', [FestivalFareController::class, 'getAllFestivalFare']);
 Route::post('/festivalFare', [FestivalFareController::class, 'createFestivalFare']);
 Route::post('/festivalFareData', [FestivalFareController::class, 'festivalFareData']);
@@ -950,7 +946,6 @@ Route::get('/festivalFare/{id}', [FestivalFareController::class, 'getFestivalFar
 Route::post('/festivalFareDT', [FestivalFareController::class, 'getFestivalFareDT']);
 Route::put('/changeStatusfestivalFare/{id}', [FestivalFareController::class, 'changeStatus']);
 Route::get('/listing', [ListingController::class, 'getAllListing']);
-
 
 Route::get('/article', [ArticleController::class, 'getArticle']);
 Route::get('/comments', [ArticleController::class, 'getComments']);
@@ -967,7 +962,6 @@ Route::post('/saveBuscancel', [ArticleController::class, 'saveBuscancel']);
 Route::post('/saveBusSchedule', [ArticleController::class, 'saveBusSchedule']);
 Route::post('/testMe', [ArticleController::class, 'testMe']);
 Route::put('/updateOneToMany', [ArticleController::class, 'updateOneToMany']);
-
 
 Route::get('/odbusCharges', [OdbusChargesController::class, 'getAll']);
 Route::get('/odbusCharges/{id}', [OdbusChargesController::class, 'getById']);
@@ -1008,11 +1002,9 @@ Route::post('/AgentRgestration', [UserController::class, 'agentRegister']);
 
 // Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
 
-
 Route::post('/login', [UserController::class, 'login']);
 Route::get('/AllUser', [UserController::class, 'AllUser']);
 Route::post('/specifieUser', [UserController::class, 'specifieUser']);
-
 
 //});
 Route::post('/Agent', [AgentController::class, 'createAgent']);
@@ -1132,8 +1124,6 @@ Route::get('/ApiUserCommission/{id}', [ApiUserComissionController::class, 'getAp
 Route::post('ApiUsercompletereport', [ApiUserCompleteReportController::class, 'getData']);
 //API User CancelTicketReport
 Route::post('ApiUsercancelticketreport', [ApiUserCancelTicketReportController::class, 'getData']);
-
-
 
 Route::post('manageClientOperatorData', [ApiUserManageOperatorController::class, 'manageClientOperatorData']);
 
@@ -1354,19 +1344,15 @@ Route::post("all-Route-template",[SeoController::class, "routeTemplate"]);
 Route::post("templateDetails",[SeoController::class, "templateDetails"]);
 Route::post("manageroute",[SeoController::class, "manageroute"]);
 
-
 Route::post("all-Route",[SeoController::class, "allRoute"]);
 Route::post("popularRouteUpdate",[SeoController::class, "popularRouteUpdate"]);
-
 
 //Missing routes
 Route::post("missing-routes",[SeoController::class, "getMissingRoutesByLocation"]);
 Route::post("missing-single-routes",[SeoController::class, "getRouteBuses"]);
 
-
-
-
-
 $router->get('/update-refund-status', function () {
    Artisan::call('phonepe:refund-status');
 });
+
+Route::post('/toproutedata', [DashboardController::class, 'getRoute']);
