@@ -1635,6 +1635,17 @@ class SeatBlockRepository
                 }
             }
 
+            $busRoute = $this->busSeats
+                ->where('bus_id', $data['bus_id'])
+                ->where('operation_date', $data['date'])
+                ->where('status', 1)
+                ->pluck('ticket_price_id')
+                ->unique()
+                ->values()
+                ->toArray();
+
+                // return $busRoute;
+
             foreach ($data['busRoute'] as $ticketPriceId) {
 
                 $oldBlockedSeatCount = $this->busSeats
@@ -1898,6 +1909,7 @@ class SeatBlockRepository
                          ->where('operation_date',$request['operation_date'])
                          ->where('type',$request['type'])
                          ->where('ticket_price_id',$request['ticket_price_id'])
+                         ->where('status',1)
                          ->get();
 
         // log::info($seatBlock);
