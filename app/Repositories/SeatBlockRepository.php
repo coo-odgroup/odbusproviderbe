@@ -1646,7 +1646,7 @@ class SeatBlockRepository
 
                 // return $busRoute;
 
-            foreach ($data['busRoute'] as $ticketPriceId) {
+            foreach ($busRoute as $ticketPriceId) {
 
                 $oldBlockedSeatCount = $this->busSeats
                     ->where('bus_id', $data['bus_id'])
