@@ -1625,11 +1625,16 @@ class SeatBlockRepository
 
                         foreach ($layout[$berth] as $seat) {
 
-                            $requestedSeats[$seat['seatId']] =
-                                filter_var(
-                                    $seat['seatChecked'] ?? false,
-                                    FILTER_VALIDATE_BOOLEAN
-                                );
+                            // $requestedSeats[$seat['seatId']] =
+                            //     filter_var(
+                            //         $seat['seatChecked'] ?? false,
+                            //         FILTER_VALIDATE_BOOLEAN
+                            //     );
+
+                            $requestedSeats[$seat['seatId']] = [
+                                'checked'  => filter_var($seat['seatChecked'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                                'seatText' => $seat['seatText'],
+                            ];
                         }
                     }
                 }
@@ -1643,8 +1648,6 @@ class SeatBlockRepository
                 ->unique()
                 ->values()
                 ->toArray();
-
-                // return $busRoute;
 
             foreach ($busRoute as $ticketPriceId) {
 
@@ -1668,7 +1671,6 @@ class SeatBlockRepository
                             ->where('source_id', $route->source_id)
                             ->where('destination_id', $route->destination_id)
                             ->whereIn('status', [1, 4]);
-
                     })
                     ->pluck('bus_seats_id')
                     ->toArray();
@@ -1681,11 +1683,35 @@ class SeatBlockRepository
                     ->get()
                     ->groupBy('seats_id');
 
-                foreach ($requestedSeats as $seatId => $isChecked) {
+                foreach ($requestedSeats as $seatId => $seatData) {
+
+                    $isChecked = $seatData['checked'];
+                    $seatText  = $seatData['seatText'];
 
                     // skip booked seats
-                    if (in_array($seatId, $bookedSeatIds)) {
-                        continue;
+                    // if (in_array($seatId, $bookedSeatIds)) {
+                    //     continue;
+                    // }
+
+                    $isBooked = $this->bookingDetail
+                        ->whereHas('booking', function ($q) use ($data, $route) {
+
+                            $q->where('bus_id', $data['bus_id'])
+                                ->where('journey_dt', $data['date'])
+                                ->where('source_id', $route->source_id)
+                                ->where('destination_id', $route->destination_id)
+                                ->whereIn('status', [1, 4]);
+                        })
+                        ->whereHas('BusSeats', function ($q) use ($seatId) {
+                            $q->where('seats_id', $seatId);
+                        })
+                        ->exists();
+
+                    if ($isBooked && $isChecked) {
+                        return [
+                            'status' => 'error',
+                            'message' => "Seat No {$seatText} is already booked and cannot be blocked."
+                        ];
                     }
 
                     $seatRows = $existingSeats->get($seatId, collect());
@@ -1720,7 +1746,6 @@ class SeatBlockRepository
                                     ->whereIn('id', $duplicateIds)
                                     ->delete();
                             }
-
                         } else {
 
                             $this->busSeats->create([
@@ -1742,8 +1767,7 @@ class SeatBlockRepository
                     |--------------------------------------------------------------------------
                     | UNBLOCK SEAT
                     |--------------------------------------------------------------------------
-                    */
-                    else {
+                    */ else {
 
                         if ($seatRows->count()) {
 
@@ -1760,25 +1784,25 @@ class SeatBlockRepository
                 }
 
                 $newBlockedSeatCount = $this->busSeats
-                                    ->where('bus_id', $data['bus_id'])
-                                    ->where('ticket_price_id', $ticketPriceId)
-                                    ->where('operation_date', $data['date'])
-                                    ->where('type', 2)
-                                    ->where('status', 1)
-                                    ->count();
+                    ->where('bus_id', $data['bus_id'])
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('operation_date', $data['date'])
+                    ->where('type', 2)
+                    ->where('status', 1)
+                    ->count();
 
-                   BusSeatCount::where('ticket_price_id', $ticketPriceId)
-                                ->where('journey_date', $data['date'])
-                                ->update([
-                                    'blocked_seat' => $newBlockedSeatCount
-                                ]);
+                BusSeatCount::where('ticket_price_id', $ticketPriceId)
+                    ->where('journey_date', $data['date'])
+                    ->update([
+                        'blocked_seat' => $newBlockedSeatCount
+                    ]);
 
-                    $inventory = app(\App\Services\InventoryService::class);
+                $inventory = app(\App\Services\InventoryService::class);
 
-                    $inventory->refreshAvailableSeats(
-                        [$ticketPriceId],
-                        $data['date']
-                    );
+                $inventory->refreshAvailableSeats(
+                    [$ticketPriceId],
+                    $data['date']
+                );
             }
 
             DB::commit();
@@ -1787,14 +1811,13 @@ class SeatBlockRepository
                 'status' => 'success',
                 'message' => 'Seat block data synced successfully'
             ];
-
         } catch (\Exception $e) {
 
             DB::rollBack();
 
             \Log::error(
                 'updateSeatBlockData Error : ' .
-                $e->getMessage()
+                    $e->getMessage()
             );
 
             return [

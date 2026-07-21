@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\TicketFareSlab;
 use App\Models\BusOperator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
 class TicketFareSlabRepository
@@ -16,49 +17,59 @@ class TicketFareSlabRepository
     {
         $this->ticketFareSlab = $ticketFareSlab;
         $this->busOperator = $busOperator;
-
     }
 
     public function ticketFareSlabData($request)
     {
-        $paginate = $request['rows_number'] ;
-        $name = $request['name'] ;
+        $paginate = $request['rows_number'];
+        $name = $request['name'];
+        $fromDate = $request['form_date'] ?? null;
+        $toDate = $request['to_date'] ?? null;
         //log::info($request);
 
 
         $data = $this->busOperator->with('ticketFareSlab')
-                                    // ->whereNotIn('status', [2])
-                                    ->whereHas('TicketFareSlab', function ($query) {
-                                        $query->where('status', 1);
-                                    })
-                                    ->orderBy('id', 'DESC');
-
+            // ->whereNotIn('status', [2])
+            ->whereHas('TicketFareSlab', function ($query) {
+                $query->where('status', 1);
+            })
+            ->orderBy('id', 'DESC');
 
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
         if ($name != null) {
-            $data = $data->where('operator_name', 'like', '%' .$name .'%')
-                         ->orwhere('organisation_name', 'like', '%' .$name .'%');
+            $data = $data->where('operator_name', 'like', '%' . $name . '%')
+                ->orwhere('organisation_name', 'like', '%' . $name . '%');
         }
 
+        // Date filter
+        if (!empty($fromDate) && !empty($toDate)) {
+            $data->whereBetween('updated_at', [
+                $fromDate . ' 00:00:00',
+                $toDate . ' 23:59:59'
+            ]);
+        }
+
+        // return $data->get();
 
         $data = $data->paginate($paginate);
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
         return $response;
     }
 
+
     public function createslab($data)
     {
-        $opr_id = $data['bus_operator_id'] ;
+        $opr_id = $data['bus_operator_id'];
 
         // $duplicate_data = $this->ticketFareSlab
         //                        ->where('bus_operator_id',$opr_id)
@@ -82,8 +93,6 @@ class TicketFareSlabRepository
                 $cSlabInfo->status = 1;
                 $cSlabInfo->save();
             }
-
-
         }
 
         return $cSlabInfo;
@@ -137,16 +146,9 @@ class TicketFareSlabRepository
         $cSlab = $this->ticketFareSlab->where('bus_operator_id', $id)->where('status', '!=', 2)->get();
         if ($cSlab[0]->status == 0) {
             $status = 1;
-
         } elseif ($cSlab[0]->status == 1) {
             $status = 0;
         }
         return $this->ticketFareSlab::where('bus_operator_id', $id)->update(['status' => $status]);
-
-
-
-
-
     }
-
 }
