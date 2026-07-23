@@ -56,7 +56,7 @@ class SendEmailToApiClientJob implements ShouldQueue
             'reason' => $this->reason,
         ];
 
-        Mail::send('apicancelticketbyadmin', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('apicancelticketbyadmin', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

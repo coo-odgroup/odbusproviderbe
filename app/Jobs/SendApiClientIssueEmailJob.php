@@ -59,7 +59,7 @@ class SendApiClientIssueEmailJob implements ShouldQueue
             'issueSubType' => $this->issueSubType,
             'mesasage' => $this->mesasage,
         ];
-        Mail::send('sendApiClientIssueEmail', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('sendApiClientIssueEmail', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

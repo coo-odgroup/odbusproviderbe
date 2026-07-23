@@ -56,7 +56,7 @@ class SendSuperAdminEmailJob implements ShouldQueue
             'tran_id' => $this->tran_id,
             'otp' => $this->otp,
         ];
-        Mail::send('agentWalletRequestSuperAdmin', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('agentWalletRequestSuperAdmin', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

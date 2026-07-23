@@ -53,7 +53,7 @@ class SendWalletEmailJob implements ShouldQueue
             'via' => $this->via,
             'tran_id' => $this->tran_id
         ];
-        Mail::send('agentWalletRequestEmail', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('agentWalletRequestEmail', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

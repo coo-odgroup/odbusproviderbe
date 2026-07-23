@@ -49,7 +49,7 @@ class SendAgentRequestToAdminEmailJob implements ShouldQueue
             'userEmail' => $this->userEmail,
         ];
         // Log::info($data);
-        Mail::send('SendAgentRequestToAdminEmail', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('SendAgentRequestToAdminEmail', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

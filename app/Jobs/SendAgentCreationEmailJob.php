@@ -55,7 +55,7 @@ class SendAgentCreationEmailJob implements ShouldQueue
             'userPassword' => $this->userPassword,
             'loginUrl' => $this->loginUrl
         ];
-        Mail::send('sendAgentCreationEmail', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('sendAgentCreationEmail', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

@@ -65,7 +65,7 @@ class SendOwnerCancelBusEmailJob implements ShouldQueue
         ];
 
         // Log::info($data);exit;
-        Mail::send('sendOwnerCancelBusEmailJob', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('sendOwnerCancelBusEmailJob', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

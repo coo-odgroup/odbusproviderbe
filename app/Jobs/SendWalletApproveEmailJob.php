@@ -57,7 +57,7 @@ class SendWalletApproveEmailJob implements ShouldQueue
             'tran_id' => $this->tran_id,
             'balance' => $this->balance
         ];
-        Mail::send('agentWalletApprove', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('agentWalletApprove', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

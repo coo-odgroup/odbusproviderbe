@@ -75,7 +75,7 @@ class SendCancelEmailToSupportJob implements ShouldQueue
         $this->subject = config('services.email.subjectTicketCancel');
         $this->subject = str_replace("<PNR>", $this->pnr, $this->subject);
 
-        Mail::send('CancelEmailToSupport', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('CancelEmailToSupport', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
              ->to($this->to)
             ->subject($this->subject);

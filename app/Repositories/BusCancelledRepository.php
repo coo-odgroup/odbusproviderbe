@@ -549,7 +549,7 @@ class BusCancelledRepository
                 'dates'         => $req['dates'],
             ];
 
-            Mail::send('sendOwnerCancelBusEmailJob', $data, function ($message) use ($to, $subject) {
+            Mail::mailer('msg91email')->send('sendOwnerCancelBusEmailJob', $data, function ($message) use ($to, $subject) {
                 $message->from(config('mail.contact.address'))
                     ->to($to)
                     ->subject($subject);

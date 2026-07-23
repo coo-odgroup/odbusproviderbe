@@ -75,7 +75,7 @@ class SendCancelAdjTicketEmailJob implements ShouldQueue
 
         //Log::info($data);
 
-        Mail::send('adjAdminTiceketCancel', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('adjAdminTiceketCancel', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

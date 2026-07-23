@@ -46,7 +46,7 @@ class SendForgetOtpEmailJob implements ShouldQueue
 
         // Log::info($data);
 
-        Mail::send('agentOtp', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('agentOtp', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

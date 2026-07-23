@@ -28,6 +28,7 @@ class SendingEmailToSupportJob implements ShouldQueue
     protected $email;
     protected $pnr;
     protected $message;
+    protected $subject;
 
     public function __construct($request)
     {
@@ -52,7 +53,7 @@ class SendingEmailToSupportJob implements ShouldQueue
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>", $this->pnr, $this->subject);
 
-        Mail::send('EmailToBooking', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('EmailToBooking', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
                                ->subject($this->subject);

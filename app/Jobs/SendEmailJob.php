@@ -27,6 +27,7 @@ class SendEmailJob implements ShouldQueue
     protected $subject;
     protected $email_body;
     protected $name;
+    protected $message;
     protected $Age;
 
     public function __construct($to, $subject, $req)
@@ -50,7 +51,7 @@ class SendEmailJob implements ShouldQueue
             'name' => $this->name,
             'Age' => $this->Age
         ];
-        Mail::send('email', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('email', $data, function ($messageNew) {
             $messageNew
             //->from('support@odbus.in', 'ODBUS')
             ->to($this->to)

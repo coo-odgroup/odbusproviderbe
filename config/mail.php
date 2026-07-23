@@ -54,6 +54,16 @@ return [
             'timeout' => null,
             'auth_mode' => null,
         ],
+        'msg91email' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_HOST', 'smtp.mailer91.com'),
+            'port' => env('MAIL_PORT', 587),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'username' => env('MAIL_USERNAME', 'emailer@mail.odbus.in'),
+            'password' => env('MAIL_PASSWORD', 'LghiBfvJvB1QFmno'),
+            'timeout' => null,
+            'auth_mode' => null,
+        ],
         'mailjet' => [
             'transport' => 'smtp',
             'host' => env('MAILJET_HOST'),
@@ -148,7 +158,7 @@ return [
     ],
 
     'contact' => [
-        'address'=> env('MAIL_CONTACT_ADDRESS',null),
+        'address'=> env('MAIL_FROM_ADDRESS','noreply@mail.odbus.in'),
     ],
     /*
     |--------------------------------------------------------------------------

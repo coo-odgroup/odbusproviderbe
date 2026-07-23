@@ -51,7 +51,7 @@ class SendCancelTicketEmailJob implements ShouldQueue
             'refund_amount' => $this->refund_amount,
             'deduction_percent' => $this->deduction_percent
         ];
-        Mail::send('adminTiceketCancel', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('adminTiceketCancel', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);

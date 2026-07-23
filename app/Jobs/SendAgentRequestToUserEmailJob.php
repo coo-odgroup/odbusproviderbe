@@ -49,7 +49,7 @@ class SendAgentRequestToUserEmailJob implements ShouldQueue
         ];
 
         // log::info($data);
-        Mail::send('SendAgentRequestToUserEmail', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('SendAgentRequestToUserEmail', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
