@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'MSG91_AUTH_KEY' => env('MSG91_AUTH_KEY'),
-    'MSG91_SENDER_ID' => env('MSG91_SENDER_ID'),
+    'MSG91_AUTH_KEY' => env('MSG91_AUTH_KEY','450989AZnXXzHCbpaB6979bcd0P1'),
+    'MSG91_SENDER_ID' => env('MSG91_SENDER_ID','ODBUUS'),
     'templates' => [
         'booking' => env('MSG91_BOOKING_TEMPLATE'),
     ],
 
     'campaign_base_url' => 'https://control.msg91.com/api/v5/campaign/api/campaigns/',
-    'template_image_url' => 'https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg',
+    'template_image_url' => 'https://provider.odbus.co.in/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg',
     'pdf_url' => 'https://odtestingssr.odbus.co.in/pnr/',
 
     'campaigns' => [

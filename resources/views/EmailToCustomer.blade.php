@@ -30,7 +30,7 @@ p{
                         <tbody><tr>
                           <td style="padding-left:12px;">
                             <div style="text-align:left; background-color: #fff;">
-                <img align="center" src="{{url('public/images/logo.png')}}" alt="ODBUS" title="ODBUS" style="margin-bottom:28px;margin-top:12px;width:160px;">
+                <img align="center" src="{{url('images/logo.png')}}" alt="ODBUS" title="ODBUS" style="margin-bottom:28px;margin-top:12px;width:160px;">
               </div>
                           </td>
                           <td style="padding-right:12px;">
@@ -49,7 +49,7 @@ p{
               <div style="border-radius:12px">
                 <div style="padding:16px;border-radius:12px">
                   <div style="text-align:center">
-                    <img width="40" height="40" align="center" src="{{url('public/images/checked.png')}}" alt="tick" style="height:40px;width:40px;display:inline-block;margin-top:0px;margin-bottom:0;text-align:center" >
+                    <img width="40" height="40" align="center" src="{{url('images/checked.png')}}" alt="tick" style="height:40px;width:40px;display:inline-block;margin-top:0px;margin-bottom:0;text-align:center" >
                     <div style="color:#323232;letter-spacing:0.28px;font-size:24px;line-height:30px;margin-top:4px;font-weight:600">
                       Your bus booking is confirmed
                     </div>
@@ -60,7 +60,7 @@ p{
                       <table style="margin-left:12px">
                         <tbody><tr>
                           <td>
-                            <img align="center" src="{{url('public/images/bus.png')}}" alt="ODBUS" title="ODBUS" style="width:32px;height:32px">
+                            <img align="center" src="{{url('images/bus.png')}}" alt="ODBUS" title="ODBUS" style="width:32px;height:32px">
                           </td>
                           <td style="padding-right:8px;padding-left:8px; text-align: left;">
                             <p style="font-size:14px;line-height:24px;font-weight:600;margin:0;color:#fff">
@@ -103,7 +103,7 @@ p{
                                   <div style="width:100%;margin-top:4px;margin-bottom:4px;border-width:1px;border-style:dotted;border-color:yellow;display:block;border-bottom-style:solid;border-bottom-width:1px;border-color:#e6e6e6" text=""></div>
                                 </td>
                                 <td style="padding:4px 12px;background-color:#f7f7f7;border-radius:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:#666;margin-right:4px;margin-left:4px">
-                                  <span><img align="center" src="{{url('public/images/arrow-pointing.png')}}" style="width:24px;height:24px"></span>
+                                  <span><img align="center" src="{{url('images/arrow-pointing.png')}}" style="width:24px;height:24px"></span>
                                 </td>
                                 <td>
                                   <div style="margin-top:4px;margin-bottom:4px;border-width:1px;border-width:1px;border-style:dotted;display:block;border-bottom-style:solid;border-bottom-width:1px;border-color:#e6e6e6" text=""></div>
@@ -134,7 +134,7 @@ p{
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tbody><tr>
                                           <td width="24px">
-                                            <img align="center" src="{{url('public/images/radio.png')}}"  style="width:24px;height:24px" >
+                                            <img align="center" src="{{url('images/radio.png')}}"  style="width:24px;height:24px" >
                                           </td>
                                           <td>
                                             <div style="margin-left:12px;font-weight:600;font-size:14px;line-height:24px">
@@ -158,7 +158,7 @@ p{
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tbody><tr>
                                           <td width="24px">
-                                            <img align="center" src="{{url('public/images/map.png')}}"  style="width:24px;height:24px">
+                                            <img align="center" src="{{url('images/map.png')}}"  style="width:24px;height:24px">
                                           </td>
                                           <td>
                                             <div style="margin-left:12px;font-weight:600;font-size:14px;line-height:24px">

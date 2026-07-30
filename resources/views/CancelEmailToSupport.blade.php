@@ -130,7 +130,7 @@
                                 <tr>
                                     <td align="center">
                                     <a href="https://www.odbus.in/" target="_blank">
-                                       <img alt="ODBUS" src="https://consumer.odbus.co.in/public/template/logo1.png"  style="display: block;" border="0">
+                                       <img alt="ODBUS" src="https://consumer.odbus.co.in/template/logo1.png"  style="display: block;" border="0">
                                     </a>    
                                 </td>                                    
                                 </tr>
