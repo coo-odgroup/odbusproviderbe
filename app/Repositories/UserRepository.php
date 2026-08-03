@@ -342,11 +342,9 @@ class UserRepository
 
     public function Register($request)
     {
-        $query = $this->user->where([
-            ['phone', $request['phone']]
-        ]);
-        $request->request->add(['name' => 'Agent']);
-        // ->where('status', '1');
+        $query = $this->user->where('phone', $request['phone']);
+
+        $request['name'] = 'Agent';
 
         $registeredAgent = $query->exists();
 
