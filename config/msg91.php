@@ -5,6 +5,7 @@ return [
     'MSG91_SENDER_ID' => env('MSG91_SENDER_ID','ODBUUS'),
     'templates' => [
         'booking' => env('MSG91_BOOKING_TEMPLATE'),
+        'Forgot_or_Reset_OTP' => '6a6db394de05af8ba10f4dc2',
     ],
 
     'campaign_base_url' => 'https://control.msg91.com/api/v5/campaign/api/campaigns/',

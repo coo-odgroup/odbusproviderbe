@@ -16,6 +16,7 @@ use App\Jobs\SendResetPasswordEmailJob;
 use App\Models\Agent;
 use App\Jobs\SendAgentRequestToUserEmailJob;
 use App\Jobs\SendAgentRequestToAdminEmailJob;
+use App\Services\Msg91Service;
 
 class UserRepository
 {
@@ -26,17 +27,19 @@ class UserRepository
     protected $userBankDetails;
     protected $channelRepository;
     protected $agent;
+    protected $msg91Service;
     /**
      * PostRepository constructor.
      *
      * @param Post $BusType
      */
-    public function __construct(User $user, Agent $agent, UserBankDetails $userBankDetails, ChannelRepository $channelRepository)
+    public function __construct(User $user, Agent $agent, UserBankDetails $userBankDetails, ChannelRepository $channelRepository, Msg91Service $msg91Service)
     {
         $this->user = $user;
         $this->userBankDetails = $userBankDetails;
         $this->channelRepository = $channelRepository;
         $this->agent = $agent;
+        $this->msg91Service = $msg91Service;
     }
 
 
@@ -89,15 +92,12 @@ class UserRepository
                 $user->otp = null;
                 $user->update();
                 return $user;
-
             } else {
                 return 'INVALID OTP';
             }
-
         } else {
             return "NOT FOUND";
         }
-
     }
 
     public function AgentResetPassword($data)
@@ -120,60 +120,102 @@ class UserRepository
 
             $today = date("Y-m-d H:i:s");
 
-            $subject = "Reset Password is successful - ".$today;
-            $emailData['password'] = $data['password'] ;
-            $emailData['name'] = $name ;
+            $subject = "Reset Password is successful - " . $today;
+            $emailData['password'] = $data['password'];
+            $emailData['name'] = $name;
 
             SendResetPasswordEmailJob::dispatch($email, $subject, $emailData);
 
             //$sendsms = $this->channelRepository->sendSms($request,$otp);
 
             return $user;
-
         } else {
             return "NOT FOUND";
         }
-
-
     }
 
+    // public function AgentForgetPasswordOtp($data)
+    // {
+
+    //     $exist = $this->user->where('email', $data['email'])->get();
+
+    //     if (isset($exist[0])) {
+
+    //         $email = $exist[0]->email;
+    //         $phone =  $exist[0]->phone;
+    //         $name =  $exist[0]->name;
+
+    //         $otp =  rand(100000, 999999);
+
+    //         // Log::info($otp);
+
+    //         $user = $this->user->find($exist[0]->id);
+    //         $user->otp = $otp;
+    //         $user->update();
+
+    //         $today = date("Y-m-d H:i:s");
+
+    //         $subject = "Forgot Password OTP - ".$today;
+    //         $emailData['otp'] = $otp ;
+    //         $emailData['name'] = $name ;
+
+    //         SendForgetOtpEmailJob::dispatch($email, $subject, $emailData);
+
+    //         //$sendsms = $this->channelRepository->sendSms($request,$otp);
+
+    //         return $user;
+
+    //     } else {
+    //         return "NOT FOUND";
+    //     }
+
+
+
+    // }
+
+    //Add By sahil
     public function AgentForgetPasswordOtp($data)
     {
+        $input = trim($data['email']);
 
-        $exist = $this->user->where('email', $data['email'])->get();
-
-        if (isset($exist[0])) {
-
-            $email = $exist[0]->email;
-            $phone =  $exist[0]->phone;
-            $name =  $exist[0]->name;
-
-            $otp =  rand(100000, 999999);
-
-            // Log::info($otp);
-
-            $user = $this->user->find($exist[0]->id);
-            $user->otp = $otp;
-            $user->update();
-
-            $today = date("Y-m-d H:i:s");
-
-            $subject = "Forgot Password OTP - ".$today;
-            $emailData['otp'] = $otp ;
-            $emailData['name'] = $name ;
-
-            SendForgetOtpEmailJob::dispatch($email, $subject, $emailData);
-
-            //$sendsms = $this->channelRepository->sendSms($request,$otp);
-
-            return $user;
-
+        // Check whether input is Email or Mobile
+        if (filter_var($input, FILTER_VALIDATE_EMAIL)) {
+            $user = $this->user->where('email', $input)->first();
+            $type = 'email';
         } else {
+            $user = $this->user->where('phone', $input)->first();
+            $type = 'mobile';
+        }
+
+        if (!$user) {
             return "NOT FOUND";
         }
 
+        $otp = rand(100000, 999999);
 
+        $user->otp = $otp;
+        $user->save();
 
+        if ($type == 'email') {
+
+            $subject = "Forgot Password OTP - " . date("Y-m-d H:i:s");
+
+            $emailData = [
+                'otp'  => $otp,
+                'name' => $user->name
+            ];
+
+            SendForgetOtpEmailJob::dispatch($user->email, $subject, $emailData);
+        } else {
+            $smsData = [
+                'mobile_no' => $user->phone,
+                'otp'   => $otp
+            ];
+
+            $this->msg91Service->forgot_otp($smsData);
+        }
+
+        return $user;
     }
 
     public function save($data)
@@ -208,7 +250,6 @@ class UserRepository
             $locdetRecord->bank_name =  $user_code['bank_name'];
             $locdetRecord->created_by =  "Admin";
             $user->userBankDetails[] = $locdetRecord;
-
         }
         $user->push();
         return $user->fresh();
@@ -242,9 +283,7 @@ class UserRepository
 
             $user->push();
             return $user->fresh();
-
         }
-
     }
     public function delete($id)
     {
@@ -263,7 +302,6 @@ class UserRepository
         //return  $customer;
         $post = json_encode($customer);
         return $post;
-
     }
     ////////////***//////////////
     //////User Login//////////
@@ -333,7 +371,6 @@ class UserRepository
                 case '1':
                     return "Registered Agent";
             }
-
         }
     }
     public function sendOtp($request)
@@ -355,7 +392,7 @@ class UserRepository
             return "";
         } elseif ($existingOtp == $rcvOtp) {
 
-            $users = $this->user->where('id', $userId)->update(array( 'otp' => null, ));
+            $users = $this->user->where('id', $userId)->update(array('otp' => null,));
             $usersDetails = $this->user->where('id', $userId)->get();
             return $usersDetails;
         } else {
@@ -363,7 +400,7 @@ class UserRepository
         }
     }
 
-     public function login($request)
+    public function login($request)
     {
         try {
 
@@ -421,10 +458,9 @@ class UserRepository
             }
 
             return $user;
-
         } catch (\Throwable $e) {
 
-            \Log::error('Login Error: '.$e->getMessage());
+            \Log::error('Login Error: ' . $e->getMessage());
 
             return "something_went_wrong";
         }
@@ -449,19 +485,15 @@ class UserRepository
                         } else {
                             return $query->first();
                         }
-
                     } else {
                         return "agent_role_mismatch";
                     }
-
                 } else {
                     return "pwd_mismatch";
                 }
-
             } else {
                 return "inactive_user";
             }
-
         } else {
             return "un_registered_agent";
         }
@@ -528,7 +560,7 @@ class UserRepository
                     $agentData = [
                         'userName' => $request['name'],
                         'userEmail' => $request['email']
-                       ] ;
+                    ];
                     SendAgentRequestToUserEmailJob::dispatch($to_user, $subject, $agentData);
 
                     $to_admin = 'agent@odbus.in';
@@ -546,9 +578,5 @@ class UserRepository
         } else {
             return 'Email Already Exist';
         }
-
     }
-
-
-
 }
