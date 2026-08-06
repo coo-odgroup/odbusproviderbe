@@ -138,6 +138,7 @@ use App\Http\Controllers\ApiUserCompleteReportController;
 use App\Http\Controllers\ApiUserCancelTicketReportController;
 use App\Http\Controllers\ApiUserManageOperatorController;
 use App\Http\Controllers\ArchiveReportController;
+use App\Http\Controllers\CampaignNotificationController;
 
 // Scheduler
 use App\Http\Controllers\SchedulerController;
@@ -277,11 +278,11 @@ Route::put('/changeAgentWalletStatus/{id}', [AgentWalletController::class, 'chan
 Route::put('/declineWlletReqStatus/{id}', [AgentWalletController::class, 'declineWlletReqStatus']);
 
 Route::post('/walletMakePayment', [AgentWalletController::class, 'walletMakePayment']);
-Route::post('/walletWebhook',[AgentWalletController::class, 'walletWebhook']);
+Route::post('/walletWebhook', [AgentWalletController::class, 'walletWebhook']);
 
 Route::get(
-    '/verifyWalletPayment/{orderId}',
-    [AgentWalletController::class, 'verifyWalletPayment']
+   '/verifyWalletPayment/{orderId}',
+   [AgentWalletController::class, 'verifyWalletPayment']
 );
 
 
@@ -1327,32 +1328,38 @@ Route::post('campaigndiscountcreate', [CampaignController::class, "campaignDisco
 Route::put('campaigndiscountupdate/{id}', [CampaignController::class, "campaignDiscountUpdate"]);
 
 //Seo Create By Sahil
-Route::post('manage-city-content',[SeoController::class,"cityContent"]);
-Route::post('update-city-content',[SeoController::class,"UpdateContent"]);
+Route::post('manage-city-content', [SeoController::class, "cityContent"]);
+Route::post('update-city-content', [SeoController::class, "UpdateContent"]);
 
-Route::post('getroutes',[SeoController::class, 'getRoutes']);
-Route::post('getlocation',[SeoController::class, 'getLocation']);
+Route::post('getroutes', [SeoController::class, 'getRoutes']);
+Route::post('getlocation', [SeoController::class, 'getLocation']);
 
-Route::post("updateDistance",[SeoController::class, "updateDistance"]);
-Route::post("route-wise-brd_drp",[SeoController::class, "brd_drp"]);
-Route::post("add-brd_drp",[SeoController::class, "addbrd_drp"]);
-Route::post("seo-content",[SeoController::class, "seoContent"]);
-Route::post("add-seo-content",[SeoController::class, "addSeoContent"]);
-Route::post("bus-count",[SeoController::class, "busCount"]);
+Route::post("updateDistance", [SeoController::class, "updateDistance"]);
+Route::post("route-wise-brd_drp", [SeoController::class, "brd_drp"]);
+Route::post("add-brd_drp", [SeoController::class, "addbrd_drp"]);
+Route::post("seo-content", [SeoController::class, "seoContent"]);
+Route::post("add-seo-content", [SeoController::class, "addSeoContent"]);
+Route::post("bus-count", [SeoController::class, "busCount"]);
 
-Route::post("all-Route-template",[SeoController::class, "routeTemplate"]);
-Route::post("templateDetails",[SeoController::class, "templateDetails"]);
-Route::post("manageroute",[SeoController::class, "manageroute"]);
+Route::post("all-Route-template", [SeoController::class, "routeTemplate"]);
+Route::post("templateDetails", [SeoController::class, "templateDetails"]);
+Route::post("manageroute", [SeoController::class, "manageroute"]);
 
-Route::post("all-Route",[SeoController::class, "allRoute"]);
-Route::post("popularRouteUpdate",[SeoController::class, "popularRouteUpdate"]);
+Route::post("all-Route", [SeoController::class, "allRoute"]);
+Route::post("popularRouteUpdate", [SeoController::class, "popularRouteUpdate"]);
 
 //Missing routes
-Route::post("missing-routes",[SeoController::class, "getMissingRoutesByLocation"]);
-Route::post("missing-single-routes",[SeoController::class, "getRouteBuses"]);
+Route::post("missing-routes", [SeoController::class, "getMissingRoutesByLocation"]);
+Route::post("missing-single-routes", [SeoController::class, "getRouteBuses"]);
 
 $router->get('/update-refund-status', function () {
    Artisan::call('phonepe:refund-status');
 });
 
 Route::post('/toproutedata', [DashboardController::class, 'getRoute']);
+
+
+Route::post('createCampaignNotification', [CampaignNotificationController::class, 'createCampaignNotification']);
+Route::post('getAllCampaignNotificationData', [CampaignNotificationController::class, 'getAllCampaignNotificationData']);
+Route::post('updateCampaignNotification/{id}', [CampaignNotificationController::class, 'updateCampaignNotification']);
+Route::post('changeCampaignNotificationStatus', [CampaignNotificationController::class, 'changeStatus']);
