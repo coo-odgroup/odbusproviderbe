@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
 
 class BlogController extends Controller
 {
@@ -197,31 +198,33 @@ class BlogController extends Controller
             // Featured Image
             if ($request->hasFile('featured_image')) {
                 $file = $request->file('featured_image');
-                $extension = $file->getClientOriginalExtension();
-                $picture = time() . '_' . Str::random(20) . '.' . $extension;
-                $file->move(public_path('uploads/blogs/blog_image'), $picture);
+                $picture = time() . '_' . Str::random(20) . '.webp';
+                Image::make($file)
+                    ->encode('webp', 80)
+                    ->save(public_path('uploads/blogs/blog_image/' . $picture));
+
                 $path = "blogs/blog_image/" . $picture;
             }
 
 
             // Thumb Image
             if ($request->hasFile('thumb_image')) {
-
                 $file = $request->file('thumb_image');
-                $extension = $file->getClientOriginalExtension();
-                $picture = time() . '_' . Str::random(20) . '.' . $extension;
-                $file->move(public_path('uploads/blogs/blog_image'), $picture);
+                $picture = time() . '_' . Str::random(20) . '.webp';
+                Image::make($file)
+                    ->encode('webp', 80)
+                    ->save(public_path('uploads/blogs/blog_image/' . $picture));
                 $thumpath = "blogs/blog_image/" . $picture;
             }
 
 
             // OG Image
             if ($request->hasFile('og_image')) {
-
                 $file = $request->file('og_image');
-                $extension = $file->getClientOriginalExtension();
-                $picture = time() . '_' . Str::random(20) . '.' . $extension;
-                $file->move(public_path('uploads/blogs/blog_image'), $picture);
+                $picture = time() . '_' . Str::random(20) . '.webp';
+                Image::make($file)
+                    ->encode('webp', 80)
+                    ->save(public_path('uploads/blogs/blog_image/' . $picture));
                 $ogpath = "blogs/blog_image/" . $picture;
             }
 
@@ -349,8 +352,7 @@ class BlogController extends Controller
             if ($request->hasFile('featured_image')) {
 
                 $file = $request->file('featured_image');
-                $extension = $file->getClientOriginalExtension();
-                $picture = time() . '_' . Str::random(20) . '.' . $extension;
+                $picture = time() . '_' . Str::random(20) . '.webp';
 
                 if ($blog->featured_image) {
 
@@ -360,7 +362,9 @@ class BlogController extends Controller
                         unlink($existing_image);
                     }
                 }
-                $file->move(public_path('uploads/blogs/blog_image'), $picture);
+                Image::make($file)
+                    ->encode('webp', 80)
+                    ->save(public_path('uploads/blogs/blog_image/' . $picture));
                 $data['featured_image'] = "blogs/blog_image/" . $picture;
             }
 
@@ -368,15 +372,16 @@ class BlogController extends Controller
             // Thumb Image
             if ($request->hasFile('thumb_image')) {
                 $file = $request->file('thumb_image');
-                $extension = $file->getClientOriginalExtension();
-                $picture = time() . '_' . Str::random(20) . '.' . $extension;
+                $picture = time() . '_' . Str::random(20) . '.webp';
                 if ($blog->thumb_image) {
                     $existing_image = public_path($blog->thumb_image);
                     if (file_exists($existing_image)) {
                         unlink($existing_image);
                     }
                 }
-                $file->move(public_path('uploads/blogs/blog_image'), $picture);
+                Image::make($file)
+                    ->encode('webp', 80)
+                    ->save(public_path('uploads/blogs/blog_image/' . $picture));
                 $data['thumb_image'] = "blogs/blog_image/" . $picture;
             }
 
@@ -385,8 +390,7 @@ class BlogController extends Controller
             if ($request->hasFile('og_image')) {
 
                 $file = $request->file('og_image');
-                $extension = $file->getClientOriginalExtension();
-                $picture = time() . '_' . Str::random(20) . '.' . $extension;
+                $picture = time() . '_' . Str::random(20) . '.webp';
                 if ($blog->og_image) {
 
                     $existing_image = public_path($blog->og_image);
@@ -395,7 +399,9 @@ class BlogController extends Controller
                         unlink($existing_image);
                     }
                 }
-                $file->move(public_path('uploads/blogs/blog_image'), $picture);
+                Image::make($file)
+                    ->encode('webp', 80)
+                    ->save(public_path('uploads/blogs/blog_image/' . $picture));
                 $data['og_image'] = "blogs/blog_image/" . $picture;
             }
 
@@ -529,7 +535,7 @@ class BlogController extends Controller
             ];
 
             Tag::where('id', $id)->update($data);
-            return $this->successResponse("Blog Updated", Response::HTTP_CREATED);
+            return $this->successResponse("Tag Updated", Response::HTTP_CREATED);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }

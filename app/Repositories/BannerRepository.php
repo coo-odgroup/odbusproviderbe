@@ -6,6 +6,8 @@ use App\Models\Banner;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Str;
 
 class BannerRepository
 {
@@ -92,11 +94,11 @@ class BannerRepository
         $banner = $this->getModel($data, $bannerObject);
         $file = collect($data)->get('banner_img');
         if (($file) != null) {
-            $filename  = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $picture   =  rand().'-'.$filename;
+            $picture = time() . rand(1000, 9999) . '.webp';
+             Image::make($file)
+                ->encode('webp', 80)
+                ->save(public_path('uploads/operatorbanner/' . $picture));
             $banner->banner_image = $picture;
-            $file->move(public_path('uploads/operatorbanner/'), $picture);
         }
 
         $banner->save();
@@ -115,12 +117,12 @@ class BannerRepository
 
         if ($file != "null") {
             $banner = $this->getModel($data, $banner);
-            $filename  = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $picture =  rand().'-'.$filename;
-            $banner->banner_image =  $picture;
+            $picture = time() . rand(1000, 9999) . '.webp';
 
-            $file->move(public_path('uploads/operatorbanner/'), $picture);
+            Image::make($file)
+                ->encode('webp', 80)
+                ->save(public_path('uploads/operatorbanner/' . $picture));
+            $banner->banner_image =  $picture;
 
             $old_image_path_consumer = public_path('uploads/operatorbanner/').$existing_image;
             if (isset($existing_image)) {

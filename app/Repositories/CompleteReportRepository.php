@@ -146,8 +146,29 @@ class CompleteReportRepository
             $data = $data->where('journey_dt', date('Y-m-d'))->orderBy('booking.journey_dt', 'DESC')
                 ->orderBy('booking.updated_at', 'DESC');
         } elseif ($date_type == 'journey' && $start_date != null && $end_date != null) {
+            // if ($start_date == $end_date) {
+            //     $data = $data->where('journey_dt', 'like', '%' . $start_date . '%')
+            //         ->orderBy('booking.journey_dt', 'DESC')
+            //         ->orderBy('booking.updated_at', 'DESC');
+            // } 
+
+            //Add by Sahil
             if ($start_date == $end_date) {
-                $data = $data->where('journey_dt', 'like', '%' . $start_date . '%')
+
+                $nextDate = Carbon::parse($start_date)->addDay()->format('Y-m-d');
+
+                $data = $data->where(function ($query) use ($start_date, $nextDate) {
+                    // Normal buses
+                    $query->whereDate('journey_dt', $start_date);
+
+                    // Next-day buses
+                    $query->orWhere(function ($q) use ($nextDate) {
+                        $q->whereDate('journey_dt', $nextDate)
+                            ->whereHas('bus', function ($bus) {
+                                $bus->where('is_next_day_booking', 1);
+                            });
+                    });
+                })
                     ->orderBy('booking.journey_dt', 'DESC')
                     ->orderBy('booking.updated_at', 'DESC');
             } else {
