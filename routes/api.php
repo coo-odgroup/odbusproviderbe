@@ -63,6 +63,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DisplayInfoController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\Agent\VerificationController;
 
 
 
@@ -1351,6 +1352,13 @@ Route::post("popularRouteUpdate", [SeoController::class, "popularRouteUpdate"]);
 //Missing routes
 Route::post("missing-routes", [SeoController::class, "getMissingRoutesByLocation"]);
 Route::post("missing-single-routes", [SeoController::class, "getRouteBuses"]);
+
+//Verification for Agent
+Route::post("verify-pan", [VerificationController::class, "verifyPan"]);
+Route::post("verify-pan-status", [VerificationController::class, "panStatus"]);
+
+Route::post("verify-aadhaar", [VerificationController::class, "generateAadhaarOtp"]);
+
 
 $router->get('/update-refund-status', function () {
    Artisan::call('phonepe:refund-status');

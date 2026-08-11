@@ -72,7 +72,7 @@ class CouponRepository
 
     public function getById($id)
     {
-        return $this->coupon ->where('id', $id)->get();
+        return $this->coupon->where('id', $id)->get();
     }
 
     public function saveCouponBus($data)
@@ -116,35 +116,27 @@ class CouponRepository
 
 
         if ($data['all_route_check'] === true) {
-           $batch_insert_array= $this->commonQuery($data);
+            $batch_insert_array = $this->commonQuery($data);
 
-            if(isset($batch_insert_array['status']) && $batch_insert_array['status'] == 'exist'){
+            if (isset($batch_insert_array['status']) && $batch_insert_array['status'] == 'exist') {
                 return $batch_insert_array;
-            }
-
-            else if ($batch_insert_array) {
+            } else if ($batch_insert_array) {
                 foreach ($batch_insert_array as $coupons) {
                     $coupons->save();
                 }
             }
-
-        }
-
-        else{
+        } else {
             if ($data['bus_id']) {
                 foreach ($data['bus_id'] as $b) {
-                  $batch_insert_array=  $this->commonQuery($data,$b);
+                    $batch_insert_array =  $this->commonQuery($data, $b);
 
-                   if(isset($batch_insert_array['status']) && $batch_insert_array['status'] == 'exist'){
-                            return $batch_insert_array;
-                    }
-
-                    else if ($batch_insert_array) {
+                    if (isset($batch_insert_array['status']) && $batch_insert_array['status'] == 'exist') {
+                        return $batch_insert_array;
+                    } else if ($batch_insert_array) {
                         foreach ($batch_insert_array as $coupons) {
                             $coupons->save();
                         }
                     }
-
                 }
             }
         }
@@ -153,129 +145,124 @@ class CouponRepository
     }
 
 
-    public function commonQuery($data,$b=[]){
+    public function commonQuery($data, $b = [])
+    {
 
-    $batch_insert_array = [];
+        $batch_insert_array = [];
 
-               $coupons = new $this->coupon();
+        $coupons = new $this->coupon();
 
-                $coupons->coupon_type_id = $data['coupon_type'];
-                $coupons->via = $data['via'];
-                $coupons->coupon_title = $data['coupon_title'];
-                $coupons->coupon_code = strtoupper($data['coupon_code']);
-                $coupons->type = $data['coupon_discount_type'];
-                $coupons->valid_by = $data['valid_by'];
-                $coupons->user_type = $data['user_type'];
+        $coupons->coupon_type_id = $data['coupon_type'];
+        $coupons->via = $data['via'];
+        $coupons->coupon_title = $data['coupon_title'];
+        $coupons->coupon_code = strtoupper($data['coupon_code']);
+        $coupons->type = $data['coupon_discount_type'];
+        $coupons->valid_by = $data['valid_by'];
+        $coupons->user_type = $data['user_type'];
 
-                if ($data['coupon_type'] == 1) {
-                    $ar = explode('-', $b);
-                    $opr_id = $ar[0];
-                    $bus_id = $ar[1];
+        if ($data['coupon_type'] == 1) {
+            $ar = explode('-', $b);
+            $opr_id = $ar[0];
+            $bus_id = $ar[1];
 
-                    $coupons->bus_operator_id = $opr_id;
-                    $coupons->bus_id = $bus_id;
-                } elseif ($data['coupon_type'] == 2) {
-                     if ($data['all_route_check'] === true) {
-                        // ✅ Apply to ALL routes
-                        $coupons->source_id = null;
-                        $coupons->destination_id = null;
+            $coupons->bus_operator_id = $opr_id;
+            $coupons->bus_id = $bus_id;
+        } elseif ($data['coupon_type'] == 2) {
+            if ($data['all_route_check'] === true) {
+                // ✅ Apply to ALL routes
+                $coupons->source_id = null;
+                $coupons->destination_id = null;
+            } else {
+                $ar = explode('-', $b);
+                $src_id = $ar[0];
+                $dest_id = $ar[1];
+                $bus_id = $ar[2];
 
-                    } else {
-                        $ar = explode('-', $b);
-                        $src_id = $ar[0];
-                        $dest_id = $ar[1];
-                        $bus_id = $ar[2];
+                $coupons->source_id =  $src_id;
+                $coupons->destination_id = $dest_id;
+                $coupons->bus_id = $bus_id;
+            }
+        } else {
+            $ar = explode('-', $b);
+            $opr_id = $ar[0];
+            $src_id = $ar[1];
+            $dest_id = $ar[2];
+            $bus_id = $ar[3];
 
-                        $coupons->source_id =  $src_id;
-                        $coupons->destination_id = $dest_id;
-                        $coupons->bus_id = $bus_id;
+            $coupons->bus_operator_id = $opr_id;
+            $coupons->source_id =  $src_id;
+            $coupons->destination_id = $dest_id;
+            $coupons->bus_id = $bus_id;
+        }
 
-                    }
-                } else {
-                    $ar = explode('-', $b);
-                    $opr_id = $ar[0];
-                    $src_id = $ar[1];
-                    $dest_id = $ar[2];
-                    $bus_id = $ar[3];
-
-                    $coupons->bus_operator_id = $opr_id;
-                    $coupons->source_id =  $src_id;
-                    $coupons->destination_id = $dest_id;
-                    $coupons->bus_id = $bus_id;
-                }
-
-                if ($data['coupon_discount_type'] == 1) {
-                    $coupons->percentage = $data['percentage'];
-                    $coupons->max_discount_price = $data['max_discount_price'];
-                    $coupons->amount = 0;
-                    $coupons->min_tran_amount = 0;
-
-                } else {
-                    $coupons->amount = $data['amount'];
-                    $coupons->min_tran_amount = $data['min_tran_amount'];
-                    $coupons->percentage = 0;
-                    $coupons->max_discount_price = 0;
-                }
+        if ($data['coupon_discount_type'] == 1) {
+            $coupons->percentage = $data['percentage'];
+            $coupons->max_discount_price = $data['max_discount_price'];
+            $coupons->amount = 0;
+            $coupons->min_tran_amount = 0;
+        } else {
+            $coupons->amount = $data['amount'];
+            $coupons->min_tran_amount = $data['min_tran_amount'];
+            $coupons->percentage = 0;
+            $coupons->max_discount_price = 0;
+        }
 
 
-                $coupons->max_redeem = $data['max_redeem'];
-                // $coupons->user_id = $data['user_id'];
-                $coupons->from_date = $data['from_date'];
-                $coupons->to_date = $data['to_date'];
-                $coupons->short_desc = $data['short_description'];
-                $coupons->full_desc = $data['full_description'];
-                $coupons->created_by = $data['created_by'];
-                $coupons->auto_apply = ($data['auto_apply'] == true) ? 1 : 0;
-                $coupons->apply_once = ($data['apply_once'] == true) ? 1 : 0;
-                $coupons->all_route_check = ($data['all_route_check'] == true) ? 1 : 0;
+        $coupons->max_redeem = $data['max_redeem'];
+        // $coupons->user_id = $data['user_id'];
+        $coupons->from_date = $data['from_date'];
+        $coupons->to_date = $data['to_date'];
+        $coupons->short_desc = $data['short_description'];
+        $coupons->full_desc = $data['full_description'];
+        $coupons->created_by = $data['created_by'];
+        $coupons->auto_apply = ($data['auto_apply'] == true) ? 1 : 0;
+        $coupons->apply_once = ($data['apply_once'] == true) ? 1 : 0;
+        $coupons->all_route_check = ($data['all_route_check'] == true) ? 1 : 0;
 
-                $coupons->status = 0;
+        $coupons->status = 0;
 
-                ////////// check duplicacy bus for same date range before insert
+        ////////// check duplicacy bus for same date range before insert
 
-                //\DB::connection()->enableQueryLog();
+        //\DB::connection()->enableQueryLog();
 
-                $from_date = $data['from_date'];
-                $to_date = $data['to_date'];
+        $from_date = $data['from_date'];
+        $to_date = $data['to_date'];
 
-                if ($data['all_route_check'] === true) {
+        if ($data['all_route_check'] === true) {
 
-                 $chk = $this->coupon->where('coupon_type_id', 2)
-                                        ->where(function ($query) use ($from_date, $to_date) {
-                                            $query->whereBetween('from_date', [$from_date,$to_date])
-                                                ->orWhereBetween('to_date', [$from_date,$to_date]);
-                                        })->where('status', '!=', 2)->get();
+            $chk = $this->coupon->where('coupon_type_id', 2)
+                ->where(function ($query) use ($from_date, $to_date) {
+                    $query->whereBetween('from_date', [$from_date, $to_date])
+                        ->orWhereBetween('to_date', [$from_date, $to_date]);
+                })->whereNotIn('status', [2, 3])->get();
 
-                   if (count($chk) > 0) {
-                        $error['status'] = 'exist';
-                        $error['message'] = 'Coupon is already added between '.$data['from_date']." - ".$data['to_date'];
+            if (count($chk) > 0) {
+                $error['status'] = 'exist';
+                $error['message'] = 'Coupon is already added between ' . $data['from_date'] . " - " . $data['to_date'];
 
-                        return $error;
-                   }
+                return $error;
+            }
+        } else {
 
+            $chk = $this->coupon->where('bus_id', $bus_id)
+                ->where(function ($query) use ($from_date, $to_date) {
+                    $query->whereBetween('from_date', [$from_date, $to_date])
+                        ->orWhereBetween('to_date', [$from_date, $to_date]);
+                })->whereNotIn('status', [2, 3])->get();
 
-                }else{
+            if (count($chk) > 0) {
 
-                    $chk = $this->coupon->where('bus_id', $bus_id)
-                                        ->where(function ($query) use ($from_date, $to_date) {
-                                            $query->whereBetween('from_date', [$from_date,$to_date])
-                                                ->orWhereBetween('to_date', [$from_date,$to_date]);
-                                        })->where('status', '!=', 2)->get();
+                $getBus = $this->bus->where("id", $bus_id)->get();
 
-                    if (count($chk) > 0) {
+                $error['status'] = 'exist';
+                $error['message'] = 'Coupon is already added for ' . $getBus[0]->name . ' bus between ' . $data['from_date'] . " - " . $data['to_date'];
 
-                        $getBus = $this->bus->where("id", $bus_id)->get();
+                return $error;
+            }
+        }
 
-                        $error['status'] = 'exist';
-                        $error['message'] = 'Coupon is already added for '.$getBus[0]->name.' bus between '.$data['from_date']." - ".$data['to_date'];
-
-                        return $error;
-                    }
-
-                }
-
-                array_push($batch_insert_array, $coupons);
-                return $batch_insert_array;
+        array_push($batch_insert_array, $coupons);
+        return $batch_insert_array;
     }
 
 
@@ -290,9 +277,9 @@ class CouponRepository
         // $coupons->bus_operator_id = $data['bus_operator_id'];
         // $coupons->source_id = $data['source_id'];
         // $coupons->destination_id = $data['destination_id'];
-         $coupons->type = $data['coupon_discount_type'];
-         $coupons->valid_by = $data['valid_by'];
-         $coupons->user_type = $data['user_type'];
+        $coupons->type = $data['coupon_discount_type'];
+        $coupons->valid_by = $data['valid_by'];
+        $coupons->user_type = $data['user_type'];
         // if($data['coupon_type'] == 1)
         // {
         //     $coupons->bus_operator_id = $data['bus_operator_id'];
@@ -312,16 +299,12 @@ class CouponRepository
         //     $coupons->destination_id = $data['destination_id'];
         // }
 
-        if($data['coupon_discount_type']==1)
-        {
+        if ($data['coupon_discount_type'] == 1) {
             $coupons->percentage = $data['percentage'];
             $coupons->max_discount_price = $data['max_discount_price'];
             $coupons->amount = 0;
             $coupons->min_tran_amount = 0;
-
-        }
-        else
-        {
+        } else {
             $coupons->amount = $data['amount'];
             $coupons->min_tran_amount = $data['min_tran_amount'];
             $coupons->percentage = 0;
@@ -362,8 +345,8 @@ class CouponRepository
         $coupon_type = $request->coupon_type;
         $status = $request->status;
 
-        $user_role = $request['user_role'] ;
-        $user_id = $request['user_id'] ;
+        $user_role = $request['user_role'];
+        $user_id = $request['user_id'];
 
 
         //$data= $this->coupon->with("BusOperator","couponType","Bus")->where('status','!=',2)->orderBy('id','DESC');
@@ -375,7 +358,7 @@ class CouponRepository
         $data = $this->coupon->with("BusOperator", "couponType", "Bus")->orderBy('id', 'DESC')->where('to_date', '>=', $todayDate);
 
         if ($status == null) {
-            $data = $data->whereNotIn('status', [2,3]);
+            $data = $data->whereNotIn('status', [2, 3]);
         }
 
         ///////////////////////////////////////////////
@@ -386,13 +369,13 @@ class CouponRepository
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
         if ($status != null) {
             $data = $data->where('status', $status);
         }
         if ($user_role != null && $user_role != 1) {
-            $data = $data->where('user_id', $user_id) ;
+            $data = $data->where('user_id', $user_id);
         }
 
         if ($bus_operator_id != null) {
@@ -401,8 +384,8 @@ class CouponRepository
 
         if ($fromDate != null && $toDate != null) {
             $data = $data->where(function ($query) use ($fromDate, $toDate) {
-                $query->whereBetween('from_date', [$fromDate,$toDate])
-                    ->orWhereBetween('to_date', [$fromDate,$toDate]);
+                $query->whereBetween('from_date', [$fromDate, $toDate])
+                    ->orWhereBetween('to_date', [$fromDate, $toDate]);
             });
         }
 
@@ -418,10 +401,12 @@ class CouponRepository
 
             $data = $data->where(
                 function ($query) use ($name) {
-                    $data = $query->whereHas('busOperator', function ($query) use ($name) {$query->where('operator_name', 'like', '%' .$name . '%');})
-                        ->orwhere('created_by', 'like', '%' .$name . '%')
-                        ->orwhere('coupon_title', 'like', '%' .$name . '%')
-                        ->orwhere('coupon_code', 'like', '%' .$name . '%')
+                    $data = $query->whereHas('busOperator', function ($query) use ($name) {
+                        $query->where('operator_name', 'like', '%' . $name . '%');
+                    })
+                        ->orwhere('created_by', 'like', '%' . $name . '%')
+                        ->orwhere('coupon_title', 'like', '%' . $name . '%')
+                        ->orwhere('coupon_code', 'like', '%' . $name . '%')
                         ->orderBy('id', 'DESC');
                 }
             );
@@ -442,12 +427,11 @@ class CouponRepository
         }
 
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
         return $response;
-
     }
 
 
@@ -462,8 +446,6 @@ class CouponRepository
 
 
         return $coupons;
-
-
     }
     public function changeStatus($id)
     {
@@ -472,11 +454,9 @@ class CouponRepository
         if ($post->status == 0 || $post->status == 3) {
             //$post->status = 1;
             $post = DB::table('coupon')->where('coupon_code', $post->coupon_code)->update(["status" => 1]);
-
         } elseif ($post->status == 1) {
             // $post->status = 3;
             $post = DB::table('coupon')->where('coupon_code', $post->coupon_code)->update(["status" => 3]);
-
         }
         // elseif($post->status==3){
 
@@ -487,5 +467,4 @@ class CouponRepository
         // $post->update();
         return $post;
     }
-
 }
