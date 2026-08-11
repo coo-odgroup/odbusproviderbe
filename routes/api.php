@@ -160,6 +160,10 @@ use App\Http\Controllers\SeoController;
 
 use Illuminate\Support\Facades\Artisan;
 
+// Jagan
+use App\Http\Controllers\Agent\AgentRegdController;
+// Jagan
+
 
 Route::get('/notification-types', [NotificationMasterController::class, 'getTypes']);
 Route::get('/template-keys/{typeId}', [NotificationMasterController::class, 'getTemplateKeys']);
@@ -1371,3 +1375,10 @@ Route::post('createCampaignNotification', [CampaignNotificationController::class
 Route::post('getAllCampaignNotificationData', [CampaignNotificationController::class, 'getAllCampaignNotificationData']);
 Route::post('updateCampaignNotification/{id}', [CampaignNotificationController::class, 'updateCampaignNotification']);
 Route::post('changeCampaignNotificationStatus', [CampaignNotificationController::class, 'changeStatus']);
+
+// Jagan
+Route::post('/agentRegd', [AgentRegdController::class, 'agentRegd']);
+Route::post('/agentRegdSendOtp', [AgentRegdController::class, 'agentRegdSendOtp']);
+Route::post('/agentRegdOtpVerify', [AgentRegdController::class, 'agentRegdOtpVerify']);
+Route::post('/agentUpdateData', [AgentRegdController::class, 'agentUpdateData']);
+// Jagan

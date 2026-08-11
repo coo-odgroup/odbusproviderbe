@@ -46,7 +46,7 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
+            'host' => env('DB_HOST', '192.168.29.141'),
             'port' => env('DB_PORT', '3307'),
             'database' => env('DB_DATABASE', 'odbus'),
             'username' => env('DB_USERNAME', 'root'),
@@ -62,7 +62,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-       
+
         'mysql_scheduler' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -102,7 +102,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-        
+
 
         'pgsql' => [
             'driver' => 'pgsql',

@@ -41,25 +41,24 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         // $schedule->command('booking:archive-failed')->daily();
 
-        $schedule->command('phonepe:refund-status')->everyFiveMinutes();
+        // $schedule->command('phonepe:refund-status')->everyFiveMinutes();
 
 
-        $crons = Cron::with('cron_frequencies')
-            ->where('run_type', 'auto')
-            ->where('is_active', 1)
-            ->get();
+        // $crons = Cron::with('cron_frequencies')
+        //     ->where('run_type', 'auto')
+        //     ->where('is_active', 1)
+        //     ->get();
 
-
-        $schedule->command('wallet:low-balance')
-            ->everyFifteenMinutes();
         // Log::info($crons);
         // return;
 
-        foreach ($crons as $cron) {
-            $schedule->command('crons:run-auto')
-                ->cron($cron->frequency->expression)
-                ->withoutOverlapping();
-        }
+        // foreach ($crons as $cron) {
+        //     $schedule->command('crons:run-auto')
+        //         ->cron($cron->frequency->expression)
+        //         ->withoutOverlapping();
+        // }
+
+        $schedule->command('wallet:low-balance')->everyFifteenMinutes();
     }
 
     /**
