@@ -12,6 +12,7 @@ class CampaignNotification extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'notification_category_id',
         'campaign_name',
         'title',
         'message',
@@ -21,6 +22,7 @@ class CampaignNotification extends Model
         'schedule_type',
         'schedule_minutes',
         'schedule_at',
+        'active_user_duration',
         'active_status',
         'total_users',
         'processed_users',
