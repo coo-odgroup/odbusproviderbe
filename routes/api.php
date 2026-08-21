@@ -1368,13 +1368,17 @@ $router->get('/update-refund-status', function () {
    Artisan::call('phonepe:refund-status');
 });
 
+//subhasis
 Route::post('/toproutedata', [DashboardController::class, 'getRoute']);
-
-
 Route::post('createCampaignNotification', [CampaignNotificationController::class, 'createCampaignNotification']);
 Route::post('getAllCampaignNotificationData', [CampaignNotificationController::class, 'getAllCampaignNotificationData']);
 Route::post('updateCampaignNotification/{id}', [CampaignNotificationController::class, 'updateCampaignNotification']);
 Route::post('changeCampaignNotificationStatus', [CampaignNotificationController::class, 'changeStatus']);
+Route::get('/notification-categories',[CampaignNotificationController::class, 'getNotificationCategories']);
+Route::get('getCampaignNotification/{id}',[CampaignNotificationController::class, 'getCampaignNotification']);
+Route::get('/get-operators', [CampaignNotificationController::class, 'getOperators']);
+Route::get('/get-locations', [CampaignNotificationController::class, 'getLocations']);
+Route::get('/getActiveCoupons', [CampaignNotificationController::class, 'getActiveCoupons']);
 
 // Jagan
 Route::post('/agentRegd', [AgentRegdController::class, 'agentRegd']);

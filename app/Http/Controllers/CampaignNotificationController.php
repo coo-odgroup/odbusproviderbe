@@ -21,59 +21,324 @@ class CampaignNotificationController extends Controller
     public function createCampaignNotification(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'campaign_name'    => 'required|max:150',
-            'title'            => 'required|max:255',
-            'message'          => 'required',
-            'type'             => 'required|in:PROMOTIONAL,TRANSACTIONAL,REMINDER,CUSTOM',
-            'target_type'      => 'required|in:ALL,ACTIVE,INACTIVE,VERIFIED,CUSTOM',
-            'schedule_type'    => 'required|in:IMMEDIATE,SCHEDULED,BEFORE_EVENT,AFTER_EVENT',
-            'schedule_minutes' => 'nullable|integer'
+
+            'campaign_name' => 'required|max:150',
+            'title' => 'required|max:255',
+            'message' => 'required',
+
+            'type' => 'required|in:PROMOTIONAL,TRANSACTIONAL,REMINDER,CUSTOM',
+
+            'target_type' => 'required|in:ALL,ACTIVE,INACTIVE,VERIFIED,CUSTOM',
+
+            'active_user_duration' =>
+            'required_if:target_type,ACTIVE|nullable|integer|in:7,14,30,60,90,120,150,180,270,365',
+
+            'schedule_type' =>
+            'required|in:IMMEDIATE,SCHEDULED,BEFORE_EVENT,AFTER_EVENT',
+
+            'schedule_minutes' => 'nullable|integer',
+
+            'notification_category_id' =>
+            'required|exists:notification_category,id',
+
+            'schedules' =>
+            'required_if:schedule_type,SCHEDULED|array|min:1',
+
+            'schedules.*.schedule_date' =>
+            'required_if:schedule_type,SCHEDULED|date_format:Y-m-d',
+
+            'schedules.*.start_time' =>
+            'required_if:schedule_type,SCHEDULED|date_format:H:i',
+
+            'schedules.*.end_time' =>
+            'required_if:schedule_type,SCHEDULED|date_format:H:i',
         ]);
 
         if ($validator->fails()) {
+
+            Log::error('Campaign validation failed', [
+                'errors' => $validator->errors()->toArray(),
+                'request' => $request->all(),
+            ]);
+
             return response()->json([
                 'status' => 0,
-                'message' => $validator->errors()->first()
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        DB::beginTransaction();
+
         try {
 
+            /*
+        |--------------------------------------------------------------------------
+        | Create notification_campaigns record
+        |--------------------------------------------------------------------------
+        */
+
             $data = $request->only([
+                'notification_category_id',
                 'campaign_name',
                 'title',
                 'message',
                 'type',
+                'active_user_duration',
                 'target_type',
                 'schedule_type',
                 'schedule_minutes'
             ]);
 
+
+            /*
+        |--------------------------------------------------------------------------
+        | Image upload
+        |--------------------------------------------------------------------------
+        */
+
             if ($request->hasFile('image')) {
 
                 $file = $request->file('image');
+
                 $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('uploads/campaign_notifications'), $fileName);
-                $data['image'] = 'uploads/campaign_notifications/' . $fileName;
+
+                $uploadPath = public_path(
+                    'uploads/campaign_notifications'
+                );
+
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                $file->move(
+                    $uploadPath,
+                    $fileName
+                );
+
+                $data['image'] =
+                    'uploads/campaign_notifications/' . $fileName;
             }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Campaign defaults
+        |--------------------------------------------------------------------------
+        */
 
             $data['active_status'] = 1;
             $data['created_by'] = $request->created_by;
 
-            $response = CampaignNotification::create($data);
+            $campaign = CampaignNotification::create($data);
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | CUSTOM TARGET TYPE
+        |--------------------------------------------------------------------------
+        |
+        | custom_scenario:
+        |
+        | ROUTE         = 1
+        | NEW_USER      = 2
+        | OPERATOR      = 3
+        | SPECIAL_OFFER = 4
+        |
+        */
+
+            if (
+                $request->target_type === 'CUSTOM' &&
+                !empty($request->custom_scenario)
+            ) {
+
+                $customType = null;
+
+                switch ($request->custom_scenario) {
+
+                    case 'ROUTE':
+                        $customType = 1;
+                        break;
+
+                    case 'NEW_USER':
+                        $customType = 2;
+                        break;
+
+                    case 'OPERATOR':
+                        $customType = 3;
+                        break;
+
+                    case 'SPECIAL_OFFER':
+                        $customType = 4;
+                        break;
+                }
+
+
+                if ($customType !== null) {
+
+                    DB::table('notification_campaign_custom')->insert([
+
+                        'campaign_id' => $campaign->id,
+
+                        'custom_type' => $customType,
+
+                        /*
+                    | Route
+                    */
+                        'source_id' =>
+                        $request->custom_scenario === 'ROUTE'
+                            ? $request->source
+                            : null,
+
+                        'destination_id' =>
+                        $request->custom_scenario === 'ROUTE'
+                            ? $request->destination
+                            : null,
+
+                        /*
+                    | Operator
+                    */
+                        'operator_id' =>
+                        $request->custom_scenario === 'OPERATOR'
+                            ? $request->operator_id
+                            : null,
+
+                        /*
+                    | Coupon
+                    |
+                    | CUSTOM scenarios don't use coupon_code.
+                    */
+                        'coupon_code' => null,
+
+                        'created_at' => now(),
+                        'created_by' => $request->created_by,
+                        'updated_at' => null,
+                        'updated_by' => null,
+                    ]);
+                }
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | PROMOTIONAL + COUPON
+        |--------------------------------------------------------------------------
+        |
+        | If PROMOTIONAL is selected:
+        |
+        | Coupon selected -> save coupon ID/code
+        | No coupon       -> don't create custom record
+        |
+        */
+
+            if (
+                $request->type === 'PROMOTIONAL' &&
+                !empty($request->custom_scenario)
+            ) {
+
+                /*
+            | custom_scenario contains the coupon ID
+            | from your Angular dropdown.
+            */
+
+                $coupon = DB::table('coupon')
+                    ->where('id', $request->custom_scenario)
+                    ->first();
+
+                if ($coupon) {
+
+                    DB::table('notification_campaign_custom')->insert([
+
+                        'campaign_id' => $campaign->id,
+
+                        /*
+                    | Promotional coupon does not belong to
+                    | Route/New User/Operator/Special Offer.
+                    |
+                    | Keep custom_type NULL.
+                    */
+                        'custom_type' => null,
+
+                        'source_id' => null,
+                        'destination_id' => null,
+                        'operator_id' => null,
+
+                        'coupon_code' => $coupon->coupon_code,
+
+                        'created_at' => now(),
+                        'created_by' => $request->created_by,
+                        'updated_at' => null,
+                        'updated_by' => null,
+                    ]);
+                }
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Scheduled campaign schedules
+        |--------------------------------------------------------------------------
+        */
+
+            if ($request->schedule_type === 'SCHEDULED') {
+
+                foreach ($request->schedules as $schedule) {
+
+                    DB::table('notification_campaign_schedule')->insert([
+
+                        'notification_campaign_id' => $campaign->id,
+
+                        'schedule_date' =>
+                        $schedule['schedule_date'],
+
+                        'start_time' =>
+                        $schedule['start_time'],
+
+                        'end_time' =>
+                        $schedule['end_time'],
+
+                        'created_at' => now(),
+
+                        'created_by' =>
+                        $request->created_by,
+                    ]);
+                }
+            }
+
+
+            DB::commit();
+
 
             return response()->json([
+
                 'status' => 1,
-                'message' => 'Success',
-                'data' => $response
-            ], Response::HTTP_OK);
-        } catch (Exception $e) {
 
-            Log::error($e);
+                'message' =>
+                'Campaign Notification Created Successfully',
+
+                'data' => $campaign
+
+            ], Response::HTTP_OK);
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            Log::error(
+                'Campaign Notification Creation Failed',
+                [
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]
+            );
 
             return response()->json([
+
                 'status' => 0,
+
                 'message' => $e->getMessage()
+
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -163,52 +428,105 @@ class CampaignNotificationController extends Controller
     public function updateCampaignNotification(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'campaign_name'    => 'required|max:150',
-            'title'            => 'required|max:255',
-            'message'          => 'required',
-            'type'             => 'required|in:PROMOTIONAL,TRANSACTIONAL,REMINDER,CUSTOM',
-            'target_type'      => 'required|in:ALL,ACTIVE,INACTIVE,VERIFIED,CUSTOM',
-            'schedule_type'    => 'required|in:IMMEDIATE,SCHEDULED,BEFORE_EVENT,AFTER_EVENT',
-            'schedule_minutes' => 'nullable|integer'
+            'notification_category_id' => 'required|exists:notification_category,id',
+            'campaign_name' => 'required|max:150',
+            'title' => 'required|max:255',
+            'message' => 'required',
+            'type' => 'required|in:PROMOTIONAL,TRANSACTIONAL,REMINDER,CUSTOM',
+            'target_type' => 'required|in:ALL,ACTIVE,INACTIVE,VERIFIED,CUSTOM',
+            'schedule_type' => 'required|in:IMMEDIATE,SCHEDULED,BEFORE_EVENT,AFTER_EVENT',
+            'schedule_minutes' => 'nullable|integer',
+
+            // Required only for SCHEDULED
+            'schedules' => 'required_if:schedule_type,SCHEDULED|array|min:1',
+            'schedules.*.id' => 'nullable|integer',
+            'schedules.*.schedule_date' => 'required_if:schedule_type,SCHEDULED|date_format:Y-m-d',
+            'schedules.*.start_time' => 'required_if:schedule_type,SCHEDULED|date_format:H:i:s',
+            'schedules.*.end_time' => 'required_if:schedule_type,SCHEDULED|date_format:H:i:s',
         ]);
 
         if ($validator->fails()) {
+
+            Log::error('Campaign update validation failed', [
+                'campaign_id' => $id,
+                'errors' => $validator->errors()->toArray(),
+                'request' => $request->all()
+            ]);
+
             return response()->json([
                 'status' => 0,
-                'message' => $validator->errors()->first()
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
             ], Response::HTTP_BAD_REQUEST);
         }
 
         try {
 
+            DB::beginTransaction();
+
+            /*
+        |--------------------------------------------------------------------------
+        | Find Campaign
+        |--------------------------------------------------------------------------
+        */
+
             $campaign = CampaignNotification::find($id);
 
             if (!$campaign) {
+
+                DB::rollBack();
+
                 return response()->json([
                     'status' => 0,
-                    'message' => "Campaign Notification Not Found"
+                    'message' => 'Campaign Notification Not Found'
                 ], Response::HTTP_NOT_FOUND);
             }
 
-            $campaign->campaign_name = $request->campaign_name;
-            $campaign->title = $request->title;
-            $campaign->message = $request->message;
-            $campaign->type = $request->type;
-            $campaign->target_type = $request->target_type;
-            $campaign->schedule_type = $request->schedule_type;
-            $campaign->schedule_minutes = $request->schedule_minutes;
+            /*
+        |--------------------------------------------------------------------------
+        | Validate User
+        |--------------------------------------------------------------------------
+        */
+
             if (!User::where('id', $request->created_by)->exists()) {
+
+                DB::rollBack();
+
                 return response()->json([
                     'status' => 0,
                     'message' => 'Invalid User'
                 ], Response::HTTP_BAD_REQUEST);
             }
 
+            /*
+        |--------------------------------------------------------------------------
+        | Update Campaign
+        |--------------------------------------------------------------------------
+        */
+
+            $campaign->notification_category_id = $request->notification_category_id;
+            $campaign->campaign_name = $request->campaign_name;
+            $campaign->title = $request->title;
+            $campaign->message = $request->message;
+            $campaign->type = $request->type;
+            $campaign->target_type = $request->target_type;
+            $campaign->active_user_duration = $request->target_type === 'ACTIVE' ? $request->active_user_duration : null;
+            $campaign->schedule_type = $request->schedule_type;
+            $campaign->schedule_minutes = $request->schedule_minutes;
             $campaign->updated_by = $request->created_by;
+
+            /*
+        |--------------------------------------------------------------------------
+        | Image
+        |--------------------------------------------------------------------------
+        */
 
             if ($request->hasFile('image')) {
 
-                if (!empty($campaign->image) && file_exists(public_path($campaign->image))) {
+                if (
+                    !empty($campaign->image) &&
+                    file_exists(public_path($campaign->image))
+                ) {
                     unlink(public_path($campaign->image));
                 }
 
@@ -216,26 +534,301 @@ class CampaignNotificationController extends Controller
 
                 $fileName = time() . '_' . $file->getClientOriginalName();
 
-                $file->move(public_path('uploads/campaign_notifications'), $fileName);
+                $file->move(
+                    public_path('uploads/campaign_notifications'),
+                    $fileName
+                );
 
-                $campaign->image = 'uploads/campaign_notifications/' . $fileName;
+                $campaign->image =
+                    'uploads/campaign_notifications/' . $fileName;
             }
 
             $campaign->save();
 
+            /*
+                |--------------------------------------------------------------------------
+                | Update Custom Campaign Data
+                |--------------------------------------------------------------------------
+                */
+
+            DB::table('notification_campaign_custom')
+                ->where('campaign_id', $campaign->id)
+                ->delete();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CUSTOM TARGET TYPE
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $request->target_type === 'CUSTOM' &&
+                !empty($request->custom_scenario)
+            ) {
+
+                $customType = null;
+
+                switch ($request->custom_scenario) {
+
+                    case 'ROUTE':
+                        $customType = 1;
+                        break;
+
+                    case 'NEW_USER':
+                        $customType = 2;
+                        break;
+
+                    case 'OPERATOR':
+                        $customType = 3;
+                        break;
+
+                    case 'SPECIAL_OFFER':
+                        $customType = 4;
+                        break;
+                }
+
+                if ($customType !== null) {
+
+                    DB::table('notification_campaign_custom')->insert([
+
+                        'campaign_id' => $campaign->id,
+
+                        'custom_type' => $customType,
+
+                        'source_id' =>
+                        $request->custom_scenario === 'ROUTE'
+                            ? $request->source
+                            : null,
+
+                        'destination_id' =>
+                        $request->custom_scenario === 'ROUTE'
+                            ? $request->destination
+                            : null,
+
+                        'operator_id' =>
+                        $request->custom_scenario === 'OPERATOR'
+                            ? $request->operator_id
+                            : null,
+
+                        'coupon_code' => null,
+
+                        'created_at' => now(),
+                        'created_by' => $request->created_by,
+                        'updated_at' => now(),
+                        'updated_by' => $request->created_by,
+                    ]);
+                }
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | PROMOTIONAL + COUPON
+            |--------------------------------------------------------------------------
+            */
+
+            /*
+                |--------------------------------------------------------------------------
+            | PROMOTIONAL + COUPON
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $request->type === 'PROMOTIONAL' &&
+                !empty($request->coupon_code)
+            ) {
+
+                $coupon = DB::table('coupon')
+                    ->where('id', $request->coupon_code)
+                    ->first();
+
+                if ($coupon) {
+
+                    DB::table('notification_campaign_custom')->insert([
+                        'campaign_id' => $campaign->id,
+                        'custom_type' => null,
+                        'source_id' => null,
+                        'destination_id' => null,
+                        'operator_id' => null,
+                        'coupon_code' => $coupon->coupon_code,
+                        'created_at' => now(),
+                        'created_by' => $request->created_by,
+                        'updated_at' => now(),
+                        'updated_by' => $request->created_by,
+                    ]);
+                }
+            }
+
+            if ($request->schedule_type === 'SCHEDULED') {
+
+                // Get existing schedule IDs from database
+                $existingSchedules = DB::table('notification_campaign_schedule')
+                    ->where('notification_campaign_id', $campaign->id)
+                    ->get()
+                    ->keyBy('id');
+
+                // IDs received from frontend
+                $receivedScheduleIds = [];
+
+                foreach ($request->schedules as $schedule) {
+
+                    if (!empty($schedule['id'])) {
+
+                        $scheduleId = (int) $schedule['id'];
+
+                        // Security check: make sure this schedule belongs to this campaign
+                        if (!$existingSchedules->has($scheduleId)) {
+                            continue;
+                        }
+
+                        $receivedScheduleIds[] = $scheduleId;
+                        $existing = $existingSchedules->get($scheduleId);
+                        $dateChanged = $existing->schedule_date != $schedule['schedule_date'];
+                        $startTimeChanged = substr($existing->start_time, 0, 5) != substr($schedule['start_time'], 0, 5);
+                        $endTimeChanged = substr($existing->end_time, 0, 5) != substr($schedule['end_time'], 0, 5);
+
+                        if ($dateChanged || $startTimeChanged || $endTimeChanged) {
+
+                            DB::table('notification_campaign_schedule')
+                                ->where('id', $scheduleId)
+                                ->where('notification_campaign_id', $campaign->id)
+                                ->update([
+                                    'schedule_date' => $schedule['schedule_date'],
+                                    'start_time'    => $schedule['start_time'],
+                                    'end_time'      => $schedule['end_time'],
+                                ]);
+
+                            Log::info('Campaign schedule updated', [
+                                'schedule_id' => $scheduleId,
+                                'campaign_id' => $campaign->id,
+                            ]);
+                        } else {
+
+                            Log::info('Campaign schedule unchanged', [
+                                'schedule_id' => $scheduleId,
+                                'campaign_id' => $campaign->id,
+                            ]);
+                        }
+                    } else {
+
+
+
+                        $newScheduleId = DB::table('notification_campaign_schedule')
+                            ->insertGetId([
+                                'notification_campaign_id' => $campaign->id,
+                                'schedule_date'            => $schedule['schedule_date'],
+                                'start_time'               => $schedule['start_time'],
+                                'end_time'                 => $schedule['end_time'],
+                                'created_at'               => now(),
+                                'created_by'               => $request->created_by,
+                            ]);
+
+                        $receivedScheduleIds[] = $newScheduleId;
+
+                        Log::info('New campaign schedule created', [
+                            'schedule_id' => $newScheduleId,
+                            'campaign_id' => $campaign->id,
+                        ]);
+                    }
+                }
+
+                $idsToDelete = $existingSchedules
+                    ->keys()
+                    ->diff($receivedScheduleIds)
+                    ->values()
+                    ->toArray();
+
+                if (!empty($idsToDelete)) {
+
+                    DB::table('notification_campaign_schedule')
+                        ->where('notification_campaign_id', $campaign->id)
+                        ->whereIn('id', $idsToDelete)
+                        ->delete();
+
+                    Log::info('Campaign schedules deleted', [
+                        'campaign_id' => $campaign->id,
+                        'deleted_ids' => $idsToDelete,
+                    ]);
+                }
+            } else {
+
+
+                DB::table('notification_campaign_schedule')
+                    ->where('notification_campaign_id', $campaign->id)
+                    ->delete();
+            }
+
+            DB::commit();
+
+            $schedules = DB::table('notification_campaign_schedule')
+                ->where('notification_campaign_id', $campaign->id)
+                ->orderBy('schedule_date')
+                ->orderBy('start_time')
+                ->get();
+
+            $custom = DB::table('notification_campaign_custom')
+                ->where('campaign_id', $campaign->id)
+                ->first();
+
             return response()->json([
                 'status' => 1,
-                'message' => 'Campaign Notification Updated',
-                'data' => $campaign
+                'message' => 'Campaign Notification Updated Successfully',
+                'data' => [
+                    'campaign' => $campaign,
+                    'schedules' => $schedules,
+                    'custom' => $custom
+                ]
             ], Response::HTTP_OK);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
 
-            Log::error($e);
+            DB::rollBack();
+
+            Log::error('Campaign update failed', [
+                'campaign_id' => $id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'request' => $request->all()
+            ]);
+
             return response()->json([
                 'status' => 0,
                 'message' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function getCampaignNotification($id)
+    {
+        $campaign = CampaignNotification::find($id);
+
+        if (!$campaign) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Campaign Notification Not Found'
+            ], 404);
+        }
+
+        $schedules = DB::table('notification_campaign_schedule')
+            ->where('notification_campaign_id', $campaign->id)
+            ->orderBy('schedule_date')
+            ->orderBy('start_time')
+            ->get();
+
+        $custom = DB::table('notification_campaign_custom')
+            ->where('campaign_id', $campaign->id)
+            ->first();
+
+        return response()->json([
+            'status' => 1,
+
+            'data' => [
+                'campaign' => $campaign,
+                'schedules' => $schedules,
+                'custom' => $custom
+            ]
+        ]);
     }
 
     public function changeStatus(Request $request)
@@ -279,5 +872,82 @@ class CampaignNotificationController extends Controller
             'status' => 1,
             'message' => 'Campaign Notification Status Updated'
         ], Response::HTTP_ACCEPTED);
+    }
+
+    public function getNotificationCategories(Request $request)
+    {
+        try {
+
+            $categories = DB::table('notification_category')
+                ->select(
+                    'id',
+                    'category_name',
+                    'category_code'
+                )
+                ->where('status', 1)
+                ->orderBy('id', 'ASC')
+                ->get();
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Notification categories fetched successfully',
+                'data' => $categories
+            ], Response::HTTP_OK);
+        } catch (Exception $e) {
+
+            Log::error($e);
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getOperators()
+    {
+        $operators = DB::table('bus_operator')
+            ->select('id', 'organisation_name')
+            ->where('status', 1)
+            ->orderBy('organisation_name', 'asc')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $operators
+        ]);
+    }
+
+    public function getLocations()
+    {
+        $locations = DB::table('location')
+            ->select('id', 'name')
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $locations
+        ]);
+    }
+
+    public function getActiveCoupons()
+    {
+        $coupons = DB::table('slider')
+            ->join('coupon', 'slider.coupon_id', '=', 'coupon.id')
+            ->where('slider.status', 1)
+            ->select(
+                'coupon.id',
+                'coupon.coupon_type_id',
+                'coupon.coupon_code',
+                'coupon.coupon_title'
+            )
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $coupons
+        ]);
     }
 }
