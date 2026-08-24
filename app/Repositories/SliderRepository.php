@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Coupon;
 use App\Models\Slider;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
@@ -90,6 +91,10 @@ class SliderRepository
 
     public function save($data)
     {
+        // return $data['coupon_id'];
+        $unique_id = Coupon::where('id',$data['coupon_id'])->value('unique_id');
+
+        // return $unique_id;
         $slide = new $this->slider();
         $slide = $this->getModel($data, $slide);
 
@@ -121,6 +126,7 @@ class SliderRepository
             $slide->android_image = $picture;
         }
 
+        $slide->coupon_unique_id = $unique_id;
         $slide->save();
 
         return $slide->fresh();

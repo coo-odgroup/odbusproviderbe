@@ -33,7 +33,7 @@ class Msg91Service
             "body_var_13" => ["type" => "text", "value" => $data['conductor_no']],
 
             "button_1" => ["type" => "text", "value" => "https://play.google.com/store/apps/details?id=com.od.odbus&pli=1"],
-            "button_2" => ["type" => "text", "value" => config('msg91.pdf_url') . $data['pnr']],
+            "button_2" => ["type" => "text", "value" => $data['pnr']],
 
 
             "var1" => ["type" => "text", "value" => $data['customer_name']],
