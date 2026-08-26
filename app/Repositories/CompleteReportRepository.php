@@ -53,7 +53,7 @@ class CompleteReportRepository
                     $quer->select('id', 'bus_id', 'ticket_price_id', 'ticket_price_id', 'seats_id')
 
                         ->with(['ticketPrice' => function ($que) {
-                            $que->select('id', 'bus_id', 'source_id', 'destination_id', 'base_seat_fare', 'base_sleeper_fare', 'dep_time', 'arr_time');
+                            $que->select('id', 'bus_id', 'source_id', 'destination_id', 'base_seat_fare', 'base_sleeper_fare', 'dep_time', 'arr_time', 'start_j_days');
                         }]);
 
                     $quer->with(['seats' => function ($qu) {
@@ -152,20 +152,27 @@ class CompleteReportRepository
             //         ->orderBy('booking.updated_at', 'DESC');
             // } 
 
-            //Add by Sahil
+            //Add by Sahil 
             if ($start_date == $end_date) {
 
                 $nextDate = Carbon::parse($start_date)->addDay()->format('Y-m-d');
 
                 $data = $data->where(function ($query) use ($start_date, $nextDate) {
-                    // Normal buses
+
+                    // Normal journey date
                     $query->whereDate('journey_dt', $start_date);
 
-                    // Next-day buses
+                    // Only next-day enabled buses having start_j_days = 2
                     $query->orWhere(function ($q) use ($nextDate) {
+
                         $q->whereDate('journey_dt', $nextDate)
+
                             ->whereHas('bus', function ($bus) {
                                 $bus->where('is_next_day_booking', 1);
+                            })
+
+                            ->whereHas('BookingDetail.BusSeats.ticketPrice', function ($tp) {
+                                $tp->where('start_j_days', 2);
                             });
                     });
                 })
@@ -300,7 +307,7 @@ class CompleteReportRepository
         $device_type = $request->device_type;
 
         // 'api_pnr','bus_name','bus_number'       ,'seat_name'
-        $data = $this->booking->select('id', 'pnr', 'transaction_id', 'user_id', 'users_id', 'bus_id', 'source_id', 'destination_id', 'journey_dt','cancel_reason', 'boarding_point', 'dropping_point', 'boarding_time', 'dropping_time', 'origin', 'app_type', 'total_fare', 'owner_fare', 'odbus_gst_charges', 'odbus_gst_amount', 'odbus_charges', 'customer_gst_status', 'gst_invoice_no', 'customer_gst_percent', 'customer_gst_number', 'customer_gst_business_name', 'customer_gst_business_email', 'customer_gst_business_address', 'customer_gst_amount', 'coupon_code', 'coupon_discount', DB::raw('"" as coupon_type'), 'payable_amount', 'transactionFee', 'additional_owner_fare', 'additional_special_fare', 'additional_festival_fare', 'agent_commission', 'created_at','updated_at','cancel_by', 'api_pnr', 'bus_name', 'bus_number')->with('User.role')->with(['BookingDetail' => function ($query) {
+        $data = $this->booking->select('id', 'pnr', 'transaction_id', 'user_id', 'users_id', 'bus_id', 'source_id', 'destination_id', 'journey_dt', 'cancel_reason', 'boarding_point', 'dropping_point', 'boarding_time', 'dropping_time', 'origin', 'app_type', 'total_fare', 'owner_fare', 'odbus_gst_charges', 'odbus_gst_amount', 'odbus_charges', 'customer_gst_status', 'gst_invoice_no', 'customer_gst_percent', 'customer_gst_number', 'customer_gst_business_name', 'customer_gst_business_email', 'customer_gst_business_address', 'customer_gst_amount', 'coupon_code', 'coupon_discount', DB::raw('"" as coupon_type'), 'payable_amount', 'transactionFee', 'additional_owner_fare', 'additional_special_fare', 'additional_festival_fare', 'agent_commission', 'created_at', 'updated_at', 'cancel_by', 'api_pnr', 'bus_name', 'bus_number')->with('User.role')->with(['BookingDetail' => function ($query) {
             $query->select('id', 'booking_id', 'bus_seats_id', 'passenger_name', 'passenger_gender', 'passenger_age', 'seat_name')
                 ->with(['BusSeats' => function ($quer) {
                     $quer->select('id', 'bus_id', 'ticket_price_id', 'ticket_price_id', 'seats_id')

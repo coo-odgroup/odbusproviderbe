@@ -97,7 +97,7 @@ class BusSeatLayoutController extends Controller
             return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
         }
         try {
-            $this->busSeatLayoutService->update($data, $id);
+            $this->busSeatLayoutRepository->update($data, $id);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }

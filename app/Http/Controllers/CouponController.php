@@ -74,7 +74,7 @@ class CouponController extends Controller
             'coupon_type','via','all_route_check','user_type','coupon_title','coupon_code','short_description','route','bus_id',
             'full_description','coupon_discount_type','percentage','max_discount_price','amount',
             'min_tran_amount','valid_by','from_date','to_date','bus_operator_id','max_redeem',
-            'auto_apply','apply_once','created_by','user_id'
+            'auto_apply','apply_once','created_by','user_id','category'
         ]);
 
         $rules = [
