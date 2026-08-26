@@ -19,6 +19,7 @@ use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -263,5 +264,32 @@ class UserController extends Controller
       // Log::info($e->getMessage());
       return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
     }
+  }
+
+  public function getUserStatus(Request $request)
+  {
+      $userId = $request->USERID;
+
+      $user = DB::table('user')
+          ->where('id', $userId)
+          ->select(
+              'id',
+              'is_password_changed',
+              'is_email_verified',
+              'is_first_recharge_done'
+          )
+          ->first();
+
+      if (!$user) {
+          return response()->json([
+              'status' => 0,
+              'message' => 'User not found'
+          ], 200);
+      }
+
+      return response()->json([
+          'status' => 1,
+          'data' => $user
+      ], 200);
   }
 }

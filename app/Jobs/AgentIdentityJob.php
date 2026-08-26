@@ -9,6 +9,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AgentIdentityJob implements ShouldQueue
 {
@@ -95,6 +98,12 @@ class AgentIdentityJob implements ShouldQueue
                             'pan_verified_at' => now(),
                             'updated_at' => now()
                         ]);
+
+                    DB::table('user')->where('id', $this->agentId)
+                        ->update([
+                            'is_pan_verified' => 1,
+                            'updated_at' => now()
+                        ]);
                 } else {
 
                     DB::table('agent_identity')
@@ -165,6 +174,12 @@ class AgentIdentityJob implements ShouldQueue
                             'aadhaar_verified_at' => now(),
                             'updated_at' => now()
                         ]);
+
+                    DB::table('user')->where('id', $this->agentId)
+                        ->update([
+                            'is_aadhaar_verified' => 1,
+                            'updated_at' => now()
+                        ]);
                 } else {
 
                     DB::table('agent_identity')
@@ -195,6 +210,23 @@ class AgentIdentityJob implements ShouldQueue
                     'updated_at' => now()
                 ]);
 
+            $originalPassword = 'OdBus@' . random_int(1000, 9999);
+
+            DB::table('user')
+                ->where('id', $this->agentId)
+                ->update([
+                    'password' => Hash::make($originalPassword),
+                    'adhar_no' => $aadhaarNo,
+                    'pancard_no' => $panNo,
+                    'status' => 1,
+                    'updated_at' => now()
+                ]);
+
+            Log::info('Agent password generated', [
+                'agent_id' => $this->agentId,
+                'password' => $originalPassword
+            ]);
+
 
             /*
              * Agent verification completed
@@ -217,7 +249,29 @@ class AgentIdentityJob implements ShouldQueue
 
     private function verifyPan($panNo)
     {
-        return true;
+        try {
+            $response = Http::post(url('/api/verify-pan'), [
+                'pan' => $panNo
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                if (isset($data['response']['valid']) && $data['response']['valid'] == 1) {
+                    return true;
+                }
+            }
+
+            return false;
+        } catch (\Exception $e) {
+
+            Log::error('PAN verification failed', [
+                'pan' => $panNo,
+                'error' => $e->getMessage()
+            ]);
+
+            return false;
+        }
     }
 
     private function verifyAadhaar($aadhaarNo)

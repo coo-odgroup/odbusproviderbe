@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class VerificationController extends Controller
 {
@@ -99,5 +101,57 @@ class VerificationController extends Controller
         );
 
         return response()->json($response);
+    }
+
+    public function maskAadhaar(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|file|mimes:jpg,jpeg,png|max:10240',
+        ]);
+
+        try {
+
+            $verificationId = 'aadhaar_' . Str::uuid();
+
+            $response = Http::withHeaders([
+                'x-client-id' => $this->clientId,
+                'x-client-secret' => $this->clientSecret,
+            ])
+            ->attach(
+                'image',
+                fopen($request->file('image')->getRealPath(), 'r'),
+                $request->file('image')->getClientOriginalName()
+            )
+            ->post(
+                $this->baseUrl . '/verification/aadhaar-masking',
+                [
+                    'verification_id' => $verificationId
+                ]
+            );
+
+            $data = $response->json();
+
+            if ($response->successful() && isset($data['image_link'])) {
+
+                return response()->json([
+                    'status' => 1,
+                    'message' => 'Aadhaar masked successfully',
+                    'data' => $data
+                ], 200);
+            }
+
+            return response()->json([
+                'status' => 0,
+                'message' => $data['message'] ?? 'Aadhaar masking failed',
+                'data' => $data
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 200);
+        }
     }
 }
