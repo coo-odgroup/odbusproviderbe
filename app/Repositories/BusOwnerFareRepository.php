@@ -43,7 +43,7 @@ class BusOwnerFareRepository
         $toDate = $request['toDate'];
         $bus_operator_id = $request['bus_operator_id'];
 
-        $data = $this->ownerFare->with('bus', 'bus.busOperator')->orderBy('id', 'DESC');
+        $data = $this->ownerFare->where('status', 1)->with('bus', 'bus.busOperator')->orderBy('id', 'DESC');
 
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');

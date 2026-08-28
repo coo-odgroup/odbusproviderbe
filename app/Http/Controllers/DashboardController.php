@@ -156,10 +156,13 @@ class DashboardController extends Controller
 
             $fromDate = date(
                 'Y-m-d 00:00:00',
-                strtotime('-6 days')
+                strtotime('monday this week')
             );
 
-            $toDate = date('Y-m-d 23:59:59');
+            $toDate = date(
+                'Y-m-d 23:59:59',
+                strtotime('sunday this week')
+            );
         } elseif ($filter === 'This Month') {
 
             $fromDate = date(
@@ -268,10 +271,13 @@ class DashboardController extends Controller
 
             $fromDate = date(
                 'Y-m-d 00:00:00',
-                strtotime('-6 days')
+                strtotime('monday this week')
             );
 
-            $toDate = date('Y-m-d 23:59:59');
+            $toDate = date(
+                'Y-m-d 23:59:59',
+                strtotime('sunday this week')
+            );
         }
 
         // This Month
@@ -429,10 +435,13 @@ class DashboardController extends Controller
 
             $fromDate = date(
                 'Y-m-d 00:00:00',
-                strtotime('-6 days')
+                strtotime('monday this week')
             );
 
-            $toDate = date('Y-m-d 23:59:59');
+            $toDate = date(
+                'Y-m-d 23:59:59',
+                strtotime('sunday this week')
+            );
         }
 
         // This Month
