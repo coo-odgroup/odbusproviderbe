@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class AgentRegdController extends Controller
 {
@@ -746,6 +747,74 @@ class AgentRegdController extends Controller
             'status' => false,
             'statusCode' => 200,
             'message' => 'New Email id Valid for registration'
+        ], 200);
+    }
+
+    public function changeFirstPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+
+            'newPassword' => [
+                'required',
+                'string',
+                'min:8'
+            ],
+
+            'confirmPassword' => [
+                'required',
+                'string'
+            ],
+
+        ], [
+            'newPassword.required' => 'Please enter a new password.',
+            'newPassword.min' => 'Password must be at least 8 characters.',
+            'confirmPassword.required' => 'Please confirm your password.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'statusCode' => 422,
+                'message' => $validator->errors()->first()
+            ], 200);
+        }
+
+        $agentId = $request->userId;
+
+        $user = DB::table('user')
+            ->where('id', $agentId)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'statusCode' => 422,
+                'message' => 'User not found.'
+            ], 200);
+        }
+
+        // Only allow first-time password change
+        if ((int) $user->is_password_changed === 1) {
+            return response()->json([
+                'status' => false,
+                'statusCode' => 400,
+                'message' => 'Password has already been changed.'
+            ], 200);
+        }
+
+        // Update password
+        DB::table('user')
+            ->where('id', $agentId)
+            ->update([
+                'password' => Hash::make($request->newPassword),
+                'is_password_changed' => 1,
+                'updated_at' => now()
+            ]);
+
+        return response()->json([
+            'status' => true,
+            'statusCode' => 200,
+            'message' => 'Password changed successfully.'
         ], 200);
     }
 }
