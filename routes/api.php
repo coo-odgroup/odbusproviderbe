@@ -1390,4 +1390,6 @@ Route::post('/checkEmailExist', [AgentRegdController::class, 'checkEmailExist'])
 Route::post('/getUserStatus', [UserController::class, 'getUserStatus']);
 
 Route::post('/change-first-password', [AgentRegdController::class, 'changeFirstPassword']);
+Route::post('/send-email-otp', [AgentRegdController::class, 'sendEmailOtp']);
+Route::post('/verify-email-otp', [AgentRegdController::class, 'verifyEmailOtp']);
 // Jagan
