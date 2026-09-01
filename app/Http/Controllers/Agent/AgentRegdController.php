@@ -823,6 +823,7 @@ class AgentRegdController extends Controller
         try {
 
             $agentId = $request->userId;
+            $email = $request->email;
 
             // Get agent details
             $agent = DB::table('user')
