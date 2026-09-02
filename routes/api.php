@@ -117,6 +117,8 @@ use App\Http\Controllers\AgentComissionController;
 use App\Http\Controllers\AgentFeeController;
 use App\Http\Controllers\AgentBookingController;
 use App\Http\Controllers\TestEmailController;
+use App\Http\Controllers\AgentNewCommissionSlabController;
+
 
 use App\Http\Controllers\TicketFareSlabController;
 use App\Http\Controllers\TicketInformationController;
@@ -138,8 +140,10 @@ use App\Http\Controllers\ApiUserComissionController;
 use App\Http\Controllers\ApiUserCompleteReportController;
 use App\Http\Controllers\ApiUserCancelTicketReportController;
 use App\Http\Controllers\ApiUserManageOperatorController;
+use App\Http\Controllers\AgentCancelSlabController;
 use App\Http\Controllers\ArchiveReportController;
 use App\Http\Controllers\CampaignNotificationController;
+use App\Http\Controllers\AgentFaqController;
 
 // Scheduler
 use App\Http\Controllers\SchedulerController;
@@ -157,8 +161,10 @@ use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\RouteWiseBookingController;
 use App\Http\Controllers\NotificationMasterController;
 use App\Http\Controllers\SeoController;
+use App\Http\Controllers\NotificationLogController;
 
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\AgentSliderController;
 
 // Jagan
 use App\Http\Controllers\Agent\AgentRegdController;
@@ -1374,11 +1380,51 @@ Route::post('createCampaignNotification', [CampaignNotificationController::class
 Route::post('getAllCampaignNotificationData', [CampaignNotificationController::class, 'getAllCampaignNotificationData']);
 Route::post('updateCampaignNotification/{id}', [CampaignNotificationController::class, 'updateCampaignNotification']);
 Route::post('changeCampaignNotificationStatus', [CampaignNotificationController::class, 'changeStatus']);
-Route::get('/notification-categories',[CampaignNotificationController::class, 'getNotificationCategories']);
-Route::get('getCampaignNotification/{id}',[CampaignNotificationController::class, 'getCampaignNotification']);
+Route::get('/notification-categories', [CampaignNotificationController::class, 'getNotificationCategories']);
+Route::get('getCampaignNotification/{id}', [CampaignNotificationController::class, 'getCampaignNotification']);
 Route::get('/get-operators', [CampaignNotificationController::class, 'getOperators']);
 Route::get('/get-locations', [CampaignNotificationController::class, 'getLocations']);
 Route::get('/getActiveCoupons', [CampaignNotificationController::class, 'getActiveCoupons']);
+Route::post('/getSelectedTargetUsers', [CampaignNotificationController::class, 'getSelectedTargetUsers']);
+
+Route::post('notification/log-report', [NotificationLogController::class, 'notificationLogReport'])->name('notification.logReport');
+Route::get('notification/campaign-list', [NotificationLogController::class, 'notificationCampaignList'])->name('notification.campaignList');
+
+
+//Agent SLider
+Route::get('/getAgentSliders', [AgentSliderController::class, 'index']);
+Route::post('/addAgentSlider', [AgentSliderController::class, 'store']);
+Route::get('/getAgentSlider/{id}', [AgentSliderController::class, 'show']);
+Route::post('/updateAgentSlider/{id}', [AgentSliderController::class, 'update']);
+Route::delete('/deleteAgentSlider/{id}', [AgentSliderController::class, 'destroy']);
+Route::put('/changeAgentSliderStatus/{id}', [AgentSliderController::class, 'changeStatus']);
+Route::put('/updateAgentSliderSequence/{id}', [AgentSliderController::class, 'updateSequence']);
+Route::put('/changeAgentSliderDefault/{id}', [AgentSliderController::class, 'changeDefault']);
+
+//Agent New Commission Slab Controller
+Route::get('/getAgentCommissionSlabs', [AgentNewCommissionSlabController::class, 'index']);
+Route::get('/getAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'show']);
+Route::post('/addAgentCommissionSlab', [AgentNewCommissionSlabController::class, 'store']);
+Route::post('/updateAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'update']);
+Route::get('/getAgentCommissionSlabAgents', [AgentNewCommissionSlabController::class, 'getAgents']);
+
+
+// Agent Cancel Slab Controller
+Route::get('/getAgentCancelSlabs', [AgentCancelSlabController::class, 'index']);
+Route::get('/getAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'show']);
+Route::post('/addAgentCancelSlab', [AgentCancelSlabController::class, 'store']);
+Route::post('/updateAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'update']);
+Route::post('/changeAgentCancelSlabStatus/{id}', [AgentCancelSlabController::class, 'changeStatus']);
+
+//Agent FAQ
+Route::get('/getAgentFaqCategoryTypes',[AgentFaqController::class, 'getCategoryTypes']);
+Route::get('/getAgentFaqCategoriesByType/{type}',[AgentFaqController::class, 'getCategoriesByType']);
+Route::post('/getAgentFaqs',[AgentFaqController::class, 'getAll']);
+Route::get('/getAgentFaq/{id}',[AgentFaqController::class, 'getFaq']);
+Route::post('/addAgentFaq',[AgentFaqController::class, 'addFaq']);
+Route::put('/updateAgentFaq/{id}',[AgentFaqController::class, 'updateFaq']);
+Route::post('/changeAgentFaqStatus/{id}',[AgentFaqController::class, 'changeStatus']);
+
 
 // Jagan
 Route::post('/agentRegd', [AgentRegdController::class, 'agentRegd']);

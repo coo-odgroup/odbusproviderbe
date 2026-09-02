@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use ApiResponser;
 use App\Models\User;
+use App\Models\Users;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
 use Symfony\Component\HttpFoundation\Response;
 use Mews\Purifier\Facades\Purifier;
 use App\Models\CampaignNotification;
+
 
 class CampaignNotificationController extends Controller
 {
@@ -25,33 +27,18 @@ class CampaignNotificationController extends Controller
             'campaign_name' => 'required|max:150',
             'title' => 'required|max:255',
             'message' => 'required',
-
             'type' => 'required|in:PROMOTIONAL,TRANSACTIONAL,REMINDER,CUSTOM',
-
-            'target_type' => 'required|in:ALL,ACTIVE,INACTIVE,VERIFIED,CUSTOM',
-
-            'active_user_duration' =>
-            'required_if:target_type,ACTIVE|nullable|integer|in:7,14,30,60,90,120,150,180,270,365',
-
-            'schedule_type' =>
-            'required|in:IMMEDIATE,SCHEDULED,BEFORE_EVENT,AFTER_EVENT',
-
+            'target_type' => 'required|in:ALL,ACTIVE,SELECTED,VERIFIED,CUSTOM',
+            'active_user_duration' => 'required_if:target_type,ACTIVE,CUSTOM,SELECTED|nullable|integer|min:1',
+            'selected_user_ids' => 'required_if:target_type,SELECTED|array|min:1',
+            'selected_user_ids.*' => 'required|integer|exists:users,id',
+            'schedule_type' => 'required|in:IMMEDIATE,SCHEDULED,BEFORE_EVENT,AFTER_EVENT',
             'schedule_minutes' => 'nullable|integer',
-
-            'notification_category_id' =>
-            'required|exists:notification_category,id',
-
-            'schedules' =>
-            'required_if:schedule_type,SCHEDULED|array|min:1',
-
-            'schedules.*.schedule_date' =>
-            'required_if:schedule_type,SCHEDULED|date_format:Y-m-d',
-
-            'schedules.*.start_time' =>
-            'required_if:schedule_type,SCHEDULED|date_format:H:i',
-
-            'schedules.*.end_time' =>
-            'required_if:schedule_type,SCHEDULED|date_format:H:i',
+            'notification_category_id' => 'required|exists:notification_category,id',
+            'schedules' => 'required_if:schedule_type,SCHEDULED|array|min:1',
+            'schedules.*.schedule_date' => 'required_if:schedule_type,SCHEDULED|date_format:Y-m-d',
+            'schedules.*.start_time' => 'required_if:schedule_type,SCHEDULED|date_format:H:i',
+            'schedules.*.end_time' => 'required_if:schedule_type,SCHEDULED|date_format:H:i',
         ]);
 
         if ($validator->fails()) {
@@ -91,11 +78,8 @@ class CampaignNotificationController extends Controller
             ]);
 
 
-            /*
-        |--------------------------------------------------------------------------
-        | Image upload
-        |--------------------------------------------------------------------------
-        */
+            //Image upload
+
 
             if ($request->hasFile('image')) {
 
@@ -121,31 +105,69 @@ class CampaignNotificationController extends Controller
             }
 
 
-            /*
-        |--------------------------------------------------------------------------
-        | Campaign defaults
-        |--------------------------------------------------------------------------
-        */
+            // Campaign defaults
+
 
             $data['active_status'] = 1;
             $data['created_by'] = $request->created_by;
 
             $campaign = CampaignNotification::create($data);
 
+            if ($request->target_type === 'SELECTED') {
 
-            /*
-        |--------------------------------------------------------------------------
-        | CUSTOM TARGET TYPE
-        |--------------------------------------------------------------------------
-        |
-        | custom_scenario:
-        |
-        | ROUTE         = 1
-        | NEW_USER      = 2
-        | OPERATOR      = 3
-        | SPECIAL_OFFER = 4
-        |
-        */
+                $selectedUserIds = $request->selected_user_ids ?? [];
+
+                // Get selected users with their FCM ID and name
+                $selectedUsers = User::whereIn('id', $selectedUserIds)
+                    ->get(['id', 'name', 'fcm_id']);
+
+                foreach ($selectedUserIds as $userId) {
+
+                    $user = DB::table('users')
+                        ->select([
+                            'id',
+                            'name',
+                            'email',
+                            'phone',
+                            'fcm_id'
+                        ])
+                        ->where('id', $userId)
+                        ->whereNotNull('fcm_id')
+                        ->where('fcm_id', '!=', '')
+                        ->first();
+
+                    if (!$user) {
+                        continue;
+                    }
+
+                    DB::table('notification_campaign_selected_users')->insert([
+
+                        'campaign_id' => $campaign->id,
+                        'user_name' => $user->name,
+                        'time_duration' => $request->active_user_duration,
+                        'mobile' => $user->phone,
+                        'email' => $user->email,
+                        'selected_users' => $user->id,
+                        'fcm_id' => $user->fcm_id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+
+                    ]);
+                }
+            }
+
+
+
+            // CUSTOM TARGET TYPE
+
+            //  custom_scenario:
+
+            //  ROUTE         = 1
+            // NEW_USER      = 2
+            // OPERATOR      = 3
+            // SPECIAL_OFFER = 4
+
+
 
             if (
                 $request->target_type === 'CUSTOM' &&
@@ -182,9 +204,9 @@ class CampaignNotificationController extends Controller
 
                         'custom_type' => $customType,
 
-                        /*
-                    | Route
-                    */
+
+                        //Route
+
                         'source_id' =>
                         $request->custom_scenario === 'ROUTE'
                             ? $request->source
@@ -195,19 +217,15 @@ class CampaignNotificationController extends Controller
                             ? $request->destination
                             : null,
 
-                        /*
-                    | Operator
-                    */
+
+                        // Operator
+
                         'operator_id' =>
                         $request->custom_scenario === 'OPERATOR'
                             ? $request->operator_id
                             : null,
 
-                        /*
-                    | Coupon
-                    |
-                    | CUSTOM scenarios don't use coupon_code.
-                    */
+                        // CUSTOM scenarios don't use coupon_code.
                         'coupon_code' => null,
 
                         'created_at' => now(),
@@ -219,27 +237,17 @@ class CampaignNotificationController extends Controller
             }
 
 
-            /*
-        |--------------------------------------------------------------------------
-        | PROMOTIONAL + COUPON
-        |--------------------------------------------------------------------------
-        |
-        | If PROMOTIONAL is selected:
-        |
-        | Coupon selected -> save coupon ID/code
-        | No coupon       -> don't create custom record
-        |
-        */
+
 
             if (
                 $request->type === 'PROMOTIONAL' &&
                 !empty($request->custom_scenario)
             ) {
 
-                /*
-            | custom_scenario contains the coupon ID
-            | from your Angular dropdown.
-            */
+
+                //custom_scenario contains the coupon ID
+                //from your Angular dropdown.
+
 
                 $coupon = DB::table('coupon')
                     ->where('id', $request->custom_scenario)
@@ -274,11 +282,8 @@ class CampaignNotificationController extends Controller
             }
 
 
-            /*
-        |--------------------------------------------------------------------------
-        | Scheduled campaign schedules
-        |--------------------------------------------------------------------------
-        */
+            //Scheduled campaign schedules
+
 
             if ($request->schedule_type === 'SCHEDULED') {
 
@@ -343,88 +348,6 @@ class CampaignNotificationController extends Controller
         }
     }
 
-    public function getAllCampaignNotificationData(Request $request)
-    {
-        try {
-
-            $query = DB::table('notification_campaigns as nc')
-                ->leftJoin('user as cu', 'cu.id', '=', 'nc.created_by')
-                ->leftJoin('user as uu', 'uu.id', '=', 'nc.updated_by')
-                ->select(
-                    'nc.id',
-                    'nc.campaign_name',
-                    'nc.title',
-                    'nc.message',
-                    'nc.image',
-                    'nc.type',
-                    'nc.active_status',
-                    'nc.total_users',
-                    'nc.processed_users',
-                    'nc.success_users',
-                    'nc.failed_users',
-                    'nc.target_type',
-                    'nc.schedule_type',
-                    'nc.schedule_minutes',
-                    'nc.schedule_at',
-                    'nc.is_completed',
-                    'nc.started_at',
-                    'nc.completed_at',
-                    'nc.created_by',
-                    'cu.name as created_by_name',
-                    'nc.updated_by',
-                    'uu.name as updated_by_name',
-                    'nc.created_at',
-                    'nc.updated_at'
-                );
-
-            if (!empty($request->name)) {
-                $query->where(function ($q) use ($request) {
-                    $q->where('nc.campaign_name', 'LIKE', '%' . $request->name . '%')
-                        ->orWhere('nc.title', 'LIKE', '%' . $request->name . '%')
-                        ->orWhere('nc.message', 'LIKE', '%' . $request->name . '%');
-                });
-            }
-
-            // Status
-            if ($request->filled('status')) {
-                $query->where('nc.active_status', $request->status);
-            }
-
-            // Type
-            if ($request->filled('type')) {
-                $query->where('nc.type', $request->type);
-            }
-
-            // Target Type
-            if ($request->filled('target_type')) {
-                $query->where('nc.target_type', $request->target_type);
-            }
-
-            // Schedule Type
-            if ($request->filled('schedule_type')) {
-                $query->where('nc.schedule_type', $request->schedule_type);
-            }
-
-            $campaigns = $query
-                ->orderBy('nc.id', 'DESC')
-                ->paginate($request->rows_number ?? 10);
-
-            return response()->json([
-                'status' => 1,
-                'message' => Config::get('constants.RECORD_FETCHED'),
-                'data' => $campaigns
-            ]);
-        } catch (Exception $e) {
-
-            Log::error($e);
-
-            return response()->json([
-                'status' => 0,
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
-
     public function updateCampaignNotification(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -433,7 +356,10 @@ class CampaignNotificationController extends Controller
             'title' => 'required|max:255',
             'message' => 'required',
             'type' => 'required|in:PROMOTIONAL,TRANSACTIONAL,REMINDER,CUSTOM',
-            'target_type' => 'required|in:ALL,ACTIVE,INACTIVE,VERIFIED,CUSTOM',
+            'target_type' => 'required|in:ALL,ACTIVE,INACTIVE,SELECTED,VERIFIED,CUSTOM',
+            'active_user_duration' => 'required_if:target_type,ACTIVE,CUSTOM,SELECTED|nullable|integer|min:1',
+            'selected_user_ids' => 'required_if:target_type,SELECTED|array|min:1',
+            'selected_user_ids.*' => 'required|integer|exists:users,id',
             'schedule_type' => 'required|in:IMMEDIATE,SCHEDULED,BEFORE_EVENT,AFTER_EVENT',
             'schedule_minutes' => 'nullable|integer',
 
@@ -464,11 +390,8 @@ class CampaignNotificationController extends Controller
 
             DB::beginTransaction();
 
-            /*
-        |--------------------------------------------------------------------------
-        | Find Campaign
-        |--------------------------------------------------------------------------
-        */
+            //Find Campaign
+
 
             $campaign = CampaignNotification::find($id);
 
@@ -482,11 +405,8 @@ class CampaignNotificationController extends Controller
                 ], Response::HTTP_NOT_FOUND);
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | Validate User
-        |--------------------------------------------------------------------------
-        */
+            // Validate User
+
 
             if (!User::where('id', $request->created_by)->exists()) {
 
@@ -498,11 +418,8 @@ class CampaignNotificationController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | Update Campaign
-        |--------------------------------------------------------------------------
-        */
+            // Update Campaign
+
 
             $campaign->notification_category_id = $request->notification_category_id;
             $campaign->campaign_name = $request->campaign_name;
@@ -510,16 +427,13 @@ class CampaignNotificationController extends Controller
             $campaign->message = $request->message;
             $campaign->type = $request->type;
             $campaign->target_type = $request->target_type;
-            $campaign->active_user_duration = $request->target_type === 'ACTIVE' ? $request->active_user_duration : null;
+            $campaign->active_user_duration = in_array($request->target_type, ['ACTIVE', 'CUSTOM', 'SELECTED']) ? $request->active_user_duration : null;
             $campaign->schedule_type = $request->schedule_type;
             $campaign->schedule_minutes = $request->schedule_minutes;
             $campaign->updated_by = $request->created_by;
 
-            /*
-        |--------------------------------------------------------------------------
-        | Image
-        |--------------------------------------------------------------------------
-        */
+            // Image
+
 
             if ($request->hasFile('image')) {
 
@@ -545,22 +459,61 @@ class CampaignNotificationController extends Controller
 
             $campaign->save();
 
+
             /*
-                |--------------------------------------------------------------------------
-                | Update Custom Campaign Data
-                |--------------------------------------------------------------------------
-                */
+        |--------------------------------------------------------------------------
+        | Update Selected Target Users
+        |--------------------------------------------------------------------------
+        |
+        | Remove the old selected users first.
+        |
+        | This is done regardless of the new target type so that if the
+        | campaign was previously SELECTED and is changed to another
+        | target type, its old selected-user records are removed.
+        |
+        */
+
+            DB::table('notification_campaign_selected_users')
+                ->where('campaign_id', $campaign->id)
+                ->delete();
+
+
+
+            if ($request->target_type === 'SELECTED') {
+
+                $selectedUserIds = $request->selected_user_ids ?? [];
+
+                // Get selected users with their FCM ID and name
+                $selectedUsers = User::whereIn('id', $selectedUserIds)
+                    ->get(['id', 'name', 'fcm_id']);
+
+                foreach ($selectedUsers as $user) {
+
+                    DB::table('notification_campaign_selected_users')->insert([
+                        'campaign_id' => $campaign->id,
+                        'time_duration' => $request->active_user_duration,
+
+                        // User details
+                        'selected_users' => $user->id,
+                        'user_name'      => $user->name,
+                        'mobile'         => $user->phone,
+                        'email'          => $user->email,
+                        'fcm_id'         => $user->fcm_id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+
+            // Update Custom Campaign Data
 
             DB::table('notification_campaign_custom')
                 ->where('campaign_id', $campaign->id)
                 ->delete();
 
+            // CUSTOM TARGET TYPE
 
-            /*
-            |--------------------------------------------------------------------------
-            | CUSTOM TARGET TYPE
-            |--------------------------------------------------------------------------
-            */
 
             if (
                 $request->target_type === 'CUSTOM' &&
@@ -622,17 +575,9 @@ class CampaignNotificationController extends Controller
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | PROMOTIONAL + COUPON
-            |--------------------------------------------------------------------------
-            */
+            // PROMOTIONAL + COUPON
+            // PROMOTIONAL + COUPON
 
-            /*
-                |--------------------------------------------------------------------------
-            | PROMOTIONAL + COUPON
-            |--------------------------------------------------------------------------
-            */
 
             if (
                 $request->type === 'PROMOTIONAL' &&
@@ -799,6 +744,88 @@ class CampaignNotificationController extends Controller
         }
     }
 
+    public function getAllCampaignNotificationData(Request $request)
+    {
+        try {
+
+            $query = DB::table('notification_campaigns as nc')
+                ->leftJoin('user as cu', 'cu.id', '=', 'nc.created_by')
+                ->leftJoin('user as uu', 'uu.id', '=', 'nc.updated_by')
+                ->select(
+                    'nc.id',
+                    'nc.campaign_name',
+                    'nc.title',
+                    'nc.message',
+                    'nc.image',
+                    'nc.type',
+                    'nc.active_status',
+                    'nc.total_users',
+                    'nc.processed_users',
+                    'nc.success_users',
+                    'nc.failed_users',
+                    'nc.target_type',
+                    'nc.schedule_type',
+                    'nc.schedule_minutes',
+                    'nc.schedule_at',
+                    'nc.is_completed',
+                    'nc.started_at',
+                    'nc.completed_at',
+                    'nc.created_by',
+                    'cu.name as created_by_name',
+                    'nc.updated_by',
+                    'uu.name as updated_by_name',
+                    'nc.created_at',
+                    'nc.updated_at'
+                );
+
+            if (!empty($request->name)) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('nc.campaign_name', 'LIKE', '%' . $request->name . '%')
+                        ->orWhere('nc.title', 'LIKE', '%' . $request->name . '%')
+                        ->orWhere('nc.message', 'LIKE', '%' . $request->name . '%');
+                });
+            }
+
+            // Status
+            if ($request->filled('status')) {
+                $query->where('nc.active_status', $request->status);
+            }
+
+            // Type
+            if ($request->filled('type')) {
+                $query->where('nc.type', $request->type);
+            }
+
+            // Target Type
+            if ($request->filled('target_type')) {
+                $query->where('nc.target_type', $request->target_type);
+            }
+
+            // Schedule Type
+            if ($request->filled('schedule_type')) {
+                $query->where('nc.schedule_type', $request->schedule_type);
+            }
+
+            $campaigns = $query
+                ->orderBy('nc.id', 'DESC')
+                ->paginate($request->rows_number ?? 10);
+
+            return response()->json([
+                'status' => 1,
+                'message' => Config::get('constants.RECORD_FETCHED'),
+                'data' => $campaigns
+            ]);
+        } catch (Exception $e) {
+
+            Log::error($e);
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function getCampaignNotification($id)
     {
         $campaign = CampaignNotification::find($id);
@@ -949,5 +976,64 @@ class CampaignNotificationController extends Controller
             'status' => true,
             'data' => $coupons
         ]);
+    }
+
+    public function getSelectedTargetUsers(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'duration' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+
+            $duration = (int) $request->duration;
+
+            $fromDate = now()->subDays($duration);
+
+            $users = Users::query()
+                ->select(
+                    'id',
+                    'name',
+                    'email',
+                    'phone',
+                    'fcm_id',
+                    'updated_at'
+                )
+                ->whereNotNull('fcm_id')
+                ->where('fcm_id', '!=', '')
+                ->whereNotNull('updated_at')
+                ->where('updated_at', '>=', $fromDate)
+                ->orderBy('updated_at', 'DESC')
+                ->get();
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Valid users fetched successfully',
+                'count' => $users->count(),
+                'data' => $users
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+
+            Log::error('Failed to fetch selected target users', [
+                'duration' => $request->duration,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
