@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AgentRegdController extends Controller
 {
@@ -177,12 +178,12 @@ class AgentRegdController extends Controller
                 $statusCode = 409;
             }
 
+            $otp = random_int(100000, 999999);
+
             if ($errorMessage) {
 
                 DB::rollBack();
             } else {
-
-                $otp = random_int(100000, 999999);
 
                 $otpData = [
                     'agent_id' => $userId,
@@ -219,7 +220,7 @@ class AgentRegdController extends Controller
                 'status' => $status,
                 'statusCode' => $statusCode,
                 'userId' => $errorMessage ? null : encrypt($clientId),
-                'message' => $errorMessage ?? 'An OTP has been sent to Registered Mobile No'
+                'message' => $errorMessage ?? 'An OTP has been sent to Registered Mobile No ' . $otp
             ], 200);
         } catch (\Exception $e) {
 
@@ -825,6 +826,11 @@ class AgentRegdController extends Controller
             $agentId = $request->userId;
             $email = $request->email;
 
+            Log::info('sendEmailOtp called', [
+                'agentId' => $agentId,
+                'email' => $email
+            ]);
+
             // Get agent details
             $agent = DB::table('user')
                 ->where('id', $agentId)
@@ -838,13 +844,29 @@ class AgentRegdController extends Controller
                 ], 200);
             }
 
-            // Check email
-            if (empty($agent->email)) {
+            // Check whether request email exists in the database
+            $emailUser = DB::table('user')
+                ->where('email', $email)
+                ->where('id', '!=', $agentId)
+                ->first();
+
+            if ($emailUser) {
                 return response()->json([
                     'status' => false,
                     'statusCode' => 400,
-                    'message' => 'Email address not found.'
+                    'message' => 'The provided email address is already in use. Please use a different email address.'
                 ], 200);
+            } else {
+                // Update agent email if it's different
+                if ($agent->email !== $email) {
+                    DB::table('user')
+                        ->where('id', $agentId)
+                        ->update([
+                            'email' => $email,
+                            'is_email_verified' => 0,
+                            'updated_at' => now()
+                        ]);
+                }
             }
 
             // Generate 6-digit OTP
@@ -862,7 +884,7 @@ class AgentRegdController extends Controller
             // Store new OTP
             DB::table('agent_otp_verification')->insert([
                 'agent_id'      => $agentId,
-                'email_mobile'  => $agent->email,
+                'email_mobile'  => $email,
                 'type'          => 2,
                 'purpose'       => 2,
                 'otp_value'     => $otp,
@@ -875,7 +897,7 @@ class AgentRegdController extends Controller
             ]);
 
             // Send OTP to email here
-            // Mail::to($agent->email)->send(new SendOtpMail($otp));
+            // Mail::to($email)->send(new SendOtpMail($otp));
 
             return response()->json([
                 'status' => true,

@@ -257,6 +257,11 @@ class AgentIdentityJob implements ShouldQueue
             if ($response->successful()) {
                 $data = $response->json();
 
+                Log::info('PAN verification response', [
+                    'pan' => $panNo,
+                    'response' => $data
+                ]);
+
                 if (isset($data['response']['valid']) && $data['response']['valid'] == 1) {
                     return true;
                 }
