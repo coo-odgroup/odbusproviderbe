@@ -10,10 +10,7 @@ use Exception;
 
 class AgentNewCommissionSlabController extends Controller
 {
-    /**
-     * GET
-     * View all Agent Commission Slabs
-     */
+
     public function index(Request $request)
     {
         try {
@@ -956,6 +953,62 @@ class AgentNewCommissionSlabController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Unable to get agents',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function changeStatus(Request $request, $id)
+    {
+        try {
+
+            $request->validate([
+                'status' => 'required|in:0,1'
+            ]);
+
+            $slab = DB::table('agent_comm_slab_name')
+                ->where('id', $id)
+                ->first();
+
+            if (!$slab) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Agent Commission Slab not found'
+                ], 404);
+            }
+
+            DB::table('agent_comm_slab_name')
+                ->where('id', $id)
+                ->update([
+                    'status' => (int) $request->status,
+                    'updated_at' => Carbon::now(),
+                    'updated_by' => auth()->id() ?? $slab->updated_by
+                ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => $request->status == 1
+                    ? 'Agent Commission Slab activated successfully'
+                    : 'Agent Commission Slab deactivated successfully',
+                'id' => $id,
+                'slab_status' => (int) $request->status
+            ], 200);
+        } catch (\Exception $e) {
+
+            Log::error(
+                'Agent Commission Slab status change error: ' .
+                    $e->getMessage(),
+                [
+                    'slab_id' => $id,
+                    'request' => $request->all(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
+            );
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to change Agent Commission Slab status',
                 'error' => $e->getMessage()
             ], 500);
         }

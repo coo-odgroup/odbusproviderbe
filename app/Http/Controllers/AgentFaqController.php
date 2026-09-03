@@ -43,9 +43,11 @@ class AgentFaqController extends Controller
     }
 
 
-    public function getCategoriesByType($type)
+    public function getCategoriesByType(Request $request)
     {
         try {
+
+            $type = $request->type;
 
             $categories = DB::table('agent_faq_category')
                 ->where('status', 1)
@@ -78,7 +80,6 @@ class AgentFaqController extends Controller
     }
 
 
-
     public function getAll(Request $request)
     {
         try {
@@ -103,7 +104,6 @@ class AgentFaqController extends Controller
                     'faq.created_by',
                     'faq.updated_at',
                     'faq.updated_by',
-
                     'category.category_name',
                     'category.type as category_type'
                 );
@@ -174,18 +174,10 @@ class AgentFaqController extends Controller
             if ($perPage <= 0) {
                 $perPage = 10;
             }
-
             if ($perPage > 100) {
                 $perPage = 100;
             }
-
-
-            $data =
-                $query->paginate(
-                    $perPage
-                );
-
-
+            $data = $query->paginate($perPage);
             return response()->json([
                 'status' => true,
                 'data' => $data
@@ -211,19 +203,13 @@ class AgentFaqController extends Controller
         try {
 
             $faq = DB::table('agent_faq as faq')
-
                 ->leftJoin(
                     'agent_faq_category as category',
                     'category.id',
                     '=',
                     'faq.category_id'
                 )
-
-                ->where(
-                    'faq.id',
-                    $id
-                )
-
+                ->where('faq.id', $id)
                 ->select(
                     'faq.id',
                     'faq.category_id',
@@ -235,7 +221,6 @@ class AgentFaqController extends Controller
                     'faq.created_by',
                     'faq.updated_at',
                     'faq.updated_by',
-
                     'category.category_name',
                     'category.type as category_type'
                 )
@@ -300,29 +285,17 @@ class AgentFaqController extends Controller
 
             $now = now();
 
-            // type_id is saved in agent_faq table
             $id = DB::table('agent_faq')->insertGetId([
 
                 'type_id' => $request->type_id,
-
                 'category_id' => $request->category_id,
-
                 'faq_name' => $request->faq_name,
-
                 'question' => $request->question,
-
                 'answer' => $request->answer,
-
-                'status' => $request->has('status')
-                    ? $request->status
-                    : 1,
-
+                'status' => $request->has('status') ? $request->status : 1,
                 'created_by' => $request->created_by,
-
                 'created_at' => $now,
-
                 'updated_at' => $now,
-
                 'updated_by' => $request->created_by
             ]);
 

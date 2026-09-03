@@ -1380,21 +1380,20 @@ Route::post('createCampaignNotification', [CampaignNotificationController::class
 Route::post('getAllCampaignNotificationData', [CampaignNotificationController::class, 'getAllCampaignNotificationData']);
 Route::post('updateCampaignNotification/{id}', [CampaignNotificationController::class, 'updateCampaignNotification']);
 Route::post('changeCampaignNotificationStatus', [CampaignNotificationController::class, 'changeStatus']);
-Route::get('/notification-categories', [CampaignNotificationController::class, 'getNotificationCategories']);
-Route::get('getCampaignNotification/{id}', [CampaignNotificationController::class, 'getCampaignNotification']);
-Route::get('/get-operators', [CampaignNotificationController::class, 'getOperators']);
-Route::get('/get-locations', [CampaignNotificationController::class, 'getLocations']);
-Route::get('/getActiveCoupons', [CampaignNotificationController::class, 'getActiveCoupons']);
+Route::post('/notification-categories', [CampaignNotificationController::class, 'getNotificationCategories']);
+Route::post('getCampaignNotification/{id}', [CampaignNotificationController::class, 'getCampaignNotification']);
+Route::post('/get-operators', [CampaignNotificationController::class, 'getOperators']);
+Route::post('/get-locations', [CampaignNotificationController::class, 'getLocations']);
+Route::post('/getActiveCoupons', [CampaignNotificationController::class, 'getActiveCoupons']);
 Route::post('/getSelectedTargetUsers', [CampaignNotificationController::class, 'getSelectedTargetUsers']);
-
 Route::post('notification/log-report', [NotificationLogController::class, 'notificationLogReport'])->name('notification.logReport');
-Route::get('notification/campaign-list', [NotificationLogController::class, 'notificationCampaignList'])->name('notification.campaignList');
+Route::post('notification/campaign-list', [NotificationLogController::class, 'notificationCampaignList'])->name('notification.campaignList');
 
-
+  
 //Agent SLider
-Route::get('/getAgentSliders', [AgentSliderController::class, 'index']);
+Route::post('/getAgentSliders', [AgentSliderController::class, 'index']);
 Route::post('/addAgentSlider', [AgentSliderController::class, 'store']);
-Route::get('/getAgentSlider/{id}', [AgentSliderController::class, 'show']);
+Route::post('/getAgentSlider/{id}', [AgentSliderController::class, 'show']);
 Route::post('/updateAgentSlider/{id}', [AgentSliderController::class, 'update']);
 Route::delete('/deleteAgentSlider/{id}', [AgentSliderController::class, 'destroy']);
 Route::put('/changeAgentSliderStatus/{id}', [AgentSliderController::class, 'changeStatus']);
@@ -1402,39 +1401,37 @@ Route::put('/updateAgentSliderSequence/{id}', [AgentSliderController::class, 'up
 Route::put('/changeAgentSliderDefault/{id}', [AgentSliderController::class, 'changeDefault']);
 
 //Agent New Commission Slab Controller
-Route::get('/getAgentCommissionSlabs', [AgentNewCommissionSlabController::class, 'index']);
-Route::get('/getAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'show']);
+Route::post('/getAgentCommissionSlabs', [AgentNewCommissionSlabController::class, 'index']);
+Route::post('/getAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'show']);
 Route::post('/addAgentCommissionSlab', [AgentNewCommissionSlabController::class, 'store']);
 Route::post('/updateAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'update']);
-Route::get('/getAgentCommissionSlabAgents', [AgentNewCommissionSlabController::class, 'getAgents']);
+Route::post('/getAgentCommissionSlabAgents', [AgentNewCommissionSlabController::class, 'getAgents']);
+Route::post('/changeAgentCommissionSlabStatus/{id}',[AgentNewCommissionSlabController::class, 'changeStatus']);
 
 
 // Agent Cancel Slab Controller
-Route::get('/getAgentCancelSlabs', [AgentCancelSlabController::class, 'index']);
-Route::get('/getAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'show']);
+Route::post('/getAgentCancelSlabs', [AgentCancelSlabController::class, 'index']);
+Route::post('/getAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'show']);
 Route::post('/addAgentCancelSlab', [AgentCancelSlabController::class, 'store']);
 Route::post('/updateAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'update']);
 Route::post('/changeAgentCancelSlabStatus/{id}', [AgentCancelSlabController::class, 'changeStatus']);
 
 //Agent FAQ
-Route::get('/getAgentFaqCategoryTypes',[AgentFaqController::class, 'getCategoryTypes']);
-Route::get('/getAgentFaqCategoriesByType/{type}',[AgentFaqController::class, 'getCategoriesByType']);
-Route::post('/getAgentFaqs',[AgentFaqController::class, 'getAll']);
-Route::get('/getAgentFaq/{id}',[AgentFaqController::class, 'getFaq']);
-Route::post('/addAgentFaq',[AgentFaqController::class, 'addFaq']);
-Route::put('/updateAgentFaq/{id}',[AgentFaqController::class, 'updateFaq']);
-Route::post('/changeAgentFaqStatus/{id}',[AgentFaqController::class, 'changeStatus']);
-
+Route::post('/getAgentFaqCategoryTypes', [AgentFaqController::class, 'getCategoryTypes']);
+Route::post('/getAgentFaqCategoriesByType', [AgentFaqController::class, 'getCategoriesByType']);
+Route::post('/getAgentFaqs', [AgentFaqController::class, 'getAll']);
+Route::post('/getAgentFaq/{id}', [AgentFaqController::class, 'getFaq']);
+Route::post('/addAgentFaq', [AgentFaqController::class, 'addFaq']);
+Route::post('/updateAgentFaq/{id}', [AgentFaqController::class, 'updateFaq']);
+Route::post('/changeAgentFaqStatus/{id}', [AgentFaqController::class, 'changeStatus']);
 
 // Jagan
 Route::post('/agentRegd', [AgentRegdController::class, 'agentRegd']);
 Route::post('/agentRegdSendOtp', [AgentRegdController::class, 'agentRegdSendOtp']);
 Route::post('/agentRegdOtpVerify', [AgentRegdController::class, 'agentRegdOtpVerify']);
 Route::post('/agentUpdateData', [AgentRegdController::class, 'agentUpdateData']);
-
 Route::post('/checkEmailExist', [AgentRegdController::class, 'checkEmailExist']);
 Route::post('/getUserStatus', [UserController::class, 'getUserStatus']);
-
 Route::post('/change-first-password', [AgentRegdController::class, 'changeFirstPassword']);
 Route::post('/send-email-otp', [AgentRegdController::class, 'sendEmailOtp']);
 Route::post('/verify-email-otp', [AgentRegdController::class, 'verifyEmailOtp']);

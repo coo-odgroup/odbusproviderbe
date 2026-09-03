@@ -57,11 +57,7 @@ class AgentSliderController extends Controller
             ], 500);
         }
     }
-
-
-    /**
-     * Add Agent Slider
-     */
+    
     public function store(Request $request)
     {
         try {
@@ -192,10 +188,6 @@ class AgentSliderController extends Controller
         }
     }
 
-
-    /**
-     * Show single slider
-     */
     public function show($id)
     {
         $slider = AgentSlider::find($id);
@@ -213,10 +205,6 @@ class AgentSliderController extends Controller
         ]);
     }
 
-
-    /**
-     * Update Agent Slider
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -372,10 +360,6 @@ class AgentSliderController extends Controller
         }
     }
 
-
-    /**
-     * Delete slider
-     */
     public function destroy($id)
     {
         try {
@@ -418,10 +402,6 @@ class AgentSliderController extends Controller
         }
     }
 
-
-    /**
-     * Change status
-     */
     public function changeStatus($id)
     {
         try {
@@ -453,10 +433,6 @@ class AgentSliderController extends Controller
         }
     }
 
-
-    /**
-     * Update sequence
-     */
     public function updateSequence(Request $request, $id)
     {
         try {

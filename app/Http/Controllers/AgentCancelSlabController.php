@@ -10,11 +10,7 @@ use Exception;
 
 class AgentCancelSlabController extends Controller
 {
-    /**
-     * =========================================================
-     * GET ALL AGENT CANCEL SLABS
-     * =========================================================
-     */
+   
     public function index(Request $request)
     {
         try {
@@ -47,9 +43,6 @@ class AgentCancelSlabController extends Controller
                     's.status as row_status'
                 );
 
-            /*
-         * Slab name filter
-         */
             if ($request->filled('slab_name')) {
 
                 $query->where(
@@ -59,9 +52,6 @@ class AgentCancelSlabController extends Controller
                 );
             }
 
-            /*
-         * Default filter
-         */
             if ($request->filled('is_default')) {
 
                 $query->where(
@@ -70,9 +60,6 @@ class AgentCancelSlabController extends Controller
                 );
             }
 
-            /*
-         * From date filter
-         */
             if ($request->filled('from_date')) {
 
                 $query->whereDate(
@@ -82,9 +69,6 @@ class AgentCancelSlabController extends Controller
                 );
             }
 
-            /*
-         * To date filter
-         */
             if ($request->filled('to_date')) {
 
                 $query->whereDate(
@@ -94,9 +78,6 @@ class AgentCancelSlabController extends Controller
                 );
             }
 
-            /*
-         * Status filter
-         */
             if ($request->filled('status')) {
 
                 $query->where(
@@ -151,17 +132,11 @@ class AgentCancelSlabController extends Controller
                 ], 404);
             }
 
-            /*
-             * 2. Get ALL rows belonging to this slab
-             */
             $cancelRows = DB::table('agent_cancel_slab')
                 ->where('slab_id', $id)
                 ->orderBy('id', 'asc')
                 ->get();
 
-            /*
-             * 3. Convert DB names to Angular names
-             */
             $rows = $cancelRows->map(function ($row) {
 
                 return [
@@ -217,12 +192,6 @@ class AgentCancelSlabController extends Controller
         }
     }
 
-
-    /**
-     * =========================================================
-     * CREATE CANCEL SLAB
-     * =========================================================
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -298,7 +267,6 @@ class AgentCancelSlabController extends Controller
 
 
             DB::commit();
-
             return response()->json([
 
                 'status' => true,
@@ -309,7 +277,6 @@ class AgentCancelSlabController extends Controller
         } catch (Exception $e) {
 
             DB::rollBack();
-
             Log::error(
                 'Agent Cancel Slab store error: ' .
                     $e->getMessage(),
@@ -332,9 +299,6 @@ class AgentCancelSlabController extends Controller
 
     public function update(Request $request, $id)
     {
-        /*
-     * Basic validation
-     */
         $request->validate([
             'slab_name' => 'required|string|max:128',
             'is_default' => 'nullable|boolean',
