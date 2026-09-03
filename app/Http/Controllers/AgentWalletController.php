@@ -212,6 +212,14 @@ class AgentWalletController extends Controller
 
             ]);
 
+            if ($user['is_first_recharge_done'] == 0) {
+                DB::table('user')->where('id', $user['id'])->update([
+                    'is_first_recharge_done' => 1,
+                    'updated_at' => now()
+                ]);
+
+            }
+
             DB::commit();
 
             return response()->json([

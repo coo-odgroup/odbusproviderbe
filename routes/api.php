@@ -117,6 +117,8 @@ use App\Http\Controllers\AgentComissionController;
 use App\Http\Controllers\AgentFeeController;
 use App\Http\Controllers\AgentBookingController;
 use App\Http\Controllers\TestEmailController;
+use App\Http\Controllers\AgentNewCommissionSlabController;
+
 
 use App\Http\Controllers\TicketFareSlabController;
 use App\Http\Controllers\TicketInformationController;
@@ -138,8 +140,10 @@ use App\Http\Controllers\ApiUserComissionController;
 use App\Http\Controllers\ApiUserCompleteReportController;
 use App\Http\Controllers\ApiUserCancelTicketReportController;
 use App\Http\Controllers\ApiUserManageOperatorController;
+use App\Http\Controllers\AgentCancelSlabController;
 use App\Http\Controllers\ArchiveReportController;
 use App\Http\Controllers\CampaignNotificationController;
+use App\Http\Controllers\AgentFaqController;
 
 // Scheduler
 use App\Http\Controllers\SchedulerController;
@@ -157,8 +161,10 @@ use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\RouteWiseBookingController;
 use App\Http\Controllers\NotificationMasterController;
 use App\Http\Controllers\SeoController;
+use App\Http\Controllers\NotificationLogController;
 
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\AgentSliderController;
 
 // Jagan
 use App\Http\Controllers\Agent\AgentRegdController;
@@ -1373,20 +1379,59 @@ Route::post('createCampaignNotification', [CampaignNotificationController::class
 Route::post('getAllCampaignNotificationData', [CampaignNotificationController::class, 'getAllCampaignNotificationData']);
 Route::post('updateCampaignNotification/{id}', [CampaignNotificationController::class, 'updateCampaignNotification']);
 Route::post('changeCampaignNotificationStatus', [CampaignNotificationController::class, 'changeStatus']);
-Route::get('/notification-categories',[CampaignNotificationController::class, 'getNotificationCategories']);
-Route::get('getCampaignNotification/{id}',[CampaignNotificationController::class, 'getCampaignNotification']);
-Route::get('/get-operators', [CampaignNotificationController::class, 'getOperators']);
-Route::get('/get-locations', [CampaignNotificationController::class, 'getLocations']);
-Route::get('/getActiveCoupons', [CampaignNotificationController::class, 'getActiveCoupons']);
+Route::post('/notification-categories', [CampaignNotificationController::class, 'getNotificationCategories']);
+Route::post('getCampaignNotification/{id}', [CampaignNotificationController::class, 'getCampaignNotification']);
+Route::post('/get-operators', [CampaignNotificationController::class, 'getOperators']);
+Route::post('/get-locations', [CampaignNotificationController::class, 'getLocations']);
+Route::post('/getActiveCoupons', [CampaignNotificationController::class, 'getActiveCoupons']);
+Route::post('/getSelectedTargetUsers', [CampaignNotificationController::class, 'getSelectedTargetUsers']);
+Route::post('notification/log-report', [NotificationLogController::class, 'notificationLogReport'])->name('notification.logReport');
+Route::post('notification/campaign-list', [NotificationLogController::class, 'notificationCampaignList'])->name('notification.campaignList');
+
+  
+//Agent SLider
+Route::post('/getAgentSliders', [AgentSliderController::class, 'index']);
+Route::post('/addAgentSlider', [AgentSliderController::class, 'store']);
+Route::post('/getAgentSlider/{id}', [AgentSliderController::class, 'show']);
+Route::post('/updateAgentSlider/{id}', [AgentSliderController::class, 'update']);
+Route::delete('/deleteAgentSlider/{id}', [AgentSliderController::class, 'destroy']);
+Route::put('/changeAgentSliderStatus/{id}', [AgentSliderController::class, 'changeStatus']);
+Route::put('/updateAgentSliderSequence/{id}', [AgentSliderController::class, 'updateSequence']);
+Route::put('/changeAgentSliderDefault/{id}', [AgentSliderController::class, 'changeDefault']);
+
+//Agent New Commission Slab Controller
+Route::post('/getAgentCommissionSlabs', [AgentNewCommissionSlabController::class, 'index']);
+Route::post('/getAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'show']);
+Route::post('/addAgentCommissionSlab', [AgentNewCommissionSlabController::class, 'store']);
+Route::post('/updateAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'update']);
+Route::post('/getAgentCommissionSlabAgents', [AgentNewCommissionSlabController::class, 'getAgents']);
+Route::post('/changeAgentCommissionSlabStatus/{id}',[AgentNewCommissionSlabController::class, 'changeStatus']);
+
+
+// Agent Cancel Slab Controller
+Route::post('/getAgentCancelSlabs', [AgentCancelSlabController::class, 'index']);
+Route::post('/getAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'show']);
+Route::post('/addAgentCancelSlab', [AgentCancelSlabController::class, 'store']);
+Route::post('/updateAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'update']);
+Route::post('/changeAgentCancelSlabStatus/{id}', [AgentCancelSlabController::class, 'changeStatus']);
+
+//Agent FAQ
+Route::post('/getAgentFaqCategoryTypes', [AgentFaqController::class, 'getCategoryTypes']);
+Route::post('/getAgentFaqCategoriesByType', [AgentFaqController::class, 'getCategoriesByType']);
+Route::post('/getAgentFaqs', [AgentFaqController::class, 'getAll']);
+Route::post('/getAgentFaq/{id}', [AgentFaqController::class, 'getFaq']);
+Route::post('/addAgentFaq', [AgentFaqController::class, 'addFaq']);
+Route::post('/updateAgentFaq/{id}', [AgentFaqController::class, 'updateFaq']);
+Route::post('/changeAgentFaqStatus/{id}', [AgentFaqController::class, 'changeStatus']);
 
 // Jagan
 Route::post('/agentRegd', [AgentRegdController::class, 'agentRegd']);
 Route::post('/agentRegdSendOtp', [AgentRegdController::class, 'agentRegdSendOtp']);
 Route::post('/agentRegdOtpVerify', [AgentRegdController::class, 'agentRegdOtpVerify']);
 Route::post('/agentUpdateData', [AgentRegdController::class, 'agentUpdateData']);
-
 Route::post('/checkEmailExist', [AgentRegdController::class, 'checkEmailExist']);
 Route::post('/getUserStatus', [UserController::class, 'getUserStatus']);
-
 Route::post('/change-first-password', [AgentRegdController::class, 'changeFirstPassword']);
+Route::post('/send-email-otp', [AgentRegdController::class, 'sendEmailOtp']);
+Route::post('/verify-email-otp', [AgentRegdController::class, 'verifyEmailOtp']);
 // Jagan

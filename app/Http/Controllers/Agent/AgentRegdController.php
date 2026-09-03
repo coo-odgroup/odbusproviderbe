@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AgentRegdController extends Controller
 {
@@ -177,12 +178,12 @@ class AgentRegdController extends Controller
                 $statusCode = 409;
             }
 
+            $otp = random_int(100000, 999999);
+
             if ($errorMessage) {
 
                 DB::rollBack();
             } else {
-
-                $otp = random_int(100000, 999999);
 
                 $otpData = [
                     'agent_id' => $userId,
@@ -219,7 +220,7 @@ class AgentRegdController extends Controller
                 'status' => $status,
                 'statusCode' => $statusCode,
                 'userId' => $errorMessage ? null : encrypt($clientId),
-                'message' => $errorMessage ?? 'An OTP has been sent to Registered Mobile No'
+                'message' => $errorMessage ?? 'An OTP has been sent to Registered Mobile No ' . $otp
             ], 200);
         } catch (\Exception $e) {
 
@@ -816,5 +817,185 @@ class AgentRegdController extends Controller
             'statusCode' => 200,
             'message' => 'Password changed successfully.'
         ], 200);
+    }
+
+    public function sendEmailOtp(Request $request)
+    {
+        try {
+
+            $agentId = $request->userId;
+            $email = $request->email;
+
+            Log::info('sendEmailOtp called', [
+                'agentId' => $agentId,
+                'email' => $email
+            ]);
+
+            // Get agent details
+            $agent = DB::table('user')
+                ->where('id', $agentId)
+                ->first();
+
+            if (!$agent) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 404,
+                    'message' => 'Agent not found.'
+                ], 200);
+            }
+
+            // Check whether request email exists in the database
+            $emailUser = DB::table('user')
+                ->where('email', $email)
+                ->where('id', '!=', $agentId)
+                ->first();
+
+            if ($emailUser) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'The provided email address is already in use. Please use a different email address.'
+                ], 200);
+            } else {
+                // Update agent email if it's different
+                if ($agent->email !== $email) {
+                    DB::table('user')
+                        ->where('id', $agentId)
+                        ->update([
+                            'email' => $email,
+                            'is_email_verified' => 0,
+                            'updated_at' => now()
+                        ]);
+                }
+            }
+
+            // Generate 6-digit OTP
+            $otp = random_int(100000, 999999);
+
+            // Optional: Mark previous unused email OTPs as expired
+            DB::table('agent_otp_verification')
+                ->where('agent_id', $agentId)
+                ->where('type', 2)
+                ->where('is_verified', 0)
+                ->update([
+                    'expired_at' => now()
+                ]);
+
+            // Store new OTP
+            DB::table('agent_otp_verification')->insert([
+                'agent_id'      => $agentId,
+                'email_mobile'  => $email,
+                'type'          => 2,
+                'purpose'       => 2,
+                'otp_value'     => $otp,
+                'is_verified'   => 0,
+                'verified_at'   => null,
+                'expired_at'    => now()->addMinutes(10),
+                'attempt_count' => 0,
+                'created_at'    => now(),
+                'created_by'    => $agentId
+            ]);
+
+            // Send OTP to email here
+            // Mail::to($email)->send(new SendOtpMail($otp));
+
+            return response()->json([
+                'status' => true,
+                'statusCode' => 200,
+                'message' => 'OTP sent successfully to your email address.'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 500,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function verifyEmailOtp(Request $request)
+    {
+        try {
+
+            $agentId = $request->userId;
+            $otp = $request->otp;
+
+            // Validate request
+            if (empty($agentId) || empty($otp)) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'Agent ID and OTP are required.'
+                ], 400);
+            }
+
+            // Get latest valid OTP
+            $otpData = DB::table('agent_otp_verification')
+                ->where('agent_id', $agentId)
+                ->where('otp_value', $otp)
+                ->where('type', 2)
+                ->where('is_verified', 0)
+                ->where('expired_at', '>', now())
+                ->orderBy('id', 'desc')
+                ->first();
+
+            // OTP not found or expired
+            if (!$otpData) {
+
+                // Increase attempt count for the latest OTP
+                DB::table('agent_otp_verification')
+                    ->where('agent_id', $agentId)
+                    ->where('type', 2)
+                    ->where('is_verified', 0)
+                    ->orderBy('id', 'desc')
+                    ->limit(1)
+                    ->increment('attempt_count');
+
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'Invalid or expired OTP.'
+                ], 400);
+            }
+
+            DB::beginTransaction();
+
+            // Mark OTP as verified
+            DB::table('agent_otp_verification')
+                ->where('id', $otpData->id)
+                ->update([
+                    'is_verified' => 1,
+                    'verified_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+            // Update user email verification status
+            DB::table('user')
+                ->where('id', $agentId)
+                ->update([
+                    'is_email_verified' => 1,
+                    'updated_at' => now()
+                ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'statusCode' => 200,
+                'message' => 'Email verified successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 500,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
