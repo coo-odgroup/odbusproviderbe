@@ -1388,7 +1388,7 @@ Route::post('/getSelectedTargetUsers', [CampaignNotificationController::class, '
 Route::post('notification/log-report', [NotificationLogController::class, 'notificationLogReport'])->name('notification.logReport');
 Route::post('notification/campaign-list', [NotificationLogController::class, 'notificationCampaignList'])->name('notification.campaignList');
 
-  
+   
 //Agent SLider
 Route::post('/getAgentSliders', [AgentSliderController::class, 'index']);
 Route::post('/addAgentSlider', [AgentSliderController::class, 'store']);
