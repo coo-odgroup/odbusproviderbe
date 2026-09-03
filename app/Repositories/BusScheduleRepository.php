@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+
 class BusScheduleRepository
 {
     protected $busSchedule;
@@ -51,21 +52,21 @@ class BusScheduleRepository
         // Total records
         $totalRecords = $this->busSchedule->whereNotIn('status', [2])->count();
         $totalRecordswithFilter = $this->busSchedule->with('busScheduleDate')->with('bus.busOperator', 'bus.busstoppage')
-        ->whereHas('bus', function ($query) use ($searchValue) {
-            $query->where('name', 'like', '%' .$searchValue . '%');
-        })->whereNotIn('status', [2])->count();
+            ->whereHas('bus', function ($query) use ($searchValue) {
+                $query->where('name', 'like', '%' . $searchValue . '%');
+            })->whereNotIn('status', [2])->count();
 
         $busRecords =  $this->busSchedule->with('busScheduleDate')->with('bus.busOperator', 'bus.busstoppage')
-        ->orderBy($columnName, $columnSortOrder)
-        ->whereHas('bus', function ($query) use ($searchValue) {
-            $query->where('name', 'like', '%' .$searchValue . '%')
-            ->groupBy('bus_id');
-        })
+            ->orderBy($columnName, $columnSortOrder)
+            ->whereHas('bus', function ($query) use ($searchValue) {
+                $query->where('name', 'like', '%' . $searchValue . '%')
+                    ->groupBy('bus_id');
+            })
 
-        ->skip($start)
-        ->take($rowperpage)
-        ->whereNotIn('status', [2])
-        ->get();
+            ->skip($start)
+            ->take($rowperpage)
+            ->whereNotIn('status', [2])
+            ->get();
         $data_arr = array();
         $bus_stoppage = array();
 
@@ -74,7 +75,7 @@ class BusScheduleRepository
 
             $dateRecord = $busRecord->busScheduleDate;
             $name = $busRecord->bus->name;
-            $name = $name." >> ".$busRecord->bus->bus_number;
+            $name = $name . " >> " . $busRecord->bus->bus_number;
             $operatorName = $busRecord->bus->busOperator->operator_name;
             $bStoppages = $busRecord->bus->busstoppage;
             $data_arr[] = $busRecord->toArray();
@@ -98,7 +99,7 @@ class BusScheduleRepository
                 "sourceName" => $stoppageName,
                 "destinationName" => $stoppageName,
             );
-            $routesdata =  $stoppageName[1]['name']."-".$stoppageName[0]['name'];
+            $routesdata =  $stoppageName[1]['name'] . "-" . $stoppageName[0]['name'];
             $data_arr[$key]['routes'] = $routesdata;
         }
         $response = array(
@@ -123,11 +124,11 @@ class BusScheduleRepository
     public function removeOldBusScheduleCronjob()
     {
         $today = date('Y-m-d');
-        $checkdate = date('Y-m-d', strtotime($today. '-35 days'));
+        $checkdate = date('Y-m-d', strtotime($today . '-35 days'));
 
         $dltData = $this->busScheduleDate->where('entry_date', '<', $checkdate)->delete();
 
-        $msg = $dltData." Record deleted from ".$checkdate." of bus schedule" ;
+        $msg = $dltData . " Record deleted from " . $checkdate . " of bus schedule";
         log::info($msg);
 
         return $msg;
@@ -136,54 +137,54 @@ class BusScheduleRepository
 
     public function scheduleCronJob()
     {
-        try{
-           
-             $startTime = microtime(true);
-             Log::info('Schedule cron job for bus started at: ' . now());
-                
-             $count = 0;
+        try {
 
-             $data = DB::table('bus_schedule as bs')
-                                ->join('bus_schedule_date as bsd', 'bsd.bus_schedule_id', '=', 'bs.id')
-                                ->select(
-                                    'bs.id',
-                                    'bs.running_cycle',
-                                    DB::raw('MAX(bsd.entry_date) as last_date'),
-                                    DB::raw('DATEDIFF(MAX(bsd.entry_date), CURDATE()) as days_ahead')
-                                )
-                                ->where('bs.status', 1)
-                                ->groupBy('bs.id', 'bs.running_cycle')
-                                ->havingRaw('DATEDIFF(MAX(bsd.entry_date), CURDATE()) < 30')
-                                ->get();
+            $startTime = microtime(true);
+            Log::info('Schedule cron job for bus started at: ' . now());
+
+            $count = 0;
+
+            $data = DB::table('bus_schedule as bs')
+                ->join('bus_schedule_date as bsd', 'bsd.bus_schedule_id', '=', 'bs.id')
+                ->select(
+                    'bs.id',
+                    'bs.running_cycle',
+                    DB::raw('MAX(bsd.entry_date) as last_date'),
+                    DB::raw('DATEDIFF(MAX(bsd.entry_date), CURDATE()) as days_ahead')
+                )
+                ->where('bs.status', 1)
+                ->groupBy('bs.id', 'bs.running_cycle')
+                ->havingRaw('DATEDIFF(MAX(bsd.entry_date), CURDATE()) < 30')
+                ->get();
 
 
-                $today = Carbon::today();
-                    
-                foreach ($data as $schedule) {
+            $today = Carbon::today();
 
-                    $lastDate = Carbon::parse($schedule->last_date);
+            foreach ($data as $schedule) {
 
-                    $daysAhead = $today->diffInDays($lastDate, false);
+                $lastDate = Carbon::parse($schedule->last_date);
 
-                    if ($daysAhead < 30) {
+                $daysAhead = $today->diffInDays($lastDate, false);
 
-                        $request = [
-                            'bus_schedule_id' => $schedule->id,
-                            'running_cycle'   => $schedule->running_cycle,
-                            'created_by'      => 'server',
-                            'entry_date'      => $schedule->last_date,
-                            'missing_days'    => 30 - $daysAhead
-                        ];
+                if ($daysAhead < 30) {
 
-                        $this->serverSave($request);
-                    }
+                    $request = [
+                        'bus_schedule_id' => $schedule->id,
+                        'running_cycle'   => $schedule->running_cycle,
+                        'created_by'      => 'server',
+                        'entry_date'      => $schedule->last_date,
+                        'missing_days'    => 30 - $daysAhead
+                    ];
 
-                    $count++;
+                    $this->serverSave($request);
                 }
-             
-                Log::info($count.' bus scheduled today');
 
-                return $count.' bus scheduled today';
+                $count++;
+            }
+
+            Log::info($count . ' bus scheduled today');
+
+            return $count . ' bus scheduled today';
         } catch (\Throwable $e) {
             Log::error('Error: ' . $e->getMessage());
         } finally {
@@ -194,27 +195,26 @@ class BusScheduleRepository
             Log::info("Total execution time: {$executionTime} seconds");
             Log::info("Execution completed in {$executionTime} seconds");
         }
-       
     }
 
     public function serverSave($request)
     {
 
-        $entryDate = date('Y-m-d', strtotime($request['entry_date']. ' + '.$request['running_cycle'].' days'));
-       
+        $entryDate = date('Y-m-d', strtotime($request['entry_date'] . ' + ' . $request['running_cycle'] . ' days'));
+
         $this->busSchedule = $this->busSchedule->find($request['bus_schedule_id']);
         $busScheduleDate = new BusScheduleDate();
         $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
         $busScheduleDate->entry_date = $entryDate;
-        
+
         $busScheduledateModels = [];
-        
-        for ($dateCount = 0;$dateCount < $request['missing_days'];$dateCount++) {
+
+        for ($dateCount = 0; $dateCount < $request['missing_days']; $dateCount++) {
 
             $busScheduleDate = new BusScheduleDate();
             $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
             if ($dateCount != 0) {
-                $entryDate = strtotime("+".$request['running_cycle']."day", strtotime($entryDate));
+                $entryDate = strtotime("+" . $request['running_cycle'] . "day", strtotime($entryDate));
             } else {
                 $entryDate = strtotime($entryDate);
             }
@@ -233,71 +233,67 @@ class BusScheduleRepository
 
         $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
 
-            ///insert to bus_seat_count table 
+        ///insert to bus_seat_count table 
 
-            $insertData = [];
+        $insertData = [];
 
-            $busId = $this->busSchedule->bus_id;
+        $busId = $this->busSchedule->bus_id;
 
-            $totalSeats = DB::table('bus_seats')
-                ->where('bus_id', $busId)
-                ->where('status', 1)
+        $totalSeats = DB::table('bus_seats')
+            ->where('bus_id', $busId)
+            ->where('status', 1)
 
-                ->where(function ($q) {
+            ->where(function ($q) {
 
-                    $q->where(function ($qq) {
+                $q->where(function ($qq) {
 
-                        // Normal seats
-                        $qq->whereNull('type')
-                            ->whereNull('operation_date')
-                            ->where('duration', 0);
+                    // Normal seats
+                    $qq->whereNull('type')
+                        ->whereNull('operation_date')
+                        ->where('duration', 0);
+                })->orWhere(function ($qq) {
 
-                    })->orWhere(function ($qq) {
+                    // Extra permanent open seats
+                    $qq->whereNull('type')
+                        ->whereNull('operation_date')
+                        ->where('duration', '>', 0);
+                });
+            })
 
-                        // Extra permanent open seats
-                        $qq->whereNull('type')
-                            ->whereNull('operation_date')
-                            ->where('duration', '>', 0);
-
-                    });
-
-                })
-
-                ->distinct('seats_id')
-                ->count('seats_id');
+            ->distinct('seats_id')
+            ->count('seats_id');
 
 
-            $ticketPrices = DB::table('ticket_price')
-                ->where('bus_id', $busId)
-                ->where('status', 1)
-                ->get();
+        $ticketPrices = DB::table('ticket_price')
+            ->where('bus_id', $busId)
+            ->where('status', 1)
+            ->get();
 
-            foreach ($busScheduledateModels as $scheduleDate) {
+        foreach ($busScheduledateModels as $scheduleDate) {
 
-                foreach ($ticketPrices as $tp) {
+            foreach ($ticketPrices as $tp) {
 
-                    $insertData[] = [
+                $insertData[] = [
 
-                        'bus_id'           => $busId,
-                        'ticket_price_id'  => $tp->id,
-                        'journey_date'     => $scheduleDate->entry_date,
-                        'total_seat'       => $totalSeats,
-                        'available_seat'   => $totalSeats,
-                        'booked_seat'      => 0,
-                        'blocked_seat'     => 0,
-                        'hold_seat'        => 0,
-                        'created_at'       => now(),
-                        'updated_at'       => now(),
-                        'updated_by'       => 'server'
-                    ];
-                }
+                    'bus_id'           => $busId,
+                    'ticket_price_id'  => $tp->id,
+                    'journey_date'     => $scheduleDate->entry_date,
+                    'total_seat'       => $totalSeats,
+                    'available_seat'   => $totalSeats,
+                    'booked_seat'      => 0,
+                    'blocked_seat'     => 0,
+                    'hold_seat'        => 0,
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                    'updated_by'       => 'server'
+                ];
             }
+        }
 
-            if (!empty($insertData)) {
+        if (!empty($insertData)) {
 
-               DB::table('bus_seat_count')->insert($insertData);
-
-            }
+            DB::table('bus_seat_count')->insert($insertData);
+        }
 
 
         return $busScheduledateModels;
@@ -307,11 +303,11 @@ class BusScheduleRepository
     {
         $data = $this->busSchedule->with(["busScheduleDate" => function ($b) {
             $b->orderBy('id', 'ASC')
-              ->where('entry_date', '>=', date('Y-m-d'))->limit(16);
+                ->where('entry_date', '>=', date('Y-m-d'))->limit(16);
         }])
-                                  ->where('bus_id', $id)
-                                  ->where('status', 1)
-                                  ->get();
+            ->where('bus_id', $id)
+            ->where('status', 1)
+            ->get();
         return $data;
     }
 
@@ -319,8 +315,8 @@ class BusScheduleRepository
     public function busSchedulerData($request)
     {
 
-        $paginate = $request['rows_number'] ;
-        $name = $request['name'] ;
+        $paginate = $request['rows_number'];
+        $name = $request['name'];
         $source_id = $request['source_id'];
         $destination_id = $request['destination_id'];
         $bus_operator_id = $request['bus_operator_id'];
@@ -328,34 +324,57 @@ class BusScheduleRepository
 
         $data = $this->busSchedule->with(["busScheduleDate" => function ($b) {
             $b->orderBy('id', 'DESC')
-              ->where('entry_date', '>=', date('Y-m-d'));
+                ->where('entry_date', '>=', date('Y-m-d'));
         }])
-                                ->with('bus.busOperator', 'bus.ticketPrice')
-                                 ->whereNotIn('status', [2])
-                                 ->orderBy('id', 'DESC');
+            ->with('bus.busOperator', 'bus.ticketPrice')
+            ->whereNotIn('status', [2])
+            ->orderBy('id', 'DESC');
 
+        //  return $data->get();
         if ($request['USER_BUS_OPERATOR_ID'] != "") {
             $data = $data->whereHas('bus', function ($query) use ($request) {
                 $query->where('bus_operator_id', $request['USER_BUS_OPERATOR_ID']);
             });
         }
 
+
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
         } elseif ($paginate == null) {
-            $paginate = 10 ;
+            $paginate = 10;
         }
 
+        // if ($name != null) {
+        //     $data = $this->busSchedule->with('busScheduleDate', 'bus.busOperator', 'bus.ticketPrice')
+        //         ->whereHas('bus.busOperator', function ($query) use ($name) {
+        //             $query->where('bus_number', $name);
+        //         })
+        //         ->where('status', '!=', '2')
+        //         ->orWhere('created_by', 'like', '%' .$name . '%')
+        //         ->orderBy('id', 'DESC');
+
+        // }
+
         if ($name != null) {
-            $data = $this->busSchedule->with('busScheduleDate', 'bus.busOperator', 'bus.ticketPrice')
+            $data = $this->busSchedule
+                ->with([
+                    "busScheduleDate" => function ($b) {
+                        $b->orderBy('id', 'DESC')
+                            ->where('entry_date', '>=', date('Y-m-d'));
+                    },
+                    'bus.busOperator',
+                    'bus.ticketPrice'
+                ])
                 ->whereHas('bus.busOperator', function ($query) use ($name) {
                     $query->where('bus_number', $name);
                 })
                 ->where('status', '!=', '2')
-                ->orWhere('created_by', 'like', '%' .$name . '%')
+                ->orWhere('created_by', 'like', '%' . $name . '%')
                 ->orderBy('id', 'DESC');
-
         }
+
+        // return $data->get();
+
         if ($bus_operator_id != null) {
             $data = $data->whereHas('bus', function ($query) use ($bus_operator_id) {
                 $query->where('bus_operator_id', $bus_operator_id);
@@ -373,9 +392,8 @@ class BusScheduleRepository
 
             $data = $data->whereHas('bus.ticketPrice', function ($query) use ($loc) {
                 $query->where('source_id', $loc[1])
-                       ->where('destination_id', $loc[2]);
+                    ->where('destination_id', $loc[2]);
             });
-
         }
 
         $data = $data->paginate($paginate);
@@ -389,10 +407,10 @@ class BusScheduleRepository
             }
         }
         $response = array(
-             "count" => $data->count(),
-             "total" => $data->total(),
+            "count" => $data->count(),
+            "total" => $data->total(),
             "data" => $data
-           );
+        );
         return $response;
     }
     /**
@@ -403,7 +421,7 @@ class BusScheduleRepository
      */
     public function getById($id)
     {
-        return $this->busSchedule ->where('id', $id)->get();
+        return $this->busSchedule->where('id', $id)->get();
     }
 
     /**
@@ -419,9 +437,9 @@ class BusScheduleRepository
         // exit;
         if ($data['entry_date'] >= date("Y-m-d")) {
             $duplicate_data = $this->busSchedule
-                               ->where('bus_id', $data['bus_id'])
-                               ->where('status', '!=', 2)
-                               ->get();
+                ->where('bus_id', $data['bus_id'])
+                ->where('status', '!=', 2)
+                ->get();
             if (count($duplicate_data) == 0) {
                 $this->bus = $this->bus->find($data['bus_id']);
                 $this->bus->running_cycle = $data['running_cycle'];
@@ -435,12 +453,12 @@ class BusScheduleRepository
                 $entryDate = $data['entry_date'];
                 $busScheduleDate = new BusScheduleDate();
                 $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
-                for ($dateCount = 0;$dateCount < 30;$dateCount++) {
+                for ($dateCount = 0; $dateCount < 30; $dateCount++) {
 
                     $busScheduleDate = new BusScheduleDate();
                     $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
                     if ($dateCount != 0) {
-                        $entryDate = strtotime("+".$data['running_cycle']."day", strtotime($entryDate));
+                        $entryDate = strtotime("+" . $data['running_cycle'] . "day", strtotime($entryDate));
                     } else {
                         $entryDate = strtotime($entryDate);
                     }
@@ -452,17 +470,14 @@ class BusScheduleRepository
                 }
                 $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
                 //Update Seat Count
-                $this->syncBusSeatCount($data['entry_date'],30,$data['bus_id']);
+                $this->syncBusSeatCount($data['entry_date'], 30, $data['bus_id']);
                 return $busScheduledateModels;
             } else {
                 return 'Bus Schedule Already Exist';
             }
-
         } else {
             return 'Can Not Add Old Date';
         }
-
-
     }
 
     /**
@@ -488,11 +503,11 @@ class BusScheduleRepository
             $busScheduleDate = new BusScheduleDate();
             $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
             $busScheduleDate->entry_date = $entryDate;
-            for ($dateCount = 0;$dateCount < 30;$dateCount++) {
+            for ($dateCount = 0; $dateCount < 30; $dateCount++) {
                 $busScheduleDate = new BusScheduleDate();
                 $busScheduleDate->bus_schedule_id = $this->busSchedule->id;
                 if ($dateCount != 0) {
-                    $entryDate = strtotime("+".$data['running_cycle']."day", strtotime($entryDate));
+                    $entryDate = strtotime("+" . $data['running_cycle'] . "day", strtotime($entryDate));
                 } else {
                     $entryDate = strtotime($entryDate);
                 }
@@ -504,14 +519,13 @@ class BusScheduleRepository
             }
 
             $this->busSchedule->busScheduleDate()->saveMany($busScheduledateModels);
-          
+
             //Update Seat Count
-            $this->syncBusSeatCount($data['entry_date'],30,$data['bus_id']);
+            $this->syncBusSeatCount($data['entry_date'], 30, $data['bus_id']);
             return $busScheduledateModels;
         } else {
             return 'Can Not Add Old Date';
         }
-
     }
 
     public function delete($id)
@@ -539,9 +553,9 @@ class BusScheduleRepository
     public function unscheduledbuslist()
     {
         $data = $this->bus
-                ->with('busOperator')
-                ->where("status", 1)
-                ->whereNotIn('id', $this->busSchedule->select('bus_id'))->get();
+            ->with('busOperator')
+            ->where("status", 1)
+            ->whereNotIn('id', $this->busSchedule->select('bus_id'))->get();
 
         return $data;
     }
@@ -551,42 +565,41 @@ class BusScheduleRepository
 
     public function syncBusSeatCount($startDate = null, $day = null, $busId = null)
     {
-        
+
         ini_set('memory_limit', '3072M');
         ini_set('max_execution_time', 600);
-        
+
         $startDate = $startDate ?? request()->input('start_date');
         $day       = $day ?? request()->input('day');
         $busId     = $busId ?? request()->input('bus_id');
 
-        if(empty($day) || empty($startDate))
-		{
-		    return 'Please provide day and start_date.';
-		}
+        if (empty($day) || empty($startDate)) {
+            return 'Please provide day and start_date.';
+        }
 
-		$day        = (int) $day;
-		$startDate  = date('Y-m-d', strtotime($startDate));
-		$endDate    = date('Y-m-d', strtotime($startDate . " +{$day} days"));
+        $day        = (int) $day;
+        $startDate  = date('Y-m-d', strtotime($startDate));
+        $endDate    = date('Y-m-d', strtotime($startDate . " +{$day} days"));
 
-		$busId = !empty($busId)  ? (int) $busId  : null;
+        $busId = !empty($busId)  ? (int) $busId  : null;
 
         try {
 
             $busIdsQuery = DB::table('ticket_price as tp')
-						    ->join('bus as b', 'b.id', '=', 'tp.bus_id')
-						    ->where('tp.status', 1)
-						    ->where('b.status', 1);
+                ->join('bus as b', 'b.id', '=', 'tp.bus_id')
+                ->where('tp.status', 1)
+                ->where('b.status', 1);
 
-			if (!empty($busId)) {
-			    $busIdsQuery->where('tp.bus_id', $busId);
-			}
+            if (!empty($busId)) {
+                $busIdsQuery->where('tp.bus_id', $busId);
+            }
 
-			$busIds = $busIdsQuery->distinct()->pluck('tp.bus_id');
-          
+            $busIds = $busIdsQuery->distinct()->pluck('tp.bus_id');
+
             $updatedCount = 0;
 
             foreach ($busIds as $busId) {
-               
+
                 $baseTotalSeat = DB::table('bus_seats')
                     ->where('bus_id', $busId)
                     ->where('status', 1)
@@ -598,12 +611,12 @@ class BusScheduleRepository
                                 ->where('duration', 0);
                         })
 
-                        ->orWhere(function ($qq) {
-                            // Extra Permanent Open Seat
-                            $qq->whereNull('type')
-                                ->whereNull('operation_date')
-                                ->where('duration', '>', 0);
-                        });
+                            ->orWhere(function ($qq) {
+                                // Extra Permanent Open Seat
+                                $qq->whereNull('type')
+                                    ->whereNull('operation_date')
+                                    ->where('duration', '>', 0);
+                            });
                     })
 
                     ->distinct('seats_id')
@@ -632,55 +645,55 @@ class BusScheduleRepository
                                 ->whereNotNull('operation_date');
                         })
 
-                        ->orWhere(function ($qq) {
-                            // Extra Seat Block
-                            $qq->whereNull('type')
-                                ->where('duration', 0)
-                                ->whereNotNull('operation_date');
-                        });
+                            ->orWhere(function ($qq) {
+                                // Extra Seat Block
+                                $qq->whereNull('type')
+                                    ->where('duration', 0)
+                                    ->whereNotNull('operation_date');
+                            });
                     })
                     ->groupBy('operation_date')
                     ->get()
                     ->keyBy('operation_date');
 
-                    // Insert missing records in bus_seat_count
-                    $ticketPrices = DB::table('ticket_price')
-                        ->where('bus_id', $busId)
-                        ->where('status', 1)
-                        ->get();
+                // Insert missing records in bus_seat_count
+                $ticketPrices = DB::table('ticket_price')
+                    ->where('bus_id', $busId)
+                    ->where('status', 1)
+                    ->get();
 
-                    $scheduleIds = DB::table('bus_schedule')
-                        ->where('bus_id', $busId)
-                        ->whereIn('status', [0,1])
-                        ->pluck('id');
+                $scheduleIds = DB::table('bus_schedule')
+                    ->where('bus_id', $busId)
+                    ->whereIn('status', [0, 1])
+                    ->pluck('id');
 
-                    $scheduleDates = DB::table('bus_schedule_date')
-                        ->whereIn('bus_schedule_id', $scheduleIds)
-                        ->whereBetween('entry_date', [$startDate, $endDate])
-                        ->where('status', 1)
-                        ->pluck('entry_date');
+                $scheduleDates = DB::table('bus_schedule_date')
+                    ->whereIn('bus_schedule_id', $scheduleIds)
+                    ->whereBetween('entry_date', [$startDate, $endDate])
+                    ->where('status', 1)
+                    ->pluck('entry_date');
 
-                    $insertData = [];
+                $insertData = [];
 
-                    foreach ($ticketPrices as $ticketPrice) {
+                foreach ($ticketPrices as $ticketPrice) {
 
-                        foreach ($scheduleDates as $journeyDate) {
-                            $insertData[] = [
-                                'bus_id' => $busId,
-                                'ticket_price_id' => $ticketPrice->id,
-                                'journey_date'    => $journeyDate,
-                                'total_seat'      => 0,
-                                'booked_seat'     => 0,
-                                'blocked_seat'    => 0,
-                                'hold_seat'       => 0,
-                                'available_seat'  => 0,
-                                'created_at'      => now(),
-                                'updated_at'      => now(),
-                                'created_by'      => 'cron',
-                                'updated_by'      => 'cron',
-                            ];
-                        }
+                    foreach ($scheduleDates as $journeyDate) {
+                        $insertData[] = [
+                            'bus_id' => $busId,
+                            'ticket_price_id' => $ticketPrice->id,
+                            'journey_date'    => $journeyDate,
+                            'total_seat'      => 0,
+                            'booked_seat'     => 0,
+                            'blocked_seat'    => 0,
+                            'hold_seat'       => 0,
+                            'available_seat'  => 0,
+                            'created_at'      => now(),
+                            'updated_at'      => now(),
+                            'created_by'      => 'cron',
+                            'updated_by'      => 'cron',
+                        ];
                     }
+                }
 
                 DB::table('bus_seat_count')->insertOrIgnore($insertData);
 
@@ -696,7 +709,7 @@ class BusScheduleRepository
                     ->where('b.status', 1)
                     ->where('tp.status', 1)
                     ->where('tp.bus_id', $busId)
-                    ->whereBetween('bsc.journey_date', [$startDate,$endDate])
+                    ->whereBetween('bsc.journey_date', [$startDate, $endDate])
                     ->get();
 
                 foreach ($seatCounts as $row) {
@@ -719,7 +732,7 @@ class BusScheduleRepository
                         ->join('bus as bus_main', 'bus_main.id', '=', 'b.bus_id')
                         ->join('booking_detail as bd', function ($join) {
                             $join->on('bd.booking_id', '=', 'b.id')
-                                 ->where('bd.status', 1);
+                                ->where('bd.status', 1);
                         })
 
                         ->join('bus_location_sequence as req_start', function ($join) {
@@ -729,7 +742,7 @@ class BusScheduleRepository
 
                         ->join('bus_location_sequence as req_end', function ($join) {
                             $join->on('req_end.bus_id', '=', 'b.bus_id')
-                                 ->on('req_end.location_id', '=', 'b.destination_id');
+                                ->on('req_end.location_id', '=', 'b.destination_id');
                         })
 
                         ->join('ticket_price as tp2', function ($join) use ($row) {
@@ -739,7 +752,7 @@ class BusScheduleRepository
 
                         ->join('bus_location_sequence as seg_start', function ($join) {
                             $join->on('seg_start.bus_id', '=', 'tp2.bus_id')
-                                 ->on('seg_start.location_id', '=', 'tp2.source_id');
+                                ->on('seg_start.location_id', '=', 'tp2.source_id');
                         })
 
                         ->join('bus_location_sequence as seg_end', function ($join) {
@@ -791,31 +804,31 @@ class BusScheduleRepository
                         ->count();
 
 
-                    $availableSeat = max($totalSeat - $bookedSeat - $blockedSeat - $holdSeat,0);
+                    $availableSeat = max($totalSeat - $bookedSeat - $blockedSeat - $holdSeat, 0);
 
                     $updated = DB::table('bus_seat_count')
-                                ->where('id', $row->id)
-                                ->update([
-                                    'total_seat'     => $totalSeat,
-                                    'booked_seat'    => $bookedSeat,
-                                    'blocked_seat'   => $blockedSeat,
-                                    'hold_seat'      => $holdSeat,
-                                    'available_seat' => $availableSeat,
-                                    'updated_at'   => now(),
-                                    'updated_by'     => 'cron'
-                                ]);
+                        ->where('id', $row->id)
+                        ->update([
+                            'total_seat'     => $totalSeat,
+                            'booked_seat'    => $bookedSeat,
+                            'blocked_seat'   => $blockedSeat,
+                            'hold_seat'      => $holdSeat,
+                            'available_seat' => $availableSeat,
+                            'updated_at'   => now(),
+                            'updated_by'     => 'cron'
+                        ]);
 
-                        if ($updated) {
-                            $updatedCount++;
-                        }
+                    if ($updated) {
+                        $updatedCount++;
+                    }
                 }
             }
 
             Log::info("Bus Seat Count Sync Completed. Total Updated Records: {$updatedCount}");
 
-            return ['status' => true,'updated_records' => $updatedCount ];
+            return ['status' => true, 'updated_records' => $updatedCount];
         } catch (\Exception $e) {
-            Log::error('Bus Seat Count Sync Failed : '.$e->getMessage());
+            Log::error('Bus Seat Count Sync Failed : ' . $e->getMessage());
             dd($e->getMessage());
             return false;
         }

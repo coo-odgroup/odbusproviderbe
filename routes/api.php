@@ -1361,8 +1361,7 @@ Route::post("missing-single-routes", [SeoController::class, "getRouteBuses"]);
 Route::post("verify-pan", [VerificationController::class, "verifyPan"]);
 Route::post("verify-pan-status", [VerificationController::class, "panStatus"]);
 
-Route::post("verify-aadhaar", [VerificationController::class, "generateAadhaarOtp"]);
-Route::post('/mask-aadhaar', [VerificationController::class, 'maskAadhaar']);
+Route::post('/aadhaar-masking', [VerificationController::class, 'maskAadhaar']);
 
 $router->get('/update-refund-status', function () {
    Artisan::call('phonepe:refund-status');

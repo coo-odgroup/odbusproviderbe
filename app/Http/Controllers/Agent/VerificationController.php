@@ -86,72 +86,95 @@ class VerificationController extends Controller
         return response()->json($response);
     }
 
-    public function generateAadhaarOtp(Request $request)
+
+    //Aadhaar Masking
+
+    public function maskAadhaar(Request $request)
     {
         $request->validate([
-            'aadhaar' => 'required|digits:12'
+            'aadhaar' => 'required|file|mimes:jpg,jpeg,png|max:10240',
         ]);
 
-        $response = $this->commonCurl(
-            'POST',
-            'verification/offline-aadhaar/otp',
-            [
-                'uid' => $request->aadhaar
-            ]
+        $file = $request->file('aadhaar');
+
+        $response = $this->aadhaarMaskingCurl(
+            $file->getRealPath(),
+            $file->getClientOriginalName(),
+            $file->getMimeType(),
+            'aadhaar_' . time()
         );
 
         return response()->json($response);
     }
 
-    public function maskAadhaar(Request $request)
+
+    public function aadhaarMaskingCurl($imagePath, $originalName, $mimeType, $verificationId)
     {
-        $request->validate([
-            'image' => 'required|file|mimes:jpg,jpeg,png|max:10240',
+        $curl = curl_init();
+
+        $extension = strtolower(
+            pathinfo($originalName, PATHINFO_EXTENSION)
+        );
+
+        // Validate extension
+        if (!in_array($extension, ['jpg', 'jpeg', 'png'])) {
+            return [
+                'success' => false,
+                'http_code' => 400,
+                'response' => [
+                    'message' => 'Invalid file format'
+                ],
+                'error' => ''
+            ];
+        }
+
+        // Force correct MIME type
+        if (in_array($extension, ['jpg', 'jpeg'])) {
+            $mimeType = 'image/jpeg';
+        } elseif ($extension === 'png') {
+            $mimeType = 'image/png';
+        }
+
+        $curlFile = new \CURLFile(
+            $imagePath,
+            $mimeType,
+            $originalName
+        );
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $this->baseUrl . 'verification/aadhaar-masking',
+
+            CURLOPT_RETURNTRANSFER => true,
+
+            CURLOPT_CUSTOMREQUEST => 'POST',
+
+            CURLOPT_HTTPHEADER => [
+                'x-client-id: ' . $this->clientId,
+                'x-client-secret: ' . $this->clientSecret,
+            ],
+
+            CURLOPT_POSTFIELDS => [
+                'image' => $curlFile,
+                'verification_id' => $verificationId,
+            ],
         ]);
 
-        try {
+        $response = curl_exec($curl);
 
-            $verificationId = 'aadhaar_' . Str::uuid();
+        $error = curl_error($curl);
 
-            $response = Http::withHeaders([
-                'x-client-id' => $this->clientId,
-                'x-client-secret' => $this->clientSecret,
-            ])
-            ->attach(
-                'image',
-                fopen($request->file('image')->getRealPath(), 'r'),
-                $request->file('image')->getClientOriginalName()
-            )
-            ->post(
-                $this->baseUrl . '/verification/aadhaar-masking',
-                [
-                    'verification_id' => $verificationId
-                ]
-            );
+        $httpCode = curl_getinfo(
+            $curl,
+            CURLINFO_HTTP_CODE
+        );
 
-            $data = $response->json();
+        curl_close($curl);
 
-            if ($response->successful() && isset($data['image_link'])) {
-
-                return response()->json([
-                    'status' => 1,
-                    'message' => 'Aadhaar masked successfully',
-                    'data' => $data
-                ], 200);
-            }
-
-            return response()->json([
-                'status' => 0,
-                'message' => $data['message'] ?? 'Aadhaar masking failed',
-                'data' => $data
-            ], 200);
-
-        } catch (\Exception $e) {
-
-            return response()->json([
-                'status' => 0,
-                'message' => $e->getMessage()
-            ], 200);
-        }
+        return [
+            'success' => empty($error),
+            'http_code' => $httpCode,
+            'response' => json_decode($response, true),
+            'error' => $error
+        ];
     }
 }
