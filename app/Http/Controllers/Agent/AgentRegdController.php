@@ -6,138 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AgentRegdController extends Controller
 {
-    // public function agentRegd(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'fullname' => 'required|string|max:255',
-    //         'email' => 'required|email|max:255',
-    //         'mobileNo' => 'required|digits:10',
-    //         'location' => 'required|string|max:255',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'statusCode' => 422,
-    //             'message' => 'Validation failed',
-    //             'errors' => $validator->errors()
-    //         ], 422);
-    //     }
-
-    //     $fullname = trim($request->fullname);
-    //     $email = strtolower(trim($request->email));
-    //     $mobileNo = trim($request->mobileNo);
-    //     $location = trim($request->location);
-
-    //     DB::beginTransaction();
-
-    //     try {
-    //         $existingUser = DB::table('user')
-    //             ->where(function ($query) use ($email, $mobileNo) {
-    //                 $query->where('email', $email)
-    //                     ->orWhere('phone', $mobileNo);
-    //             })
-    //             ->first();
-
-    //         if ($existingUser) {
-    //             if (
-    //                 isset($existingUser->email) &&
-    //                 strtolower($existingUser->email) === $email
-    //             ) {
-    //                 DB::rollBack();
-
-    //                 return response()->json([
-    //                     'status' => false,
-    //                     'statusCode' => 409,
-    //                     'message' => 'Email already exists.'
-    //                 ], 409);
-    //             }
-
-    //             if (
-    //                 isset($existingUser->phone) &&
-    //                 $existingUser->phone === $mobileNo
-    //             ) {
-    //                 DB::rollBack();
-
-    //                 return response()->json([
-    //                     'status' => false,
-    //                     'statusCode' => 409,
-    //                     'message' => 'Mobile number already exists.'
-    //                 ], 409);
-    //             }
-    //         }
-
-    //         $clientId = $this->generateClientId();
-
-    //         $userId = DB::table('user')->insertGetId([
-    //             'name' => $fullname,
-    //             'email' => $email,
-    //             'phone' => $mobileNo,
-    //             'location' => $location,
-    //             'client_id' => $clientId,
-    //             'existing_agent' => 1,
-    //             'role_id' => 3,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-
-    //         $otp = random_int(100000, 999999);
-
-    //         $otpExpiry = now()->addMinutes(10);
-
-    //         DB::table('agent_otp_verification')->insert([
-    //             'agent_id' => $userId,
-    //             'email_mobile' => $mobileNo,
-    //             'type' => 1,
-    //             'purpose' => 2,
-    //             'otp_value' => $otp,
-    //             'is_verified' => 0,
-    //             'verified_at' => null,
-    //             'expired_at' => $otpExpiry,
-    //             'attempt_count' => 0,
-    //             'created_at' => now(),
-    //             'created_by' => $userId,
-    //         ]);
-
-    //         $otpSent = $this->sendOtp($mobileNo, $otp);
-
-    //         if (!$otpSent) {
-
-    //             DB::rollBack();
-
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'statusCode' => 500,
-    //                 'message' => 'Unable to send OTP. Please try again.'
-    //             ], 500);
-    //         }
-
-    //         DB::commit();
-
-    //         $encryptedClientId = encrypt($clientId);
-
-    //         return response()->json([
-    //             'status' => true,
-    //             'statusCode' => 200,
-    //             'userId' => $encryptedClientId,
-    //             'message' => 'An OTP has been sent to Registered Mobile No'
-    //         ], 200);
-    //     } catch (\Exception $e) {
-
-    //         DB::rollBack();
-
-    //         return response()->json([
-    //             'status' => false,
-    //             'statusCode' => 500,
-    //             'message' => 'Something went wrong.',
-    //             'error' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
     public function agentRegd(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -153,7 +26,7 @@ class AgentRegdController extends Controller
                 'statusCode' => 422,
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
-            ], 422);
+            ], 200);
         }
 
         $fullname = trim($request->fullname);
@@ -165,15 +38,20 @@ class AgentRegdController extends Controller
         DB::beginTransaction();
 
         try {
+
             $emailUser = DB::table('user')
-                ->whereRaw('LOWER(email) = ?', [$email])
+                ->whereRaw('LOWER(email) = ?', [strtolower($email)])
                 ->first();
 
             $mobileUser = DB::table('user')
                 ->where('phone', $mobileNo)
                 ->first();
 
-            // Email No + Mobile No (New Agent)
+            $errorMessage = null;
+            $status = true;
+            $statusCode = 200;
+
+            // New Mobile + New Email
             if (!$emailUser && !$mobileUser) {
 
                 $clientId = $this->generateClientId();
@@ -187,109 +65,162 @@ class AgentRegdController extends Controller
                     'client_id' => $clientId,
                     'existing_agent' => 1,
                     'role_id' => 3,
+                    'is_mobile_verified' => 0,
+                    'is_email_verified' => 0,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
             }
 
-            // Email Same + Mobile Same (Existing Agent)
+            // Same Email + Same Mobile
             elseif (
                 $emailUser &&
                 $mobileUser &&
                 $emailUser->id == $mobileUser->id
             ) {
 
-                DB::rollBack();
-
-                return response()->json([
-                    'status' => true,
-                    'statusCode' => 200,
-                    'userId' => encrypt($emailUser->client_id),
-                    'message' => 'Existing agent found.'
-                ], 200);
+                $errorMessage = 'Existing agent found.';
+                $status = false;
+                $statusCode = 409;
             }
 
-            // Mobile Same + Email Different (Update Email)
+            // Existing Mobile + New Email
             elseif ($mobileUser && !$emailUser) {
 
-                DB::table('user')
-                    ->where('id', $mobileUser->id)
-                    ->update([
-                        'email' => $email,
-                        'updated_at' => now(),
-                    ]);
+                // Check whether EMAIL is already verified
+                if ($mobileUser->is_email_verified == 1) {
 
-                $userId = $mobileUser->id;
-                $clientId = $mobileUser->client_id;
+                    $errorMessage = 'Email is already verified. You cannot update the email.';
+                    $status = false;
+                    $statusCode = 409;
+                }
+
+                // Check verified documents
+                elseif (
+                    DB::table('agent_documents')
+                    ->where('agent_id', $mobileUser->id)
+                    ->where('is_active', 1)
+                    ->where('status', 'VERIFIED')
+                    ->exists()
+                ) {
+
+                    $errorMessage = 'Agent documents are already verified. You cannot update the email.';
+                    $status = false;
+                    $statusCode = 409;
+                }
+
+                // Allow email update
+                else {
+
+                    DB::table('user')
+                        ->where('id', $mobileUser->id)
+                        ->update([
+                            'email' => $email,
+                            'is_email_verified' => 0,
+                            'updated_at' => now(),
+                        ]);
+
+                    $userId = $mobileUser->id;
+                    $clientId = $mobileUser->client_id;
+                }
             }
 
-            // Email Same + Mobile Different (Update Mobile)
+            // Existing Email + New Mobile
             elseif ($emailUser && !$mobileUser) {
-                DB::table('user')
-                    ->where('id', $emailUser->id)
-                    ->update([
-                        'phone' => $mobileNo,
-                        'updated_at' => now(),
-                    ]);
 
-                $userId = $emailUser->id;
-                $clientId = $emailUser->client_id;
+                // Check whether MOBILE is already verified
+                if ($emailUser->is_mobile_verified == 1) {
+
+                    $errorMessage = 'Mobile number is already verified. You cannot update the mobile number.';
+                    $status = false;
+                    $statusCode = 409;
+                }
+
+                // Check verified documents
+                elseif (
+                    DB::table('agent_documents')
+                    ->where('agent_id', $emailUser->id)
+                    ->where('is_active', 1)
+                    ->where('status', 'VERIFIED')
+                    ->exists()
+                ) {
+
+                    $errorMessage = 'Agent documents are already verified. You cannot update the mobile number.';
+                    $status = false;
+                    $statusCode = 409;
+                }
+
+                // Allow mobile update
+                else {
+
+                    DB::table('user')
+                        ->where('id', $emailUser->id)
+                        ->update([
+                            'phone' => $mobileNo,
+                            'is_mobile_verified' => 0,
+                            'updated_at' => now(),
+                        ]);
+
+                    $userId = $emailUser->id;
+                    $clientId = $emailUser->client_id;
+                }
             }
 
-            // Email & Mobile belong to different users
+            // Email + Mobile Belong To Different Agents
             elseif (
                 $emailUser &&
                 $mobileUser &&
                 $emailUser->id != $mobileUser->id
             ) {
 
-                DB::rollBack();
-
-                return response()->json([
-                    'status' => false,
-                    'statusCode' => 409,
-                    'message' => 'Email and mobile number belong to different agents.'
-                ], 409);
+                $errorMessage = 'Email and mobile number belong to different agents.';
+                $status = false;
+                $statusCode = 409;
             }
 
             $otp = random_int(100000, 999999);
 
-            $otpData = [
-                'agent_id' => $userId,
-                'email_mobile' => $mobileNo,
-                'type' => 1,
-                'purpose' => 2,
-                'otp_value' => $otp,
-                'is_verified' => 0,
-                'verified_at' => null,
-                'expired_at' => now()->addMinutes(10),
-                'attempt_count' => 0,
-                'created_at' => now(),
-                'created_by' => $userId,
-            ];
-
-            DB::table('agent_otp_verification')->insert($otpData);
-
-            $otpSent = $this->sendOtp($mobileNo, $otp);
-
-            if (!$otpSent) {
+            if ($errorMessage) {
 
                 DB::rollBack();
+            } else {
 
-                return response()->json([
-                    'status' => false,
-                    'statusCode' => 500,
-                    'message' => 'Unable to send OTP. Please try again.'
-                ], 500);
+                $otpData = [
+                    'agent_id' => $userId,
+                    'email_mobile' => $mobileNo,
+                    'type' => 1,
+                    'purpose' => 2,
+                    'otp_value' => $otp,
+                    'is_verified' => 0,
+                    'verified_at' => null,
+                    'expired_at' => now()->addMinutes(10),
+                    'attempt_count' => 0,
+                    'created_at' => now(),
+                    'created_by' => $userId,
+                ];
+
+                DB::table('agent_otp_verification')->insert($otpData);
+
+                $otpSent = $this->sendOtp($mobileNo, $otp);
+
+                if (!$otpSent) {
+
+                    DB::rollBack();
+
+                    $errorMessage = 'Unable to send OTP. Please try again.';
+                    $status = false;
+                    $statusCode = 500;
+                } else {
+
+                    DB::commit();
+                }
             }
 
-            DB::commit();
-
             return response()->json([
-                'status' => true,
-                'statusCode' => 200,
-                'userId' => encrypt($clientId),
-                'message' => 'An OTP has been sent to Registered Mobile No'
+                'status' => $status,
+                'statusCode' => $statusCode,
+                'userId' => $errorMessage ? null : encrypt($clientId),
+                'message' => $errorMessage ?? 'An OTP has been sent to Registered Mobile No ' . $otp
             ], 200);
         } catch (\Exception $e) {
 
@@ -300,7 +231,7 @@ class AgentRegdController extends Controller
                 'statusCode' => 500,
                 'message' => 'Something went wrong.',
                 'error' => $e->getMessage()
-            ], 500);
+            ], 200);
         }
     }
 
@@ -341,7 +272,7 @@ class AgentRegdController extends Controller
                 'statusCode' => 422,
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
-            ], 422);
+            ], 200);
         }
 
         DB::beginTransaction();
@@ -355,7 +286,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 400,
                     'message' => 'Invalid userId'
-                ], 400);
+                ], 200);
             }
 
             $agent = DB::table('user')
@@ -371,7 +302,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 404,
                     'message' => 'Agent not found'
-                ], 404);
+                ], 200);
             }
 
             DB::table('agent_otp_verification')
@@ -412,7 +343,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 500,
                     'message' => 'Unable to send OTP. Please try again.'
-                ], 500);
+                ], 200);
             }
 
             DB::commit();
@@ -432,7 +363,7 @@ class AgentRegdController extends Controller
                 'statusCode' => 500,
                 'message' => 'Something went wrong.',
                 'error' => $e->getMessage()
-            ], 500);
+            ], 200);
         }
     }
 
@@ -450,7 +381,7 @@ class AgentRegdController extends Controller
                 'statusCode' => 422,
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
-            ], 422);
+            ], 200);
         }
 
 
@@ -463,7 +394,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 400,
                     'message' => 'Invalid userId'
-                ], 400);
+                ], 200);
             }
 
             $agent = DB::table('user')
@@ -478,7 +409,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 404,
                     'message' => 'Agent not found'
-                ], 404);
+                ], 200);
             }
 
             $otpRecord = DB::table('agent_otp_verification')
@@ -496,7 +427,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 400,
                     'message' => 'OTP not found. Please request a new OTP.'
-                ], 400);
+                ], 200);
             }
 
             if (now()->greaterThan($otpRecord->expired_at)) {
@@ -505,7 +436,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 400,
                     'message' => 'OTP has expired. Please request a new OTP.'
-                ], 400);
+                ], 200);
             }
 
             if ($otpRecord->attempt_count >= 5) {
@@ -514,7 +445,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 400,
                     'message' => 'Maximum OTP attempts exceeded. Please request a new OTP.'
-                ], 400);
+                ], 200);
             }
 
             if ((string) $otpRecord->otp_value !== (string) $request->otp) {
@@ -527,7 +458,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 400,
                     'message' => 'Invalid OTP'
-                ], 400);
+                ], 200);
             }
 
             DB::table('agent_otp_verification')
@@ -535,6 +466,12 @@ class AgentRegdController extends Controller
                 ->update([
                     'is_verified' => 1,
                     'verified_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+            DB::table('user')->where('id', $agent->id)
+                ->update([
+                    'is_mobile_verified' => 1,
                     'updated_at' => now()
                 ]);
 
@@ -551,7 +488,7 @@ class AgentRegdController extends Controller
                 'statusCode' => 500,
                 'message' => 'Something went wrong.',
                 'error' => $e->getMessage()
-            ], 500);
+            ], 200);
         }
     }
 
@@ -580,7 +517,7 @@ class AgentRegdController extends Controller
                 'statusCode' => 422,
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
-            ], 422);
+            ], 200);
         }
 
 
@@ -595,7 +532,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 400,
                     'message' => 'Invalid agentId'
-                ], 400);
+                ], 200);
             }
 
             $agent = DB::table('user')
@@ -609,7 +546,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 404,
                     'message' => 'Agent not found'
-                ], 404);
+                ], 200);
             }
 
             $otpVerified = DB::table('agent_otp_verification')
@@ -625,7 +562,7 @@ class AgentRegdController extends Controller
                     'status' => false,
                     'statusCode' => 403,
                     'message' => 'Please verify your mobile number first.'
-                ], 403);
+                ], 200);
             }
 
             $panNo = strtoupper(trim($request->panNo));
@@ -783,6 +720,275 @@ class AgentRegdController extends Controller
                 'message' => 'KYC details submitted successfully. Verification is in progress.'
             ], 200);
         } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 500,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage()
+            ], 200);
+        }
+    }
+
+    public function checkEmailExist(Request $request)
+    {
+        $exists = DB::table('user')
+            ->whereRaw('LOWER(email) = ?', [strtolower($request->email)])
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'status' => true,
+                'statusCode' => 200,
+                'message' => 'Email already exists'
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => false,
+            'statusCode' => 200,
+            'message' => 'New Email id Valid for registration'
+        ], 200);
+    }
+
+    public function changeFirstPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+
+            'newPassword' => [
+                'required',
+                'string',
+                'min:8'
+            ],
+
+            'confirmPassword' => [
+                'required',
+                'string'
+            ],
+
+        ], [
+            'newPassword.required' => 'Please enter a new password.',
+            'newPassword.min' => 'Password must be at least 8 characters.',
+            'confirmPassword.required' => 'Please confirm your password.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'statusCode' => 422,
+                'message' => $validator->errors()->first()
+            ], 200);
+        }
+
+        $agentId = $request->userId;
+
+        $user = DB::table('user')
+            ->where('id', $agentId)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'statusCode' => 422,
+                'message' => 'User not found.'
+            ], 200);
+        }
+
+        // Only allow first-time password change
+        if ((int) $user->is_password_changed === 1) {
+            return response()->json([
+                'status' => false,
+                'statusCode' => 400,
+                'message' => 'Password has already been changed.'
+            ], 200);
+        }
+
+        // Update password
+        DB::table('user')
+            ->where('id', $agentId)
+            ->update([
+                'password' => Hash::make($request->newPassword),
+                'is_password_changed' => 1,
+                'updated_at' => now()
+            ]);
+
+        return response()->json([
+            'status' => true,
+            'statusCode' => 200,
+            'message' => 'Password changed successfully.'
+        ], 200);
+    }
+
+    public function sendEmailOtp(Request $request)
+    {
+        try {
+
+            $agentId = $request->userId;
+            $email = $request->email;
+
+            Log::info('sendEmailOtp called', [
+                'agentId' => $agentId,
+                'email' => $email
+            ]);
+
+            // Get agent details
+            $agent = DB::table('user')
+                ->where('id', $agentId)
+                ->first();
+
+            if (!$agent) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 404,
+                    'message' => 'Agent not found.'
+                ], 200);
+            }
+
+            // Check whether request email exists in the database
+            $emailUser = DB::table('user')
+                ->where('email', $email)
+                ->where('id', '!=', $agentId)
+                ->first();
+
+            if ($emailUser) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'The provided email address is already in use. Please use a different email address.'
+                ], 200);
+            } else {
+                // Update agent email if it's different
+                if ($agent->email !== $email) {
+                    DB::table('user')
+                        ->where('id', $agentId)
+                        ->update([
+                            'email' => $email,
+                            'is_email_verified' => 0,
+                            'updated_at' => now()
+                        ]);
+                }
+            }
+
+            // Generate 6-digit OTP
+            $otp = random_int(100000, 999999);
+
+            // Optional: Mark previous unused email OTPs as expired
+            DB::table('agent_otp_verification')
+                ->where('agent_id', $agentId)
+                ->where('type', 2)
+                ->where('is_verified', 0)
+                ->update([
+                    'expired_at' => now()
+                ]);
+
+            // Store new OTP
+            DB::table('agent_otp_verification')->insert([
+                'agent_id'      => $agentId,
+                'email_mobile'  => $email,
+                'type'          => 2,
+                'purpose'       => 2,
+                'otp_value'     => $otp,
+                'is_verified'   => 0,
+                'verified_at'   => null,
+                'expired_at'    => now()->addMinutes(10),
+                'attempt_count' => 0,
+                'created_at'    => now(),
+                'created_by'    => $agentId
+            ]);
+
+            // Send OTP to email here
+            // Mail::to($email)->send(new SendOtpMail($otp));
+
+            return response()->json([
+                'status' => true,
+                'statusCode' => 200,
+                'message' => 'OTP sent successfully to your email address.'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 500,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function verifyEmailOtp(Request $request)
+    {
+        try {
+
+            $agentId = $request->userId;
+            $otp = $request->otp;
+
+            // Validate request
+            if (empty($agentId) || empty($otp)) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'Agent ID and OTP are required.'
+                ], 400);
+            }
+
+            // Get latest valid OTP
+            $otpData = DB::table('agent_otp_verification')
+                ->where('agent_id', $agentId)
+                ->where('otp_value', $otp)
+                ->where('type', 2)
+                ->where('is_verified', 0)
+                ->where('expired_at', '>', now())
+                ->orderBy('id', 'desc')
+                ->first();
+
+            // OTP not found or expired
+            if (!$otpData) {
+
+                // Increase attempt count for the latest OTP
+                DB::table('agent_otp_verification')
+                    ->where('agent_id', $agentId)
+                    ->where('type', 2)
+                    ->where('is_verified', 0)
+                    ->orderBy('id', 'desc')
+                    ->limit(1)
+                    ->increment('attempt_count');
+
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'Invalid or expired OTP.'
+                ], 400);
+            }
+
+            DB::beginTransaction();
+
+            // Mark OTP as verified
+            DB::table('agent_otp_verification')
+                ->where('id', $otpData->id)
+                ->update([
+                    'is_verified' => 1,
+                    'verified_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+            // Update user email verification status
+            DB::table('user')
+                ->where('id', $agentId)
+                ->update([
+                    'is_email_verified' => 1,
+                    'updated_at' => now()
+                ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'statusCode' => 200,
+                'message' => 'Email verified successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
 
             return response()->json([
                 'status' => false,

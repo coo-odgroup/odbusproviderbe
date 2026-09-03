@@ -1368,7 +1368,7 @@ Route::post("verify-pan", [VerificationController::class, "verifyPan"]);
 Route::post("verify-pan-status", [VerificationController::class, "panStatus"]);
 
 Route::post("verify-aadhaar", [VerificationController::class, "generateAadhaarOtp"]);
-
+Route::post('/mask-aadhaar', [VerificationController::class, 'maskAadhaar']);
 
 $router->get('/update-refund-status', function () {
    Artisan::call('phonepe:refund-status');
@@ -1431,4 +1431,11 @@ Route::post('/agentRegd', [AgentRegdController::class, 'agentRegd']);
 Route::post('/agentRegdSendOtp', [AgentRegdController::class, 'agentRegdSendOtp']);
 Route::post('/agentRegdOtpVerify', [AgentRegdController::class, 'agentRegdOtpVerify']);
 Route::post('/agentUpdateData', [AgentRegdController::class, 'agentUpdateData']);
+
+Route::post('/checkEmailExist', [AgentRegdController::class, 'checkEmailExist']);
+Route::post('/getUserStatus', [UserController::class, 'getUserStatus']);
+
+Route::post('/change-first-password', [AgentRegdController::class, 'changeFirstPassword']);
+Route::post('/send-email-otp', [AgentRegdController::class, 'sendEmailOtp']);
+Route::post('/verify-email-otp', [AgentRegdController::class, 'verifyEmailOtp']);
 // Jagan

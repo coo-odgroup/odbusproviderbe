@@ -39,11 +39,11 @@ class BusOwnerFareRepository
 
         $paginate = $request['rows_number'];
         $name = $request['name'];
-        $fromDate = $request['fromDate'];
-        $toDate = $request['toDate'];
+        $fromDate = $request['fromDate'] ?? now();
+        $toDate = $request['toDate'] ?? now();
         $bus_operator_id = $request['bus_operator_id'];
 
-        $data = $this->ownerFare->with('bus', 'bus.busOperator')->orderBy('id', 'DESC');
+        $data = $this->ownerFare->where('status', 1)->with('bus', 'bus.busOperator')->orderBy('id', 'DESC');
 
         if ($paginate == 'all') {
             $paginate = Config::get('constants.ALL_RECORDS');
