@@ -17,19 +17,27 @@ class AgentNewCommissionSlabController extends Controller
 
             $perPage = $request->get('per_page', 10);
 
-            /*
-         * =====================================================
-         * BASE QUERY
-         * =====================================================
-         */
-
             $query = DB::table('agent_comm_slab_name as acsn')
+
                 ->leftJoin(
                     'agent_commission_slab as acs',
                     'acs.slab_id',
                     '=',
                     'acsn.id'
                 )
+                ->leftJoin(
+                    'user as creator',
+                    'creator.id',
+                    '=',
+                    'acsn.created_by'
+                )
+                ->leftJoin(
+                    'user as updater',
+                    'updater.id',
+                    '=',
+                    'acsn.updated_by'
+                )
+
                 ->select(
                     'acsn.id as slab_id',
                     'acsn.slab_name',
@@ -38,8 +46,11 @@ class AgentNewCommissionSlabController extends Controller
 
                     'acsn.created_at',
                     'acsn.created_by',
+                    'creator.name as created_by_name',
+
                     'acsn.updated_at',
                     'acsn.updated_by',
+                    'updater.name as updated_by_name',
 
                     'acs.id as commission_id',
                     'acs.range_from',
@@ -52,12 +63,6 @@ class AgentNewCommissionSlabController extends Controller
                 );
 
 
-            /*
-         * =====================================================
-         * 1. SLAB NAME FILTER
-         * =====================================================
-         */
-
             if ($request->filled('slab_name')) {
 
                 $query->where(
@@ -67,16 +72,6 @@ class AgentNewCommissionSlabController extends Controller
                 );
             }
 
-
-            /*
-         * =====================================================
-         * 2. DEFAULT / NOT DEFAULT FILTER
-         *
-         * is_default = 1  -> Default
-         * is_default = 0  -> Not Default
-         * empty            -> All
-         * =====================================================
-         */
 
             if (
                 $request->has('is_default') &&
@@ -90,16 +85,6 @@ class AgentNewCommissionSlabController extends Controller
                 );
             }
 
-
-            /*
-         * =====================================================
-         * 3. STATUS FILTER
-         *
-         * 1 = Active
-         * 0 = Block
-         * =====================================================
-         */
-
             if (
                 $request->has('status') &&
                 $request->status !== null &&
@@ -112,24 +97,10 @@ class AgentNewCommissionSlabController extends Controller
                 );
             }
 
-
-            /*
-         * =====================================================
-         * 4. FROM DATE / TO DATE FILTER
-         *
-         * Dates are stored in:
-         *
-         * assigned_comm_slab_agent
-         *
-         * =====================================================
-         */
-
             if ($request->filled('from_date')) {
 
                 $fromDate = $request->from_date;
-
                 $query->whereExists(function ($subQuery) use ($fromDate) {
-
                     $subQuery->select(DB::raw(1))
                         ->from('assigned_comm_slab_agent as asa')
                         ->whereColumn(
@@ -148,9 +119,7 @@ class AgentNewCommissionSlabController extends Controller
             if ($request->filled('to_date')) {
 
                 $toDate = $request->to_date;
-
                 $query->whereExists(function ($subQuery) use ($toDate) {
-
                     $subQuery->select(DB::raw(1))
                         ->from('assigned_comm_slab_agent as asa')
                         ->whereColumn(
@@ -165,39 +134,14 @@ class AgentNewCommissionSlabController extends Controller
                 });
             }
 
-
-            /*
-         * =====================================================
-         * ORDER
-         * =====================================================
-         */
-
             $query->orderBy(
                 'acsn.id',
                 'desc'
             );
 
-
-            /*
-         * =====================================================
-         * PAGINATION
-         * =====================================================
-         */
-
             $data = $query->paginate($perPage);
 
-
-            /*
-         * =====================================================
-         * ADD AGENTS + COMMON DATES
-         * =====================================================
-         */
-
             foreach ($data->items() as $item) {
-
-                /*
-             * Get assigned agents
-             */
 
                 $agents = DB::table(
                     'assigned_comm_slab_agent as asa'
@@ -320,9 +264,7 @@ class AgentNewCommissionSlabController extends Controller
     {
         try {
 
-            /*
-         * 1. Get slab name/details
-         */
+
             $slab = DB::table('agent_comm_slab_name')
                 ->where('id', $id)
                 ->first();
@@ -335,18 +277,13 @@ class AgentNewCommissionSlabController extends Controller
             }
 
 
-            /*
-         * 2. Get ALL commission rows
-         */
+
             $commission = DB::table('agent_commission_slab')
                 ->where('slab_id', $id)
                 ->orderBy('id', 'asc')
                 ->get();
 
 
-            /*
-         * 3. Get assigned agents
-         */
             $agents = DB::table('assigned_comm_slab_agent as asa')
                 ->leftJoin(
                     'users as u',
@@ -370,9 +307,6 @@ class AgentNewCommissionSlabController extends Controller
                 ->get();
 
 
-            /*
-         * 4. Agent IDs
-         */
             $agentIds = $agents
                 ->pluck('agent_id')
                 ->map(function ($id) {
@@ -381,22 +315,9 @@ class AgentNewCommissionSlabController extends Controller
                 ->values()
                 ->toArray();
 
-
-            /*
-         * 5. Determine whether agents are assigned
-         * from the actual assigned_comm_slab_agent table.
-         */
             $agentAssigned = count($agentIds) > 0 ? 1 : 0;
 
-
-            /*
-         * 6. Get dates from assigned agents
-         *
-         * Assuming all selected agents use the same
-         * from/to dates.
-         */
             $firstAgent = $agents->first();
-
             $fromDate = $firstAgent
                 ? $firstAgent->from_date
                 : null;
@@ -406,12 +327,6 @@ class AgentNewCommissionSlabController extends Controller
                 : null;
 
 
-            /*
-         * 7. Format commission rows for frontend
-         *
-         * This makes the response names match the Angular
-         * commission_rows structure.
-         */
             $commissionRows = $commission->map(function ($row) {
 
                 return [
@@ -424,61 +339,60 @@ class AgentNewCommissionSlabController extends Controller
                 ];
             })->values()->toArray();
 
+            $createdBy = null;
 
-            /*
-         * 8. Build complete slab response
-         */
+            if (!empty($slab->created_by)) {
+
+                $createdBy = DB::table('user')
+                    ->select('id', 'name')
+                    ->where(
+                        'id',
+                        $slab->created_by
+                    )
+                    ->first();
+            }
+
+
+            $updatedBy = null;
+
+            if (!empty($slab->updated_by)) {
+
+                $updatedBy = DB::table('user')
+                    ->select('id', 'name')
+                    ->where(
+                        'id',
+                        $slab->updated_by
+                    )
+                    ->first();
+            }
+
             $slabData = [
                 'id' => $slab->id,
                 'slab_name' => $slab->slab_name,
-
                 'is_default' => (int) $slab->is_default,
-
-                /*
-             * IMPORTANT:
-             * Do NOT use the incorrect value stored in
-             * agent_comm_slab_name.
-             *
-             * Determine it from assigned agents.
-             */
                 'agent_assigned' => $agentAssigned,
-
                 'agent_ids' => $agentIds,
-
                 'from_date' => $fromDate,
                 'to_date' => $toDate,
-
                 'status' => (int) $slab->status,
-
                 'created_at' => $slab->created_at,
                 'created_by' => $slab->created_by,
-
+                'created_by_name' => $createdBy ? $createdBy->name : null,
                 'updated_at' => $slab->updated_at,
-                'updated_by' => $slab->updated_by
+                'updated_by' => $slab->updated_by,
+                'updated_by_name' => $updatedBy ? $updatedBy->name : null
             ];
 
-
-            /*
-         * 9. Return response
-         */
             return response()->json([
                 'status' => true,
-
                 'data' => [
                     'slab' => $slabData,
-
                     'commission' => $commission,
-
                     'commission_rows' => $commissionRows,
-
                     'agents' => $agents,
-
                     'agent_ids' => $agentIds,
-
                     'agent_assigned' => $agentAssigned,
-
                     'from_date' => $fromDate,
-
                     'to_date' => $toDate
                 ]
 
@@ -496,9 +410,15 @@ class AgentNewCommissionSlabController extends Controller
             );
 
             return response()->json([
+
                 'status' => false,
-                'message' => 'Unable to get agent commission slab',
-                'error' => $e->getMessage()
+
+                'message' =>
+                'Unable to get agent commission slab',
+
+                'error' =>
+                $e->getMessage()
+
             ], 500);
         }
     }

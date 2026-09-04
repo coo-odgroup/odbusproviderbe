@@ -115,7 +115,7 @@ class AgentFaqController extends Controller
                     'faq.updated_at',
                     'faq.updated_by',
                     'category.category_name',
-                    'category.type as category_type',   
+                    'category.type as category_type',
                     'creator.name as created_by_name',
                     'updater.name as updated_by_name'
                 );
@@ -244,6 +244,7 @@ class AgentFaqController extends Controller
 
             $category = DB::table('agent_faq_category')
                 ->where('id', $request->category_id)
+                ->where('type', $request->type_id)
                 ->where('status', 1)
                 ->first();
 
@@ -331,7 +332,7 @@ class AgentFaqController extends Controller
 
             $category = DB::table('agent_faq_category')
                 ->where('id', $request->category_id)
-                ->where('type_id', $request->type_id)
+                ->where('type', $request->type_id)
                 ->where('status', 1)
                 ->first();
 
@@ -351,15 +352,14 @@ class AgentFaqController extends Controller
                     $id
                 )
                 ->update([
+                    'type_id' => $request->type_id,
                     'category_id' => $request->category_id,
                     'faq_name' => $request->faq_name,
                     'question' => $request->question,
                     'answer' => $request->answer,
                     'status' => $request->has('status') ? $request->status : $faq->status,
                     'updated_by' => $request->updated_by,
-                    'updated_at' =>
-                    now()
-
+                    'updated_at' => now()
                 ]);
 
 

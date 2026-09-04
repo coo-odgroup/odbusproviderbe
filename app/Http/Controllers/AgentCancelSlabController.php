@@ -10,7 +10,7 @@ use Exception;
 
 class AgentCancelSlabController extends Controller
 {
-   
+
     public function index(Request $request)
     {
         try {
@@ -22,6 +22,12 @@ class AgentCancelSlabController extends Controller
                     '=',
                     'n.id'
                 )
+                ->leftJoin(
+                    'user as creator',
+                    'creator.id',
+                    '=',
+                    'n.created_by'
+                )
                 ->select(
                     'n.id as slab_id',
                     'n.slab_name',
@@ -29,6 +35,7 @@ class AgentCancelSlabController extends Controller
                     'n.status as slab_status',
                     'n.created_at',
                     'n.created_by',
+                    'creator.name as created_by_name',
                     'n.updated_at',
                     'n.updated_by',
 
@@ -117,9 +124,6 @@ class AgentCancelSlabController extends Controller
     {
         try {
 
-            /*
-             * 1. Slab name table
-             */
             $slab = DB::table('agent_cancel_slab_name')
                 ->where('id', $id)
                 ->first();
@@ -302,12 +306,9 @@ class AgentCancelSlabController extends Controller
         $request->validate([
             'slab_name' => 'required|string|max:128',
             'is_default' => 'nullable|boolean',
-
             'from_date' => 'nullable|date',
             'to_date' => 'nullable|date|after_or_equal:from_date',
-
             'commission_rows' => 'required|array|min:1',
-
             'commission_rows.*.min_fare' => 'required|numeric|min:0',
             'commission_rows.*.max_fare' => 'nullable|numeric|min:0',
             'commission_rows.*.total_deduct' => 'required|numeric|min:0',
@@ -317,14 +318,8 @@ class AgentCancelSlabController extends Controller
             'created_by' => 'required|integer',
         ]);
 
-        /*
-     * Convert is_default to boolean
-     */
-        $isDefault = $request->boolean('is_default');
 
-        /*
-     * If NOT default, dates are mandatory
-     */
+        $isDefault = $request->boolean('is_default');
         if (!$isDefault) {
 
             $request->validate([
@@ -340,9 +335,6 @@ class AgentCancelSlabController extends Controller
             $updatedBy = (int) $request->created_by;
             $now = Carbon::now();
 
-            /*
-         * Find main slab
-         */
             $slab = DB::table('agent_cancel_slab_name')
                 ->where('id', $id)
                 ->first();
@@ -357,10 +349,6 @@ class AgentCancelSlabController extends Controller
                 ], 404);
             }
 
-            /*
-         * If this slab is being made DEFAULT,
-         * remove default from all other slabs.
-         */
             if ($isDefault) {
 
                 DB::table('agent_cancel_slab_name')
@@ -373,9 +361,6 @@ class AgentCancelSlabController extends Controller
                     ]);
             }
 
-            /*
-         * Update MAIN slab
-         */
             DB::table('agent_cancel_slab_name')
                 ->where('id', $id)
                 ->update([
@@ -384,62 +369,28 @@ class AgentCancelSlabController extends Controller
                     'updated_at' => $now,
                     'updated_by' => $updatedBy
                 ]);
+            $fromDate = $isDefault? null: $request->from_date;
+            $toDate = $isDefault? null: $request->to_date;
 
-            /*
-         * Dates:
-         *
-         * Default slab     => NULL
-         * Normal slab      => selected dates
-         */
-            $fromDate = $isDefault
-                ? null
-                : $request->from_date;
-
-            $toDate = $isDefault
-                ? null
-                : $request->to_date;
-
-            /*
-         * Delete existing child rows
-         */
             DB::table('agent_cancel_slab')
                 ->where('slab_id', $id)
                 ->delete();
 
-            /*
-         * Insert updated child rows
-         */
             foreach ($request->commission_rows as $row) {
 
                 DB::table('agent_cancel_slab')
                     ->insert([
                         'slab_id' => $id,
-
                         'range_from' => $row['min_fare'],
-
-                        'range_to' => isset($row['max_fare'])
-                            ? $row['max_fare']
-                            : null,
-
+                        'range_to' => isset($row['max_fare'])? $row['max_fare']: null,
                         'total_deduct' => $row['total_deduct'],
-
                         'odus_deduct' => $row['odus_deduct'],
-
                         'agent_deduct' => $row['agent_deduct'],
-
                         'from_date' => $fromDate,
-
                         'to_date' => $toDate,
-
                         'created_at' => $now,
-
                         'updated_at' => $now,
-
-                        /*
-                     * Keep original creator
-                     */
                         'created_by' => $slab->created_by,
-
                         'status' => 1
                     ]);
             }
@@ -454,7 +405,6 @@ class AgentCancelSlabController extends Controller
         } catch (Exception $e) {
 
             DB::rollBack();
-
             Log::error(
                 'Agent Cancel Slab update error: ' . $e->getMessage(),
                 [

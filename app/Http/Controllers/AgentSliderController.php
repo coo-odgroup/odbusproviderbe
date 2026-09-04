@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Exception;
 
 class AgentSliderController extends Controller
@@ -23,27 +24,114 @@ class AgentSliderController extends Controller
 
             $query = AgentSlider::query();
 
-            // Status filter
-            if ($request->has('status') && $request->status !== '') {
-                $query->where('status', $request->status);
+            /*
+         * Status filter
+         */
+            if (
+                $request->has('status') &&
+                $request->status !== ''
+            ) {
+                $query->where(
+                    'status',
+                    $request->status
+                );
             }
 
-            // Search
-            if ($request->has('searchBy') && !empty($request->searchBy)) {
+            /*
+         * Search
+         */
+            if (
+                $request->has('searchBy') &&
+                !empty($request->searchBy)
+            ) {
 
-                $search = $request->searchBy;
+                $search =
+                    $request->searchBy;
 
                 $query->where(function ($q) use ($search) {
-                    $q->where('alt_tag', 'LIKE', '%' . $search . '%')
-                        ->orWhere('slider_description', 'LIKE', '%' . $search . '%')
-                        ->orWhere('url', 'LIKE', '%' . $search . '%');
+
+                    $q->where(
+                        'alt_tag',
+                        'LIKE',
+                        '%' . $search . '%'
+                    )
+
+                        ->orWhere(
+                            'slider_description',
+                            'LIKE',
+                            '%' . $search . '%'
+                        )
+
+                        ->orWhere(
+                            'url',
+                            'LIKE',
+                            '%' . $search . '%'
+                        );
                 });
             }
 
+            /*
+         * Get sliders
+         */
             $sliders = $query
                 ->orderBy('sequence', 'asc')
                 ->orderBy('id', 'desc')
                 ->paginate($perPage);
+
+
+            /*
+         * =====================================================
+         * GET USER NAMES FOR created_by
+         * =====================================================
+         */
+
+            $createdByIds =
+                $sliders->getCollection()
+                ->pluck('created_by')
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray();
+
+
+            $users = [];
+
+            if (!empty($createdByIds)) {
+
+                $users = DB::table('users')
+                    ->whereIn(
+                        'id',
+                        $createdByIds
+                    )
+                    ->pluck(
+                        'name',
+                        'id'
+                    )
+                    ->toArray();
+            }
+
+
+            /*
+         * =====================================================
+         * ADD created_by_name TO EACH SLIDER
+         * =====================================================
+         */
+
+            $sliders
+                ->getCollection()
+                ->transform(function ($slider) use ($users) {
+
+                    $createdById =
+                        $slider->created_by;
+
+                    $slider->created_by_name =
+                        isset($users[$createdById])
+                        ? $users[$createdById]
+                        : null;
+
+                    return $slider;
+                });
+
 
             return response()->json([
                 'status' => true,
@@ -57,7 +145,7 @@ class AgentSliderController extends Controller
             ], 500);
         }
     }
-    
+
     public function store(Request $request)
     {
         try {
@@ -170,7 +258,7 @@ class AgentSliderController extends Controller
                 'status' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
-               'created_by' => $request->created_by,
+                'created_by' => $request->created_by,
             ]);
 
 
@@ -198,6 +286,16 @@ class AgentSliderController extends Controller
                 'message' => 'Slider not found.'
             ], 404);
         }
+
+        // Get creator's name from users table
+        $user = DB::table('user')
+            ->where('id', $slider->created_by)
+            ->first();
+
+        // Add user name to slider response
+        $slider->created_by_name = $user
+            ? $user->name
+            : null;
 
         return response()->json([
             'status' => true,
