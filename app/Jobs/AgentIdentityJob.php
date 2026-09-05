@@ -197,7 +197,6 @@ class AgentIdentityJob implements ShouldQueue
             ->where('agent_id', $this->agentId)
             ->first();
 
-
         if (
             $identity->pan_verified == 1 &&
             $identity->aadhaar_verified == 1
@@ -210,7 +209,8 @@ class AgentIdentityJob implements ShouldQueue
                     'updated_at' => now()
                 ]);
 
-            $originalPassword = 'OdBus@' . random_int(1000, 9999);
+            $originalPassword = '11110000';
+            // $originalPassword = 'OdBus@' . random_int(1000, 9999);
 
             DB::table('user')
                 ->where('id', $this->agentId)

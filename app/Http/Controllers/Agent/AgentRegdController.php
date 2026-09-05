@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AgentRegdController extends Controller
 {
@@ -34,6 +35,25 @@ class AgentRegdController extends Controller
         $mobileNo = trim($request->mobileNo);
         $location = trim($request->location);
         $businessName = trim($request->businessName);
+
+        // Unique rate-limit key
+        $key = 'agent_registration_' . md5($email . '_' . $mobileNo);
+
+        // Block if API was already called recently
+        if (RateLimiter::tooManyAttempts($key, 1)) {
+
+            $seconds = RateLimiter::availableIn($key);
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 429,
+                'userId' => null,
+                'message' => 'Please wait ' . $seconds . ' seconds before submitting the registration again.'
+            ], 200);
+        }
+
+        // Allow only 1 request every 60 seconds
+        RateLimiter::hit($key, 60);
 
         DB::beginTransaction();
 
@@ -78,10 +98,16 @@ class AgentRegdController extends Controller
                 $mobileUser &&
                 $emailUser->id == $mobileUser->id
             ) {
+                if ($mobileUser->is_mobile_verified == 1) {
 
-                $errorMessage = 'Existing agent found.';
-                $status = false;
-                $statusCode = 409;
+                    $errorMessage = 'Agent is already registered.';
+                    $status = false;
+                    $statusCode = 409;
+                } else {
+
+                    $userId = $emailUser->id;
+                    $clientId = $emailUser->client_id;
+                }
             }
 
             // Existing Mobile + New Email
@@ -178,7 +204,8 @@ class AgentRegdController extends Controller
                 $statusCode = 409;
             }
 
-            $otp = random_int(100000, 999999);
+            $otp = '111000';
+            // $otp = random_int(100000, 999999);
 
             if ($errorMessage) {
 
@@ -220,9 +247,12 @@ class AgentRegdController extends Controller
                 'status' => $status,
                 'statusCode' => $statusCode,
                 'userId' => $errorMessage ? null : encrypt($clientId),
-                'message' => $errorMessage ?? 'An OTP has been sent to Registered Mobile No ' . $otp
+                'message' => $errorMessage ?? 'An OTP has been sent to Registered Mobile No'
             ], 200);
         } catch (\Exception $e) {
+
+            // Remove rate limit if registration fails
+            RateLimiter::clear($key);
 
             DB::rollBack();
 
@@ -315,7 +345,8 @@ class AgentRegdController extends Controller
                     'updated_at' => now()
                 ]);
 
-            $otp = random_int(100000, 999999);
+            // $otp = random_int(100000, 999999);
+            $otp = '111000';
 
             $otpExpiry = now()->addMinutes(10);
 
@@ -870,7 +901,8 @@ class AgentRegdController extends Controller
             }
 
             // Generate 6-digit OTP
-            $otp = random_int(100000, 999999);
+            // $otp = random_int(100000, 999999);
+            $otp = '111000';
 
             // Optional: Mark previous unused email OTPs as expired
             DB::table('agent_otp_verification')
@@ -996,6 +1028,257 @@ class AgentRegdController extends Controller
                 'message' => 'Something went wrong.',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function AgentForgetPasswordOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'mobile' => 'required|digits:10'
+        ]);
+
+        if ($validator->fails()) {
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 200);
+        }
+
+        try {
+
+            $agent = DB::table('user')
+                ->where('phone', $request->mobile)
+                ->where('existing_agent', 1)
+                ->first();
+
+            if (!$agent) {
+
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 404,
+                    'message' => 'Agent not found'
+                ], 200);
+            }
+
+            $otp = '111000';
+            // $otp = random_int(100000, 999999);
+
+            $expiredAt = now()->addMinutes(10);
+
+            DB::table('agent_otp_verification')
+                ->where('agent_id', $agent->id)
+                ->where('type', 1)
+                ->where('purpose', 3)
+                ->where('is_verified', 0)
+                ->update([
+                    'expired_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+            DB::table('agent_otp_verification')
+                ->insert([
+                    'agent_id' => $agent->id,
+                    'type' => 1,
+                    'email_mobile' => $agent->phone,
+                    'purpose' => 3,
+                    'otp_value' => $otp,
+                    'expired_at' => $expiredAt,
+                    'verified_at' => null,
+                    'created_by' => $agent->id,
+                    'created_at' => now()
+                ]);
+
+            return response()->json([
+                'status' => true,
+                'statusCode' => 200,
+                'userId' => encrypt($agent->client_id),
+                'message' => 'OTP sent successfully'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 500,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage()
+            ], 200);
+        }
+    }
+
+    public function AgentVerifyOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'userId' => 'required|string',
+            'otp' => 'required|digits:6'
+        ]);
+
+        if ($validator->fails()) {
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 200);
+        }
+
+        try {
+
+            $clientId = decrypt($request->userId);
+
+            $agent = DB::table('user')
+                ->where('client_id', $clientId)
+                ->where('existing_agent', 1)
+                ->first();
+
+            if (!$agent) {
+
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 404,
+                    'message' => 'Agent not found'
+                ], 200);
+            }
+
+            $otpRecord = DB::table('agent_otp_verification')
+                ->where('agent_id', $agent->id)
+                ->where('type', 1)
+                ->where('purpose', 3)
+                ->where('is_verified', 0)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if (!$otpRecord) {
+
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'OTP not found. Please request a new OTP.'
+                ], 200);
+            }
+
+            if (now()->greaterThan($otpRecord->expired_at)) {
+
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'OTP has expired. Please request a new OTP.'
+                ], 200);
+            }
+
+            if ($otpRecord->attempt_count >= 5) {
+
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'Maximum OTP attempts exceeded. Please request a new OTP.'
+                ], 200);
+            }
+
+            if ((string) $otpRecord->otp_value !== (string) $request->otp) {
+
+                DB::table('agent_otp_verification')
+                    ->where('id', $otpRecord->id)
+                    ->increment('attempt_count');
+
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 400,
+                    'message' => 'Invalid OTP'
+                ], 200);
+            }
+
+            DB::table('agent_otp_verification')
+                ->where('id', $otpRecord->id)
+                ->update([
+                    'is_verified' => 1,
+                    'verified_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+            return response()->json([
+                'status' => true,
+                'statusCode' => 200,
+                'message' => 'OTP verified successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 500,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage()
+            ], 200);
+        }
+    }
+
+    public function AgentResetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'userId' => 'required|string',
+            'newPassword' => [
+                'required',
+                'string',
+                'min:8'
+            ],
+            'confirmPassword' => [
+                'required',
+                'string'
+            ]
+        ]);
+
+        if ($validator->fails()) {
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 200);
+        }
+
+        try {
+
+            $clientId = decrypt($request->userId);
+
+            $agent = DB::table('user')
+                ->where('client_id', $clientId)
+                ->where('existing_agent', 1)
+                ->first();
+
+            if (!$agent) {
+
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 404,
+                    'message' => 'Agent not found'
+                ], 200);
+            }
+
+            DB::table('user')
+                ->where('id', $agent->id)
+                ->update([
+                    'password' => Hash::make($request->newPassword),
+                    'is_password_changed' => 1,
+                    'updated_at' => now()
+                ]);
+
+            return response()->json([
+                'status' => true,
+                'statusCode' => 200,
+                'message' => 'Password reset successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'statusCode' => 500,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage()
+            ], 200);
         }
     }
 }

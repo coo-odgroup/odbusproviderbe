@@ -1388,7 +1388,7 @@ Route::post('/getSelectedTargetUsers', [CampaignNotificationController::class, '
 Route::post('notification/log-report', [NotificationLogController::class, 'notificationLogReport'])->name('notification.logReport');
 Route::post('notification/campaign-list', [NotificationLogController::class, 'notificationCampaignList'])->name('notification.campaignList');
 
-  
+
 //Agent SLider
 Route::post('/getAgentSliders', [AgentSliderController::class, 'index']);
 Route::post('/addAgentSlider', [AgentSliderController::class, 'store']);
@@ -1434,4 +1434,8 @@ Route::post('/getUserStatus', [UserController::class, 'getUserStatus']);
 Route::post('/change-first-password', [AgentRegdController::class, 'changeFirstPassword']);
 Route::post('/send-email-otp', [AgentRegdController::class, 'sendEmailOtp']);
 Route::post('/verify-email-otp', [AgentRegdController::class, 'verifyEmailOtp']);
+
+Route::post('/agent-forget-password-otp', [AgentRegdController::class, 'AgentForgetPasswordOtp']);
+Route::post('/agent-verify-otp', [AgentRegdController::class, 'AgentVerifyOtp']);
+Route::post('/agent-reset-password', [AgentRegdController::class, 'AgentResetPassword']);
 // Jagan
