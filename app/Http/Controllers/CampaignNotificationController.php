@@ -118,7 +118,7 @@ class CampaignNotificationController extends Controller
                 $selectedUserIds = $request->selected_user_ids ?? [];
 
                 // Get selected users with their FCM ID and name
-                $selectedUsers = User::whereIn('id', $selectedUserIds)
+                $selectedUsers = Users::whereIn('id', $selectedUserIds)
                     ->get(['id', 'name', 'fcm_id']);
 
                 foreach ($selectedUserIds as $userId) {
@@ -484,7 +484,7 @@ class CampaignNotificationController extends Controller
                 $selectedUserIds = $request->selected_user_ids ?? [];
 
                 // Get selected users with their FCM ID and name
-                $selectedUsers = User::whereIn('id', $selectedUserIds)
+                $selectedUsers = Users::whereIn('id', $selectedUserIds)
                     ->get(['id', 'name', 'fcm_id']);
 
                 foreach ($selectedUsers as $user) {

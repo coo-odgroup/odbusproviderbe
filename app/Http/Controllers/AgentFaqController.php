@@ -83,18 +83,28 @@ class AgentFaqController extends Controller
     public function getAll(Request $request)
     {
         try {
-
             $query = DB::table('agent_faq as faq')
-
                 ->leftJoin(
                     'agent_faq_category as category',
                     'category.id',
                     '=',
                     'faq.category_id'
                 )
-
+                ->leftJoin(
+                    'user as creator',
+                    'creator.id',
+                    '=',
+                    'faq.created_by'
+                )
+                ->leftJoin(
+                    'user as updater',
+                    'updater.id',
+                    '=',
+                    'faq.updated_by'
+                )
                 ->select(
                     'faq.id',
+                    'faq.type_id',
                     'faq.category_id',
                     'faq.faq_name',
                     'faq.question',
@@ -105,89 +115,50 @@ class AgentFaqController extends Controller
                     'faq.updated_at',
                     'faq.updated_by',
                     'category.category_name',
-                    'category.type as category_type'
+                    'category.type as category_type',
+                    'creator.name as created_by_name',
+                    'updater.name as updated_by_name'
                 );
 
-
-            if (
-                $request->filled('category_type')
-            ) {
-
-                $query->where(
-                    'category.type',
-                    $request->category_type
-                );
+            if ($request->filled('category_type')) {
+                $query->where('category.type', $request->category_type);
             }
 
-
-            if (
-                $request->filled('category_id')
-            ) {
-
-                $query->where(
-                    'faq.category_id',
-                    $request->category_id
-                );
+            if ($request->filled('category_id')) {
+                $query->where('faq.category_id', $request->category_id);
             }
 
-            if (
-                $request->filled('faq_search')
-            ) {
-
-                $search =
-                    trim(
-                        $request->faq_search
-                    );
+            if ($request->filled('faq_search')) {
+                $search = trim($request->faq_search);
 
                 $query->where(function ($q) use ($search) {
-
-                    $q->where(
-                        'faq.faq_name',
-                        'LIKE',
-                        '%' . $search . '%'
-                    )
-
-                        ->orWhere(
-                            'faq.question',
-                            'LIKE',
-                            '%' . $search . '%'
-                        )
-
-                        ->orWhere(
-                            'faq.answer',
-                            'LIKE',
-                            '%' . $search . '%'
-                        );
+                    $q->where('faq.faq_name', 'LIKE', '%' . $search . '%')
+                        ->orWhere('faq.question', 'LIKE', '%' . $search . '%')
+                        ->orWhere('faq.answer', 'LIKE', '%' . $search . '%');
                 });
             }
-            $query->orderBy(
-                'faq.id',
-                'desc'
-            );
 
-            $perPage =
-                (int) $request->input(
-                    'rows_number',
-                    10
-                );
+            $query->orderBy('faq.id', 'desc');
+
+            $perPage = (int) $request->input('rows_number', 10);
 
             if ($perPage <= 0) {
                 $perPage = 10;
             }
+
             if ($perPage > 100) {
                 $perPage = 100;
             }
+
             $data = $query->paginate($perPage);
+
             return response()->json([
                 'status' => true,
                 'data' => $data
             ]);
         } catch (Exception $e) {
 
-            Log::error(
-                'Get Agent FAQ error: ' .
-                    $e->getMessage()
-            );
+            Log::error('Get Agent FAQ error: ' . $e->getMessage());
 
             return response()->json([
                 'status' => false,
@@ -212,6 +183,7 @@ class AgentFaqController extends Controller
                 ->where('faq.id', $id)
                 ->select(
                     'faq.id',
+                    'faq.type_id',
                     'faq.category_id',
                     'faq.faq_name',
                     'faq.question',
@@ -272,6 +244,7 @@ class AgentFaqController extends Controller
 
             $category = DB::table('agent_faq_category')
                 ->where('id', $request->category_id)
+                ->where('type', $request->type_id)
                 ->where('status', 1)
                 ->first();
 
@@ -330,6 +303,7 @@ class AgentFaqController extends Controller
         try {
 
             $request->validate([
+                'type_id' => 'required|integer|in:1,2',
                 'category_id' => 'required|integer',
                 'faq_name' => 'required|string|max:255',
                 'question' => 'required|string',
@@ -358,7 +332,7 @@ class AgentFaqController extends Controller
 
             $category = DB::table('agent_faq_category')
                 ->where('id', $request->category_id)
-                ->where('type_id', $request->type_id)
+                ->where('type', $request->type_id)
                 ->where('status', 1)
                 ->first();
 
@@ -378,15 +352,14 @@ class AgentFaqController extends Controller
                     $id
                 )
                 ->update([
+                    'type_id' => $request->type_id,
                     'category_id' => $request->category_id,
                     'faq_name' => $request->faq_name,
                     'question' => $request->question,
                     'answer' => $request->answer,
                     'status' => $request->has('status') ? $request->status : $faq->status,
                     'updated_by' => $request->updated_by,
-                    'updated_at' =>
-                    now()
-
+                    'updated_at' => now()
                 ]);
 
 
