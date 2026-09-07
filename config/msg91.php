@@ -6,6 +6,10 @@ return [
     'templates' => [
         'booking' => env('MSG91_BOOKING_TEMPLATE'),
         'Forgot_or_Reset_OTP' => '6a6db394de05af8ba10f4dc2',
+        'Agent_Regi_OTP' => '69ba64144ddfd6cf020a50b2',
+        'Welcome_Login_credentials' => '6a9bc01775d4ea792a06ac74',
+        'documents_received' => '6a9bbf33e44abf4ea904acc2',
+        'Documents_Verification_unsuccessful' => '6a9bc2f186d141ec1603b614',
     ],
 
     'campaign_base_url' => 'https://control.msg91.com/api/v5/campaign/api/campaigns/',

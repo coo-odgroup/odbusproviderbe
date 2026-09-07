@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Services\Msg91Service;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,21 +19,21 @@ class AgentIdentityJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $agentId;
+    public $msg91Service;
 
     public function __construct($agentId)
     {
         $this->agentId = $agentId;
+        $this->msg91Service = new Msg91Service();
 
         $this->onQueue('agent-identity');
     }
 
     public function handle()
     {
-        Log::info("AgentIdentityJob started for agent_id: {$this->agentId}");
         $identity = DB::table('agent_identity')
             ->where('agent_id', $this->agentId)
             ->first();
-
 
         if (!$identity) {
             return;
@@ -117,12 +118,9 @@ class AgentIdentityJob implements ShouldQueue
             }
         }
 
-        Log::info("AgentIdentityJob completed for agent_id: {$this->agentId}");
-
         $identity = DB::table('agent_identity')
             ->where('agent_id', $this->agentId)
             ->first();
-
 
         if ($identity->duplicate_aadhaar == 1) {
 
@@ -209,8 +207,7 @@ class AgentIdentityJob implements ShouldQueue
                     'updated_at' => now()
                 ]);
 
-            $originalPassword = '11110000';
-            // $originalPassword = 'OdBus@' . random_int(1000, 9999);
+            $originalPassword = 'OdBus@' . random_int(1000, 9999);
 
             DB::table('user')
                 ->where('id', $this->agentId)
@@ -227,17 +224,26 @@ class AgentIdentityJob implements ShouldQueue
                 'password' => $originalPassword
             ]);
 
+            $docReceivedData = [
+                'phone' => $agent->phone
+            ];
 
-            /*
-             * Agent verification completed
-             *
-             * Send SMS / WhatsApp here later.
-             */
+            $confirmationData = [
+                'phone' => $agent->phone,
+                'name' => $agent->name,
+                'password' => $originalPassword
+            ];
 
-            // $this->sendAgentConfirmation($agent);
+            $this->msg91Service->agentDocReceived($docReceivedData);
+            $this->msg91Service->agentConfirmation($confirmationData);
 
+            Log::info('Success');
 
         } else {
+
+            $this->msg91Service->agentConfirmation([
+                'phone' => $agent->phone
+            ]);
 
             DB::table('agent_identity')
                 ->where('agent_id', $this->agentId)

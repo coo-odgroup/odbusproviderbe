@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
+use App\Services\Msg91Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -12,6 +13,13 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class AgentRegdController extends Controller
 {
+    protected $msg91Service;
+
+    public function __construct(Msg91Service $msg91Service)
+    {
+        $this->msg91Service = $msg91Service;
+    }
+
     public function agentRegd(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -25,7 +33,7 @@ class AgentRegdController extends Controller
             return response()->json([
                 'status' => false,
                 'statusCode' => 422,
-                'message' => 'Validation failed',
+                'message' => $validator->errors()->first(),
                 'errors' => $validator->errors()
             ], 200);
         }
@@ -204,8 +212,7 @@ class AgentRegdController extends Controller
                 $statusCode = 409;
             }
 
-            $otp = '111000';
-            // $otp = random_int(100000, 999999);
+            $otp = random_int(100000, 999999);
 
             if ($errorMessage) {
 
@@ -226,11 +233,25 @@ class AgentRegdController extends Controller
                     'created_by' => $userId,
                 ];
 
-                DB::table('agent_otp_verification')->insert($otpData);
+                $isInserted = DB::table('agent_otp_verification')->insert($otpData);
 
-                $otpSent = $this->sendOtp($mobileNo, $otp);
+                if (!$isInserted) {
 
-                if (!$otpSent) {
+                    DB::rollBack();
+
+                    $errorMessage = 'Unable to generate OTP. Please try again.';
+                    $status = false;
+                    $statusCode = 500;
+                }
+
+                $otpMsg91 = [
+                    'mobile_no' => $mobileNo,
+                    'otp' => $otp
+                ];
+
+                $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+
+                if ($otpSent['type'] != 'success') {
 
                     DB::rollBack();
 
@@ -285,11 +306,6 @@ class AgentRegdController extends Controller
         return $clientId;
     }
 
-    private function sendOtp($mobileNo, $otp)
-    {
-        return true;
-    }
-
     public function agentRegdSendOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -300,8 +316,7 @@ class AgentRegdController extends Controller
             return response()->json([
                 'status' => false,
                 'statusCode' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'message' => $validator->errors()->first()
             ], 200);
         }
 
@@ -345,8 +360,7 @@ class AgentRegdController extends Controller
                     'updated_at' => now()
                 ]);
 
-            // $otp = random_int(100000, 999999);
-            $otp = '111000';
+            $otp = random_int(100000, 999999);
 
             $otpExpiry = now()->addMinutes(10);
 
@@ -364,9 +378,14 @@ class AgentRegdController extends Controller
                 'created_by' => $agent->id,
             ]);
 
-            $otpSent = $this->sendOtp($agent->phone, $otp);
+            $otpMsg91 = [
+                'mobile_no' => $agent->phone,
+                'otp' => $otp
+            ];
 
-            if (!$otpSent) {
+            $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+
+            if ($otpSent['type'] != 'success') {
 
                 DB::rollBack();
 
@@ -410,7 +429,7 @@ class AgentRegdController extends Controller
             return response()->json([
                 'status' => false,
                 'statusCode' => 422,
-                'message' => 'Validation failed',
+                'message' => $validator->errors()->first(),
                 'errors' => $validator->errors()
             ], 200);
         }
@@ -430,9 +449,8 @@ class AgentRegdController extends Controller
 
             $agent = DB::table('user')
                 ->where('client_id', $clientId)
-                ->where('existing_agent', 1)
+                // ->where('existing_agent', 1)
                 ->first();
-
 
             if (!$agent) {
 
@@ -546,7 +564,7 @@ class AgentRegdController extends Controller
             return response()->json([
                 'status' => false,
                 'statusCode' => 422,
-                'message' => 'Validation failed',
+                'message' => $validator->errors()->first(),
                 'errors' => $validator->errors()
             ], 200);
         }
@@ -568,7 +586,7 @@ class AgentRegdController extends Controller
 
             $agent = DB::table('user')
                 ->where('client_id', $clientId)
-                ->where('existing_agent', 1)
+                // ->where('existing_agent', 1)
                 ->first();
 
             if (!$agent) {
@@ -1051,7 +1069,7 @@ class AgentRegdController extends Controller
 
             $agent = DB::table('user')
                 ->where('phone', $request->mobile)
-                ->where('existing_agent', 1)
+                // ->where('existing_agent', 1)
                 ->first();
 
             if (!$agent) {
@@ -1063,8 +1081,8 @@ class AgentRegdController extends Controller
                 ], 200);
             }
 
-            $otp = '111000';
-            // $otp = random_int(100000, 999999);
+            // $otp = '111000';
+            $otp = random_int(100000, 999999);
 
             $expiredAt = now()->addMinutes(10);
 
@@ -1090,6 +1108,13 @@ class AgentRegdController extends Controller
                     'created_by' => $agent->id,
                     'created_at' => now()
                 ]);
+
+            $otpMsg91 = [
+                'mobile_no' => $agent->phone,
+                'otp' => $otp
+            ];
+
+            $this->msg91Service->forgot_otp($otpMsg91);
 
             return response()->json([
                 'status' => true,
@@ -1235,7 +1260,7 @@ class AgentRegdController extends Controller
             return response()->json([
                 'status' => false,
                 'statusCode' => 422,
-                'message' => 'Validation failed',
+                'message' => $validator->errors()->first(),
                 'errors' => $validator->errors()
             ], 200);
         }
