@@ -3,21 +3,27 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
+use App\Services\AgentActivityService;
 use App\Services\Msg91Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Http\Controllers\Agent\VerificationController;
 
 class AgentRegdController extends Controller
 {
     protected $msg91Service;
+    protected $agentActivityService;
 
-    public function __construct(Msg91Service $msg91Service)
+
+    public function __construct(Msg91Service $msg91Service, AgentActivityService $agentActivityService)
     {
         $this->msg91Service = $msg91Service;
+        $this->agentActivityService = $agentActivityService;
     }
 
     public function agentRegd(Request $request)
@@ -249,7 +255,21 @@ class AgentRegdController extends Controller
                     'otp' => $otp
                 ];
 
-                $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+                // $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+
+                $this->agentActivityService->logActivity(
+                    $userId,
+                    'AGENT_REGISTERED',
+                    'AGENT_REGISTERED',
+                    $userId,
+                    [
+                        'name'   => $fullname,
+                        'email'  => $email,
+                        'mobile' => $mobileNo
+                    ]
+                );
+
+                $otpSent['type'] = "success"; // For testing purpose, remove this line in production
 
                 if ($otpSent['type'] != 'success') {
 
@@ -336,7 +356,6 @@ class AgentRegdController extends Controller
 
             $agent = DB::table('user')
                 ->where('client_id', $clientId)
-                ->where('existing_agent', 1)
                 ->first();
 
             if (!$agent) {
@@ -383,7 +402,9 @@ class AgentRegdController extends Controller
                 'otp' => $otp
             ];
 
-            $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+            // $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+
+            $otpSent['type'] = "success"; // For testing purpose, remove this line in production
 
             if ($otpSent['type'] != 'success') {
 
@@ -569,7 +590,6 @@ class AgentRegdController extends Controller
             ], 200);
         }
 
-
         try {
 
             try {
@@ -586,7 +606,6 @@ class AgentRegdController extends Controller
 
             $agent = DB::table('user')
                 ->where('client_id', $clientId)
-                // ->where('existing_agent', 1)
                 ->first();
 
             if (!$agent) {
@@ -620,11 +639,9 @@ class AgentRegdController extends Controller
             $panDirectory = public_path('uploads/agent/pan');
             $aadhaarDirectory = public_path('uploads/agent/aadhaar');
 
-
             if (!file_exists($panDirectory)) {
                 mkdir($panDirectory, 0755, true);
             }
-
 
             if (!file_exists($aadhaarDirectory)) {
                 mkdir($aadhaarDirectory, 0755, true);
@@ -638,7 +655,6 @@ class AgentRegdController extends Controller
                 . '.'
                 . $panImage->getClientOriginalExtension();
 
-
             $panImage->move(
                 $panDirectory,
                 $panImageName
@@ -646,20 +662,24 @@ class AgentRegdController extends Controller
 
             $panImagePath = 'uploads/agent/pan/' . $panImageName;
 
-            $aadhaarImage = $request->file('adhaarImage');
+            $verificationController = new VerificationController();
 
-            $aadhaarImageName = time()
-                . '_aadhaar_'
-                . $agent->id
-                . '.'
-                . $aadhaarImage->getClientOriginalExtension();
+            $response = $verificationController->maskAadhaar($request);
 
-            $aadhaarImage->move(
-                $aadhaarDirectory,
-                $aadhaarImageName
-            );
+            $aadhaarResponse = $response->original;
 
-            $aadhaarImagePath = 'uploads/agent/aadhaar/' . $aadhaarImageName;
+            if (!$aadhaarResponse['success']) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 422,
+                    'message' => 'Aadhaar verification failed'
+                ], 200);
+            }
+
+            // Get masked image URL
+            $aadhaarImagePath = $aadhaarResponse['response']['image_link'];
+            $aadhaarImageName = $aadhaarResponse['response']['verification_id'];
+            $aadharStatus = $aadhaarResponse['response']['status'];
 
             $panHash = hash('sha256', $panNo);
 
@@ -674,13 +694,12 @@ class AgentRegdController extends Controller
                 ->where('agent_id', '!=', $agent->id)
                 ->exists();
 
-
             $duplicateAadhaar = DB::table('agent_identity')
                 ->where('aadhaar_hash', $aadhaarHash)
                 ->where('agent_id', '!=', $agent->id)
                 ->exists();
 
-            DB::table('agent_documents')->insert([
+            $panDocumentId = DB::table('agent_documents')->insertGetId([
                 'agent_id' => $agent->id,
                 'document_number' => $panNo,
                 'document_type' => 'PAN',
@@ -697,7 +716,18 @@ class AgentRegdController extends Controller
                 'updated_at' => now(),
             ]);
 
-            DB::table('agent_documents')->insert([
+            $this->agentActivityService->logActivity(
+                $agent->id,
+                'DOCUMENT_UPLOADED',
+                'DOCUMENT_UPLOADED',
+                $panDocumentId,
+                [
+                    'agent_id' => $agent->id,
+                    'pan_document_id' => $panDocumentId
+                ]
+            );
+
+            $aadhaarDocumentId = DB::table('agent_documents')->insertGetId([
                 'agent_id' => $agent->id,
                 'document_number' => $aadhaarNo,
                 'document_type' => 'AADHAAR',
@@ -713,6 +743,17 @@ class AgentRegdController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            $this->agentActivityService->logActivity(
+                $agent->id,
+                'DOCUMENT_UPLOADED',
+                'DOCUMENT_UPLOADED',
+                $aadhaarDocumentId,
+                [
+                    'agent_id' => $agent->id,
+                    'aadhaar_document_id' => $aadhaarDocumentId
+                ]
+            );
 
             $identityData = [
 
@@ -730,9 +771,9 @@ class AgentRegdController extends Controller
                 'pan_verification_status' => 'PENDING',
                 'pan_verified_at' => null,
 
-                'aadhaar_verified' => 0,
-                'aadhaar_verification_status' => 'PENDING',
-                'aadhaar_verified_at' => null,
+                'aadhaar_verified' => $aadharStatus === 'VALID' ? 1 : 0,
+                'aadhaar_verification_status' => $aadharStatus === 'VALID' ? 'VERIFIED' : 'PENDING',
+                'aadhaar_verified_at' => $aadharStatus === 'VALID' ? now() : null,
 
                 'duplicate_pan' => $duplicatePan ? 1 : 0,
                 'duplicate_aadhaar' => $duplicateAadhaar ? 1 : 0,
@@ -744,7 +785,6 @@ class AgentRegdController extends Controller
             $existingIdentity = DB::table('agent_identity')
                 ->where('agent_id', $agent->id)
                 ->first();
-
 
             if ($existingIdentity) {
 
@@ -1029,6 +1069,12 @@ class AgentRegdController extends Controller
                     'updated_at' => now()
                 ]);
 
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'EMAIL_VERIFIED',
+                'EMAIL_VERIFIED'
+            );
+
             DB::commit();
 
             return response()->json([
@@ -1171,7 +1217,7 @@ class AgentRegdController extends Controller
             $otpRecord = DB::table('agent_otp_verification')
                 ->where('agent_id', $agent->id)
                 ->where('type', 1)
-                ->where('purpose', 3)
+                ->where('purpose', 2)
                 ->where('is_verified', 0)
                 ->orderBy('id', 'DESC')
                 ->first();

@@ -87,15 +87,14 @@ class VerificationController extends Controller
     }
 
 
-    //Aadhaar Masking
-
+    // Aadhaar Masking
     public function maskAadhaar(Request $request)
     {
         $request->validate([
-            'aadhaar' => 'required|file|mimes:jpg,jpeg,png|max:10240',
+            'adhaarImage' => 'required|file|mimes:jpg,jpeg,png|max:10240',
         ]);
 
-        $file = $request->file('aadhaar');
+        $file = $request->file('adhaarImage');
 
         $response = $this->aadhaarMaskingCurl(
             $file->getRealPath(),

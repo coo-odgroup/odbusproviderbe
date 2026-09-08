@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Services\AgentActivityService;
 
 class AgentIdentityJob implements ShouldQueue
 {
@@ -20,12 +21,13 @@ class AgentIdentityJob implements ShouldQueue
 
     public $agentId;
     public $msg91Service;
+    public $agentActivityService;
 
     public function __construct($agentId)
     {
         $this->agentId = $agentId;
         $this->msg91Service = new Msg91Service();
-
+        $this->agentActivityService = new AgentActivityService();
         $this->onQueue('agent-identity');
     }
 
@@ -41,9 +43,7 @@ class AgentIdentityJob implements ShouldQueue
 
         $agent = DB::table('user')
             ->where('id', $this->agentId)
-            ->where('existing_agent', 1)
             ->first();
-
 
         if (!$agent) {
             return;
@@ -83,11 +83,9 @@ class AgentIdentityJob implements ShouldQueue
                 $panNo = null;
             }
 
-
             if ($panNo) {
 
                 $panResult = $this->verifyPan($panNo);
-
 
                 if ($panResult === true) {
 
@@ -105,6 +103,12 @@ class AgentIdentityJob implements ShouldQueue
                             'is_pan_verified' => 1,
                             'updated_at' => now()
                         ]);
+
+                    $this->agentActivityService->logActivity(
+                        $this->agentId,
+                        'PAN_VERIFIED',
+                        'PAN_VERIFIED'
+                    );
                 } else {
 
                     DB::table('agent_identity')
@@ -159,8 +163,7 @@ class AgentIdentityJob implements ShouldQueue
 
             if ($aadhaarNo) {
 
-                $aadhaarResult = $this->verifyAadhaar($aadhaarNo);
-
+                $aadhaarResult = $this->verifyAadhaar($this->agentId);
 
                 if ($aadhaarResult === true) {
 
@@ -178,6 +181,12 @@ class AgentIdentityJob implements ShouldQueue
                             'is_aadhaar_verified' => 1,
                             'updated_at' => now()
                         ]);
+
+                    $this->agentActivityService->logActivity(
+                        $this->agentId,
+                        'AADHAAR_VERIFIED',
+                        'AADHAAR_VERIFIED'
+                    );
                 } else {
 
                     DB::table('agent_identity')
@@ -199,7 +208,6 @@ class AgentIdentityJob implements ShouldQueue
             $identity->pan_verified == 1 &&
             $identity->aadhaar_verified == 1
         ) {
-
             DB::table('agent_identity')
                 ->where('agent_id', $this->agentId)
                 ->update([
@@ -234,14 +242,11 @@ class AgentIdentityJob implements ShouldQueue
                 'password' => $originalPassword
             ];
 
-            $this->msg91Service->agentDocReceived($docReceivedData);
-            $this->msg91Service->agentConfirmation($confirmationData);
-
-            Log::info('Success');
+            // $this->msg91Service->agentDocReceived($docReceivedData);
+            // $this->msg91Service->agentConfirmation($confirmationData);
 
         } else {
-
-            $this->msg91Service->agentConfirmation([
+            $this->msg91Service->agentVerificationFailed([
                 'phone' => $agent->phone
             ]);
 
@@ -285,8 +290,17 @@ class AgentIdentityJob implements ShouldQueue
         }
     }
 
-    private function verifyAadhaar($aadhaarNo)
+    private function verifyAadhaar($agentId)
     {
-        return true;
+        $identity = DB::table('agent_identity')
+            ->where('agent_id', $agentId)
+            ->where('aadhaar_verified', 1)
+            ->first();
+
+        if ($identity) {
+            return true;
+        }
+
+        return false;
     }
 }
