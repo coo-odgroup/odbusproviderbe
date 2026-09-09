@@ -52,7 +52,7 @@ class BusStoppageController extends Controller
         BusStoppageTiming $busStoppageTiming,
         BusStoppage $busStoppage,
         BusLocationSequence $busLocationSequence,
-        BusScheduleRepository $busScheduleRepository,
+        BusScheduleRepository $busScheduleRepository
     ) {
         $this->busStoppageService = $busStoppageService;
         $this->busStoppageTiming = $busStoppageTiming;
