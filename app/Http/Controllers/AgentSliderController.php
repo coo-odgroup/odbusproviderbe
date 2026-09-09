@@ -70,20 +70,22 @@ class AgentSliderController extends Controller
                 });
             }
 
-            /*
-         * Get sliders
-         */
             $sliders = $query
                 ->orderBy('sequence', 'asc')
                 ->orderBy('id', 'desc')
                 ->paginate($perPage);
 
+            $sliders->getCollection()->transform(function ($slider) {
+                if ($slider->file_name) {
+                    $slider->image_url = url(
+                        'public/storage/agent_slider/' . $slider->file_name
+                    );
+                } else {
+                    $slider->image_url = null;
+                }
 
-            /*
-         * =====================================================
-         * GET USER NAMES FOR created_by
-         * =====================================================
-         */
+                return $slider;
+            });
 
             $createdByIds =
                 $sliders->getCollection()
@@ -176,13 +178,7 @@ class AgentSliderController extends Controller
                 $request->default_slider === true ||
                 $request->default_slider === 'true';
 
-            if ($defaultSlider) {
-                AgentSlider::where('default_slider', 1)
-                    ->update([
-                        'default_slider' => 0,
-                        'updated_at' => now()
-                    ]);
-            }
+
 
 
             $maxSequence = AgentSlider::max('sequence');
@@ -337,20 +333,6 @@ class AgentSliderController extends Controller
             $defaultSlider = $request->default_slider == 1 ||
                 $request->default_slider === true ||
                 $request->default_slider === 'true';
-
-
-            /*
-             * Remove default from other sliders
-             */
-            if ($defaultSlider) {
-
-                AgentSlider::where('id', '!=', $id)
-                    ->where('default_slider', 1)
-                    ->update([
-                        'default_slider' => 0,
-                        'updated_at' => now()
-                    ]);
-            }
 
 
             /*

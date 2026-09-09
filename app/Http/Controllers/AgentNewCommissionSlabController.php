@@ -18,7 +18,6 @@ class AgentNewCommissionSlabController extends Controller
             $perPage = $request->get('per_page', 10);
 
             $query = DB::table('agent_comm_slab_name as acsn')
-
                 ->leftJoin(
                     'agent_commission_slab as acs',
                     'acs.slab_id',
@@ -37,17 +36,15 @@ class AgentNewCommissionSlabController extends Controller
                     '=',
                     'acsn.updated_by'
                 )
-
+                ->whereNull('acsn.deleted_at')
                 ->select(
                     'acsn.id as slab_id',
                     'acsn.slab_name',
                     'acsn.is_default',
                     'acsn.status as slab_status',
-
                     'acsn.created_at',
                     'acsn.created_by',
                     'creator.name as created_by_name',
-
                     'acsn.updated_at',
                     'acsn.updated_by',
                     'updater.name as updated_by_name',
@@ -61,7 +58,6 @@ class AgentNewCommissionSlabController extends Controller
                     'acs.total_comm',
                     'acs.status as commission_status'
                 );
-
 
             if ($request->filled('slab_name')) {
 
@@ -267,6 +263,7 @@ class AgentNewCommissionSlabController extends Controller
 
             $slab = DB::table('agent_comm_slab_name')
                 ->where('id', $id)
+                ->whereNull('deleted_at')
                 ->first();
 
             if (!$slab) {
@@ -680,6 +677,7 @@ class AgentNewCommissionSlabController extends Controller
          */
             $slab = DB::table('agent_comm_slab_name')
                 ->where('id', $id)
+                ->whereNull('deleted_at')
                 ->first();
 
             if (!$slab) {
@@ -929,6 +927,80 @@ class AgentNewCommissionSlabController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Unable to change Agent Commission Slab status',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteAgentCommissionSlab($id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $slab = DB::table('agent_comm_slab_name')
+                ->where('id', (int) $id)
+                ->whereNull('deleted_at')
+                ->first();
+
+            if (!$slab) {
+
+                DB::rollBack();
+
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Agent Commission Slab not found',
+                    'id' => (int) $id
+                ], 404);
+            }
+
+            $deletedAt = Carbon::now();
+
+            $updated = DB::table('agent_comm_slab_name')
+                ->where('id', (int) $id)
+                ->whereNull('deleted_at')
+                ->update([
+                    'deleted_at' => $deletedAt,
+                    'updated_at' => $deletedAt,
+                    'updated_by' => auth()->id() ?? $slab->updated_by
+                ]);
+
+            if ($updated !== 1) {
+
+                DB::rollBack();
+
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unable to delete Agent Commission Slab',
+                    'id' => (int) $id
+                ], 500);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Agent Commission Slab deleted successfully',
+                'id' => (int) $id,
+                'deleted_at' => $deletedAt->toDateTimeString()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            Log::error(
+                'Delete Agent Commission Slab error',
+                [
+                    'slab_id' => $id,
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
+            );
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to delete Agent Commission Slab',
                 'error' => $e->getMessage()
             ], 500);
         }

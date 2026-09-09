@@ -23,11 +23,12 @@ class AgentCancelSlabController extends Controller
                     'n.id'
                 )
                 ->leftJoin(
-                    'user as creator',
-                    'creator.id',
+                    'user as u',
+                    'u.id',
                     '=',
-                    'n.created_by'
+                    'n.updated_by'
                 )
+                ->whereNull('n.deleted_at')
                 ->select(
                     'n.id as slab_id',
                     'n.slab_name',
@@ -35,9 +36,9 @@ class AgentCancelSlabController extends Controller
                     'n.status as slab_status',
                     'n.created_at',
                     'n.created_by',
-                    'creator.name as created_by_name',
                     'n.updated_at',
                     'n.updated_by',
+                    'u.name as updated_by_name',
 
                     's.id as cancellation_id',
                     's.range_from',
@@ -126,6 +127,7 @@ class AgentCancelSlabController extends Controller
 
             $slab = DB::table('agent_cancel_slab_name')
                 ->where('id', $id)
+                ->whereNull('deleted_at')
                 ->first();
 
             if (!$slab) {
@@ -226,6 +228,7 @@ class AgentCancelSlabController extends Controller
 
                 DB::table('agent_cancel_slab_name')
                     ->where('is_default', 1)
+                    ->whereNull('deleted_at')
                     ->update([
                         'is_default' => 0,
                         'updated_at' => $now,
@@ -337,6 +340,7 @@ class AgentCancelSlabController extends Controller
 
             $slab = DB::table('agent_cancel_slab_name')
                 ->where('id', $id)
+                ->whereNull('deleted_at')
                 ->first();
 
             if (!$slab) {
@@ -350,10 +354,10 @@ class AgentCancelSlabController extends Controller
             }
 
             if ($isDefault) {
-
                 DB::table('agent_cancel_slab_name')
                     ->where('id', '!=', $id)
                     ->where('is_default', 1)
+                    ->whereNull('deleted_at')
                     ->update([
                         'is_default' => 0,
                         'updated_at' => $now,
@@ -369,8 +373,8 @@ class AgentCancelSlabController extends Controller
                     'updated_at' => $now,
                     'updated_by' => $updatedBy
                 ]);
-            $fromDate = $isDefault? null: $request->from_date;
-            $toDate = $isDefault? null: $request->to_date;
+            $fromDate = $isDefault ? null : $request->from_date;
+            $toDate = $isDefault ? null : $request->to_date;
 
             DB::table('agent_cancel_slab')
                 ->where('slab_id', $id)
@@ -382,7 +386,7 @@ class AgentCancelSlabController extends Controller
                     ->insert([
                         'slab_id' => $id,
                         'range_from' => $row['min_fare'],
-                        'range_to' => isset($row['max_fare'])? $row['max_fare']: null,
+                        'range_to' => isset($row['max_fare']) ? $row['max_fare'] : null,
                         'total_deduct' => $row['total_deduct'],
                         'odus_deduct' => $row['odus_deduct'],
                         'agent_deduct' => $row['agent_deduct'],
@@ -424,15 +428,15 @@ class AgentCancelSlabController extends Controller
     }
 
 
-    public function destroy($id)
+    public function deleteAgentCancelSlab($id)
     {
         DB::beginTransaction();
 
         try {
 
-            $slab =
-                DB::table('agent_cancel_slab_name')
-                ->where('id', $id)
+            $slab = DB::table('agent_cancel_slab_name')
+                ->where('id', (int) $id)
+                ->whereNull('deleted_at')
                 ->first();
 
             if (!$slab) {
@@ -440,39 +444,44 @@ class AgentCancelSlabController extends Controller
                 DB::rollBack();
 
                 return response()->json([
-
                     'status' => false,
                     'message' => 'Agent Cancel Slab not found'
-
                 ], 404);
             }
 
+            $deletedAt = Carbon::now();
 
             /*
-             * Delete child rows first
-             */
-            DB::table('agent_cancel_slab')
-                ->where('slab_id', $id)
-                ->delete();
+         * Soft delete ONLY the parent slab.
+         *
+         * Do NOT delete rows from agent_cancel_slab.
+         */
+            $updated = DB::table('agent_cancel_slab_name')
+                ->where('id', (int) $id)
+                ->whereNull('deleted_at')
+                ->update([
+                    'deleted_at' => $deletedAt,
+                    'updated_at' => $deletedAt,
+                    'updated_by' => $slab->updated_by
+                ]);
 
+            if ($updated !== 1) {
 
-            /*
-             * Delete parent
-             */
-            DB::table('agent_cancel_slab_name')
-                ->where('id', $id)
-                ->delete();
+                DB::rollBack();
 
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unable to delete Agent Cancel Slab'
+                ], 500);
+            }
 
             DB::commit();
 
             return response()->json([
-
                 'status' => true,
-
-                'message' =>
-                'Agent Cancel Slab deleted successfully'
-
+                'message' => 'Agent Cancel Slab deleted successfully',
+                'id' => (int) $id,
+                'deleted_at' => $deletedAt->toDateTimeString()
             ], 200);
         } catch (Exception $e) {
 
@@ -480,15 +489,18 @@ class AgentCancelSlabController extends Controller
 
             Log::error(
                 'Agent Cancel Slab delete error: ' .
-                    $e->getMessage()
+                    $e->getMessage(),
+                [
+                    'slab_id' => $id,
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
             );
 
             return response()->json([
-
                 'status' => false,
                 'message' => 'Unable to delete Agent Cancel Slab',
                 'error' => $e->getMessage()
-
             ], 500);
         }
     }
