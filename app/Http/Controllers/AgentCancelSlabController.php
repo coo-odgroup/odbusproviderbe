@@ -202,8 +202,8 @@ class AgentCancelSlabController extends Controller
     {
         $request->validate([
             'slab_name' => 'required|string|max:128',
-            'from_date' => 'required|date',
-            'to_date' => 'required|date|after_or_equal:from_date',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
             'is_default' => 'nullable|boolean',
             'commission_rows' => 'required|array|min:1',
             'commission_rows.*.min_fare' => 'required|numeric|min:0',
@@ -214,6 +214,15 @@ class AgentCancelSlabController extends Controller
 
             'created_by' => 'required|integer',
         ]);
+
+        $isDefault = $request->boolean('is_default');
+
+        if (!$isDefault) {
+            $request->validate([
+                'from_date' => 'required|date',
+                'to_date' => 'required|date|after_or_equal:from_date',
+            ]);
+        }
 
         DB::beginTransaction();
 

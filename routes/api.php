@@ -64,6 +64,8 @@ use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DisplayInfoController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Agent\VerificationController;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 
 
 
@@ -1400,14 +1402,15 @@ Route::put('/changeAgentSliderStatus/{id}', [AgentSliderController::class, 'chan
 Route::put('/updateAgentSliderSequence/{id}', [AgentSliderController::class, 'updateSequence']);
 Route::put('/changeAgentSliderDefault/{id}', [AgentSliderController::class, 'changeDefault']);
 
+
 //Agent New Commission Slab Controller
 Route::post('/getAgentCommissionSlabs', [AgentNewCommissionSlabController::class, 'index']);
 Route::post('/getAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'show']);
 Route::post('/addAgentCommissionSlab', [AgentNewCommissionSlabController::class, 'store']);
 Route::post('/updateAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'update']);
 Route::post('/getAgentCommissionSlabAgents', [AgentNewCommissionSlabController::class, 'getAgents']);
-Route::post('/changeAgentCommissionSlabStatus/{id}',[AgentNewCommissionSlabController::class, 'changeStatus']);
-Route::post('/deleteAgentCommissionSlab/{id}',[AgentNewCommissionSlabController::class, 'deleteAgentCommissionSlab']);
+Route::post('/changeAgentCommissionSlabStatus/{id}', [AgentNewCommissionSlabController::class, 'changeStatus']);
+Route::post('/deleteAgentCommissionSlab/{id}', [AgentNewCommissionSlabController::class, 'deleteAgentCommissionSlab']);
 
 
 // Agent Cancel Slab Controller
@@ -1416,7 +1419,7 @@ Route::post('/getAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'show
 Route::post('/addAgentCancelSlab', [AgentCancelSlabController::class, 'store']);
 Route::post('/updateAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'update']);
 Route::post('/changeAgentCancelSlabStatus/{id}', [AgentCancelSlabController::class, 'changeStatus']);
-Route::post('/deleteAgentCancelSlab/{id}',[AgentCancelSlabController::class, 'deleteAgentCancelSlab']);
+Route::post('/deleteAgentCancelSlab/{id}', [AgentCancelSlabController::class, 'deleteAgentCancelSlab']);
 
 //Agent FAQ
 Route::post('/getAgentFaqCategoryTypes', [AgentFaqController::class, 'getCategoryTypes']);
