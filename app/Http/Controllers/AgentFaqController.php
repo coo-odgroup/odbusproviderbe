@@ -106,7 +106,6 @@ class AgentFaqController extends Controller
                     'faq.id',
                     'faq.type_id',
                     'faq.category_id',
-                    'faq.faq_name',
                     'faq.question',
                     'faq.answer',
                     'faq.status',
@@ -132,8 +131,7 @@ class AgentFaqController extends Controller
                 $search = trim($request->faq_search);
 
                 $query->where(function ($q) use ($search) {
-                    $q->where('faq.faq_name', 'LIKE', '%' . $search . '%')
-                        ->orWhere('faq.question', 'LIKE', '%' . $search . '%')
+                    $q->Where('faq.question', 'LIKE', '%' . $search . '%')
                         ->orWhere('faq.answer', 'LIKE', '%' . $search . '%');
                 });
             }
@@ -185,7 +183,6 @@ class AgentFaqController extends Controller
                     'faq.id',
                     'faq.type_id',
                     'faq.category_id',
-                    'faq.faq_name',
                     'faq.question',
                     'faq.answer',
                     'faq.status',
@@ -236,7 +233,6 @@ class AgentFaqController extends Controller
             $request->validate([
                 'type_id' => 'required|integer|in:1,2',
                 'category_id' => 'required|integer',
-                'faq_name' => 'required|string|max:255',
                 'question' => 'required|string',
                 'answer' => 'required|string',
                 'status' => 'nullable|in:0,1'
@@ -262,7 +258,6 @@ class AgentFaqController extends Controller
 
                 'type_id' => $request->type_id,
                 'category_id' => $request->category_id,
-                'faq_name' => $request->faq_name,
                 'question' => $request->question,
                 'answer' => $request->answer,
                 'status' => $request->has('status') ? $request->status : 1,
@@ -305,7 +300,6 @@ class AgentFaqController extends Controller
             $request->validate([
                 'type_id' => 'required|integer|in:1,2',
                 'category_id' => 'required|integer',
-                'faq_name' => 'required|string|max:255',
                 'question' => 'required|string',
                 'answer' => 'required|string',
                 'status' => 'nullable|in:0,1'
@@ -354,7 +348,6 @@ class AgentFaqController extends Controller
                 ->update([
                     'type_id' => $request->type_id,
                     'category_id' => $request->category_id,
-                    'faq_name' => $request->faq_name,
                     'question' => $request->question,
                     'answer' => $request->answer,
                     'status' => $request->has('status') ? $request->status : $faq->status,
