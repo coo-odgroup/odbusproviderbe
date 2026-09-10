@@ -255,7 +255,9 @@ class AgentRegdController extends Controller
                     'otp' => $otp
                 ];
 
-                // $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+                $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+
+                $dueAt = now()->addHours(24);
 
                 $this->agentActivityService->logActivity(
                     $userId,
@@ -266,7 +268,8 @@ class AgentRegdController extends Controller
                         'name'   => $fullname,
                         'email'  => $email,
                         'mobile' => $mobileNo
-                    ]
+                    ],
+                    $dueAt
                 );
 
                 $otpSent['type'] = "success"; // For testing purpose, remove this line in production
@@ -402,7 +405,7 @@ class AgentRegdController extends Controller
                 'otp' => $otp
             ];
 
-            // $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+            $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
 
             $otpSent['type'] = "success"; // For testing purpose, remove this line in production
 
@@ -699,6 +702,25 @@ class AgentRegdController extends Controller
                 ->where('agent_id', '!=', $agent->id)
                 ->exists();
 
+            // Duplicate PAN
+            if ($duplicatePan) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 409,
+                    'message' => 'This PAN number is already registered with another agent. Please enter a valid PAN number.'
+                ], 200);
+            }
+
+
+            // Duplicate Aadhaar
+            if ($duplicateAadhaar) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 409,
+                    'message' => 'This Aadhaar number is already registered with another agent. Please enter a valid Aadhaar number.'
+                ], 200);
+            }
+
             $panDocumentId = DB::table('agent_documents')->insertGetId([
                 'agent_id' => $agent->id,
                 'document_number' => $panNo,
@@ -715,17 +737,6 @@ class AgentRegdController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-
-            $this->agentActivityService->logActivity(
-                $agent->id,
-                'DOCUMENT_UPLOADED',
-                'DOCUMENT_UPLOADED',
-                $panDocumentId,
-                [
-                    'agent_id' => $agent->id,
-                    'pan_document_id' => $panDocumentId
-                ]
-            );
 
             $aadhaarDocumentId = DB::table('agent_documents')->insertGetId([
                 'agent_id' => $agent->id,
@@ -744,6 +755,8 @@ class AgentRegdController extends Controller
                 'updated_at' => now(),
             ]);
 
+            $dueAt = now()->addHours(48);
+
             $this->agentActivityService->logActivity(
                 $agent->id,
                 'DOCUMENT_UPLOADED',
@@ -751,8 +764,10 @@ class AgentRegdController extends Controller
                 $aadhaarDocumentId,
                 [
                     'agent_id' => $agent->id,
+                    'pan_document_id' => $panDocumentId,
                     'aadhaar_document_id' => $aadhaarDocumentId
-                ]
+                ],
+                $dueAt
             );
 
             $identityData = [
@@ -799,7 +814,6 @@ class AgentRegdController extends Controller
                     ->insert($identityData);
             }
 
-            // \App\Jobs\AgentIdentityJob::dispatch($agent->id);
             (new \App\Jobs\AgentIdentityJob($agent->id))->handle();
 
             return response()->json([
@@ -1069,10 +1083,14 @@ class AgentRegdController extends Controller
                     'updated_at' => now()
                 ]);
 
+            $dueAt = now()->addHours(48);
+
             $this->agentActivityService->logActivity(
                 $agentId,
                 'EMAIL_VERIFIED',
-                'EMAIL_VERIFIED'
+                'EMAIL_VERIFIED',
+                [],
+                $dueAt
             );
 
             DB::commit();

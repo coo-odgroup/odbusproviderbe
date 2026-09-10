@@ -232,19 +232,23 @@ class AgentIdentityJob implements ShouldQueue
                 'password' => $originalPassword
             ]);
 
-            $docReceivedData = [
-                'phone' => $agent->phone
-            ];
-
             $confirmationData = [
                 'phone' => $agent->phone,
                 'name' => $agent->name,
                 'password' => $originalPassword
             ];
 
-            // $this->msg91Service->agentDocReceived($docReceivedData);
-            // $this->msg91Service->agentConfirmation($confirmationData);
+            $dueAt = now()->addHours(48);
 
+            $this->agentActivityService->logActivity(
+                $this->agentId,
+                'DOCUMENT_VERIFIED',
+                'DOCUMENT_VERIFIED',
+                $confirmationData,
+                $dueAt
+            );
+
+            $this->msg91Service->agentConfirmation($confirmationData);
         } else {
             $this->msg91Service->agentVerificationFailed([
                 'phone' => $agent->phone
