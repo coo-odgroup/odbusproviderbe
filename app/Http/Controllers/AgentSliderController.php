@@ -70,20 +70,23 @@ class AgentSliderController extends Controller
                 });
             }
 
-            /*
-         * Get sliders
-         */
             $sliders = $query
                 ->orderBy('sequence', 'asc')
                 ->orderBy('id', 'desc')
                 ->paginate($perPage);
 
+            $sliders->getCollection()->transform(function ($slider) {
+                if ($slider->file_name) {
+                    $slider->image_url = url(
+                        'uploads/agent_slider/' . $slider->file_name
+                    );
+                } else {
+                    $slider->image_url = null;
+                }
 
-            /*
-         * =====================================================
-         * GET USER NAMES FOR created_by
-         * =====================================================
-         */
+                return $slider;
+            });
+
 
             $createdByIds =
                 $sliders->getCollection()
@@ -169,34 +172,40 @@ class AgentSliderController extends Controller
 
 
             /*
-             * If this slider is marked as default,
-             * remove default from existing sliders.
-             */
+         * If this slider is marked as default,
+         * allow multiple sliders to remain default.
+         */
             $defaultSlider = $request->default_slider == 1 ||
                 $request->default_slider === true ||
                 $request->default_slider === 'true';
 
-            if ($defaultSlider) {
-                AgentSlider::where('default_slider', 1)
-                    ->update([
-                        'default_slider' => 0,
-                        'updated_at' => now()
-                    ]);
-            }
-
 
             $maxSequence = AgentSlider::max('sequence');
             $sequence = $maxSequence ? $maxSequence + 1 : 1;
+
             $randomName = Str::random(32);
             $image = $request->file('slider_img');
-            $folder = 'agent_slider';
-            $storagePath = storage_path('app/public/' . $folder);
 
-            if (!file_exists($storagePath)) {
-                mkdir($storagePath, 0755, true);
+            /*
+         * Store image physically in:
+         * public/uploads/agent_slider/
+         */
+            $folder = 'agent_slider';
+
+            $uploadPath = public_path('uploads/' . $folder);
+
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
             }
+
             $fileName = $randomName . '.webp';
-            $fullPath = $storagePath . '/' . $fileName;
+
+            /*
+         * Final physical file path:
+         * public/uploads/agent_slider/filename.webp
+         */
+            $fullPath = $uploadPath . '/' . $fileName;
+
             $imageInfo = getimagesize($image->getRealPath());
 
             if (!$imageInfo) {
@@ -209,11 +218,15 @@ class AgentSliderController extends Controller
             switch ($imageInfo['mime']) {
 
                 case 'image/jpeg':
-                    $sourceImage = imagecreatefromjpeg($image->getRealPath());
+                    $sourceImage = imagecreatefromjpeg(
+                        $image->getRealPath()
+                    );
                     break;
 
                 case 'image/png':
-                    $sourceImage = imagecreatefrompng($image->getRealPath());
+                    $sourceImage = imagecreatefrompng(
+                        $image->getRealPath()
+                    );
 
                     // Preserve PNG transparency
                     imagepalettetotruecolor($sourceImage);
@@ -231,8 +244,8 @@ class AgentSliderController extends Controller
 
 
             /*
-             * Save as WebP
-             */
+         * Save image as WebP
+         */
             imagewebp(
                 $sourceImage,
                 $fullPath,
@@ -243,11 +256,17 @@ class AgentSliderController extends Controller
 
 
             /*
-             * Save database record
-             */
+         * Save database record
+         */
             $slider = AgentSlider::create([
                 'url' => $request->url,
-                'image_path' => 'storage/' . $folder . '/',
+
+                /*
+             * Database value:
+             * uploads/agent_slider/
+             */
+                'image_path' => 'uploads/' . $folder . '/',
+
                 'alt_tag' => $request->alt_tag,
                 'slider_description' => $request->slider_description,
                 'file_name' => $fileName,
@@ -297,6 +316,20 @@ class AgentSliderController extends Controller
             ? $user->name
             : null;
 
+        /*
+     * Generate image URL from public/uploads/agent_slider
+     *
+     * Example:
+     * https://odapi.adglob.in/uploads/agent_slider/filename.webp
+     */
+        if ($slider->file_name) {
+            $slider->image_url = url(
+                'uploads/agent_slider/' . $slider->file_name
+            );
+        } else {
+            $slider->image_url = null;
+        }
+
         return response()->json([
             'status' => true,
             'data' => $slider
@@ -340,38 +373,33 @@ class AgentSliderController extends Controller
 
 
             /*
-             * Remove default from other sliders
-             */
-            if ($defaultSlider) {
-
-                AgentSlider::where('id', '!=', $id)
-                    ->where('default_slider', 1)
-                    ->update([
-                        'default_slider' => 0,
-                        'updated_at' => now()
-                    ]);
-            }
-
-
-            /*
-             * Update image if a new image was uploaded
-             */
+         * Update image if a new image was uploaded
+         */
             if ($request->hasFile('slider_img')) {
 
                 $image = $request->file('slider_img');
 
                 $folder = 'agent_slider';
 
-                $storagePath = storage_path('app/public/' . $folder);
+                /*
+             * Store images in:
+             *
+             * public/uploads/agent_slider/
+             */
+                $uploadPath = public_path('uploads/' . $folder);
 
-                if (!file_exists($storagePath)) {
-                    mkdir($storagePath, 0755, true);
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0777, true);
                 }
 
+
                 /*
-                 * Delete old image
-                 */
-                $oldFile = $storagePath . '/' . $slider->file_name;
+             * Delete old image
+             *
+             * Old image location:
+             * public/uploads/agent_slider/oldfile.webp
+             */
+                $oldFile = $uploadPath . '/' . $slider->file_name;
 
                 if ($slider->file_name && file_exists($oldFile)) {
                     unlink($oldFile);
@@ -379,36 +407,62 @@ class AgentSliderController extends Controller
 
 
                 /*
-                 * Generate new 32 character name
-                 */
+             * Generate new 32 character name
+             */
                 $randomName = Str::random(32);
 
                 $fileName = $randomName . '.webp';
 
-                $fullPath = $storagePath . '/' . $fileName;
+                /*
+             * New image physical path:
+             * public/uploads/agent_slider/filename.webp
+             */
+                $fullPath = $uploadPath . '/' . $fileName;
 
 
                 /*
-                 * Convert image
-                 */
+             * Get image information
+             */
                 $imageInfo = getimagesize($image->getRealPath());
 
+                if (!$imageInfo) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Invalid image file.'
+                    ], 422);
+                }
+
+
+                /*
+             * Convert image
+             */
                 switch ($imageInfo['mime']) {
 
                     case 'image/jpeg':
-                        $sourceImage = imagecreatefromjpeg($image->getRealPath());
+
+                        $sourceImage = imagecreatefromjpeg(
+                            $image->getRealPath()
+                        );
+
                         break;
 
-                    case 'image/png':
-                        $sourceImage = imagecreatefrompng($image->getRealPath());
 
+                    case 'image/png':
+
+                        $sourceImage = imagecreatefrompng(
+                            $image->getRealPath()
+                        );
+
+                        // Preserve PNG transparency
                         imagepalettetotruecolor($sourceImage);
                         imagealphablending($sourceImage, false);
                         imagesavealpha($sourceImage, true);
 
                         break;
 
+
                     default:
+
                         return response()->json([
                             'status' => false,
                             'message' => 'Only JPG, JPEG and PNG images are allowed.'
@@ -424,15 +478,12 @@ class AgentSliderController extends Controller
 
                 imagedestroy($sourceImage);
 
-
                 $slider->file_name = $fileName;
-                $slider->image_path = 'storage/' . $folder . '/';
+                $slider->image_path = 'uploads/' . $folder . '/';
             }
 
 
-            /*
-             * Update fields
-             */
+    
             $slider->url = $request->url;
             $slider->alt_tag = $request->alt_tag;
             $slider->slider_description = $request->slider_description;
@@ -442,6 +493,15 @@ class AgentSliderController extends Controller
             $slider->updated_at = now();
 
             $slider->save();
+
+
+            if ($slider->file_name) {
+                $slider->image_url = url(
+                    'uploads/agent_slider/' . $slider->file_name
+                );
+            } else {
+                $slider->image_url = null;
+            }
 
 
             return response()->json([
@@ -457,7 +517,6 @@ class AgentSliderController extends Controller
             ], 500);
         }
     }
-
     public function destroy($id)
     {
         try {
@@ -471,14 +530,9 @@ class AgentSliderController extends Controller
                 ], 404);
             }
 
-
-            /*
-             * Delete image
-             */
-            $filePath = storage_path(
-                'app/public/agent_slider/' . $slider->file_name
+            $filePath = public_path(
+                'uploads/agent_slider/' . $slider->file_name
             );
-
             if ($slider->file_name && file_exists($filePath)) {
                 unlink($filePath);
             }
