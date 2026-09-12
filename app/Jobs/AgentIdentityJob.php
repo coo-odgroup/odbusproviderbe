@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Services\AgentActivityService;
+use Illuminate\Support\Facades\Config;
 
 class AgentIdentityJob implements ShouldQueue
 {
@@ -22,12 +23,14 @@ class AgentIdentityJob implements ShouldQueue
     public $agentId;
     public $msg91Service;
     public $agentActivityService;
+    protected $SMS_ENABLED;
 
     public function __construct($agentId)
     {
         $this->agentId = $agentId;
         $this->msg91Service = new Msg91Service();
         $this->agentActivityService = new AgentActivityService();
+        $this->SMS_ENABLED = Config::get('constants.SMS_ENABLED');
         $this->onQueue('agent-identity');
     }
 
@@ -248,11 +251,15 @@ class AgentIdentityJob implements ShouldQueue
                 $dueAt
             );
 
-            $this->msg91Service->agentConfirmation($confirmationData);
+            if ($this->SMS_ENABLED) {
+                $this->msg91Service->agentConfirmation($confirmationData);
+            }
         } else {
-            $this->msg91Service->agentVerificationFailed([
-                'phone' => $agent->phone
-            ]);
+            if ($this->SMS_ENABLED) {
+                $this->msg91Service->agentVerificationFailed([
+                    'phone' => $agent->phone
+                ]);
+            }
 
             DB::table('agent_identity')
                 ->where('agent_id', $this->agentId)

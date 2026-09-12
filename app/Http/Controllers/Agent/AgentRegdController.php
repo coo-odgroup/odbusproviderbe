@@ -13,17 +13,20 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use App\Http\Controllers\Agent\VerificationController;
+use Illuminate\Support\Facades\Config;
 
 class AgentRegdController extends Controller
 {
     protected $msg91Service;
     protected $agentActivityService;
-
+    protected $SMS_ENABLED;
 
     public function __construct(Msg91Service $msg91Service, AgentActivityService $agentActivityService)
     {
         $this->msg91Service = $msg91Service;
         $this->agentActivityService = $agentActivityService;
+
+        $this->SMS_ENABLED = Config::get('constants.SMS_ENABLED');
     }
 
     public function agentRegd(Request $request)
@@ -255,7 +258,11 @@ class AgentRegdController extends Controller
                     'otp' => $otp
                 ];
 
-                $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+                if ($this->SMS_ENABLED) {
+                    $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+                } else {
+                    $otpSent['type'] = 'success';
+                }
 
                 $dueAt = now()->addHours(24);
 
@@ -271,8 +278,6 @@ class AgentRegdController extends Controller
                     ],
                     $dueAt
                 );
-
-                $otpSent['type'] = "success"; // For testing purpose, remove this line in production
 
                 if ($otpSent['type'] != 'success') {
 
@@ -405,9 +410,11 @@ class AgentRegdController extends Controller
                 'otp' => $otp
             ];
 
-            $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
-
-            $otpSent['type'] = "success"; // For testing purpose, remove this line in production
+            if ($this->SMS_ENABLED) {
+                $otpSent = $this->msg91Service->agentSignUpOtp($otpMsg91);
+            } else {
+                $otpSent['type'] = 'success';
+            }
 
             if ($otpSent['type'] != 'success') {
 
@@ -473,7 +480,6 @@ class AgentRegdController extends Controller
 
             $agent = DB::table('user')
                 ->where('client_id', $clientId)
-                // ->where('existing_agent', 1)
                 ->first();
 
             if (!$agent) {
@@ -1133,7 +1139,6 @@ class AgentRegdController extends Controller
 
             $agent = DB::table('user')
                 ->where('phone', $request->mobile)
-                // ->where('existing_agent', 1)
                 ->first();
 
             if (!$agent) {
@@ -1178,12 +1183,14 @@ class AgentRegdController extends Controller
                 'otp' => $otp
             ];
 
-            $this->msg91Service->forgot_otp($otpMsg91);
+            if ($this->SMS_ENABLED) {
+                $this->msg91Service->forgot_otp($otpMsg91);
+            }
 
             return response()->json([
                 'status' => true,
                 'statusCode' => 200,
-                'userId' => encrypt($agent->client_id),
+                'userId' => encrypt($agent->id),
                 'message' => 'OTP sent successfully'
             ], 200);
         } catch (\Exception $e) {
@@ -1219,8 +1226,7 @@ class AgentRegdController extends Controller
             $clientId = decrypt($request->userId);
 
             $agent = DB::table('user')
-                ->where('client_id', $clientId)
-                ->where('existing_agent', 1)
+                ->where('id', $clientId)
                 ->first();
 
             if (!$agent) {
@@ -1235,7 +1241,7 @@ class AgentRegdController extends Controller
             $otpRecord = DB::table('agent_otp_verification')
                 ->where('agent_id', $agent->id)
                 ->where('type', 1)
-                ->where('purpose', 2)
+                ->where('purpose', 3)
                 ->where('is_verified', 0)
                 ->orderBy('id', 'DESC')
                 ->first();
@@ -1334,8 +1340,7 @@ class AgentRegdController extends Controller
             $clientId = decrypt($request->userId);
 
             $agent = DB::table('user')
-                ->where('client_id', $clientId)
-                ->where('existing_agent', 1)
+                ->where('id', $clientId)
                 ->first();
 
             if (!$agent) {
