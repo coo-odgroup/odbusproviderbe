@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Config;
 use DB;
 
 /*Priyadarshi to Review*/
+
 class BusSeatsRepository
 {
     protected $busSeats;
@@ -25,46 +26,46 @@ class BusSeatsRepository
     public function getAll()
     {
         return $this->busSeats
-        ->where('status', '1')
-        ->get();
+            ->where('status', '1')
+            ->get();
     }
     public function getAllFare($busId)
     {
         // $result['busSeats']=$this->busSeats->where('bus_id',$busId)->orderBy('source_id','ASC')->get();//busSeats
         // $result['stoppageInfo']=$this->busStoppage->where('bus_id', $busId)->get();
         return $this->ticketPrice->with('getBusSeats.seats')
-               ->whereHas('getBusSeats', function ($query) {
-                   $query->where('status', '!=', '2');
-               })
-               ->whereHas('getBusSeats.seats', function ($query) {
-                   $query->where('status', '!=', '2');
-               })
-               ->where('bus_id', $busId)->get();
+            ->whereHas('getBusSeats', function ($query) {
+                $query->where('status', '!=', '2');
+            })
+            ->whereHas('getBusSeats.seats', function ($query) {
+                $query->where('status', '!=', '2');
+            })
+            ->where('bus_id', $busId)->get();
     }
     public function getByBusId($busId)
     {
         $data =  $this->busSeats->whereHas('ticketPrice', function ($q) {
             $q->where('status', 1);
         })
-        ->where('status', '1')
-        ->where('bus_id', $busId)
-        //->where('type',null)
-        ->get();
+            ->where('status', '1')
+            ->where('bus_id', $busId)
+            //->where('type',null)
+            ->get();
         // log::info($data);
         $duration = $this->busSeats
-                        ->where('status', '1')
-                        ->where('bus_id', $busId)
-                        ->where('type', null)
-                        ->where('duration', '!=', 0)
-                        ->limit(1)
-                        ->get();
+            ->where('status', '1')
+            ->where('bus_id', $busId)
+            ->where('type', null)
+            ->where('duration', '!=', 0)
+            ->limit(1)
+            ->get();
         // log::info($duration);
 
 
         $response = array(
-              "seat" => $data,
-              "duration" => $duration
-             );
+            "seat" => $data,
+            "duration" => $duration
+        );
         // log::info($response);
 
         return $response;
@@ -73,17 +74,17 @@ class BusSeatsRepository
     public function busextraSeatsByBus($busId)
     {
         $data = $this->busSeats
-        ->where('status', '1')
-        ->where('bus_id', $busId)
-        ->where('duration', '>', 0)
-        ->where('type', null)
-        ->get();
+            ->where('status', '1')
+            ->where('bus_id', $busId)
+            ->where('duration', '>', 0)
+            ->where('type', null)
+            ->get();
         // log::info($data);
         return $data;
     }
     public function getById($id)
     {
-        return $this->busSeats ->where('id', $id)->where('status', '!=', 2)->get();
+        return $this->busSeats->where('id', $id)->where('status', '!=', 2)->get();
     }
     public function getModel(BusSeats $busseats, $data, $berthData)
     {
@@ -128,21 +129,51 @@ class BusSeatsRepository
                             $busseats = $this->getModel($busseats, $data, $lowerBerthData);
                             $busseats->save();
                         }
-
                     }
                 }
             }
         }
         return $data;
     }
+    // public function updateNewFare($data)
+    // {
+    //     foreach ($data['fare_info'] as $singleSeat) {
+
+    //         $this->busSeats = $this->busSeats->find($singleSeat['id']);
+    //         $this->busSeats->new_fare = $singleSeat['new_fare'];
+    //         $this->busSeats->new_fare_status = !empty($singleSeat['new_fare_status']) ? 1 : 0;
+    //         $this->busSeats->update();
+    //     }
+    //     return $data;
+    // }
+
     public function updateNewFare($data)
     {
         foreach ($data['fare_info'] as $singleSeat) {
 
             $this->busSeats = $this->busSeats->find($singleSeat['id']);
-            $this->busSeats->new_fare = $singleSeat['new_fare'];
+
+            if (!$this->busSeats) {
+                continue;
+            }
+
+            $status = !empty($singleSeat['new_fare_status']) ? 1 : 0;
+
+            if ($status == 1) {
+                // Update new_fare and backup_fare
+                $this->busSeats->new_fare = $singleSeat['new_fare'];
+                $this->busSeats->backup_fare = $singleSeat['new_fare'];
+            } else {
+
+                // Save current new_fare into backup_fare
+                $this->busSeats->new_fare = 0;
+            }
+
+            $this->busSeats->new_fare_status = $status;
+
             $this->busSeats->update();
         }
+
         return $data;
     }
 
@@ -232,9 +263,9 @@ class BusSeatsRepository
                 if ($diff != 0) {
 
                     BusSeatCount::where(
-                            'ticket_price_id',
-                            $ticketPrice->id
-                        )
+                        'ticket_price_id',
+                        $ticketPrice->id
+                    )
                         ->whereDate(
                             'journey_date',
                             '>=',
@@ -250,9 +281,9 @@ class BusSeatsRepository
                         ]);
 
                     $journeyDates = BusSeatCount::where(
-                            'ticket_price_id',
-                            $ticketPrice->id
-                        )
+                        'ticket_price_id',
+                        $ticketPrice->id
+                    )
                         ->whereDate(
                             'journey_date',
                             '>=',
@@ -273,14 +304,13 @@ class BusSeatsRepository
             DB::commit();
 
             return $data;
-
         } catch (\Exception $e) {
 
             DB::rollBack();
 
             \Log::error(
                 'updateBusSeatsExtra Error : ' .
-                $e->getMessage()
+                    $e->getMessage()
             );
 
             throw $e;
@@ -310,8 +340,6 @@ class BusSeatsRepository
                                 }
                             }
                         }
-
-
                     }
                 }
             }
@@ -375,12 +403,12 @@ class BusSeatsRepository
                                 // \DB::connection()->enableQueryLog();
 
                                 $find_existing = $this->busSeats
-                                                ->where('bus_id', $bus_id)
-                                                ->where('seats_id', $upperBerthData['seatId'])
-                                                ->where('ticket_price_id', $ticketpriceID->id)
-                                                ->where('status', 1)
-                                                ->where('operation_date', '=', null)
-                                                ->get();
+                                    ->where('bus_id', $bus_id)
+                                    ->where('seats_id', $upperBerthData['seatId'])
+                                    ->where('ticket_price_id', $ticketpriceID->id)
+                                    ->where('status', 1)
+                                    ->where('operation_date', '=', null)
+                                    ->get();
 
                                 // Log::info($bus_id."-".$upperBerthData['seatId']."-".$ticketpriceID->id);
                                 //Log::info($find_existing);
@@ -399,14 +427,14 @@ class BusSeatsRepository
                                 }
 
                                 $find_existing_new_fare = $this->busSeats
-                                ->where('bus_id', $bus_id)
-                                ->where('seats_id', $upperBerthData['seatId'])
-                                ->where('ticket_price_id', $ticketpriceID->id)
-                                ->where('status', 2)
-                                ->where('operation_date', '=', null)
-                                ->orderBy('id', 'desc')
-                                ->limit(1)
-                                ->first();
+                                    ->where('bus_id', $bus_id)
+                                    ->where('seats_id', $upperBerthData['seatId'])
+                                    ->where('ticket_price_id', $ticketpriceID->id)
+                                    ->where('status', 2)
+                                    ->where('operation_date', '=', null)
+                                    ->orderBy('id', 'desc')
+                                    ->limit(1)
+                                    ->first();
 
 
 
@@ -427,12 +455,11 @@ class BusSeatsRepository
                             if (isset($upperBerthData['seatChecked']) && $upperBerthData['seatChecked'] == false) {
                                 // Log::info("UPPER BERTH: Made status 2 for seat ".$upperBerthData['seatId']);
                                 $busseats = $this->busSeats
-                                                 ->where('seats_id', $upperBerthData['seatId'])
-                                                 ->where('bus_id', $bus_id)
-                                                 ->where('ticket_price_id', $ticketpriceID->id)
-                                                 ->update(['status' => 2]);
+                                    ->where('seats_id', $upperBerthData['seatId'])
+                                    ->where('bus_id', $bus_id)
+                                    ->where('ticket_price_id', $ticketpriceID->id)
+                                    ->update(['status' => 2]);
                             }
-
                         }
                     }
                 }
@@ -444,12 +471,12 @@ class BusSeatsRepository
                         foreach ($get_ticket_price_id as $ticketpriceID) {
                             if ((isset($lowerBerthData['seatChecked']) && ($lowerBerthData['seatChecked'] == true || $lowerBerthData['seatChecked'] == "true")) || (!isset($lowerBerthData['seatChecked']) && isset($lowerBerthData['extraSeat']) && $lowerBerthData['extraSeat'] > 0)) {
                                 $find_existing = $this->busSeats
-                                                ->where('bus_id', $bus_id)
-                                                ->where('seats_id', $lowerBerthData['seatId'])
-                                                ->where('ticket_price_id', $ticketpriceID->id)
-                                                ->where('status', 1)
-                                                ->where('operation_date', '=', null)
-                                                ->get();
+                                    ->where('bus_id', $bus_id)
+                                    ->where('seats_id', $lowerBerthData['seatId'])
+                                    ->where('ticket_price_id', $ticketpriceID->id)
+                                    ->where('status', 1)
+                                    ->where('operation_date', '=', null)
+                                    ->get();
 
                                 // Log::info($bus_id."-".$lowerBerthData['seatId']."-".$ticketpriceID->id);
                                 // Log::info($find_existing);
@@ -462,14 +489,14 @@ class BusSeatsRepository
                                 }
 
                                 $find_existing_new_fare = $this->busSeats
-                                ->where('bus_id', $bus_id)
-                                ->where('seats_id', $lowerBerthData['seatId'])
-                                ->where('ticket_price_id', $ticketpriceID->id)
-                                ->where('status', 2)
-                                ->where('operation_date', '=', null)
-                                ->orderBy('id', 'desc')
-                                ->limit(1)
-                                ->first();
+                                    ->where('bus_id', $bus_id)
+                                    ->where('seats_id', $lowerBerthData['seatId'])
+                                    ->where('ticket_price_id', $ticketpriceID->id)
+                                    ->where('status', 2)
+                                    ->where('operation_date', '=', null)
+                                    ->orderBy('id', 'desc')
+                                    ->limit(1)
+                                    ->first();
 
                                 //Log::info("LOWER BERTH: Add A new seat ".$lowerBerthData['seatId']);
                                 $busseats = new $this->busSeats();
@@ -488,23 +515,19 @@ class BusSeatsRepository
                             if (isset($lowerBerthData['seatChecked']) && $lowerBerthData['seatChecked'] == false) {
                                 //Log::info("LOWER BERTH: Made status 2 for seat ".$lowerBerthData['seatId']);
                                 $busseats = $this->busSeats
-                                                 ->where('seats_id', $lowerBerthData['seatId'])
-                                                 ->where('bus_id', $bus_id)
-                                                 ->where('ticket_price_id', $ticketpriceID->id)
-                                                 ->update(['status' => 2]);
+                                    ->where('seats_id', $lowerBerthData['seatId'])
+                                    ->where('bus_id', $bus_id)
+                                    ->where('ticket_price_id', $ticketpriceID->id)
+                                    ->update(['status' => 2]);
                             }
-
                         }
-
-
-
                     }
                 }
             }
         }
 
 
-       $inventory = app(\App\Services\InventoryService::class);
+        $inventory = app(\App\Services\InventoryService::class);
 
         foreach ($get_ticket_price_id as $ticketPrice) {
 
@@ -524,9 +547,9 @@ class BusSeatsRepository
                 ]);
 
             $journeyDates = BusSeatCount::where(
-                    'ticket_price_id',
-                    $ticketPrice->id
-                )
+                'ticket_price_id',
+                $ticketPrice->id
+            )
                 ->whereDate('journey_date', '>=', now()->toDateString())
                 ->pluck('journey_date');
 
@@ -564,9 +587,8 @@ class BusSeatsRepository
 
 
 
-        log::info('seatBlock - '.$seat_block);
-        log::info('seatOpen - '.$seat_open);
-        log::info('deletedSeats - '.$deleted_seat);
+        log::info('seatBlock - ' . $seat_block);
+        log::info('seatOpen - ' . $seat_open);
+        log::info('deletedSeats - ' . $deleted_seat);
     }
-
 }
