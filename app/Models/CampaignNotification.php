@@ -22,6 +22,7 @@ class CampaignNotification extends Model
         'schedule_type',
         'schedule_minutes',
         'schedule_at',
+        'is_queued',
         'active_user_duration',
         'active_status',
         'total_users',

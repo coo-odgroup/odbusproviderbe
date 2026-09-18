@@ -1376,6 +1376,8 @@ $router->get('/update-refund-status', function () {
 });
 
 //subhasis
+
+//Campaign Notification
 Route::post('/toproutedata', [DashboardController::class, 'getRoute']);
 Route::post('createCampaignNotification', [CampaignNotificationController::class, 'createCampaignNotification']);
 Route::post('getAllCampaignNotificationData', [CampaignNotificationController::class, 'getAllCampaignNotificationData']);
@@ -1387,6 +1389,8 @@ Route::post('/get-operators', [CampaignNotificationController::class, 'getOperat
 Route::post('/get-locations', [CampaignNotificationController::class, 'getLocations']);
 Route::post('/getActiveCoupons', [CampaignNotificationController::class, 'getActiveCoupons']);
 Route::post('/getSelectedTargetUsers', [CampaignNotificationController::class, 'getSelectedTargetUsers']);
+
+//Notification Log
 Route::post('notification/log-report', [NotificationLogController::class, 'notificationLogReport'])->name('notification.logReport');
 Route::post('notification/campaign-list', [NotificationLogController::class, 'notificationCampaignList'])->name('notification.campaignList');
 

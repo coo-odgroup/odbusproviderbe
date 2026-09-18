@@ -84,9 +84,7 @@ class CampaignNotificationController extends Controller
             if ($request->hasFile('image')) {
 
                 $file = $request->file('image');
-
                 $fileName = time() . '_' . $file->getClientOriginalName();
-
                 $uploadPath = public_path(
                     'uploads/campaign_notifications'
                 );
@@ -100,8 +98,7 @@ class CampaignNotificationController extends Controller
                     $fileName
                 );
 
-                $data['image'] =
-                    'uploads/campaign_notifications/' . $fileName;
+                $data['image'] = $fileName;
             }
 
 
@@ -265,7 +262,7 @@ class CampaignNotificationController extends Controller
                     |
                     | Keep custom_type NULL.
                     */
-                        'custom_type' => null,
+                        'custom_type' => 5,
 
                         'source_id' => null,
                         'destination_id' => null,
@@ -367,8 +364,8 @@ class CampaignNotificationController extends Controller
             'schedules' => 'required_if:schedule_type,SCHEDULED|array|min:1',
             'schedules.*.id' => 'nullable|integer',
             'schedules.*.schedule_date' => 'required_if:schedule_type,SCHEDULED|date_format:Y-m-d',
-            'schedules.*.start_time' => 'required_if:schedule_type,SCHEDULED|date_format:H:i:s',
-            'schedules.*.end_time' => 'required_if:schedule_type,SCHEDULED|date_format:H:i:s',
+            'schedules.*.start_time' => 'required_if:schedule_type,SCHEDULED|date_format:H:i',
+            'schedules.*.end_time' => 'required_if:schedule_type,SCHEDULED|date_format:H:i',
         ]);
 
         if ($validator->fails()) {
@@ -453,8 +450,7 @@ class CampaignNotificationController extends Controller
                     $fileName
                 );
 
-                $campaign->image =
-                    'uploads/campaign_notifications/' . $fileName;
+                $campaign->image = $fileName;
             }
 
             $campaign->save();
@@ -769,6 +765,16 @@ class CampaignNotificationController extends Controller
                     'nc.schedule_at',
                     'nc.is_completed',
                     'nc.started_at',
+                    'nc.is_queued',
+                    DB::raw("
+                                CASE
+                                    WHEN nc.schedule_type = 'SCHEDULED' AND nc.is_queued = 1
+                                        THEN 'YES'
+                                    WHEN nc.schedule_type = 'SCHEDULED' AND nc.is_queued IS NULL
+                                        THEN 'NO'
+                                    ELSE NULL
+                                END AS queued_status
+                            "),
                     'nc.completed_at',
                     'nc.created_by',
                     'cu.name as created_by_name',
@@ -847,13 +853,26 @@ class CampaignNotificationController extends Controller
             ->where('campaign_id', $campaign->id)
             ->first();
 
+        // Get previously selected users
+        $selectedUsers = DB::table('notification_campaign_selected_users as csu')
+            ->join('users', 'users.id', '=', 'csu.selected_users')
+            ->where('csu.campaign_id', $campaign->id)
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                'users.phone',
+                'users.fcm_id'
+            )
+            ->get();
+
         return response()->json([
             'status' => 1,
-
             'data' => [
                 'campaign' => $campaign,
                 'schedules' => $schedules,
-                'custom' => $custom
+                'custom' => $custom,
+                'selected_users' => $selectedUsers
             ]
         ]);
     }
