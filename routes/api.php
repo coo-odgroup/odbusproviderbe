@@ -1448,4 +1448,6 @@ Route::post('/verify-email-otp', [AgentRegdController::class, 'verifyEmailOtp'])
 Route::post('/agent-forget-password-otp', [AgentRegdController::class, 'AgentForgetPasswordOtp']);
 Route::post('/agent-verify-otp', [AgentRegdController::class, 'AgentVerifyOtp']);
 Route::post('/agent-reset-password', [AgentRegdController::class, 'AgentResetPassword']);
+
+Route::post('/getagantfaqs', [AgentFaqController::class, 'getAgantFaqs']);
 // Jagan

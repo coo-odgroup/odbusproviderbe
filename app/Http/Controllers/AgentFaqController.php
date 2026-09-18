@@ -470,4 +470,51 @@ class AgentFaqController extends Controller
             ], 500);
         }
     }
+
+    public function getAgantFaqs()
+    {
+        try {
+            $faqs = DB::table('agent_faq_category as fc')
+                ->leftJoin('agent_faq as f', 'fc.id', '=', 'f.category_id')
+                ->select(
+                    'fc.id as faq_category_id',
+                    'fc.category_name',
+                    'f.id as faq_id',
+                    'f.question',
+                    'f.answer'
+                )
+                ->where('fc.type', 2)
+                ->where('f.type_id', 2)
+                ->where('f.status', 1)
+                ->orderBy('fc.id')
+                ->get()
+                ->groupBy('faq_category_id')
+                ->map(function ($items) {
+                    return [
+                        'category_id' => $items->first()->faq_category_id,
+                        'category_name' => $items->first()->category_name,
+                        'faqs' => $items->map(function ($item) {
+                            return [
+                                'faq_id' => $item->faq_id,
+                                'title' => $item->question,
+                                'content' => $item->answer,
+                            ];
+                        })->values()
+                    ];
+                })
+                ->values();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'FAQ fetched successfully',
+                'data' => $faqs
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
