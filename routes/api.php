@@ -165,6 +165,9 @@ use App\Http\Controllers\NotificationMasterController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\NotificationLogController;
 
+//Vendors
+use App\Http\Controllers\ApiVendorController;
+
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AgentSliderController;
 
@@ -1433,6 +1436,19 @@ Route::post('/getAgentFaq/{id}', [AgentFaqController::class, 'getFaq']);
 Route::post('/addAgentFaq', [AgentFaqController::class, 'addFaq']);
 Route::post('/updateAgentFaq/{id}', [AgentFaqController::class, 'updateFaq']);
 Route::post('/changeAgentFaqStatus/{id}', [AgentFaqController::class, 'changeStatus']);
+
+//API Vendor
+Route::post('/vendors/list', [ApiVendorController::class, 'getVendors']);
+Route::post('/vendors/view', [ApiVendorController::class, 'getVendor']);
+Route::post('/vendors/add', [ApiVendorController::class, 'addVendor']);
+Route::post('/vendors/update', [ApiVendorController::class, 'updateVendor']);
+Route::post('/vendors/status', [ApiVendorController::class, 'changeVendorStatus']);
+Route::post('/vendors/states', [ApiVendorController::class, 'getStates']);
+Route::post('/vendors/credentials/generate',[ApiVendorController::class, 'generateVendorCredential']);
+Route::post('/vendors/credentials/save',[ApiVendorController::class, 'saveVendorCredentials']);
+Route::post('/vendors/credentials/list',[ApiVendorController::class, 'getVendorCredentials']);
+Route::post('/vendors/environment/status',[ApiVendorController::class, 'changeVendorEnvironmentStatus']);
+
 
 // Jagan
 Route::post('/agentRegd', [AgentRegdController::class, 'agentRegd']);
