@@ -1448,6 +1448,15 @@ Route::post('/vendors/credentials/generate',[ApiVendorController::class, 'genera
 Route::post('/vendors/credentials/save',[ApiVendorController::class, 'saveVendorCredentials']);
 Route::post('/vendors/credentials/list',[ApiVendorController::class, 'getVendorCredentials']);
 Route::post('/vendors/environment/status',[ApiVendorController::class, 'changeVendorEnvironmentStatus']);
+Route::post('/vendors/ips/list',[ApiVendorController::class, 'getVendorIps']);
+Route::post('/vendors/ips/save',[ApiVendorController::class, 'saveVendorIps']);
+Route::post('/vendors/ips/status',[ApiVendorController::class, 'changeVendorIpStatus']);
+Route::post('/vendors/scope/list',[ApiVendorController::class, 'getVendorScopes']);
+Route::post('/vendors/scope/save',[ApiVendorController::class, 'saveVendorScopes']);
+Route::post('/vendors/scope/status',[ApiVendorController::class, 'changeVendorScopeStatus']);
+Route::post('/vendors/rate-limits/list',[ApiVendorController::class, 'getVendorRateLimits']);
+Route::post('/vendors/rate-limits/save',[ApiVendorController::class, 'saveVendorRateLimits']);
+Route::post('/vendors/view-details',[ApiVendorController::class, 'getVendorViewDetails']);
 
 
 // Jagan

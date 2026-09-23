@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Str;
 
+
 class ApiVendorController extends Controller
 {
     public function getVendors(Request $request)
@@ -1024,6 +1025,2161 @@ class ApiVendorController extends Controller
             return response()->json([
                 'status' => 0,
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getVendorIps(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'vendor_id' => 'required|integer|exists:api_vendors,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $ips = DB::table('api_vendor_ips as vi')
+                ->join(
+                    'api_vendor_environments as ve',
+                    've.id',
+                    '=',
+                    'vi.vendor_environment_id'
+                )
+                ->where('vi.vendor_id', $request->vendor_id)
+                ->select(
+                    'vi.id',
+                    'vi.vendor_id',
+                    'vi.vendor_environment_id',
+                    'vi.ip_address',
+                    'vi.is_active',
+                    've.environment'
+                )
+                ->orderBy('vi.id', 'ASC')
+                ->get();
+
+            $productionIps = $ips
+                ->where('environment', 'production')
+                ->values();
+
+            $sandboxIps = $ips
+                ->where('environment', 'sandbox')
+                ->values();
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Vendor IPs fetched successfully',
+                'data' => [
+                    'production' => $productionIps,
+                    'sandbox' => $sandboxIps
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function saveVendorIps(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'vendor_id' => 'required|integer|exists:api_vendors,id',
+
+                'production_ips' => 'nullable|array',
+                'production_ips.*.id' => 'nullable|integer',
+                'production_ips.*.ip_address' => 'required|ip',
+                'production_ips.*.is_active' => 'required|boolean',
+
+                'sandbox_ips' => 'nullable|array',
+                'sandbox_ips.*.id' => 'nullable|integer',
+                'sandbox_ips.*.ip_address' => 'required|ip',
+                'sandbox_ips.*.is_active' => 'required|boolean',
+
+                'created_by' => 'nullable|integer',
+                'updated_by' => 'nullable|integer',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $vendor = ApiVendor::find($request->vendor_id);
+
+            if (!$vendor) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Vendor not found'
+                ], 404);
+            }
+
+            /*
+         * Get actual environment IDs.
+         */
+            $productionEnvironment = DB::table('api_vendor_environments')
+                ->where('vendor_id', $vendor->id)
+                ->where('environment', 'production')
+                ->first();
+
+            $sandboxEnvironment = DB::table('api_vendor_environments')
+                ->where('vendor_id', $vendor->id)
+                ->where('environment', 'sandbox')
+                ->first();
+
+            if (!$productionEnvironment || !$sandboxEnvironment) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Vendor environments are not configured properly'
+                ], 404);
+            }
+
+            $createdBy = $request->created_by;
+            $updatedBy = $request->updated_by;
+
+            DB::transaction(function () use (
+                $request,
+                $vendor,
+                $productionEnvironment,
+                $sandboxEnvironment,
+                $createdBy,
+                $updatedBy
+            ) {
+
+                /*
+             * ==========================================
+             * PRODUCTION IPs
+             * ==========================================
+             */
+                foreach ($request->production_ips ?? [] as $ip) {
+
+                    if (!empty($ip['id'])) {
+
+                        /*
+                     * UPDATE existing IP
+                     */
+                        DB::table('api_vendor_ips')
+                            ->where('id', $ip['id'])
+                            ->where('vendor_id', $vendor->id)
+                            ->where(
+                                'vendor_environment_id',
+                                $productionEnvironment->id
+                            )
+                            ->update([
+                                'ip_address' => $ip['ip_address'],
+                                'is_active' => $ip['is_active'],
+                                'updated_at' => Carbon::now(),
+                                'updated_by' => $updatedBy
+                            ]);
+                    } else {
+
+                        /*
+                     * INSERT new IP
+                     */
+                        DB::table('api_vendor_ips')->insert([
+                            'vendor_id' => $vendor->id,
+                            'vendor_environment_id' =>
+                            $productionEnvironment->id,
+                            'ip_address' => $ip['ip_address'],
+                            'is_active' => $ip['is_active'],
+                            'created_at' => Carbon::now(),
+                            'created_by' => $createdBy,
+                            'updated_at' => Carbon::now(),
+                            'updated_by' => $updatedBy
+                        ]);
+                    }
+                }
+
+
+                /*
+             * ==========================================
+             * SANDBOX IPs
+             * ==========================================
+             */
+                foreach ($request->sandbox_ips ?? [] as $ip) {
+
+                    if (!empty($ip['id'])) {
+
+                        /*
+                     * UPDATE existing IP
+                     */
+                        DB::table('api_vendor_ips')
+                            ->where('id', $ip['id'])
+                            ->where('vendor_id', $vendor->id)
+                            ->where(
+                                'vendor_environment_id',
+                                $sandboxEnvironment->id
+                            )
+                            ->update([
+                                'ip_address' => $ip['ip_address'],
+                                'is_active' => $ip['is_active'],
+                                'updated_at' => Carbon::now(),
+                                'updated_by' => $updatedBy
+                            ]);
+                    } else {
+
+                        /*
+                     * INSERT new IP
+                     */
+                        DB::table('api_vendor_ips')->insert([
+                            'vendor_id' => $vendor->id,
+                            'vendor_environment_id' =>
+                            $sandboxEnvironment->id,
+                            'ip_address' => $ip['ip_address'],
+                            'is_active' => $ip['is_active'],
+                            'created_at' => Carbon::now(),
+                            'created_by' => $createdBy,
+                            'updated_at' => Carbon::now(),
+                            'updated_by' => $updatedBy
+                        ]);
+                    }
+                }
+            });
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Vendor IPs saved successfully'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function changeVendorIpStatus(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|integer|exists:api_vendor_ips,id',
+                'is_active' => 'required|boolean',
+                'updated_by' => 'nullable|integer',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $ip = DB::table('api_vendor_ips')
+                ->where('id', $request->id)
+                ->first();
+
+            if (!$ip) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Vendor IP not found'
+                ], 404);
+            }
+
+            DB::table('api_vendor_ips')
+                ->where('id', $request->id)
+                ->update([
+                    'is_active' => $request->is_active,
+                    'updated_at' => Carbon::now(),
+                    'updated_by' => $request->updated_by
+                ]);
+
+            return response()->json([
+                'status' => 1,
+                'message' => $request->is_active
+                    ? 'IP activated successfully'
+                    : 'IP deactivated successfully'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getVendorScopes(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'vendor_id' => 'required|integer|exists:api_vendors,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $vendorId = $request->vendor_id;
+
+
+
+            $environments = DB::table('api_vendor_environments')
+                ->where('vendor_id', $vendorId)
+                ->whereIn('environment', [
+                    'sandbox',
+                    'production'
+                ])
+                ->get()
+                ->keyBy('environment');
+
+            if (
+                !isset($environments['sandbox']) ||
+                !isset($environments['production'])
+            ) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Vendor environments are not configured properly'
+                ], 404);
+            }
+
+            $sandboxEnvironmentId =
+                $environments['sandbox']->id;
+
+            $productionEnvironmentId =
+                $environments['production']->id;
+
+            $scopes = DB::table('api_scope')
+                ->select(
+                    'id',
+                    'name',
+                    'description'
+                )
+                ->orderBy('id', 'ASC')
+                ->get();
+
+
+            $vendorScopes = DB::table('api_vendor_scope')
+                ->where('vednor_id', $vendorId)
+                ->whereIn(
+                    'vendor_environment_id',
+                    [
+                        $sandboxEnvironmentId,
+                        $productionEnvironmentId
+                    ]
+                )
+                ->get();
+
+
+
+            $sandboxScopes = $scopes->map(function ($scope) use (
+                $vendorScopes,
+                $sandboxEnvironmentId
+            ) {
+
+                $assigned = $vendorScopes
+                    ->where(
+                        'vendor_environment_id',
+                        $sandboxEnvironmentId
+                    )
+                    ->where(
+                        'scope_id',
+                        $scope->id
+                    )
+                    ->first();
+
+                return [
+                    // MASTER DATA
+                    'id' => $scope->id,
+                    'name' => $scope->name,
+                    'description' => $scope->description,
+
+                    // VENDOR ASSIGNMENT DATA
+                    'vendor_scope_id' =>
+                    $assigned
+                        ? $assigned->id
+                        : null,
+
+                    'checked' =>
+                    $assigned
+                        ? true
+                        : false,
+
+                    'status' =>
+                    $assigned
+                        ? (int) $assigned->status
+                        : 0
+                ];
+            });
+
+
+
+            $productionScopes = $scopes->map(function ($scope) use (
+                $vendorScopes,
+                $productionEnvironmentId
+            ) {
+
+                $assigned = $vendorScopes
+                    ->where(
+                        'vendor_environment_id',
+                        $productionEnvironmentId
+                    )
+                    ->where(
+                        'scope_id',
+                        $scope->id
+                    )
+                    ->first();
+
+                return [
+                    // MASTER DATA
+                    'id' => $scope->id,
+                    'name' => $scope->name,
+                    'description' => $scope->description,
+
+                    // VENDOR ASSIGNMENT DATA
+                    'vendor_scope_id' =>
+                    $assigned
+                        ? $assigned->id
+                        : null,
+
+                    'checked' =>
+                    $assigned
+                        ? true
+                        : false,
+
+                    'status' =>
+                    $assigned
+                        ? (int) $assigned->status
+                        : 0
+                ];
+            });
+
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Vendor scopes fetched successfully',
+
+                'data' => [
+                    'sandbox' =>
+                    $sandboxScopes->values(),
+
+                    'production' =>
+                    $productionScopes->values()
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function saveVendorScopes(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+
+                'vendor_id' =>
+                'required|integer|exists:api_vendors,id',
+
+                'sandbox_scopes' =>
+                'nullable|array',
+
+                'sandbox_scopes.*.id' =>
+                'required|integer|exists:api_scope,id',
+
+                'sandbox_scopes.*.checked' =>
+                'required|boolean',
+
+                'sandbox_scopes.*.status' =>
+                'required|boolean',
+
+                'production_scopes' =>
+                'nullable|array',
+
+                'production_scopes.*.id' =>
+                'required|integer|exists:api_scope,id',
+
+                'production_scopes.*.checked' =>
+                'required|boolean',
+
+                'production_scopes.*.status' =>
+                'required|boolean',
+
+                'created_by' =>
+                'nullable|integer',
+
+                'updated_by' =>
+                'nullable|integer',
+            ]);
+
+
+            if ($validator->fails()) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' =>
+                    $validator->errors()->first(),
+                    'errors' =>
+                    $validator->errors()
+                ], 422);
+            }
+
+
+            $vendor = ApiVendor::find(
+                $request->vendor_id
+            );
+
+
+            if (!$vendor) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Vendor not found'
+                ], 404);
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | ENVIRONMENTS
+        |--------------------------------------------------------------------------
+        */
+
+            $sandboxEnvironment =
+                DB::table('api_vendor_environments')
+                ->where('vendor_id', $vendor->id)
+                ->where('environment', 'sandbox')
+                ->first();
+
+
+            $productionEnvironment =
+                DB::table('api_vendor_environments')
+                ->where('vendor_id', $vendor->id)
+                ->where('environment', 'production')
+                ->first();
+
+
+            if (
+                !$sandboxEnvironment ||
+                !$productionEnvironment
+            ) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' =>
+                    'Vendor environments are not configured properly'
+                ], 404);
+            }
+
+
+            $createdBy = $request->created_by;
+            $updatedBy = $request->updated_by;
+
+
+            DB::transaction(function () use (
+                $request,
+                $vendor,
+                $sandboxEnvironment,
+                $productionEnvironment,
+                $createdBy,
+                $updatedBy
+            ) {
+
+
+                /*
+            |--------------------------------------------------------------------------
+            | DELETE OLD SANDBOX ASSIGNMENTS
+            |--------------------------------------------------------------------------
+            */
+
+                DB::table('api_vendor_scope')
+                    ->where(
+                        'vednor_id',
+                        $vendor->id
+                    )
+                    ->where(
+                        'vendor_environment_id',
+                        $sandboxEnvironment->id
+                    )
+                    ->delete();
+
+
+                /*
+            |--------------------------------------------------------------------------
+            | INSERT CHECKED SANDBOX SCOPES
+            |--------------------------------------------------------------------------
+            */
+
+                foreach (
+                    $request->sandbox_scopes ?? []
+                    as $scope
+                ) {
+
+                    if (
+                        !empty($scope['checked'])
+                    ) {
+
+                        DB::table('api_vendor_scope')
+                            ->insert([
+                                'vednor_id' =>
+                                $vendor->id,
+
+                                'vendor_environment_id' =>
+                                $sandboxEnvironment->id,
+
+                                'scope_id' =>
+                                $scope['id'],
+
+                                // Checked scope is ACTIVE by default
+                                'status' => 1,
+
+                                'created_at' =>
+                                Carbon::now(),
+
+                                'created_by' =>
+                                $createdBy,
+
+                                'updated_at' =>
+                                Carbon::now(),
+
+                                'updated_by' =>
+                                $updatedBy,
+                            ]);
+                    }
+                }
+
+
+                /*
+            |--------------------------------------------------------------------------
+            | DELETE OLD PRODUCTION ASSIGNMENTS
+            |--------------------------------------------------------------------------
+            */
+
+                DB::table('api_vendor_scope')
+                    ->where(
+                        'vednor_id',
+                        $vendor->id
+                    )
+                    ->where(
+                        'vendor_environment_id',
+                        $productionEnvironment->id
+                    )
+                    ->delete();
+
+
+                /*
+            |--------------------------------------------------------------------------
+            | INSERT CHECKED PRODUCTION SCOPES
+            |--------------------------------------------------------------------------
+            */
+
+                foreach (
+                    $request->production_scopes ?? []
+                    as $scope
+                ) {
+
+                    if (
+                        !empty($scope['checked'])
+                    ) {
+
+                        DB::table('api_vendor_scope')
+                            ->insert([
+                                'vednor_id' =>
+                                $vendor->id,
+
+                                'vendor_environment_id' =>
+                                $productionEnvironment->id,
+
+                                'scope_id' =>
+                                $scope['id'],
+
+                                // Checked scope is ACTIVE by default
+                                'status' => 1,
+
+                                'created_at' =>
+                                Carbon::now(),
+
+                                'created_by' =>
+                                $createdBy,
+
+                                'updated_at' =>
+                                Carbon::now(),
+
+                                'updated_by' =>
+                                $updatedBy,
+                            ]);
+                    }
+                }
+            });
+
+
+            return response()->json([
+                'status' => 1,
+                'message' =>
+                'Vendor scopes saved successfully'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' =>
+                $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function changeVendorScopeStatus(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'vendor_id' =>
+                'required|integer|exists:api_vendors,id',
+
+                'environment' =>
+                'required|in:sandbox,production',
+
+                'scope_id' =>
+                'required|integer|exists:api_scope,id',
+
+                'status' =>
+                'required|boolean',
+
+                'updated_by' =>
+                'nullable|integer',
+            ]);
+
+            if ($validator->fails()) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' =>
+                    $validator->errors()->first(),
+                    'errors' =>
+                    $validator->errors()
+                ], 422);
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Get Environment
+        |--------------------------------------------------------------------------
+        */
+
+            $environment = DB::table('api_vendor_environments')
+                ->where(
+                    'vendor_id',
+                    $request->vendor_id
+                )
+                ->where(
+                    'environment',
+                    $request->environment
+                )
+                ->first();
+
+
+            if (!$environment) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' =>
+                    ucfirst($request->environment) .
+                        ' environment not found'
+                ], 404);
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Find Vendor Scope
+        |--------------------------------------------------------------------------
+        */
+
+            $vendorScope = DB::table('api_vendor_scope')
+                ->where(
+                    'vednor_id',
+                    $request->vendor_id
+                )
+                ->where(
+                    'vendor_environment_id',
+                    $environment->id
+                )
+                ->where(
+                    'scope_id',
+                    $request->scope_id
+                )
+                ->first();
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Existing Assignment
+        |--------------------------------------------------------------------------
+        */
+
+            if ($vendorScope) {
+
+                DB::table('api_vendor_scope')
+                    ->where(
+                        'id',
+                        $vendorScope->id
+                    )
+                    ->update([
+                        'status' =>
+                        $request->status,
+
+                        'updated_at' =>
+                        Carbon::now(),
+
+                        'updated_by' =>
+                        $request->updated_by
+                    ]);
+
+
+                return response()->json([
+                    'status' => 1,
+
+                    'message' =>
+                    $request->status
+                        ? 'Scope activated successfully'
+                        : 'Scope deactivated successfully',
+
+                    'data' => [
+                        'vendor_scope_id' =>
+                        $vendorScope->id,
+
+                        'status' =>
+                        (int) $request->status
+                    ]
+                ], 200);
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | No Assignment Exists
+        |--------------------------------------------------------------------------
+        |
+        | If user clicks Active on a scope that is not
+        | currently assigned, create the assignment.
+        |
+        */
+
+            if ((int) $request->status === 1) {
+
+                $vendorScopeId =
+                    DB::table('api_vendor_scope')
+                    ->insertGetId([
+                        'vednor_id' =>
+                        $request->vendor_id,
+
+                        'vendor_environment_id' =>
+                        $environment->id,
+
+                        'scope_id' =>
+                        $request->scope_id,
+
+                        'status' => 1,
+
+                        'created_at' =>
+                        Carbon::now(),
+
+                        'created_by' =>
+                        $request->updated_by,
+
+                        'updated_at' =>
+                        Carbon::now(),
+
+                        'updated_by' =>
+                        $request->updated_by
+                    ]);
+
+
+                return response()->json([
+                    'status' => 1,
+
+                    'message' =>
+                    'Scope activated successfully',
+
+                    'data' => [
+                        'vendor_scope_id' =>
+                        $vendorScopeId,
+
+                        'status' => 1
+                    ]
+                ], 200);
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | No Assignment + Inactive
+        |--------------------------------------------------------------------------
+        */
+
+            return response()->json([
+                'status' => 1,
+                'message' =>
+                'Scope is already inactive'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' =>
+                $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getVendorRateLimits(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'vendor_id' => 'required|integer|exists:api_vendors,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $vendorId = $request->vendor_id;
+
+            /*
+        |--------------------------------------------------------------------------
+        | Get vendor environments
+        |--------------------------------------------------------------------------
+        */
+
+            $environments = DB::table('api_vendor_environments')
+                ->where('vendor_id', $vendorId)
+                ->whereIn('environment', [
+                    'sandbox',
+                    'production'
+                ])
+                ->get()
+                ->keyBy('environment');
+
+            if (
+                !isset($environments['sandbox']) ||
+                !isset($environments['production'])
+            ) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Vendor environments are not configured properly'
+                ], 404);
+            }
+
+            $sandboxEnvironmentId =
+                $environments['sandbox']->id;
+
+            $productionEnvironmentId =
+                $environments['production']->id;
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Get active vendor scopes
+        |--------------------------------------------------------------------------
+        |
+        | api_vendor_scope
+        |   vednor_id
+        |   vendor_environment_id
+        |   scope_id
+        |   status
+        |
+        */
+
+            $vendorScopes = DB::table('api_vendor_scope as vs')
+                ->join(
+                    'api_scope as s',
+                    's.id',
+                    '=',
+                    'vs.scope_id'
+                )
+                ->join(
+                    'api_vendor_environments as ve',
+                    've.id',
+                    '=',
+                    'vs.vendor_environment_id'
+                )
+                ->where(
+                    'vs.vednor_id',
+                    $vendorId
+                )
+                ->where('vs.status', 1)
+                ->whereIn(
+                    'vs.vendor_environment_id',
+                    [
+                        $sandboxEnvironmentId,
+                        $productionEnvironmentId
+                    ]
+                )
+                ->select(
+                    'vs.id as vendor_scope_id',
+                    'vs.vednor_id as vendor_id',
+                    'vs.vendor_environment_id',
+                    'vs.scope_id',
+                    'vs.status',
+                    's.name as scope_name',
+                    's.description as scope_description',
+                    've.environment'
+                )
+                ->orderBy('vs.scope_id', 'ASC')
+                ->get();
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Get existing rate limits
+        |--------------------------------------------------------------------------
+        */
+
+            $rateLimits = DB::table('api_vendor_rate_limits')
+                ->where('vendor_id', $vendorId)
+                ->whereIn(
+                    'vendor_environment_id',
+                    [
+                        $sandboxEnvironmentId,
+                        $productionEnvironmentId
+                    ]
+                )
+                ->get();
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Sandbox
+        |--------------------------------------------------------------------------
+        */
+
+            $sandbox = $vendorScopes
+                ->where(
+                    'vendor_environment_id',
+                    $sandboxEnvironmentId
+                )
+                ->map(function ($scope) use ($rateLimits) {
+
+                    $rateLimit = $rateLimits
+                        ->where(
+                            'vendor_environment_id',
+                            $scope->vendor_environment_id
+                        )
+                        ->where(
+                            'scope_id',
+                            $scope->scope_id
+                        )
+                        ->first();
+
+                    return [
+                        'vendor_scope_id' =>
+                        $scope->vendor_scope_id,
+
+                        'vendor_id' =>
+                        $scope->vendor_id,
+
+                        'vendor_environment_id' =>
+                        $scope->vendor_environment_id,
+
+                        'scope_id' =>
+                        $scope->scope_id,
+
+                        'scope_name' =>
+                        $scope->scope_name,
+
+                        'scope_description' =>
+                        $scope->scope_description,
+
+                        'endpoint' =>
+                        $rateLimit
+                            ? $rateLimit->endpoint
+                            : $scope->scope_name,
+
+                        'requests_per_minute' =>
+                        $rateLimit
+                            ? $rateLimit->requests_per_minute
+                            : null,
+
+                        'requests_per_hour' =>
+                        $rateLimit
+                            ? $rateLimit->requests_per_hour
+                            : null,
+
+                        'burst_limit' =>
+                        $rateLimit
+                            ? $rateLimit->burst_limit
+                            : null,
+
+                        'rate_limit_id' =>
+                        $rateLimit
+                            ? $rateLimit->id
+                            : null,
+
+                        'is_active' =>
+                        $rateLimit
+                            ? (int) $rateLimit->is_active
+                            : 1
+                    ];
+                })
+                ->values();
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Production
+        |--------------------------------------------------------------------------
+        */
+
+            $production = $vendorScopes
+                ->where(
+                    'vendor_environment_id',
+                    $productionEnvironmentId
+                )
+                ->map(function ($scope) use ($rateLimits) {
+
+                    $rateLimit = $rateLimits
+                        ->where(
+                            'vendor_environment_id',
+                            $scope->vendor_environment_id
+                        )
+                        ->where(
+                            'scope_id',
+                            $scope->scope_id
+                        )
+                        ->first();
+
+                    return [
+                        'vendor_scope_id' =>
+                        $scope->vendor_scope_id,
+
+                        'vendor_id' =>
+                        $scope->vendor_id,
+
+                        'vendor_environment_id' =>
+                        $scope->vendor_environment_id,
+
+                        'scope_id' =>
+                        $scope->scope_id,
+
+                        'scope_name' =>
+                        $scope->scope_name,
+
+                        'scope_description' =>
+                        $scope->scope_description,
+
+                        'endpoint' =>
+                        $rateLimit
+                            ? $rateLimit->endpoint
+                            : $scope->scope_name,
+
+                        'requests_per_minute' =>
+                        $rateLimit
+                            ? $rateLimit->requests_per_minute
+                            : null,
+
+                        'requests_per_hour' =>
+                        $rateLimit
+                            ? $rateLimit->requests_per_hour
+                            : null,
+
+                        'burst_limit' =>
+                        $rateLimit
+                            ? $rateLimit->burst_limit
+                            : null,
+
+                        'rate_limit_id' =>
+                        $rateLimit
+                            ? $rateLimit->id
+                            : null,
+
+                        'is_active' =>
+                        $rateLimit
+                            ? (int) $rateLimit->is_active
+                            : 1
+                    ];
+                })
+                ->values();
+
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Vendor rate limits fetched successfully',
+                'data' => [
+                    'sandbox' => $sandbox,
+                    'production' => $production
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function saveVendorRateLimits(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+
+                'vendor_id' =>
+                'required|integer|exists:api_vendors,id',
+
+                'sandbox' =>
+                'nullable|array',
+
+                'sandbox.*.scope_id' =>
+                'required|integer|exists:api_scope,id',
+
+                'sandbox.*.requests_per_minute' =>
+                'required|integer|min:1',
+
+                'sandbox.*.requests_per_hour' =>
+                'required|integer|min:1',
+
+                'sandbox.*.burst_limit' =>
+                'required|integer|min:1',
+
+                'production' =>
+                'nullable|array',
+
+                'production.*.scope_id' =>
+                'required|integer|exists:api_scope,id',
+
+                'production.*.requests_per_minute' =>
+                'required|integer|min:1',
+
+                'production.*.requests_per_hour' =>
+                'required|integer|min:1',
+
+                'production.*.burst_limit' =>
+                'required|integer|min:1',
+
+                'created_by' =>
+                'nullable|integer',
+
+                'updated_by' =>
+                'nullable|integer',
+            ]);
+
+
+            if ($validator->fails()) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' =>
+                    $validator->errors()->first(),
+                    'errors' =>
+                    $validator->errors()
+                ], 422);
+            }
+
+
+            $vendor = ApiVendor::find(
+                $request->vendor_id
+            );
+
+
+            if (!$vendor) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Vendor not found'
+                ], 404);
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | Get environments
+        |--------------------------------------------------------------------------
+        */
+
+            $sandboxEnvironment = DB::table(
+                'api_vendor_environments'
+            )
+                ->where(
+                    'vendor_id',
+                    $vendor->id
+                )
+                ->where(
+                    'environment',
+                    'sandbox'
+                )
+                ->first();
+
+
+            $productionEnvironment = DB::table(
+                'api_vendor_environments'
+            )
+                ->where(
+                    'vendor_id',
+                    $vendor->id
+                )
+                ->where(
+                    'environment',
+                    'production'
+                )
+                ->first();
+
+
+            if (
+                !$sandboxEnvironment ||
+                !$productionEnvironment
+            ) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' =>
+                    'Vendor environments are not configured properly'
+                ], 404);
+            }
+
+
+            $createdBy =
+                $request->created_by;
+
+            $updatedBy =
+                $request->updated_by;
+
+
+            DB::transaction(function () use (
+                $request,
+                $vendor,
+                $sandboxEnvironment,
+                $productionEnvironment,
+                $createdBy,
+                $updatedBy
+            ) {
+
+
+                /*
+            |--------------------------------------------------------------------------
+            | Sandbox
+            |--------------------------------------------------------------------------
+            */
+
+                foreach (
+                    $request->sandbox ?? []
+                    as $rate
+                ) {
+
+                    /*
+                |--------------------------------------------------------------------------
+                | Verify active vendor scope
+                |--------------------------------------------------------------------------
+                */
+
+                    $vendorScope =
+                        DB::table('api_vendor_scope')
+                        ->where(
+                            'vednor_id',
+                            $vendor->id
+                        )
+                        ->where(
+                            'vendor_environment_id',
+                            $sandboxEnvironment->id
+                        )
+                        ->where(
+                            'scope_id',
+                            $rate['scope_id']
+                        )
+                        ->where(
+                            'status',
+                            1
+                        )
+                        ->first();
+
+
+                    if (!$vendorScope) {
+                        continue;
+                    }
+
+
+                    /*
+                |--------------------------------------------------------------------------
+                | Get scope master
+                |--------------------------------------------------------------------------
+                */
+
+                    $scope =
+                        DB::table('api_scope')
+                        ->where(
+                            'id',
+                            $rate['scope_id']
+                        )
+                        ->first();
+
+
+                    if (!$scope) {
+                        continue;
+                    }
+
+
+                    /*
+                |--------------------------------------------------------------------------
+                | Check existing rate limit
+                |--------------------------------------------------------------------------
+                */
+
+                    $existing =
+                        DB::table(
+                            'api_vendor_rate_limits'
+                        )
+                        ->where(
+                            'vendor_id',
+                            $vendor->id
+                        )
+                        ->where(
+                            'vendor_environment_id',
+                            $sandboxEnvironment->id
+                        )
+                        ->where(
+                            'scope_id',
+                            $scope->id
+                        )
+                        ->first();
+
+
+                    $data = [
+
+                        'vendor_id' =>
+                        $vendor->id,
+
+                        'vendor_environment_id' =>
+                        $sandboxEnvironment->id,
+
+                        'scope_id' =>
+                        $scope->id,
+
+                        /*
+                    | Endpoint stores scope NAME
+                    */
+                        'endpoint' =>
+                        $scope->name,
+
+                        'requests_per_minute' =>
+                        $rate['requests_per_minute'],
+
+                        'requests_per_hour' =>
+                        $rate['requests_per_hour'],
+
+                        'burst_limit' =>
+                        $rate['burst_limit'],
+
+                        'is_active' => 1,
+
+                        'updated_at' =>
+                        Carbon::now(),
+
+                        'updated_by' =>
+                        $updatedBy
+                    ];
+
+
+                    if ($existing) {
+
+                        DB::table(
+                            'api_vendor_rate_limits'
+                        )
+                            ->where(
+                                'id',
+                                $existing->id
+                            )
+                            ->update($data);
+                    } else {
+
+                        $data['created_at'] =
+                            Carbon::now();
+
+                        $data['created_by'] =
+                            $createdBy;
+
+                        DB::table(
+                            'api_vendor_rate_limits'
+                        )
+                            ->insert($data);
+                    }
+                }
+
+
+                /*
+            |--------------------------------------------------------------------------
+            | Production
+            |--------------------------------------------------------------------------
+            */
+
+                foreach (
+                    $request->production ?? []
+                    as $rate
+                ) {
+
+                    /*
+                |--------------------------------------------------------------------------
+                | Verify active vendor scope
+                |--------------------------------------------------------------------------
+                */
+
+                    $vendorScope =
+                        DB::table('api_vendor_scope')
+                        ->where(
+                            'vednor_id',
+                            $vendor->id
+                        )
+                        ->where(
+                            'vendor_environment_id',
+                            $productionEnvironment->id
+                        )
+                        ->where(
+                            'scope_id',
+                            $rate['scope_id']
+                        )
+                        ->where(
+                            'status',
+                            1
+                        )
+                        ->first();
+
+
+                    if (!$vendorScope) {
+                        continue;
+                    }
+
+
+                    /*
+                |--------------------------------------------------------------------------
+                | Get scope master
+                |--------------------------------------------------------------------------
+                */
+
+                    $scope =
+                        DB::table('api_scope')
+                        ->where(
+                            'id',
+                            $rate['scope_id']
+                        )
+                        ->first();
+
+
+                    if (!$scope) {
+                        continue;
+                    }
+
+
+                    /*
+                |--------------------------------------------------------------------------
+                | Check existing rate limit
+                |--------------------------------------------------------------------------
+                */
+
+                    $existing =
+                        DB::table(
+                            'api_vendor_rate_limits'
+                        )
+                        ->where(
+                            'vendor_id',
+                            $vendor->id
+                        )
+                        ->where(
+                            'vendor_environment_id',
+                            $productionEnvironment->id
+                        )
+                        ->where(
+                            'scope_id',
+                            $scope->id
+                        )
+                        ->first();
+
+
+                    $data = [
+
+                        'vendor_id' =>
+                        $vendor->id,
+
+                        'vendor_environment_id' =>
+                        $productionEnvironment->id,
+
+                        'scope_id' =>
+                        $scope->id,
+
+                        /*
+                    | Endpoint stores scope NAME
+                    */
+                        'endpoint' =>
+                        $scope->name,
+
+                        'requests_per_minute' =>
+                        $rate['requests_per_minute'],
+
+                        'requests_per_hour' =>
+                        $rate['requests_per_hour'],
+
+                        'burst_limit' =>
+                        $rate['burst_limit'],
+
+                        'is_active' => 1,
+
+                        'updated_at' =>
+                        Carbon::now(),
+
+                        'updated_by' =>
+                        $updatedBy
+                    ];
+
+
+                    if ($existing) {
+
+                        DB::table(
+                            'api_vendor_rate_limits'
+                        )
+                            ->where(
+                                'id',
+                                $existing->id
+                            )
+                            ->update($data);
+                    } else {
+
+                        $data['created_at'] =
+                            Carbon::now();
+
+                        $data['created_by'] =
+                            $createdBy;
+
+                        DB::table(
+                            'api_vendor_rate_limits'
+                        )
+                            ->insert($data);
+                    }
+                }
+            });
+
+
+            return response()->json([
+                'status' => 1,
+                'message' =>
+                'Vendor rate limits saved successfully'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' =>
+                $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getVendorViewDetails(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'vendor_id' =>
+                'required|integer|exists:api_vendors,id'
+            ]);
+
+            if ($validator->fails()) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' =>
+                    $validator->errors()->first(),
+                    'errors' =>
+                    $validator->errors()
+                ], 422);
+            }
+
+            $vendorId = $request->vendor_id;
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | VENDOR
+        |--------------------------------------------------------------------------
+        */
+
+            $vendor = DB::table('api_vendors')
+                ->where('id', $vendorId)
+                ->first();
+
+            if (!$vendor) {
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Vendor not found'
+                ], 404);
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | ADDRESS
+        |--------------------------------------------------------------------------
+        */
+
+            $address = DB::table(
+                'api_vendor_address as va'
+            )
+                ->leftJoin(
+                    'state as s',
+                    's.id',
+                    '=',
+                    'va.state'
+                )
+                ->where(
+                    'va.vendor_id',
+                    $vendorId
+                )
+                ->select(
+                    'va.id',
+                    'va.vendor_id',
+                    'va.address',
+                    'va.street',
+                    'va.landmark',
+                    'va.city',
+                    'va.pincode',
+                    'va.state',
+                    's.state_name'
+                )
+                ->first();
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | ENVIRONMENTS
+        |--------------------------------------------------------------------------
+        */
+
+            $environments = DB::table(
+                'api_vendor_environments'
+            )
+                ->where(
+                    'vendor_id',
+                    $vendorId
+                )
+                ->whereIn(
+                    'environment',
+                    [
+                        'sandbox',
+                        'production'
+                    ]
+                )
+                ->get()
+                ->keyBy('environment');
+
+
+            $sandboxEnvironmentId =
+                isset($environments['sandbox'])
+                ? $environments['sandbox']->id
+                : null;
+
+            $productionEnvironmentId =
+                isset($environments['production'])
+                ? $environments['production']->id
+                : null;
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | EMPTY STRUCTURE
+        |--------------------------------------------------------------------------
+        */
+
+            $sandbox = [
+                'credentials' => [],
+                'ips' => [],
+                'scopes' => [],
+                'rate_limits' => []
+            ];
+
+            $production = [
+                'credentials' => [],
+                'ips' => [],
+                'scopes' => [],
+                'rate_limits' => []
+            ];
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | CREDENTIALS
+        |--------------------------------------------------------------------------
+        */
+
+            $credentials = DB::table(
+                'api_vendor_credential'
+            )
+                ->where(
+                    'vendor_id',
+                    $vendorId
+                )
+                ->whereIn(
+                    'vendor_environment_id',
+                    array_filter([
+                        $sandboxEnvironmentId,
+                        $productionEnvironmentId
+                    ])
+                )
+                ->get();
+
+
+            foreach ($credentials as $credential) {
+
+                $clientSecret = '';
+
+                try {
+
+                    if (
+                        !empty($credential->client_secret_encrypted)
+                    ) {
+
+                        $clientSecret =
+                            Crypt::decryptString(
+                                $credential
+                                    ->client_secret_encrypted
+                            );
+                    }
+                } catch (\Exception $e) {
+
+                    $clientSecret = '';
+                }
+
+                $credentialData = [
+                    'id' =>
+                    $credential->id,
+
+                    'client_id' =>
+                    $credential->client_id,
+
+                    'client_secret' =>
+                    $clientSecret,
+
+                    'is_active' =>
+                    (int) $credential->is_active,
+
+                    'last_used_at' =>
+                    $credential->last_used_at,
+
+                    'expires_at' =>
+                    $credential->expires_at,
+
+                    'created_at' =>
+                    $credential->created_at
+                ];
+
+                if (
+                    $sandboxEnvironmentId &&
+                    $credential->vendor_environment_id ==
+                    $sandboxEnvironmentId
+                ) {
+
+                    $sandbox['credentials'][] =
+                        $credentialData;
+                } elseif (
+                    $productionEnvironmentId &&
+                    $credential->vendor_environment_id ==
+                    $productionEnvironmentId
+                ) {
+
+                    $production['credentials'][] =
+                        $credentialData;
+                }
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | IPS
+        |--------------------------------------------------------------------------
+        */
+
+            $ips = DB::table(
+                'api_vendor_ips'
+            )
+                ->where(
+                    'vendor_id',
+                    $vendorId
+                )
+                ->whereIn(
+                    'vendor_environment_id',
+                    array_filter([
+                        $sandboxEnvironmentId,
+                        $productionEnvironmentId
+                    ])
+                )
+                ->orderBy('id', 'ASC')
+                ->get();
+
+
+            foreach ($ips as $ip) {
+
+                $ipData = [
+                    'id' =>
+                    $ip->id,
+
+                    'ip_address' =>
+                    $ip->ip_address,
+
+                    'is_active' =>
+                    (int) $ip->is_active,
+
+                    'created_at' =>
+                    $ip->created_at
+                ];
+
+                if (
+                    $sandboxEnvironmentId &&
+                    $ip->vendor_environment_id ==
+                    $sandboxEnvironmentId
+                ) {
+
+                    $sandbox['ips'][] =
+                        $ipData;
+                } elseif (
+                    $productionEnvironmentId &&
+                    $ip->vendor_environment_id ==
+                    $productionEnvironmentId
+                ) {
+
+                    $production['ips'][] =
+                        $ipData;
+                }
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | SCOPES
+        |--------------------------------------------------------------------------
+        |
+        | api_vendor_scope.vednor_id is the current
+        | column name in your database.
+        |
+        */
+
+            $vendorScopes = DB::table(
+                'api_vendor_scope as vs'
+            )
+                ->join(
+                    'api_scope as s',
+                    's.id',
+                    '=',
+                    'vs.scope_id'
+                )
+                ->where(
+                    'vs.vednor_id',
+                    $vendorId
+                )
+                ->whereIn(
+                    'vs.vendor_environment_id',
+                    array_filter([
+                        $sandboxEnvironmentId,
+                        $productionEnvironmentId
+                    ])
+                )
+                ->select(
+                    'vs.id',
+                    'vs.vednor_id',
+                    'vs.vendor_environment_id',
+                    'vs.scope_id',
+                    'vs.status',
+                    's.name',
+                    's.description'
+                )
+                ->orderBy('vs.id', 'ASC')
+                ->get();
+
+
+            foreach ($vendorScopes as $scope) {
+
+                /*
+            | Only active scopes are shown in View
+            */
+
+                if ((int) $scope->status !== 1) {
+                    continue;
+                }
+
+                $scopeData = [
+                    'id' =>
+                    $scope->id,
+
+                    'scope_id' =>
+                    $scope->scope_id,
+
+                    'name' =>
+                    $scope->name,
+
+                    'description' =>
+                    $scope->description,
+
+                    'status' =>
+                    (int) $scope->status
+                ];
+
+
+                if (
+                    $sandboxEnvironmentId &&
+                    $scope->vendor_environment_id ==
+                    $sandboxEnvironmentId
+                ) {
+
+                    $sandbox['scopes'][] =
+                        $scopeData;
+                } elseif (
+                    $productionEnvironmentId &&
+                    $scope->vendor_environment_id ==
+                    $productionEnvironmentId
+                ) {
+
+                    $production['scopes'][] =
+                        $scopeData;
+                }
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | RATE LIMITS
+        |--------------------------------------------------------------------------
+        */
+
+            $rateLimits = DB::table(
+                'api_vendor_rate_limits as rl'
+            )
+                ->leftJoin(
+                    'api_scope as s',
+                    's.id',
+                    '=',
+                    'rl.scope_id'
+                )
+                ->where(
+                    'rl.vendor_id',
+                    $vendorId
+                )
+                ->whereIn(
+                    'rl.vendor_environment_id',
+                    array_filter([
+                        $sandboxEnvironmentId,
+                        $productionEnvironmentId
+                    ])
+                )
+                ->select(
+                    'rl.id',
+                    'rl.vendor_id',
+                    'rl.vendor_environment_id',
+                    'rl.scope_id',
+                    'rl.endpoint',
+                    'rl.requests_per_minute',
+                    'rl.requests_per_hour',
+                    'rl.burst_limit',
+                    'rl.is_active',
+                    's.name as scope_name'
+                )
+                ->orderBy('rl.id', 'ASC')
+                ->get();
+
+
+            foreach ($rateLimits as $rateLimit) {
+
+                $rateLimitData = [
+                    'id' =>
+                    $rateLimit->id,
+
+                    'scope_id' =>
+                    $rateLimit->scope_id,
+
+                    'scope_name' =>
+                    $rateLimit->scope_name,
+
+                    'endpoint' =>
+                    $rateLimit->endpoint,
+
+                    'requests_per_minute' =>
+                    $rateLimit->requests_per_minute,
+
+                    'requests_per_hour' =>
+                    $rateLimit->requests_per_hour,
+
+                    'burst_limit' =>
+                    $rateLimit->burst_limit,
+
+                    'is_active' =>
+                    (int) $rateLimit->is_active
+                ];
+
+
+                if (
+                    $sandboxEnvironmentId &&
+                    $rateLimit->vendor_environment_id ==
+                    $sandboxEnvironmentId
+                ) {
+
+                    $sandbox['rate_limits'][] =
+                        $rateLimitData;
+                } elseif (
+                    $productionEnvironmentId &&
+                    $rateLimit->vendor_environment_id ==
+                    $productionEnvironmentId
+                ) {
+
+                    $production['rate_limits'][] =
+                        $rateLimitData;
+                }
+            }
+
+
+            /*
+        |--------------------------------------------------------------------------
+        | RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+            return response()->json([
+                'status' => 1,
+                'message' =>
+                'Vendor details fetched successfully',
+
+                'data' => [
+
+                    'vendor' => $vendor,
+
+                    'address' => $address,
+
+                    'sandbox' => $sandbox,
+
+                    'production' => $production
+                ]
+
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' =>
+                $e->getMessage()
             ], 500);
         }
     }
