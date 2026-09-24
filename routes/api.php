@@ -167,6 +167,7 @@ use App\Http\Controllers\NotificationLogController;
 
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AgentSliderController;
+use App\Http\Controllers\VendorSeatBlockController;
 
 // Jagan
 use App\Http\Controllers\Agent\AgentRegdController;
@@ -414,6 +415,15 @@ Route::post('/addseatBlockByOperator', [SeatBlockController::class, 'addseatBloc
 
 
 // Route::get('/removeSeatBlockCornJob',[SeatBlockController::class,'removeSeatBlockCornJob']);
+
+
+//Vendor seat Block add by sahil
+Route::post('/vendor-seatblockData', [VendorSeatBlockController::class, 'vendorSeatblockData']);
+Route::post('/vendor-seatblock', [VendorSeatBlockController::class, 'vendorAddseatblock']);
+Route::post('/delete-vendor-Seatblock', [VendorSeatBlockController::class, 'deleteseatblock']);
+Route::post('/already-vendor-Blocks', [VendorSeatBlockController::class, 'alreadyBlocks']);
+
+
 
 
 
