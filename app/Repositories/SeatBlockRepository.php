@@ -117,6 +117,7 @@ class SeatBlockRepository
                                 'operation_date' => $dt,
                                 'type' => $data['type'],
                                 'status' => 1,
+                                'vendor_id' => null
                             ])->exists();
 
                         if ($isBlocked) {
@@ -178,14 +179,41 @@ class SeatBlockRepository
 
             $seatCount = count($selectedSeats);
 
+            // foreach ($data['busRoute'] as $ticketPriceId) {
+
+            //     foreach ($dates as $dt) {
+
+            //         $inventory->blockSeatsByTicketPrice(
+            //             $ticketPriceId,
+            //             $dt,
+            //             $seatCount
+            //         );
+            //     }
+            // }
+
             foreach ($data['busRoute'] as $ticketPriceId) {
 
                 foreach ($dates as $dt) {
 
-                    $inventory->blockSeatsByTicketPrice(
-                        $ticketPriceId,
-                        $dt,
-                        $seatCount
+                    $inventoryRow = BusSeatCount::where('ticket_price_id', $ticketPriceId)
+                        ->where('journey_date', $dt)
+                        ->first();
+
+                    $existingBlocked = $inventoryRow
+                        ? (int) $inventoryRow->blocked_seat
+                        : 0;
+
+                    $totalBlocked = $existingBlocked + $seatCount;
+
+                    BusSeatCount::where('ticket_price_id', $ticketPriceId)
+                        ->where('journey_date', $dt)
+                        ->update([
+                            'blocked_seat' => $totalBlocked
+                        ]);
+
+                    $inventory->refreshAvailableSeats(
+                        [$ticketPriceId],
+                        $dt
                     );
                 }
             }
@@ -1883,6 +1911,7 @@ class SeatBlockRepository
             ->where('bus_id', $request['bus_id'])
             ->where('operation_date', $request['operationDate'])
             ->where('type', $request['type'])
+            ->whereNull('vendor_id')
             ->delete();
 
         $routeIds = TicketPrice::where('bus_id', $request['bus_id'])
@@ -1964,6 +1993,7 @@ class SeatBlockRepository
                 'status','updated_at','created_by'
             )
             ->where('type', 2)
+            ->whereNull('vendor_id')
             ->whereNotIn('status', [2])
             ->with([
                 'bus:id,bus_operator_id,name,bus_number',
@@ -2212,6 +2242,7 @@ class SeatBlockRepository
                               ->where('operation_date','>',$check_dt)
                               ->where('ticket_price_id',$ticketPrice[0]->id)
                               ->where('type',2)
+                              ->whereNull('vendor_id')
                               ->where('status', 1)->get()->groupBy(['operation_date']);
         return $data;
 
