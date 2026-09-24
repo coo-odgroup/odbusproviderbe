@@ -1457,6 +1457,9 @@ Route::post('/vendors/scope/status',[ApiVendorController::class, 'changeVendorSc
 Route::post('/vendors/rate-limits/list',[ApiVendorController::class, 'getVendorRateLimits']);
 Route::post('/vendors/rate-limits/save',[ApiVendorController::class, 'saveVendorRateLimits']);
 Route::post('/vendors/view-details',[ApiVendorController::class, 'getVendorViewDetails']);
+Route::post('/vendors/app-access-rules/list',[ApiVendorController::class, 'getVendorAppAccessRules']);
+Route::post('/vendors/app-access-rules/save',[ApiVendorController::class, 'saveVendorAppAccessRules']);
+Route::post('/vendors/app-access-rules/status',[ApiVendorController::class, 'changeVendorAppAccessRuleStatus']);
 
 
 // Jagan
