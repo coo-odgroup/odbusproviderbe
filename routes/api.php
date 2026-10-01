@@ -1489,3 +1489,5 @@ Route::post('/agent-reset-password', [AgentRegdController::class, 'AgentResetPas
 
 Route::post('/getagantfaqs', [AgentFaqController::class, 'getAgantFaqs']);
 // Jagan
+
+Route::post('/transaction-details', [CancelTicketReportController::class, 'transactionDetail']);
