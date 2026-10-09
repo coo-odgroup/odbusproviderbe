@@ -248,4 +248,86 @@ class AgentController extends Controller
       return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
     }
   }
+
+  public function agentAlerts(Request $request)
+  {
+    try {
+      date_default_timezone_set('Asia/Kolkata');
+      $now = date('Y-m-d H:i:s');
+
+      $before6Min = date(
+        'Y-m-d H:i:s',
+        strtotime('-60 minutes')
+      );
+
+      // return $before6Min;
+
+      $data = DB::table('booking')
+        ->where('status', 4)
+        ->where('updated_at', '>=', $before6Min)
+        ->where('updated_at', '<=', $now)
+        ->get();
+
+      // return $data;
+
+      foreach ($data as $booking) {
+
+        // Get user details
+        $user = DB::table('users')
+          ->where('id', $booking->users_id)
+          ->first();
+
+          return $user;
+
+        if (!$user) {
+          continue;
+        }
+
+        $mobile = $user->mobile_no;
+        $email  = $user->email;
+
+        // Notification message
+        $message = 'Your bus booking is incomplete. Please complete your booking to confirm your seat.';
+
+        // Send SMS
+        // $this->sendSms($mobile, $message);
+
+        // Send Email
+        // $this->sendEmail($email, 'Complete Your Booking', $message);
+
+        // Example for checking
+        Log::info('Incomplete Booking Notification', [
+          'booking_id' => $booking->id,
+          'user_id'    => $booking->user_id,
+          'mobile'     => $mobile,
+          'email'      => $email,
+        ]);
+      }
+
+      return $data;
+    } catch (\Exception $e) {
+      $this->error($e->getMessage());
+    }
+
+    return;
+    try {
+      $agentAlerts = DB::table('assigned_comm_slab_agent')
+        ->where('status', 1)
+        ->where('agent_id', '=', $request->agent_id)
+        ->get();
+      return $this->successResponse($agentAlerts, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+    }
+  }
+
+  public function agentDashboard(Request $request)
+  {
+    try {
+      $agentDashboard = "hello";
+      return $this->successResponse($agentDashboard, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+    }
+  }
 }
