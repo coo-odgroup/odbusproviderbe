@@ -1492,6 +1492,7 @@ Route::post('/getagantfaqs', [AgentFaqController::class, 'getAgantFaqs']);
 Route::post('/agentCouponSlider', [AgentController::class, 'agentCouponSlider']);
 Route::post('/agentAlerts', [AgentController::class, 'agentAlerts']);
 Route::post('/agentdashboard', [AgentController::class, 'agentDashboard']);
+Route::post('/agentreports', [AgentController::class, 'agentReports']);
 // Jagan
 
 Route::post('/transaction-details', [CancelTicketReportController::class, 'transactionDetail']);

@@ -324,8 +324,215 @@ class AgentController extends Controller
   public function agentDashboard(Request $request)
   {
     try {
-      $agentDashboard = "hello";
-      return $this->successResponse($agentDashboard, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+      $agentBookings = DB::table('booking')
+        ->where('user_id', '!=', 0)
+        ->where('app_type', 'AGENT')
+        ->where('status', 1);
+
+      $agents = DB::table('user')
+        ->where('role_id', 3)
+        ->where('user_type', 'AGENT')
+        ->where('status', 1)
+        ->get();
+
+      $walletBalance = 0;
+      $firstBookingPending = 0;
+
+      foreach ($agents as $agent) {
+
+        $wallet = DB::table('agent_wallet')
+          ->where('user_id', $agent->id)
+          ->where('status', 1)
+          ->orderBy('id', 'DESC')
+          ->limit(1)
+          ->first();
+
+        if ($wallet) {
+          $walletBalance += $wallet->balance;
+        }
+      }
+
+      // return $firstBooking;
+
+      $walletBalance = round($walletBalance, 2);
+
+      $userRec = DB::table('user')
+        ->where('role_id', 3)
+        ->where('user_type', 'AGENT')
+        ->where('status', 1);
+
+      $newToday = (clone $userRec)
+        ->whereDate('created_at', now()->toDateString())
+        ->count();
+
+      $newThisMonth = (clone $userRec)
+        ->whereMonth('created_at', now()->month)
+        ->whereYear('created_at', now()->year)
+        ->count();
+
+      $kycPending = (clone $userRec)
+        ->where(function ($query) {
+          $query->where('is_mobile_verified', 0)
+            ->orWhere('is_email_verified', 0)
+            ->orWhere('is_pan_verified', 0)
+            ->orWhere('is_aadhaar_verified', 0);
+        })
+        ->count();
+
+      $activatedAgents = (clone $userRec)
+        ->where('is_mobile_verified', 1)
+        ->where('is_email_verified', 1)
+        ->where('is_pan_verified', 1)
+        ->where('is_aadhaar_verified', 1)
+        ->count();
+
+      $agentIds = $agents->pluck('id');
+
+      // return $agentIds;
+
+      $bookingAgentIds = DB::table('booking')
+        ->whereIn('user_id', $agentIds)
+        ->where('status', 1)
+        ->distinct()
+        ->pluck('user_id');
+
+      $firstBookingPending = $agents
+        ->whereNotIn('id', $bookingAgentIds)
+        ->count();
+
+      $activeAgentIds = DB::table('booking')
+        ->where('status', 1)
+        ->where('created_at', '>=', now()->subMonth())
+        ->distinct()
+        ->pluck('user_id');
+
+      $activeAgents = (clone $userRec)
+        ->whereIn('id', $activeAgentIds)
+        ->count();
+
+      $dormantAgentIds = DB::table('booking')
+        ->whereIn('user_id', $agentIds)
+        ->where('status', 1)
+        ->whereBetween('created_at', [
+          now()->subDays(90),
+          now()->subDays(31)
+        ])
+        ->distinct()
+        ->pluck('user_id');
+
+      $dormantAgents = $agents
+        ->whereIn('id', $dormantAgentIds)
+        ->count();
+
+      $inactiveAgentIds = DB::table('booking')
+        ->whereIn('user_id', $agentIds)
+        ->where('status', 1)
+        ->where('created_at', '<', now()->subDays(90))
+        ->distinct()
+        ->pluck('user_id');
+
+      $inactiveAgents = $agents
+        ->whereIn('id', $inactiveAgentIds)
+        ->count();
+
+      $topAgents = DB::table('booking as b')
+        ->join('user as u', 'u.id', '=', 'b.user_id')
+        ->join('bus_operator as bo', 'bo.id', '=', 'b.user_id')
+        ->select(
+          'b.user_id as agent_id',
+          'u.name as agent_name',
+          'u.unique_id as agent_unique_id',
+          'bo.location_name',
+          DB::raw('SUM(b.total_fare) as total_fare'),
+          DB::raw('SUM(b.agent_commission) as total_commission'),
+          DB::raw('COUNT(b.id) as total_bookings'),
+          'b.status'
+        )
+        ->whereIn('b.user_id', $agentIds)
+        ->where('b.status', 1)
+        ->where('u.role_id', 3)
+        ->groupBy('b.user_id', 'u.name', 'bo.location_name')
+        ->orderByDesc('total_fare')
+        ->limit(10)
+        ->get();
+
+      $topOperators = DB::table('booking as b')
+        ->join('user as u', 'u.id', '=', 'b.user_id')
+        ->join('bus_operator as o', 'o.id', '=', 'b.user_id')
+        ->join('bus as bo', 'bo.bus_operator_id', '=', 'o.id')
+        ->select(
+          'o.id as operator_id',
+          'o.operator_name',
+          'bo.name as bus_name',
+          DB::raw('SUM(b.total_fare) as total_fare'),
+          DB::raw('COUNT(b.id) as total_bookings')
+        )
+        ->whereIn('b.user_id', $agentIds)
+        ->where('b.status', 1)
+        ->groupBy('o.id', 'o.operator_name', 'bo.name')
+        ->orderByDesc('total_fare')
+        ->limit(3)
+        ->get();
+
+      $topAgentRoutes = DB::table('booking as b')
+        ->join('location as source', 'source.id', '=', 'b.source_id')
+        ->join('location as destination', 'destination.id', '=', 'b.destination_id')
+        ->select(
+          'source.name as source_name',
+          'destination.name as destination_name',
+          DB::raw('COUNT(b.id) as total_bookings'),
+          DB::raw('SUM(b.total_fare) as total_fare'),
+          DB::raw('COUNT(DISTINCT b.user_id) as total_agents')
+        )
+        ->whereIn('b.user_id', $agentIds)
+        ->where('b.status', 1)
+        ->groupBy('b.source_id', 'b.destination_id')
+        ->orderByDesc('total_bookings')
+        ->limit(10)
+        ->get();
+
+      $data = [
+        'grossbookings' => number_format((clone $agentBookings)->sum('total_fare'), 2, '.', ''),
+        'totalpnrs' => (clone $agentBookings)->count(),
+        'commissions' => number_format((clone $agentBookings)->sum('agent_commission'), 2, '.', ''),
+        'walletbalance' => number_format($walletBalance, 2, '.', ''),
+        'newtoday' => $newToday,
+        'newthismonth' => $newThisMonth,
+        'kycpending' => $kycPending,
+        'activatedagents' => $activatedAgents,
+        'firstbookingpending' => $firstBookingPending,
+        'activeagents' => $activeAgents,
+        'dormantagents' => $dormantAgents,
+        'inactiveagents' => $inactiveAgents,
+        'totalagents' => count($agents),
+        'topagents' => $topAgents,
+        'topoperators' => $topOperators,
+        'topagentroutes' => $topAgentRoutes
+      ];
+
+      return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+    }
+  }
+
+  public function agentReports(Request $request)
+  {
+    try {
+      $userRec = DB::table('user')
+        ->where('role_id', 3)
+        ->where('user_type', 'AGENT')
+        ->where('status', 1);
+
+      $newToday = (clone $userRec)
+        ->whereDate('created_at', now()->toDateString())
+        ->get();
+
+      $data = [
+        'newtoday' => $newToday,
+      ];
+
+      return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
     }
