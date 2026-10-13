@@ -277,7 +277,7 @@ class AgentController extends Controller
           ->where('id', $booking->users_id)
           ->first();
 
-          return $user;
+        return $user;
 
         if (!$user) {
           continue;
@@ -519,22 +519,155 @@ class AgentController extends Controller
   public function agentReports(Request $request)
   {
     try {
-      $userRec = DB::table('user')
-        ->where('role_id', 3)
-        ->where('user_type', 'AGENT')
-        ->where('status', 1);
+      $request->validate([
+        'slug' => 'required|in:newtoday,newthismonth,kycpending,activatedagents,firstbookingpending,activeagents,dormantagents,inactiveagents',
+        'per_page' => 'nullable|integer|min:1|max:100',
+        'page' => 'nullable|integer|min:1'
+      ]);
 
-      $newToday = (clone $userRec)
-        ->whereDate('created_at', now()->toDateString())
-        ->get();
+      $slug = $request->input('slug');
+      $perPage = (int) $request->input('perPage', 10);
+
+      $now = now();
+      $activeFrom = $now->copy()->subDays(30);
+      $dormantFrom = $now->copy()->subDays(90);
+      $dormantTo = $now->copy()->subDays(31);
+
+      $query = DB::table('user')
+        ->select(
+          'user.id',
+          'user.name',
+          'user.email',
+          'user.location',
+          'user.organization_name',
+          'user.created_at',
+          'user.is_mobile_verified',
+          'user.is_email_verified',
+          'user.is_pan_verified',
+          'user.is_aadhaar_verified'
+        )
+        ->where('user.role_id', 3)
+        ->where('user.user_type', 'AGENT')
+        ->where('user.status', 1);
+
+      if ($request->filled('fromDate')) {
+        $query->whereDate('created_at', '>=', $request->fromDate);
+      }
+
+      if ($request->filled('toDate')) {
+        $query->whereDate('created_at', '<=', $request->toDate);
+      }
+
+      if ($request->filled('searchText')) {
+        $search = trim($request->searchText);
+
+        $query->where(function ($q) use ($search) {
+          $q->where('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%")
+            ->orWhere('location', 'like', "%{$search}%")
+            ->orWhere('organization_name', 'like', "%{$search}%");
+        });
+      }
+
+      switch ($slug) {
+
+        case 'newtoday':
+          $query->whereDate('user.created_at', $now->toDateString());
+          break;
+
+        case 'newthismonth':
+          $query->whereMonth('user.created_at', $now->month)
+            ->whereYear('user.created_at', $now->year);
+          break;
+
+        case 'kycpending':
+          $query->where(function ($q) {
+            $q->where('user.is_mobile_verified', 0)
+              ->orWhere('user.is_email_verified', 0)
+              ->orWhere('user.is_pan_verified', 0)
+              ->orWhere('user.is_aadhaar_verified', 0);
+          });
+          break;
+
+        case 'activatedagents':
+          $query->where('user.is_mobile_verified', 1)
+            ->where('user.is_email_verified', 1)
+            ->where('user.is_pan_verified', 1)
+            ->where('user.is_aadhaar_verified', 1);
+          break;
+
+        case 'firstbookingpending':
+          $query->whereNotIn('user.id', function ($q) {
+            $q->select('user_id')
+              ->from('booking')
+              ->where('status', 1)
+              ->whereNotNull('user_id');
+          });
+          break;
+
+        case 'activeagents':
+          $query->whereIn('user.id', function ($q) use ($activeFrom) {
+            $q->select('user_id')
+              ->from('booking')
+              ->where('status', 1)
+              ->where('created_at', '>=', $activeFrom)
+              ->whereNotNull('user_id')
+              ->distinct();
+          });
+          break;
+
+        case 'dormantagents':
+          // Latest successful booking was 31-90 days ago.
+          $query->whereRaw(
+            '(SELECT MAX(b.created_at)
+                      FROM booking b
+                      WHERE b.user_id = user.id
+                      AND b.status = 1) BETWEEN ? AND ?',
+            [
+              $dormantFrom->toDateTimeString(),
+              $dormantTo->toDateTimeString()
+            ]
+          );
+          break;
+
+        case 'inactiveagents':
+          // Latest successful booking was more than 90 days ago.
+          $query->whereRaw(
+            '(SELECT MAX(b.created_at)
+                      FROM booking b
+                      WHERE b.user_id = user.id
+                      AND b.status = 1) < ?',
+            [$dormantFrom->toDateTimeString()]
+          );
+          break;
+      }
+
+      $pagination = $query
+        ->orderByDesc('user.id')
+        ->paginate($perPage);
 
       $data = [
-        'newtoday' => $newToday,
+        'slug' => $slug,
+        'count' => $pagination->count(),
+        'total' => $pagination->total(),
+        'pagination' => $pagination
       ];
 
-      return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
-    } catch (Exception $e) {
-      return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+      return $this->successResponse(
+        $data,
+        Config::get('constants.RECORD_FETCHED'),
+        Response::HTTP_OK
+      );
+    } catch (\Illuminate\Validation\ValidationException $e) {
+      return $this->errorResponse(
+        $e->getMessage(),
+        Response::HTTP_UNPROCESSABLE_ENTITY
+      );
+    } catch (\Exception $e) {
+      return $this->errorResponse(
+        $e->getMessage(),
+        Response::HTTP_PARTIAL_CONTENT
+      );
     }
   }
 }
