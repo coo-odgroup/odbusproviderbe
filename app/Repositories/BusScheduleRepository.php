@@ -235,65 +235,65 @@ class BusScheduleRepository
 
         ///insert to bus_seat_count table 
 
-        $insertData = [];
+        // $insertData = [];
 
-        $busId = $this->busSchedule->bus_id;
+        // $busId = $this->busSchedule->bus_id;
 
-        $totalSeats = DB::table('bus_seats')
-            ->where('bus_id', $busId)
-            ->where('status', 1)
+        // $totalSeats = DB::table('bus_seats')
+        //     ->where('bus_id', $busId)
+        //     ->where('status', 1)
 
-            ->where(function ($q) {
+        //     ->where(function ($q) {
 
-                $q->where(function ($qq) {
+        //         $q->where(function ($qq) {
 
-                    // Normal seats
-                    $qq->whereNull('type')
-                        ->whereNull('operation_date')
-                        ->where('duration', 0);
-                })->orWhere(function ($qq) {
+        //             // Normal seats
+        //             $qq->whereNull('type')
+        //                 ->whereNull('operation_date')
+        //                 ->where('duration', 0);
+        //         })->orWhere(function ($qq) {
 
-                    // Extra permanent open seats
-                    $qq->whereNull('type')
-                        ->whereNull('operation_date')
-                        ->where('duration', '>', 0);
-                });
-            })
+        //             // Extra permanent open seats
+        //             $qq->whereNull('type')
+        //                 ->whereNull('operation_date')
+        //                 ->where('duration', '>', 0);
+        //         });
+        //     })
 
-            ->distinct('seats_id')
-            ->count('seats_id');
+        //     ->distinct('seats_id')
+        //     ->count('seats_id');
 
 
-        $ticketPrices = DB::table('ticket_price')
-            ->where('bus_id', $busId)
-            ->where('status', 1)
-            ->get();
+        // $ticketPrices = DB::table('ticket_price')
+        //     ->where('bus_id', $busId)
+        //     ->where('status', 1)
+        //     ->get();
 
-        foreach ($busScheduledateModels as $scheduleDate) {
+        // foreach ($busScheduledateModels as $scheduleDate) {
 
-            foreach ($ticketPrices as $tp) {
+        //     foreach ($ticketPrices as $tp) {
 
-                $insertData[] = [
+        //         $insertData[] = [
 
-                    'bus_id'           => $busId,
-                    'ticket_price_id'  => $tp->id,
-                    'journey_date'     => $scheduleDate->entry_date,
-                    'total_seat'       => $totalSeats,
-                    'available_seat'   => $totalSeats,
-                    'booked_seat'      => 0,
-                    'blocked_seat'     => 0,
-                    'hold_seat'        => 0,
-                    'created_at'       => now(),
-                    'updated_at'       => now(),
-                    'updated_by'       => 'server'
-                ];
-            }
-        }
+        //             'bus_id'           => $busId,
+        //             'ticket_price_id'  => $tp->id,
+        //             'journey_date'     => $scheduleDate->entry_date,
+        //             'total_seat'       => $totalSeats,
+        //             'available_seat'   => $totalSeats,
+        //             'booked_seat'      => 0,
+        //             'blocked_seat'     => 0,
+        //             'hold_seat'        => 0,
+        //             'created_at'       => now(),
+        //             'updated_at'       => now(),
+        //             'updated_by'       => 'server'
+        //         ];
+        //     }
+        // }
 
-        if (!empty($insertData)) {
+        // if (!empty($insertData)) {
 
-            DB::table('bus_seat_count')->insert($insertData);
-        }
+        //     DB::table('bus_seat_count')->insert($insertData);
+        // }
 
 
         return $busScheduledateModels;
