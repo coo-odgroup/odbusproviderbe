@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Crypt;
 use Symfony\Component\HttpFoundation\Response;
 use Mews\Purifier\Facades\Purifier;
 use App\Models\CampaignNotification;
+use Carbon\Carbon;
 
 
 class CampaignNotificationController extends Controller
@@ -763,6 +764,7 @@ class CampaignNotificationController extends Controller
                     'nc.schedule_type',
                     'nc.schedule_minutes',
                     'nc.schedule_at',
+                    'nc.execution_status',
                     'nc.is_completed',
                     'nc.started_at',
                     'nc.is_queued',
@@ -920,6 +922,120 @@ class CampaignNotificationController extends Controller
         ], Response::HTTP_ACCEPTED);
     }
 
+    public function killCampaign(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:notification_campaigns,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => $validator->errors()->first(),
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            $campaignId = (int) $request->id;
+
+            $campaign = CampaignNotification::find($campaignId);
+
+            if (!$campaign) {
+                DB::rollBack();
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Campaign Notification Not Found',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Already cancelled
+        |--------------------------------------------------------------------------
+        */
+
+            if ($campaign->execution_status === 'CANCELLED') {
+                DB::rollBack();
+
+                return response()->json([
+                    'status' => 1,
+                    'message' => 'Campaign is already cancelled.',
+                ], Response::HTTP_OK);
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Cancel campaign
+        |--------------------------------------------------------------------------
+        */
+
+            $campaign->execution_status = 'CANCELLED';
+            $campaign->active_status = 0;
+            $campaign->updated_by = $request->created_by;
+            $campaign->save();
+
+            /*
+        |--------------------------------------------------------------------------
+        | Stop notifications which have NOT started processing
+        |--------------------------------------------------------------------------
+        |
+        | PENDING  = still in DB waiting for dispatcher
+        | QUEUED   = already pushed to RabbitMQ but worker has not started
+        |
+        */
+
+            $cancelledCount = DB::table('notification_campaign_queue')
+                ->where('campaign_id', $campaignId)
+                ->whereIn('status', [
+                    'PENDING',
+                    'QUEUED',
+                ])
+                ->update([
+                    'status' => 'SKIPPED',
+                    'cancelled_at' => Carbon::now(),
+                    'processed_at' => Carbon::now(),
+                    'error_code' => 'CAMPAIGN_CANCELLED',
+                    'error_message' => 'Campaign cancelled by administrator.',
+                    'updated_at' => Carbon::now(),
+                ]);
+
+            DB::commit();
+
+            Log::warning('Notification campaign killed', [
+                'campaign_id' => $campaignId,
+                'cancelled_queue_records' => $cancelledCount,
+                'cancelled_by' => $request->created_by,
+            ]);
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Campaign stopped successfully.',
+                'data' => [
+                    'campaign_id' => $campaignId,
+                    'cancelled_queue_records' => $cancelledCount,
+                ],
+            ], Response::HTTP_OK);
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            Log::error('Failed to kill notification campaign', [
+                'campaign_id' => $request->id ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => 0,
+                'message' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function getNotificationCategories(Request $request)
     {
         try {
@@ -1025,13 +1141,14 @@ class CampaignNotificationController extends Controller
                     'email',
                     'phone',
                     'fcm_id',
+                    'login_status',
                     'updated_at'
                 )
                 ->whereNotNull('fcm_id')
-                ->where('fcm_id', '!=', '')
                 ->whereNotNull('updated_at')
                 ->where('updated_at', '>=', $fromDate)
                 ->orderBy('updated_at', 'DESC')
+                ->where('login_status', 1) // Only include users with login_status = 1
                 ->get();
 
             return response()->json([

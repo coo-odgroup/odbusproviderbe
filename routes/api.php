@@ -166,7 +166,7 @@ use App\Http\Controllers\SeoController;
 use App\Http\Controllers\NotificationLogController;
 
 //Vendors
-use App\Http\Controllers\ApiVendorController;
+use App\Http\Controllers\ApiVendorController;   
 
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AgentSliderController;
@@ -1396,6 +1396,7 @@ Route::post('createCampaignNotification', [CampaignNotificationController::class
 Route::post('getAllCampaignNotificationData', [CampaignNotificationController::class, 'getAllCampaignNotificationData']);
 Route::post('updateCampaignNotification/{id}', [CampaignNotificationController::class, 'updateCampaignNotification']);
 Route::post('changeCampaignNotificationStatus', [CampaignNotificationController::class, 'changeStatus']);
+Route::post('/killCampaign',[CampaignNotificationController::class, 'killCampaign']);
 Route::post('/notification-categories', [CampaignNotificationController::class, 'getNotificationCategories']);
 Route::post('getCampaignNotification/{id}', [CampaignNotificationController::class, 'getCampaignNotification']);
 Route::post('/get-operators', [CampaignNotificationController::class, 'getOperators']);
@@ -1404,10 +1405,10 @@ Route::post('/getActiveCoupons', [CampaignNotificationController::class, 'getAct
 Route::post('/getSelectedTargetUsers', [CampaignNotificationController::class, 'getSelectedTargetUsers']);
 
 //Notification Log
-Route::post('notification/log-report', [NotificationLogController::class, 'notificationLogReport'])->name('notification.logReport');
-Route::post('notification/campaign-list', [NotificationLogController::class, 'notificationCampaignList'])->name('notification.campaignList');
-
-
+Route::post('/notification-log/dashboard',[NotificationLogController::class, 'notificationDashboard']);
+Route::post('/notification-log/campaign/{campaignId}',[NotificationLogController::class, 'campaignDetails']);
+Route::post('/notification-log/campaigns',[NotificationLogController::class, 'notificationCampaignList']);
+Route::post('/notification-log/campaign/{campaignId}/export',[NotificationLogController::class, 'exportCampaignDetails']);
 
 //Agent SLider
 Route::post('/getAgentSliders', [AgentSliderController::class, 'index']);
@@ -1454,22 +1455,26 @@ Route::post('/vendors/add', [ApiVendorController::class, 'addVendor']);
 Route::post('/vendors/update', [ApiVendorController::class, 'updateVendor']);
 Route::post('/vendors/status', [ApiVendorController::class, 'changeVendorStatus']);
 Route::post('/vendors/states', [ApiVendorController::class, 'getStates']);
-Route::post('/vendors/credentials/generate',[ApiVendorController::class, 'generateVendorCredential']);
-Route::post('/vendors/credentials/save',[ApiVendorController::class, 'saveVendorCredentials']);
-Route::post('/vendors/credentials/list',[ApiVendorController::class, 'getVendorCredentials']);
-Route::post('/vendors/environment/status',[ApiVendorController::class, 'changeVendorEnvironmentStatus']);
-Route::post('/vendors/ips/list',[ApiVendorController::class, 'getVendorIps']);
-Route::post('/vendors/ips/save',[ApiVendorController::class, 'saveVendorIps']);
-Route::post('/vendors/ips/status',[ApiVendorController::class, 'changeVendorIpStatus']);
-Route::post('/vendors/scope/list',[ApiVendorController::class, 'getVendorScopes']);
-Route::post('/vendors/scope/save',[ApiVendorController::class, 'saveVendorScopes']);
-Route::post('/vendors/scope/status',[ApiVendorController::class, 'changeVendorScopeStatus']);
-Route::post('/vendors/rate-limits/list',[ApiVendorController::class, 'getVendorRateLimits']);
-Route::post('/vendors/rate-limits/save',[ApiVendorController::class, 'saveVendorRateLimits']);
-Route::post('/vendors/view-details',[ApiVendorController::class, 'getVendorViewDetails']);
-Route::post('/vendors/app-access-rules/list',[ApiVendorController::class, 'getVendorAppAccessRules']);
-Route::post('/vendors/app-access-rules/save',[ApiVendorController::class, 'saveVendorAppAccessRules']);
-Route::post('/vendors/app-access-rules/status',[ApiVendorController::class, 'changeVendorAppAccessRuleStatus']);
+Route::post('/vendors/credentials/generate', [ApiVendorController::class, 'generateVendorCredential']);
+Route::post('/vendors/credentials/save', [ApiVendorController::class, 'saveVendorCredentials']);
+Route::post('/vendors/credentials/list', [ApiVendorController::class, 'getVendorCredentials']);
+Route::post('/vendors/environment/status', [ApiVendorController::class, 'changeVendorEnvironmentStatus']);
+Route::post('/vendors/ips/list', [ApiVendorController::class, 'getVendorIps']);
+Route::post('/vendors/ips/save', [ApiVendorController::class, 'saveVendorIps']);
+Route::post('/vendors/ips/status', [ApiVendorController::class, 'changeVendorIpStatus']);
+Route::post('/vendors/scope/list', [ApiVendorController::class, 'getVendorScopes']);
+Route::post('/vendors/scope/save', [ApiVendorController::class, 'saveVendorScopes']);
+Route::post('/vendors/scope/status', [ApiVendorController::class, 'changeVendorScopeStatus']);
+Route::post('/vendors/rate-limits/list', [ApiVendorController::class, 'getVendorRateLimits']);
+Route::post('/vendors/rate-limits/save', [ApiVendorController::class, 'saveVendorRateLimits']);
+Route::post('/vendors/view-details', [ApiVendorController::class, 'getVendorViewDetails']);
+Route::post('/vendors/app-access-rules/list', [ApiVendorController::class, 'getVendorAppAccessRules']);
+Route::post('/vendors/app-access-rules/save', [ApiVendorController::class, 'saveVendorAppAccessRules']);
+Route::post('/vendors/app-access-rules/status', [ApiVendorController::class, 'changeVendorAppAccessRuleStatus']);
+Route::post('/vendors/sandbox-balance',[ApiVendorController::class, 'addSandboxBalance']);
+Route::post('/bus-operators', [ApiVendorController::class, 'getBusOperators']);
+Route::post('/bus-operators/{id}/details',[ApiVendorController::class, 'getBusOperatorDetails']);
+Route::post('/vendors/{id}/password', [ApiVendorController::class, 'updatePassword']);
 
 
 // Jagan
@@ -1482,10 +1487,8 @@ Route::post('/getUserStatus', [UserController::class, 'getUserStatus']);
 Route::post('/change-first-password', [AgentRegdController::class, 'changeFirstPassword']);
 Route::post('/send-email-otp', [AgentRegdController::class, 'sendEmailOtp']);
 Route::post('/verify-email-otp', [AgentRegdController::class, 'verifyEmailOtp']);
-
 Route::post('/agent-forget-password-otp', [AgentRegdController::class, 'AgentForgetPasswordOtp']);
 Route::post('/agent-verify-otp', [AgentRegdController::class, 'AgentVerifyOtp']);
 Route::post('/agent-reset-password', [AgentRegdController::class, 'AgentResetPassword']);
-
 Route::post('/getagantfaqs', [AgentFaqController::class, 'getAgantFaqs']);
 // Jagan
