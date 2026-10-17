@@ -11,31 +11,48 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+
 
 
 class ApiVendorController extends Controller
 {
+
+
     public function getVendors(Request $request)
     {
         try {
-
             $query = ApiVendor::leftJoin(
                 'user',
                 'user.id',
                 '=',
                 'api_vendors.created_by'
             )
+                ->leftJoin(
+                    'bus_operator',
+                    'bus_operator.id',
+                    '=',
+                    'api_vendors.parent_id'
+                )
                 ->select(
                     'api_vendors.*',
-                    'user.name as created_by_name'
-                );
+                    'user.name as created_by_name',
+                    'bus_operator.organisation_name as parent_operator_name'
+                )
+                // Fetch the latest wallet balance for each vendor.
+                ->addSelect([
+                    'wallet_balance' => DB::table('client_wallet as cw')
+                        ->select('cw.balance')
+                        ->whereColumn('cw.user_id', 'api_vendors.id')
+                        ->orderByDesc('cw.id')
+                        ->limit(1)
+                ]);
 
+            // Search
             if ($request->filled('search')) {
-
                 $search = trim($request->search);
 
                 $query->where(function ($q) use ($search) {
-
                     $q->where('api_vendors.vendor_code', 'LIKE', "%{$search}%")
                         ->orWhere('api_vendors.company_name', 'LIKE', "%{$search}%")
                         ->orWhere('api_vendors.contact_name', 'LIKE', "%{$search}%")
@@ -43,8 +60,7 @@ class ApiVendorController extends Controller
                         ->orWhere('api_vendors.contact_phone', 'LIKE', "%{$search}%")
                         ->orWhere('api_vendors.rate_limit_per_minute', 'LIKE', "%{$search}%");
 
-                    // Search GST also
-                    if (strtolower($search) === 'yes' || strtolower($search) === 'gst') {
+                    if (in_array(strtolower($search), ['yes', 'gst'])) {
                         $q->orWhere('api_vendors.has_gst', 1);
                     }
 
@@ -54,20 +70,21 @@ class ApiVendorController extends Controller
                 });
             }
 
+            // GST filter
             if ($request->has('has_gst') && $request->has_gst !== '') {
-
-                $query->where(
-                    'api_vendors.has_gst',
-                    $request->has_gst
-                );
+                $query->where('api_vendors.has_gst', $request->has_gst);
             }
+
+            // Status filter
             if ($request->has('status') && $request->status !== '') {
-
-                $query->where(
-                    'api_vendors.status',
-                    $request->status
-                );
+                $query->where('api_vendors.status', $request->status);
             }
+
+            // Vendor type filter
+            if ($request->filled('vendor_type')) {
+                $query->where('api_vendors.vendor_type', $request->vendor_type);
+            }
+
             $vendors = $query
                 ->orderBy('api_vendors.id', 'DESC')
                 ->get();
@@ -78,26 +95,61 @@ class ApiVendorController extends Controller
                 'data' => $vendors
             ], 200);
         } catch (\Exception $e) {
+            \Log::error('Get vendors failed', [
+                'error' => $e->getMessage()
+            ]);
 
             return response()->json([
                 'status' => 0,
-                'message' => $e->getMessage()
+                'message' => 'Unable to fetch vendors'
             ], 500);
         }
     }
 
+
     public function getVendor(Request $request)
     {
         try {
+            $request->validate([
+                'id' => 'required|integer|min:1',
+            ]);
 
             $vendor = ApiVendor::where('id', $request->id)->first();
 
             if (!$vendor) {
                 return response()->json([
                     'status' => 0,
-                    'message' => 'Vendor not found'
+                    'message' => 'Vendor not found',
                 ], 404);
             }
+
+            /*
+             * Resolve the associated bus operator using vendor_type:
+             * OPERATOR        => api_vendors.operator_id
+             * OPERATOR_VENDOR => api_vendors.parent_id
+             */
+            $vendorType = strtoupper(trim((string) $vendor->vendor_type));
+
+            if ($vendorType === 'OPERATOR') {
+                $operatorId = $vendor->operator_id;
+            } elseif ($vendorType === 'OPERATOR_VENDOR') {
+                $operatorId = $vendor->parent_id;
+            } else {
+                $operatorId = null;
+            }
+
+            $operatorName = null;
+
+            if (!empty($operatorId)) {
+                $operatorName = DB::table('bus_operator')
+                    ->where('id', $operatorId)
+                    ->value('organisation_name');
+            }
+
+            // Include resolved values in the vendor object returned to Angular.
+            $vendor->resolved_operator_id = $operatorId;
+            $vendor->operator_organisation_name = $operatorName;
+            $vendor->is_parent_vendor = !empty($vendor->parent_id) ? 1 : 0;
 
             $address = DB::table('api_vendor_address')
                 ->where('vendor_id', $vendor->id)
@@ -113,14 +165,20 @@ class ApiVendorController extends Controller
                 'data' => [
                     'vendor' => $vendor,
                     'address' => $address,
-                    'environments' => $environments
-                ]
+                    'environments' => $environments,
+                ],
             ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
+            Log::error('Get vendor failed', [
+                'vendor_id' => $request->id,
+                'error' => $e->getMessage(),
+            ]);
 
             return response()->json([
                 'status' => 0,
-                'message' => $e->getMessage()
+                'message' => 'Unable to fetch vendor',
             ], 500);
         }
     }
@@ -131,11 +189,11 @@ class ApiVendorController extends Controller
 
             $validator = Validator::make($request->all(), [
 
-                'company_name' => 'required|string|max:255',
+                'company_name' => 'required|string|max:255|unique:api_vendors,company_name',
                 'contact_name' => 'required|string|max:255',
                 'contact_email' => 'required|email|max:255',
                 'contact_phone' => 'required|string|max:10',
-                'rate_limit_per_minute' => 'required|integer|min:1',
+                'rate_limit_per_minute' => 'integer',
                 'has_gst' => 'nullable|boolean',
                 'address' => 'required|string|max:500',
                 'street' => 'nullable|string|max:255',
@@ -145,8 +203,12 @@ class ApiVendorController extends Controller
                 'state' => 'required|integer|exists:state,id',
                 'sandbox' => 'nullable|boolean',
                 'production' => 'nullable|boolean',
+                'operator_id' => 'nullable|integer|min:1',
+                'is_parent_vendor' => 'required|boolean',
                 'created_by' => 'required|integer',
                 'updated_by' => 'nullable|integer',
+            ], [
+                'company_name.unique' => 'This company name already exists. Please use a different company name.',
             ]);
 
 
@@ -172,7 +234,10 @@ class ApiVendorController extends Controller
 
 
             $vendor = new ApiVendor();
+
             $vendor->vendor_code = $vendorCode;
+            $vendor->parent_id = $request->boolean('is_parent_vendor') ? (int) $request->operator_id : null;
+            $vendor->vendor_type = $request->boolean('is_parent_vendor') ? 'OPERATOR_VENDOR' : 'VENDOR';
             $vendor->company_name = $request->company_name;
             $vendor->contact_name = $request->contact_name;
             $vendor->contact_email = $request->contact_email;
@@ -185,6 +250,7 @@ class ApiVendorController extends Controller
             $vendor->risk_score = $request->risk_score ?? null;
             $vendor->created_by = $request->created_by;
             $vendor->updated_by = $request->updated_by ?? $request->created_by;
+
             $vendor->save();
 
             DB::table('api_vendor_address')->insert([
@@ -386,7 +452,6 @@ class ApiVendorController extends Controller
             ], 500);
         }
     }
-
 
     public function changeVendorStatus(Request $request)
     {
@@ -753,7 +818,6 @@ class ApiVendorController extends Controller
     public function changeVendorEnvironmentStatus(Request $request)
     {
         try {
-
             $validator = Validator::make($request->all(), [
                 'vendor_id' => 'required|integer|exists:api_vendors,id',
                 'environment' => 'required|in:sandbox,production',
@@ -767,40 +831,71 @@ class ApiVendorController extends Controller
                 ], 422);
             }
 
+            $vendorId = (int) $request->vendor_id;
+            $environmentName = $request->environment;
+            $status = (int) $request->status;
+
             $environment = DB::table('api_vendor_environments')
-                ->where('vendor_id', $request->vendor_id)
-                ->where('environment', $request->environment)
+                ->where('vendor_id', $vendorId)
+                ->where('environment', $environmentName)
                 ->first();
 
             if (!$environment) {
                 return response()->json([
                     'status' => 0,
-                    'message' =>
-                    ucfirst($request->environment) .
-                        ' environment not found'
+                    'message' => ucfirst($environmentName)
+                        . ' environment not found'
                 ], 404);
             }
 
-            DB::table('api_vendor_environments')
-                ->where('id', $environment->id)
-                ->update([
-                    'status' => $request->status,
-                    'updated_at' => Carbon::now()
-                ]);
+            DB::transaction(function () use (
+                $environment,
+                $vendorId,
+                $status
+            ) {
+                // Update the environment status.
+                DB::table('api_vendor_environments')
+                    ->where('id', $environment->id)
+                    ->where('vendor_id', $vendorId)
+                    ->update([
+                        'status' => $status,
+                        'updated_at' => Carbon::now()
+                    ]);
+
+                // Update the corresponding credential status.
+                DB::table('api_vendor_credential')
+                    ->where('vendor_id', $vendorId)
+                    ->where('vendor_environment_id', $environment->id)
+                    ->update([
+                        'is_active' => $status,
+                        'updated_at' => Carbon::now()
+                    ]);
+            });
 
             return response()->json([
                 'status' => 1,
-                'message' =>
-                ucfirst($request->environment) .
-                    ' environment ' .
-                    ($request->status ? 'activated' : 'deactivated') .
-                    ' successfully'
+                'message' => ucfirst($environmentName)
+                    . ' environment and credentials '
+                    . ($status ? 'activated' : 'deactivated')
+                    . ' successfully',
+                'data' => [
+                    'vendor_id' => $vendorId,
+                    'vendor_environment_id' => $environment->id,
+                    'environment' => $environmentName,
+                    'status' => $status,
+                    'credential_status' => $status
+                ]
             ], 200);
         } catch (\Exception $e) {
+            Log::error('Failed to change vendor environment status', [
+                'vendor_id' => $request->vendor_id,
+                'environment' => $request->environment,
+                'error' => $e->getMessage()
+            ]);
 
             return response()->json([
                 'status' => 0,
-                'message' => $e->getMessage()
+                'message' => 'Unable to update environment and credential status'
             ], 500);
         }
     }
@@ -808,7 +903,6 @@ class ApiVendorController extends Controller
     public function getVendorIps(Request $request)
     {
         try {
-
             $validator = Validator::make($request->all(), [
                 'vendor_id' => 'required|integer|exists:api_vendors,id',
             ]);
@@ -817,7 +911,7 @@ class ApiVendorController extends Controller
                 return response()->json([
                     'status' => 0,
                     'message' => $validator->errors()->first(),
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
@@ -829,6 +923,8 @@ class ApiVendorController extends Controller
                     'vi.vendor_environment_id'
                 )
                 ->where('vi.vendor_id', $request->vendor_id)
+                ->where('ve.vendor_id', $request->vendor_id)
+                ->whereNull('vi.deleted_at')
                 ->select(
                     'vi.id',
                     'vi.vendor_id',
@@ -840,172 +936,185 @@ class ApiVendorController extends Controller
                 ->orderBy('vi.id', 'ASC')
                 ->get();
 
-            $productionIps = $ips
-                ->where('environment', 'production')
-                ->values();
-
-            $sandboxIps = $ips
-                ->where('environment', 'sandbox')
-                ->values();
-
             return response()->json([
                 'status' => 1,
                 'message' => 'Vendor IPs fetched successfully',
                 'data' => [
-                    'production' => $productionIps,
-                    'sandbox' => $sandboxIps
-                ]
+                    'production' => $ips
+                        ->where('environment', 'production')
+                        ->values(),
+                    'sandbox' => $ips
+                        ->where('environment', 'sandbox')
+                        ->values(),
+                ],
             ], 200);
         } catch (\Exception $e) {
+            Log::error('Get vendor IPs failed', [
+                'vendor_id' => $request->vendor_id,
+                'error' => $e->getMessage(),
+            ]);
 
             return response()->json([
                 'status' => 0,
-                'message' => $e->getMessage()
+                'message' => 'Unable to fetch vendor IPs',
             ], 500);
         }
     }
 
+
     public function saveVendorIps(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'vendor_id' => 'required|integer|exists:api_vendors,id',
+
+            'production' => 'present|array',
+            'production.*.id' => 'nullable|integer|min:1',
+            'production.*.ip_address' => 'required|string|max:45',
+            'production.*.is_active' => 'required|boolean',
+
+            'sandbox' => 'present|array',
+            'sandbox.*.id' => 'nullable|integer|min:1',
+            'sandbox.*.ip_address' => 'required|string|max:45',
+            'sandbox.*.is_active' => 'required|boolean',
+
+            'created_by' => 'nullable|integer',
+            'updated_by' => 'nullable|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
         try {
-
-            $validator = Validator::make($request->all(), [
-                'vendor_id' => 'required|integer|exists:api_vendors,id',
-                'production_ips' => 'nullable|array',
-                'production_ips.*.id' => 'nullable|integer',
-                'production_ips.*.ip_address' => 'required|ip',
-                'production_ips.*.is_active' => 'required|boolean',
-                'sandbox_ips' => 'nullable|array',
-                'sandbox_ips.*.id' => 'nullable|integer',
-                'sandbox_ips.*.ip_address' => 'required|ip',
-                'sandbox_ips.*.is_active' => 'required|boolean',
-                'created_by' => 'nullable|integer',
-                'updated_by' => 'nullable|integer',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => 0,
-                    'message' => $validator->errors()->first(),
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $vendor = ApiVendor::find($request->vendor_id);
-
-            if (!$vendor) {
-                return response()->json([
-                    'status' => 0,
-                    'message' => 'Vendor not found'
-                ], 404);
-            }
-
-            $productionEnvironment = DB::table('api_vendor_environments')
-                ->where('vendor_id', $vendor->id)
-                ->where('environment', 'production')
-                ->first();
-
-            $sandboxEnvironment = DB::table('api_vendor_environments')
-                ->where('vendor_id', $vendor->id)
-                ->where('environment', 'sandbox')
-                ->first();
-
-            if (!$productionEnvironment || !$sandboxEnvironment) {
-                return response()->json([
-                    'status' => 0,
-                    'message' => 'Vendor environments are not configured properly'
-                ], 404);
-            }
-
-            $createdBy = $request->created_by;
-            $updatedBy = $request->updated_by;
+            $vendorId = (int) $validatedVendorId = $request->input('vendor_id');
+            $createdBy = $request->input('created_by');
+            $updatedBy = $request->input('updated_by');
 
             DB::transaction(function () use (
                 $request,
-                $vendor,
-                $productionEnvironment,
-                $sandboxEnvironment,
+                $vendorId,
                 $createdBy,
                 $updatedBy
             ) {
+                $now = now();
 
-                foreach ($request->production_ips ?? [] as $ip) {
+                // Get only this vendor's environment IDs.
+                $environments = DB::table('api_vendor_environments')
+                    ->where('vendor_id', $vendorId)
+                    ->whereIn('environment', ['sandbox', 'production'])
+                    ->get()
+                    ->keyBy('environment');
 
-                    if (!empty($ip['id'])) {
+                foreach (['sandbox', 'production'] as $environmentName) {
+                    $environment = $environments->get($environmentName);
 
-
-                        DB::table('api_vendor_ips')
-                            ->where('id', $ip['id'])
-                            ->where('vendor_id', $vendor->id)
-                            ->where(
-                                'vendor_environment_id',
-                                $productionEnvironment->id
-                            )
-                            ->update([
-                                'ip_address' => $ip['ip_address'],
-                                'is_active' => $ip['is_active'],
-                                'updated_at' => Carbon::now(),
-                                'updated_by' => $updatedBy
-                            ]);
-                    } else {
-                        DB::table('api_vendor_ips')->insert([
-                            'vendor_id' => $vendor->id,
-                            'vendor_environment_id' =>
-                            $productionEnvironment->id,
-                            'ip_address' => $ip['ip_address'],
-                            'is_active' => $ip['is_active'],
-                            'created_at' => Carbon::now(),
-                            'created_by' => $createdBy,
-                            'updated_at' => Carbon::now(),
-                            'updated_by' => $updatedBy
-                        ]);
+                    if (!$environment) {
+                        throw new \RuntimeException(
+                            ucfirst($environmentName) .
+                                ' environment not found for this vendor.'
+                        );
                     }
-                }
 
+                    $environmentId = (int) $environment->id;
+                    $submittedIps = $request->input($environmentName, []);
 
-                foreach ($request->sandbox_ips ?? [] as $ip) {
+                    $submittedIds = collect($submittedIps)
+                        ->pluck('id')
+                        ->filter(fn($id) => $id !== null && $id !== '')
+                        ->map(fn($id) => (int) $id)
+                        ->unique()
+                        ->values()
+                        ->all();
 
-                    if (!empty($ip['id'])) {
+                    // Ensure submitted IDs belong to this vendor and environment.
+                    if (!empty($submittedIds)) {
+                        $validIds = DB::table('api_vendor_ips')
+                            ->where('vendor_id', $vendorId)
+                            ->where('vendor_environment_id', $environmentId)
+                            ->whereNull('deleted_at')
+                            ->whereIn('id', $submittedIds)
+                            ->pluck('id')
+                            ->map(fn($id) => (int) $id)
+                            ->all();
 
-                        DB::table('api_vendor_ips')
-                            ->where('id', $ip['id'])
-                            ->where('vendor_id', $vendor->id)
-                            ->where(
-                                'vendor_environment_id',
-                                $sandboxEnvironment->id
-                            )
-                            ->update([
-                                'ip_address' => $ip['ip_address'],
-                                'is_active' => $ip['is_active'],
-                                'updated_at' => Carbon::now(),
-                                'updated_by' => $updatedBy
+                        if (count($validIds) !== count($submittedIds)) {
+                            throw new \RuntimeException(
+                                'One or more IP records are invalid. Please reload the vendor IP list and try again.'
+                            );
+                        }
+                    }
+
+                    // Soft-delete saved IPs that are no longer submitted.
+                    $removedQuery = DB::table('api_vendor_ips')
+                        ->where('vendor_id', $vendorId)
+                        ->where('vendor_environment_id', $environmentId)
+                        ->whereNull('deleted_at');
+
+                    if (!empty($submittedIds)) {
+                        $removedQuery->whereNotIn('id', $submittedIds);
+                    }
+
+                    $removedQuery->update([
+                        'deleted_at' => $now,
+                        'updated_at' => $now,
+                        'updated_by' => $updatedBy,
+                    ]);
+
+                    // Update existing IPs or insert new ones.
+                    foreach ($submittedIps as $ip) {
+                        $ipId = $ip['id'] ?? null;
+
+                        $ipAddress = trim($ip['ip_address']);
+                        $isActive = (int) $ip['is_active'];
+
+                        if ($ipId !== null && $ipId !== '') {
+                            DB::table('api_vendor_ips')
+                                ->where('id', (int) $ipId)
+                                ->where('vendor_id', $vendorId)
+                                ->where('vendor_environment_id', $environmentId)
+                                ->whereNull('deleted_at')
+                                ->update([
+                                    'ip_address' => $ipAddress,
+                                    'is_active' => $isActive,
+                                    'updated_at' => $now,
+                                    'updated_by' => $updatedBy,
+                                ]);
+                        } else {
+                            DB::table('api_vendor_ips')->insert([
+                                'vendor_id' => $vendorId,
+                                'vendor_environment_id' => $environmentId,
+                                'ip_address' => $ipAddress,
+                                'is_active' => $isActive,
+                                'created_at' => $now,
+                                'created_by' => $createdBy,
+                                'updated_at' => $now,
+                                'updated_by' => $updatedBy,
+                                'deleted_at' => null,
                             ]);
-                    } else {
-
-                        DB::table('api_vendor_ips')->insert([
-                            'vendor_id' => $vendor->id,
-                            'vendor_environment_id' =>
-                            $sandboxEnvironment->id,
-                            'ip_address' => $ip['ip_address'],
-                            'is_active' => $ip['is_active'],
-                            'created_at' => Carbon::now(),
-                            'created_by' => $createdBy,
-                            'updated_at' => Carbon::now(),
-                            'updated_by' => $updatedBy
-                        ]);
+                        }
                     }
                 }
             });
 
             return response()->json([
                 'status' => 1,
-                'message' => 'Vendor IPs saved successfully'
+                'message' => 'Vendor IPs saved successfully.',
             ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
+            Log::error('Save vendor IPs failed', [
+                'vendor_id' => $request->input('vendor_id'),
+                'error' => $e->getMessage(),
+            ]);
 
             return response()->json([
                 'status' => 0,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -1111,7 +1220,7 @@ class ApiVendorController extends Controller
 
 
             $vendorScopes = DB::table('api_vendor_scope')
-                ->where('vednor_id', $vendorId)
+                ->where('vendor_id', $vendorId)
                 ->whereIn(
                     'vendor_environment_id',
                     [
@@ -1288,7 +1397,7 @@ class ApiVendorController extends Controller
 
                 DB::table('api_vendor_scope')
                     ->where(
-                        'vednor_id',
+                        'vendor_id',
                         $vendor->id
                     )
                     ->where(
@@ -1308,7 +1417,7 @@ class ApiVendorController extends Controller
 
                         DB::table('api_vendor_scope')
                             ->insert([
-                                'vednor_id' => $vendor->id,
+                                'vendor_id' => $vendor->id,
                                 'vendor_environment_id' => $sandboxEnvironment->id,
                                 'scope_id' => $scope['id'],
                                 'status' => 1,
@@ -1322,7 +1431,7 @@ class ApiVendorController extends Controller
 
                 DB::table('api_vendor_scope')
                     ->where(
-                        'vednor_id',
+                        'vendor_id',
                         $vendor->id
                     )
                     ->where(
@@ -1342,7 +1451,7 @@ class ApiVendorController extends Controller
 
                         DB::table('api_vendor_scope')
                             ->insert([
-                                'vednor_id' => $vendor->id,
+                                'vendor_id' => $vendor->id,
                                 'vendor_environment_id' => $productionEnvironment->id,
                                 'scope_id' => $scope['id'],
                                 'status' => 1,
@@ -1424,7 +1533,7 @@ class ApiVendorController extends Controller
 
             $vendorScope = DB::table('api_vendor_scope')
                 ->where(
-                    'vednor_id',
+                    'vendor_id',
                     $request->vendor_id
                 )
                 ->where(
@@ -1466,7 +1575,7 @@ class ApiVendorController extends Controller
                 $vendorScopeId =
                     DB::table('api_vendor_scope')
                     ->insertGetId([
-                        'vednor_id' => $request->vendor_id,
+                        'vendor_id' => $request->vendor_id,
                         'vendor_environment_id' => $environment->id,
                         'scope_id' => $request->scope_id,
                         'status' => 1,
@@ -1555,7 +1664,7 @@ class ApiVendorController extends Controller
                     'vs.vendor_environment_id'
                 )
                 ->where(
-                    'vs.vednor_id',
+                    'vs.vendor_id',
                     $vendorId
                 )
                 ->where('vs.status', 1)
@@ -1568,7 +1677,7 @@ class ApiVendorController extends Controller
                 )
                 ->select(
                     'vs.id as vendor_scope_id',
-                    'vs.vednor_id as vendor_id',
+                    'vs.vendor_id as vendor_id',
                     'vs.vendor_environment_id',
                     'vs.scope_id',
                     'vs.status',
@@ -1798,7 +1907,7 @@ class ApiVendorController extends Controller
                     $vendorScope =
                         DB::table('api_vendor_scope')
                         ->where(
-                            'vednor_id',
+                            'vendor_id',
                             $vendor->id
                         )
                         ->where(
@@ -1902,7 +2011,7 @@ class ApiVendorController extends Controller
                     $vendorScope =
                         DB::table('api_vendor_scope')
                         ->where(
-                            'vednor_id',
+                            'vendor_id',
                             $vendor->id
                         )
                         ->where(
@@ -2091,6 +2200,15 @@ class ApiVendorController extends Controller
                 'access_rules' => []
             ];
 
+            $latestWallet = DB::table('client_wallet')
+                ->where('user_id', $vendorId)
+                ->orderByDesc('id')
+                ->first();
+
+            $walletBalance = $latestWallet
+                ? (float) $latestWallet->balance
+                : 0;
+
             $production = [
                 'credentials' => [],
                 'ips' => [],
@@ -2218,7 +2336,7 @@ class ApiVendorController extends Controller
                     'vs.scope_id'
                 )
                 ->where(
-                    'vs.vednor_id',
+                    'vs.vendor_id',
                     $vendorId
                 )
                 ->whereIn(
@@ -2230,7 +2348,7 @@ class ApiVendorController extends Controller
                 )
                 ->select(
                     'vs.id',
-                    'vs.vednor_id',
+                    'vs.vendor_id',
                     'vs.vendor_environment_id',
                     'vs.scope_id',
                     'vs.status',
@@ -2421,16 +2539,14 @@ class ApiVendorController extends Controller
 
             return response()->json([
                 'status' => 1,
-                'message' =>
-                'Vendor details fetched successfully',
+                'message' => 'Vendor details fetched successfully',
                 'data' => [
-
                     'vendor' => $vendor,
                     'address' => $address,
+                    'wallet_balance' => $walletBalance,
                     'sandbox' => $sandbox,
                     'production' => $production
                 ]
-
             ], 200);
         } catch (\Exception $e) {
 
@@ -2489,7 +2605,7 @@ class ApiVendorController extends Controller
                         'vs.scope_id'
                     )
                     ->where(
-                        'vs.vednor_id',
+                        'vs.vendor_id',
                         $vendorId
                     )
                     ->where(
@@ -2691,7 +2807,7 @@ class ApiVendorController extends Controller
                             'vs.scope_id'
                         )
                         ->where(
-                            'vs.vednor_id',
+                            'vs.vendor_id',
                             $vendorId
                         )
                         ->where(
@@ -2901,5 +3017,247 @@ class ApiVendorController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    private function generateSandboxTransactionId(): string
+    {
+        do {
+            // First digit is non-zero, so the ID is exactly 20 digits.
+            $transactionId = (string) random_int(1, 9);
+
+            for ($i = 1; $i < 20; $i++) {
+                $transactionId .= (string) random_int(0, 9);
+            }
+
+            $exists = DB::table('client_wallet')
+                ->where('transaction_id', $transactionId)
+                ->exists();
+        } while ($exists);
+
+        return $transactionId;
+    }
+
+    public function addSandboxBalance(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'vendor_id' => 'required|integer|min:1|exists:api_vendors,id',
+            'amount'    => 'required|numeric|gt:0',
+            'remarks'   => 'required|string|max:500',
+            'created_by' => 'required|integer|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $result = DB::transaction(function () use ($request) {
+                $vendorId = (int) $request->vendor_id;
+                $amount = round((float) $request->amount, 2);
+                $createdBy = (int) $request->created_by;
+
+                // Lock the vendor row to serialize balance credits.
+                $vendor = DB::table('api_vendors')
+                    ->where('id', $vendorId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$vendor) {
+                    throw new \RuntimeException('Vendor not found.');
+                }
+
+                // Fetch the latest wallet balance for this vendor.
+                $lastWallet = DB::table('client_wallet')
+                    ->where('user_id', $vendorId)
+                    ->where('status', 1)
+                    ->orderByDesc('id')
+                    ->lockForUpdate()
+                    ->first();
+
+                $previousBalance = $lastWallet ? (float) $lastWallet->balance : 0.00;
+                $newBalance = round($previousBalance + $amount, 2);
+
+                // Generate a unique 20-digit numeric transaction ID.
+                $transactionId = $this->generateSandboxTransactionId();
+
+                $walletId = DB::table('client_wallet')->insertGetId([
+                    'transaction_id'   => $transactionId,
+                    'booking_id'       => null,
+                    'reference_id'     => null,
+                    'payment_via'      => 'SANDBOX',
+                    'amount'           => $amount,
+                    'transaction_type' => 'c',
+                    'type'             => 'wallet recharge',
+                    'balance'          => $newBalance,
+                    'remarks'          => trim($request->remarks),
+                    'user_id'          => $vendorId,
+                    'created_by'       => $createdBy,
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                    'status'           => 1,
+                    'otp'              => null,
+                    'reject_reason'    => null,
+                ]);
+
+                return [
+                    'id'               => $walletId,
+                    'vendor_id'        => $vendorId,
+                    'transaction_id'   => $transactionId,
+                    'amount'            => $amount,
+                    'previous_balance' => $previousBalance,
+                    'balance'           => $newBalance,
+                ];
+            });
+
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Sandbox balance added successfully.',
+                'data'    => $result,
+            ], 200);
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'status'  => 0,
+                'message' => $e->getMessage(),
+            ], 404);
+        } catch (\Throwable $e) {
+            Log::error('Add Sandbox Balance Error', [
+                'vendor_id' => $request->vendor_id,
+                'error'     => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Unable to add sandbox balance.',
+            ], 500);
+        }
+    }
+
+    public function getBusOperators(Request $request)
+    {
+        try {
+            $operators = DB::table('bus_operator')
+                ->select('id', 'organisation_name')
+                ->where('status', 1)
+                ->orderBy('organisation_name', 'ASC')
+                ->get();
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Bus operators fetched successfully',
+                'data' => $operators
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Unable to fetch bus operators'
+            ], 500);
+        }
+    }
+
+    public function getBusOperatorDetails($id)
+    {
+        try {
+            $operator = DB::table('bus_operator')
+                ->select(
+                    'id',
+                    'organisation_name',
+                    'operator_name',
+                    'email_id',
+                    'contact_number',
+                    'address',
+                    'location_name',
+                    'need_gst_bill',
+                    'status'
+                )
+                ->where('id', $id)
+                ->where('status', 1)
+                ->first();
+
+            if (!$operator) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Bus operator not found or inactive',
+                    'data' => null
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Operator details fetched successfully',
+                'data' => [
+                    'operator_id' => (int) $operator->id,
+                    'company_name' => $operator->organisation_name,
+                    'contact_name' => $operator->operator_name ?? '',
+                    'contact_email' => $operator->email_id ?? '',
+                    'contact_phone' => $operator->contact_number ?? '',
+                    'rate_limit_per_minute' => 100,
+                    'has_gst' => (int) ($operator->need_gst_bill ?? 0),
+                    'address' => $operator->address ?? '',
+                    'location_name' => $operator->location_name ?? ''
+                ]
+            ], 200);
+        } catch (\Throwable $e) {
+            Log::error('Get bus operator details failed', [
+                'operator_id' => $id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return response()->json([
+                'status' => 0,
+                'message' => 'Unable to fetch operator details'
+            ], 500);
+        }
+    }
+
+    public function updatePassword(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/[A-Z]/',
+                'regex:/[a-z]/',
+                'regex:/[0-9]/',
+                'regex:/[^A-Za-z0-9]/',
+            ],
+        ], [
+            'password.regex' =>
+            'Password must contain an uppercase letter, lowercase letter, number and special character.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => $validator->errors()->first('password'),
+            ], 422);
+        }
+
+        $vendor = DB::table('api_vendors')->where('id', $id)->first();
+
+        if (!$vendor) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Vendor not found.',
+            ], 404);
+        }
+
+        DB::table('api_vendors')
+            ->where('id', $id)
+            ->update([
+                'password' => hash('sha256', $request->input('password')),
+                'updated_at' => now(),
+            ]);
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Vendor password updated successfully.',
+        ]);
     }
 }
