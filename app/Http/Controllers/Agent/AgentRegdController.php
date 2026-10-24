@@ -1078,7 +1078,8 @@ class AgentRegdController extends Controller
                 ->update([
                     'is_verified' => 1,
                     'verified_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
+                    'welcome_bonus_ends' => now()->addDays(10),
                 ]);
 
             // Update user email verification status
@@ -1089,7 +1090,7 @@ class AgentRegdController extends Controller
                     'updated_at' => now()
                 ]);
 
-            $dueAt = now()->addHours(48);
+            $dueAt = now()->addHours(12);
 
             $this->agentActivityService->logActivity(
                 $agentId,
@@ -1097,6 +1098,36 @@ class AgentRegdController extends Controller
                 'EMAIL_VERIFIED',
                 [],
                 $dueAt
+            );
+
+            $_dueAt = now()->addHours(12);
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'WALLET_WAITING',
+                'WALLET_WAITING',
+                [],
+                $_dueAt
+            );
+
+            $__dueAt = now()->addMinute();
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'WALLET_NOT_FUNDED_OFFER_LIVE',
+                'WALLET_NOT_FUNDED_OFFER_LIVE',
+                [],
+                $__dueAt
+            );
+
+            $__dueAt_ = now()->addMinute();
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'AGENT_ACTIVATED',
+                'AGENT_ACTIVATED',
+                [],
+                $__dueAt_
             );
 
             DB::commit();

@@ -134,14 +134,14 @@ class AgentWalletController extends Controller
 
             $frontendUrl = rtrim($request->frontend_url ?? '', '/');
 
-            $returnUrl = $frontendUrl . "/#/agent/wallet?order_id={order_id}";
+            $returnUrl = $frontendUrl . "/agent/wallet?order_id={order_id}";
 
-            Log::info('WALLET PAYMENT REQUEST', [
-                'frontend_url' => $request->frontend_url,
-                'frontendUrl'  => $frontendUrl,
-                'returnUrl'    => $returnUrl,
-                'request'      => $request->all()
-            ]);
+            // Log::info('WALLET PAYMENT REQUEST', [
+            //     'frontend_url' => $request->frontend_url,
+            //     'frontendUrl'  => $frontendUrl,
+            //     'returnUrl'    => $returnUrl,
+            //     'request'      => $request->all()
+            // ]);
 
             $response = Http::withHeaders([
 
@@ -175,12 +175,12 @@ class AgentWalletController extends Controller
 
             $responseData = $response->json();
 
-            Log::info(
-                json_encode(
-                    $responseData,
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                )
-            );
+            // Log::info(
+            //     json_encode(
+            //         $responseData,
+            //         JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+            //     )
+            // );
 
             if (!isset($responseData['payment_session_id'])) {
 
@@ -269,12 +269,12 @@ class AgentWalletController extends Controller
 
             $res = json_decode($post);
 
-            Log::info(
-                json_encode(
-                    $res,
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                )
-            );
+            // Log::info(
+            //     json_encode(
+            //         $res,
+            //         JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+            //     )
+            // );
 
             if (
 
@@ -456,7 +456,7 @@ class AgentWalletController extends Controller
     {
         try {
 
-            Log::info('REDEEM REQUEST', $request->all());
+            // Log::info('REDEEM REQUEST', $request->all());
 
             $pnrs    = $request->pnrs;
             $agentId = $request->user_id;
