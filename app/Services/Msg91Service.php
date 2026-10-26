@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class Msg91Service
 {
@@ -523,5 +524,60 @@ class Msg91Service
         curl_close($curl);
 
         return json_decode($response, true);
+    }
+
+    public function sendEmail($msg91Arr, $sentArr)
+    {
+        $url = 'https://control.msg91.com/api/v5/email/send';
+
+        $payload = [
+            'recipients' => [
+                [
+                    'to' => [
+                        [
+                            'name' => $sentArr['name'],
+                            'email' => 'jagan.odbus@gmail.com'
+                            // 'email' => $sentArr['to']
+                        ],
+                    ],
+                    'variables' => $msg91Arr,
+                ],
+            ],
+            'from' => [
+                'name' => 'ODBUS Agent',
+                'email' => config('msg91.FROM_EMAIL'),
+            ],
+            'domain' => 'mail.odbus.in',
+            'template_id' => $sentArr['template_id']
+        ];
+
+        try {
+            $response = Http::withHeaders([
+                'accept' => 'application/json',
+                'authkey' => config('msg91.MSG91_AUTH_KEY'),
+                'content-type' => 'application/json',
+            ])->post($url, $payload);
+
+            if ($response->successful()) {
+                Log::info('Email sent successfully', [
+                    'response' => $response->json(),
+                ]);
+
+                return $response->json();
+            }
+
+            Log::error('MSG91 Email failed', [
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+
+            return $response->json();
+        } catch (\Exception $e) {
+            Log::error('MSG91 email API exception', [
+                'message' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
     }
 }

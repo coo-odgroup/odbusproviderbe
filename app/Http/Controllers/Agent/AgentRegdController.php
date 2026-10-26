@@ -979,8 +979,8 @@ class AgentRegdController extends Controller
             }
 
             // Generate 6-digit OTP
-            // $otp = random_int(100000, 999999);
-            $otp = '111000';
+            $otp = random_int(100000, 999999);
+            // $otp = '111000';
 
             // Optional: Mark previous unused email OTPs as expired
             DB::table('agent_otp_verification')
@@ -1006,8 +1006,20 @@ class AgentRegdController extends Controller
                 'created_by'    => $agentId
             ]);
 
+            $msg91Arr = [
+                'otp_code' => $otp
+            ];
+
+            $sentArr = [
+                'template_id' => config('msg91.EMAIL_TEMPLATE_IDS.VERIFY_EMAIL_OTP'),
+                'name' => $agent->name,
+                'to' => $agent->email,
+            ];
+
             // Send OTP to email here
-            // Mail::to($email)->send(new SendOtpMail($otp));
+            if ($this->SMS_ENABLED) {
+                $this->msg91Service->sendEmail($msg91Arr, $sentArr);
+            }
 
             return response()->json([
                 'status' => true,

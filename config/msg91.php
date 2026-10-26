@@ -26,5 +26,10 @@ return [
         'agent_ticket_cancellation' => 'agent-ticket-cancellation',
         'new_agent_registration' => 'new-agent-registration',
         'agent_pnr_cancellation_otp' => 'agent-pnr-cancellation-otp',
+    ],
+
+    'FROM_EMAIL' => 'emailer@mail.odbus.in',
+    'EMAIL_TEMPLATE_IDS' => [
+        'VERIFY_EMAIL_OTP' => 'odbus_agent_01_email_otp_2'
     ]
 ];
