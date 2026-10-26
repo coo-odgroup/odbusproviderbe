@@ -134,6 +134,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\OprAssignAgentController;
 use App\Http\Controllers\PermissionToRoleController;
 use App\Http\Controllers\AssocAssignReportController;
+use App\Http\Controllers\ManageUserAccessController;
 
 use App\Http\Controllers\ApiClientWalletController;
 use App\Http\Controllers\ApiClientReportController;
@@ -164,9 +165,8 @@ use App\Http\Controllers\RouteWiseBookingController;
 use App\Http\Controllers\NotificationMasterController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\NotificationLogController;
-
-//Vendors
-use App\Http\Controllers\ApiVendorController;   
+use App\Http\Controllers\ApiVendorController;
+use App\Http\Controllers\ManageUserController;
 
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AgentSliderController;
@@ -1396,7 +1396,7 @@ Route::post('createCampaignNotification', [CampaignNotificationController::class
 Route::post('getAllCampaignNotificationData', [CampaignNotificationController::class, 'getAllCampaignNotificationData']);
 Route::post('updateCampaignNotification/{id}', [CampaignNotificationController::class, 'updateCampaignNotification']);
 Route::post('changeCampaignNotificationStatus', [CampaignNotificationController::class, 'changeStatus']);
-Route::post('/killCampaign',[CampaignNotificationController::class, 'killCampaign']);
+Route::post('/killCampaign', [CampaignNotificationController::class, 'killCampaign']);
 Route::post('/notification-categories', [CampaignNotificationController::class, 'getNotificationCategories']);
 Route::post('getCampaignNotification/{id}', [CampaignNotificationController::class, 'getCampaignNotification']);
 Route::post('/get-operators', [CampaignNotificationController::class, 'getOperators']);
@@ -1405,10 +1405,10 @@ Route::post('/getActiveCoupons', [CampaignNotificationController::class, 'getAct
 Route::post('/getSelectedTargetUsers', [CampaignNotificationController::class, 'getSelectedTargetUsers']);
 
 //Notification Log
-Route::post('/notification-log/dashboard',[NotificationLogController::class, 'notificationDashboard']);
-Route::post('/notification-log/campaign/{campaignId}',[NotificationLogController::class, 'campaignDetails']);
-Route::post('/notification-log/campaigns',[NotificationLogController::class, 'notificationCampaignList']);
-Route::post('/notification-log/campaign/{campaignId}/export',[NotificationLogController::class, 'exportCampaignDetails']);
+Route::post('/notification-log/dashboard', [NotificationLogController::class, 'notificationDashboard']);
+Route::post('/notification-log/campaign/{campaignId}', [NotificationLogController::class, 'campaignDetails']);
+Route::post('/notification-log/campaigns', [NotificationLogController::class, 'notificationCampaignList']);
+Route::post('/notification-log/campaign/{campaignId}/export', [NotificationLogController::class, 'exportCampaignDetails']);
 
 //Agent SLider
 Route::post('/getAgentSliders', [AgentSliderController::class, 'index']);
@@ -1471,11 +1471,29 @@ Route::post('/vendors/view-details', [ApiVendorController::class, 'getVendorView
 Route::post('/vendors/app-access-rules/list', [ApiVendorController::class, 'getVendorAppAccessRules']);
 Route::post('/vendors/app-access-rules/save', [ApiVendorController::class, 'saveVendorAppAccessRules']);
 Route::post('/vendors/app-access-rules/status', [ApiVendorController::class, 'changeVendorAppAccessRuleStatus']);
-Route::post('/vendors/sandbox-balance',[ApiVendorController::class, 'addSandboxBalance']);
+Route::post('/vendors/sandbox-balance', [ApiVendorController::class, 'addSandboxBalance']);
 Route::post('/bus-operators', [ApiVendorController::class, 'getBusOperators']);
-Route::post('/bus-operators/{id}/details',[ApiVendorController::class, 'getBusOperatorDetails']);
+Route::post('/bus-operators/{id}/details', [ApiVendorController::class, 'getBusOperatorDetails']);
 Route::post('/vendors/{id}/password', [ApiVendorController::class, 'updatePassword']);
 
+//Manage User
+Route::post('/bus-operators', [ManageUserController::class, 'getBusOperators']);
+Route::post('/roles', [ManageUserController::class, 'getRoles']);
+Route::post('/users', [ManageUserController::class, 'store']);
+Route::post('/users/list', [ManageUserController::class, 'getUsers']);
+Route::post('/users/toggle-status', [ManageUserController::class, 'changeStatus']);
+Route::post('/vendors/states', [ManageUserController::class, 'getStates']);
+Route::post('/users/address', [ManageUserController::class, 'updateUserAddress']);
+
+// Manage Bus User Access routes
+Route::post('/bus-user-access/operators', [ManageUserAccessController::class, 'getOperators']);
+Route::post('/bus-user-access/users', [ManageUserAccessController::class, 'getUsers']);
+Route::post('/bus-user-access/buses', [ManageUserAccessController::class, 'getBuses']);
+Route::post('/bus-user-access/routes', [ManageUserAccessController::class, 'getBusRoutes']);
+Route::post('/bus-user-access/save', [ManageUserAccessController::class, 'saveUserBusAccess']);
+Route::post('/bus-user-access/list', [ManageUserAccessController::class, 'getUserBusAccessList']);
+Route::post('/bus-user-access/status', [ManageUserAccessController::class, 'updateUserBusAssignmentStatus']);
+Route::post('/bus-user-access/bus-status', [ManageUserAccessController::class, 'updateBusAssignmentsStatus']);
 
 // Jagan
 Route::post('/agentRegd', [AgentRegdController::class, 'agentRegd']);
