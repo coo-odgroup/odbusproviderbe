@@ -1485,15 +1485,15 @@ Route::post('/users/toggle-status', [ManageUserController::class, 'changeStatus'
 Route::post('/vendors/states', [ManageUserController::class, 'getStates']);
 Route::post('/users/address', [ManageUserController::class, 'updateUserAddress']);
 
-//BUs User Access Controller.
+// Manage Bus User Access routes
 Route::post('/bus-user-access/operators', [ManageUserAccessController::class, 'getOperators']);
 Route::post('/bus-user-access/users', [ManageUserAccessController::class, 'getUsers']);
 Route::post('/bus-user-access/buses', [ManageUserAccessController::class, 'getBuses']);
 Route::post('/bus-user-access/routes', [ManageUserAccessController::class, 'getBusRoutes']);
 Route::post('/bus-user-access/save', [ManageUserAccessController::class, 'saveUserBusAccess']);
-Route::post('/bus-user-access/routes/status', [ManageUserAccessController::class, 'updateAssignedRouteStatus']);
-Route::post('/bus-user-access/list',[ManageUserAccessController::class, 'getUserBusAccessList']);
-Route::post('/bus-user-access/status',[ManageUserAccessController::class, 'updateUserBusAssignmentStatus']);
+Route::post('/bus-user-access/list', [ManageUserAccessController::class, 'getUserBusAccessList']);
+Route::post('/bus-user-access/status', [ManageUserAccessController::class, 'updateUserBusAssignmentStatus']);
+Route::post('/bus-user-access/bus-status', [ManageUserAccessController::class, 'updateBusAssignmentsStatus']);
 
 // Jagan
 Route::post('/agentRegd', [AgentRegdController::class, 'agentRegd']);

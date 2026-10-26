@@ -6,406 +6,228 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class ManageUserAccessController extends Controller
 {
-
     public function getOperators()
     {
         try {
-            $operators = DB::table('bus_operator')
-                ->select('id', 'organisation_name')
-                ->where('status', 1)
-                ->orderBy('organisation_name', 'asc')
-                ->get();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Operators fetched successfully',
-                'data' => $operators
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('BusUserAccessController getOperators: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to fetch operators'
-            ], 500);
+            $operators = DB::table('bus_operator')->select('id', 'organisation_name')
+                ->where('status', 1)->orderBy('organisation_name')->get();
+            return response()->json(['status' => true, 'message' => 'Operators fetched successfully', 'data' => $operators]);
+        } catch (\Throwable $e) {
+            Log::error('ManageUserAccessController getOperators: ' . $e->getMessage());
+            return response()->json(['status' => false, 'message' => 'Unable to fetch operators'], 500);
         }
     }
 
+    public function getUsers(Request $request)
+    {
+        $v = Validator::make($request->all(), ['operator_id' => 'required|integer|min:1', 'user_type' => 'required|in:3,7,8']);
+        if ($v->fails()) return response()->json(['status' => false, 'message' => 'Invalid request parameters', 'errors' => $v->errors()], 422);
+        try {
+            $users = DB::table('user')->select('id', 'name', 'client_id')
+                ->where('bus_operator_id', (int)$request->operator_id)->where('role_id', (int)$request->user_type)
+                ->orderBy('name')->get();
+            return response()->json(['status' => true, 'message' => 'Users fetched successfully', 'data' => $users]);
+        } catch (\Throwable $e) {
+            Log::error('ManageUserAccessController getUsers: ' . $e->getMessage());
+            return response()->json(['status' => false, 'message' => 'Unable to fetch users'], 500);
+        }
+    }
+
+    public function getBuses(Request $request)
+    {
+        $v = Validator::make($request->all(), ['operator_id' => 'required|integer|min:1']);
+        if ($v->fails()) return response()->json(['status' => false, 'message' => 'Invalid operator ID', 'errors' => $v->errors()], 422);
+        try {
+            $buses = DB::table('bus')->select('id', 'name', 'bus_number')
+                ->where('bus_operator_id', (int)$request->operator_id)->orderBy('name')->get();
+            return response()->json(['status' => true, 'message' => 'Buses fetched successfully', 'data' => $buses]);
+        } catch (\Throwable $e) {
+            Log::error('ManageUserAccessController getBuses: ' . $e->getMessage());
+            return response()->json(['status' => false, 'message' => 'Unable to fetch buses'], 500);
+        }
+    }
+
+    public function getBusRoutes(Request $request)
+    {
+        $v = Validator::make($request->all(), ['bus_id' => 'required|integer|min:1']);
+        if ($v->fails()) return response()->json(['status' => false, 'message' => 'Invalid bus ID', 'errors' => $v->errors()], 422);
+        try {
+            $routes = DB::table('ticket_price as tp')
+                ->join('location as src', 'src.id', '=', 'tp.source_id')
+                ->join('location as dest', 'dest.id', '=', 'tp.destination_id')
+                ->where('tp.bus_id', (int)$request->bus_id)
+                ->select('tp.id', 'tp.source_id', 'src.name as source_name', 'tp.destination_id', 'dest.name as destination_name')
+                ->orderBy('src.name')->orderBy('dest.name')->get()
+                ->map(function ($r) {
+                    $r->name = $r->source_name . ' → ' . $r->destination_name;
+                    return $r;
+                });
+            return response()->json(['status' => true, 'message' => 'Bus routes fetched successfully', 'data' => $routes]);
+        } catch (\Throwable $e) {
+            Log::error('ManageUserAccessController getBusRoutes: ' . $e->getMessage());
+            return response()->json(['status' => false, 'message' => 'Unable to fetch bus routes'], 500);
+        }
+    }
+
+    /**
+     * Saves multiple user assignments for one selected operator + bus.
+     * Existing assignment IDs are updated; assignments without IDs are inserted.
+     * Route and location access rows are replaced per assignment in the same transaction.
+     */
     public function saveUserBusAccess(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $v = Validator::make($request->all(), [
             'operator_id' => 'required|integer|min:1',
-            'user_type'   => 'required|in:3,7,8',
-            'user_id'     => 'required|integer|min:1',
-            'bus_id'      => 'required|integer|min:1',
-            'from_date'   => 'required|date_format:Y-m-d',
-            'to_date'     => 'required|date_format:Y-m-d|after_or_equal:from_date',
-            'route_ids'   => 'required|array|min:1',
-            'route_ids.*' => 'required|integer|min:1|distinct',
-            'route_statuses' => 'sometimes|array',
-            'route_statuses.*' => 'sometimes|in:Active,Inactive',
+            'bus_id' => 'required|integer|min:1',
+            'assignments' => 'required|array|min:1',
+            'assignments.*.id' => 'nullable|integer|min:1',
+            'assignments.*.user_type' => 'required|in:3,7,8',
+            'assignments.*.user_id' => 'required|integer|min:1',
+            'assignments.*.from_date' => 'required|date_format:Y-m-d',
+            'assignments.*.to_date' => 'required|date_format:Y-m-d',
+            'assignments.*.route_ids' => 'required|array|min:1',
+            'assignments.*.route_ids.*' => 'required|integer|min:1',
+            'assignments.*.route_statuses' => 'sometimes|array',
+            'assignments.*.route_statuses.*' => 'sometimes|in:Active,Inactive',
+            'removed_assignment_ids' => 'sometimes|array',
+            'removed_assignment_ids.*' => 'integer|min:1',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Please correct the submitted data.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
+        if ($v->fails()) return response()->json(['status' => false, 'message' => 'Please correct the submitted data.', 'errors' => $v->errors()], 422);
 
         try {
-            $operatorId = (int) $request->operator_id;
-            $userId = (int) $request->user_id;
-            $busId = (int) $request->bus_id;
-            $roleType = (int) $request->user_type;
+            $operatorId = (int)$request->operator_id;
+            $busId = (int)$request->bus_id;
+            $rows = $request->input('assignments', []);
+            $removedIds = array_values(array_unique(array_map('intval', $request->input('removed_assignment_ids', []))));
+            $roleUserKeys = [];
+            foreach ($rows as $row) {
+                if (empty($row['from_date']) || empty($row['to_date']) || $row['to_date'] < $row['from_date']) {
+                    return response()->json(['status' => false, 'message' => 'Each assignment must have a valid date range.'], 422);
+                }
+                $key = (int)$row['user_type'] . ':' . (int)$row['user_id'];
+                if (in_array($key, $roleUserKeys, true)) {
+                    return response()->json(['status' => false, 'message' => 'The same user and role cannot be added twice to one bus.'], 422);
+                }
+                $roleUserKeys[] = $key;
+            }
 
-            $routeIds = array_values(array_unique(
-                array_map('intval', $request->route_ids)
-            ));
+            $result = DB::transaction(function () use ($operatorId, $busId, $rows, $removedIds) {
+                $busExists = DB::table('bus')->where('id', $busId)->where('bus_operator_id', $operatorId)->exists();
+                if (!$busExists) throw new \InvalidArgumentException('The selected bus does not belong to this operator.');
 
-            $routeStatuses = $request->input('route_statuses', []);
-
-            $result = DB::transaction(function () use (
-                $operatorId,
-                $userId,
-                $busId,
-                $roleType,
-                $routeIds,
-                $routeStatuses,
-                $request
-            ) {
-                // Confirm the selected user belongs to this operator and role.
-                $userExists = DB::table('user')
-                    ->where('id', $userId)
-                    ->where('bus_operator_id', $operatorId)
-                    ->where('role_id', $roleType)
-                    ->exists();
-
-                if (!$userExists) {
-                    throw new \InvalidArgumentException(
-                        'The selected user does not belong to this operator and user type.'
-                    );
+                // Removed saved blocks are soft-disabled to preserve assignment history.
+                if (!empty($removedIds)) {
+                    DB::table('operator_bus_assignments')
+                        ->where('bus_operator_id', $operatorId)
+                        ->where('bus_id', $busId)
+                        ->whereIn('id', $removedIds)
+                        ->update(['status' => 0, 'updated_at' => now(), 'updated_by' => auth()->id() ?? null]);
                 }
 
-                // Confirm the bus belongs to the selected operator.
-                $busExists = DB::table('bus')
-                    ->where('id', $busId)
-                    ->where('bus_operator_id', $operatorId)
-                    ->exists();
+                $savedIds = [];
+                foreach ($rows as $row) {
+                    $userId = (int)$row['user_id'];
+                    $roleType = (int)$row['user_type'];
+                    $assignmentId = !empty($row['id']) ? (int)$row['id'] : null;
 
-                if (!$busExists) {
-                    throw new \InvalidArgumentException(
-                        'The selected bus does not belong to this operator.'
-                    );
-                }
+                    $userExists = DB::table('user')->where('id', $userId)
+                        ->where('bus_operator_id', $operatorId)->where('role_id', $roleType)->exists();
+                    if (!$userExists) throw new \InvalidArgumentException('A selected user does not belong to this operator and role.');
 
-                // Fetch the actual route records for this bus.
-                $routes = DB::table('ticket_price')
-                    ->where('bus_id', $busId)
-                    ->whereIn('id', $routeIds)
-                    ->select('id', 'source_id', 'destination_id')
-                    ->get();
+                    if (in_array($roleType, [7, 8], true)) {
+                        $duplicate = DB::table('operator_bus_assignments')
+                            ->where('bus_id', $busId)->where('bus_operator_id', $operatorId)
+                            ->where('role_type', $roleType)->where('status', 1)
+                            ->when($assignmentId, function ($q) use ($assignmentId) {
+                                $q->where('id', '<>', $assignmentId);
+                            })
+                            ->exists();
+                        if ($duplicate) throw new \InvalidArgumentException($roleType === 7
+                            ? 'This bus already has an active conductor.'
+                            : 'This bus already has an active manager.');
+                    }
 
-                if ($routes->count() !== count($routeIds)) {
-                    throw new \InvalidArgumentException(
-                        'One or more selected routes are invalid for this bus.'
-                    );
-                }
+                    $routeIds = array_values(array_unique(array_map('intval', $row['route_ids'])));
+                    $routes = DB::table('ticket_price')->where('bus_id', $busId)->whereIn('id', $routeIds)
+                        ->select('id', 'source_id', 'destination_id')->get();
+                    if ($routes->count() !== count($routeIds)) throw new \InvalidArgumentException('One or more selected routes are invalid for this bus.');
 
-                $totalBusRoutes = DB::table('ticket_price')
-                    ->where('bus_id', $busId)
-                    ->count();
-
-                // Access mode 1 means every route for the bus is selected.
-                // Access mode 2 means only some routes are selected.
-                $accessMode = (
-                    $totalBusRoutes > 0 &&
-                    count($routeIds) === $totalBusRoutes
-                ) ? 1 : 2;
-
-                $now = now();
-
-                // Main assignment.
-                $assignmentId = DB::table('operator_bus_assignments')
-                    ->insertGetId([
+                    $totalRoutes = DB::table('ticket_price')->where('bus_id', $busId)->count();
+                    $accessMode = ($totalRoutes > 0 && count($routeIds) === $totalRoutes) ? 1 : 2;
+                    $now = now();
+                    $values = [
                         'bus_operator_id' => $operatorId,
                         'role_type' => $roleType,
                         'user_id' => $userId,
                         'bus_id' => $busId,
                         'route_access' => $accessMode,
                         'access_mode' => $accessMode,
-                        'valid_from' => $request->from_date,
-                        'valid_until' => $request->to_date,
+                        'valid_from' => $row['from_date'],
+                        'valid_until' => $row['to_date'],
                         'status' => 1,
-                        'created_at' => $now,
                         'updated_at' => $now,
-                        'created_by' => auth()->id() ?? null,
                         'updated_by' => auth()->id() ?? null,
-                    ]);
-
-                // One assigned-route row for every selected ticket_price ID.
-                $assignedRouteRows = [];
-
-                foreach ($routes as $route) {
-                    $assignedRouteRows[] = [
-                        'operator_id' => $operatorId,
-                        'operator_user_id' => $userId,
-                        'bus_id' => $busId,
-                        'ticket_price_id' => (int) $route->id,
-                        'status' => (
-                            ($routeStatuses[$route->id] ?? 'Active') === 'Inactive'
-                        ) ? 0 : 1,
-                        'created_at' => $now,
-                        'updated_at' => $now,
                     ];
-                }
+                    if ($assignmentId) {
+                        $updated = DB::table('operator_bus_assignments')->where('id', $assignmentId)
+                            ->where('bus_operator_id', $operatorId)->where('bus_id', $busId)->update($values);
+                        if (!$updated && !DB::table('operator_bus_assignments')->where('id', $assignmentId)->where('bus_operator_id', $operatorId)->where('bus_id', $busId)->exists()) {
+                            throw new \InvalidArgumentException('An assignment being edited does not belong to this bus.');
+                        }
+                        $id = $assignmentId;
+                    } else {
+                        $values['created_at'] = $now;
+                        $values['created_by'] = auth()->id() ?? null;
+                        $id = DB::table('operator_bus_assignments')->insertGetId($values);
+                    }
+                    $savedIds[] = $id;
 
-                foreach (array_chunk($assignedRouteRows, 500) as $chunk) {
-                    DB::table('operator_user_assigned_routes')
-                        ->insert($chunk);
-                }
+                    DB::table('operator_user_assigned_routes')->where('operator_id', $operatorId)
+                        ->where('operator_user_id', $userId)->where('bus_id', $busId)->delete();
+                    DB::table('operator_locations_ids')->where('operator_id', $operatorId)
+                        ->where('operator_user_id', $userId)->delete();
 
-                // Gather source and destination IDs, then deduplicate them.
-                $locationIds = $routes
-                    ->flatMap(function ($route) {
-                        return [
-                            (int) $route->source_id,
-                            (int) $route->destination_id,
+                    $routeRows = [];
+                    $locationIds = [];
+                    foreach ($routes as $route) {
+                        $routeRows[] = [
+                            'operator_id' => $operatorId,
+                            'operator_user_id' => $userId,
+                            'bus_id' => $busId,
+                            'ticket_price_id' => (int)$route->id,
+                            'status' => (($row['route_statuses'][$route->id] ?? 'Active') === 'Inactive') ? 0 : 1,
+                            'created_at' => $now,
+                            'updated_at' => $now,
                         ];
-                    })
-                    ->filter(function ($id) {
-                        return $id > 0;
-                    })
-                    ->unique()
-                    ->values();
-
-                $locationRows = [];
-
-                foreach ($locationIds as $locationId) {
-                    $locationRows[] = [
-                        'operator_id' => $operatorId,
-                        'operator_user_id' => $userId,
-                        'location_id' => $locationId,
-                        'active_status' => 1,
-                        'created_at' => $now,
-                        'updated_at' => $now,
-                    ];
+                        if ((int)$route->source_id > 0) $locationIds[] = (int)$route->source_id;
+                        if ((int)$route->destination_id > 0) $locationIds[] = (int)$route->destination_id;
+                    }
+                    foreach (array_chunk($routeRows, 500) as $chunk) DB::table('operator_user_assigned_routes')->insert($chunk);
+                    $locationRows = [];
+                    foreach (array_values(array_unique($locationIds)) as $locationId) {
+                        $locationRows[] = [
+                            'operator_id' => $operatorId,
+                            'operator_user_id' => $userId,
+                            'location_id' => $locationId,
+                            'active_status' => 1,
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ];
+                    }
+                    foreach (array_chunk($locationRows, 500) as $chunk) DB::table('operator_locations_ids')->insert($chunk);
                 }
-
-                foreach (array_chunk($locationRows, 500) as $chunk) {
-                    DB::table('operator_locations_ids')->insert($chunk);
-                }
-
-                return [
-                    'assignment_id' => $assignmentId,
-                    'access_mode' => $accessMode,
-                    'assigned_routes' => count($assignedRouteRows),
-                    'unique_locations' => count($locationRows),
-                ];
+                return ['assignment_ids' => $savedIds, 'saved_count' => count($savedIds), 'disabled_removed_count' => count($removedIds)];
             });
-
-            return response()->json([
-                'status' => true,
-                'message' => 'User bus access saved successfully.',
-                'data' => $result,
-            ], 201);
+            return response()->json(['status' => true, 'message' => 'Bus user access saved successfully.', 'data' => $result], 200);
         } catch (\InvalidArgumentException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 422);
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 422);
         } catch (\Throwable $e) {
-            Log::error('ManageUserAccessController saveUserBusAccess failed', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to save user bus access.',
-            ], 500);
-        }
-    }
-
-
-    public function updateAssignedRouteStatus(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'operator_id' => 'required|integer|min:1',
-            'user_id' => 'required|integer|min:1',
-            'bus_id' => 'required|integer|min:1',
-            'status' => 'required|in:0,1',
-            'ticket_price_ids' => 'nullable|array',
-            'ticket_price_ids.*' => 'integer|min:1|distinct',
-            'all' => 'sometimes|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid route status request.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $query = DB::table('operator_user_assigned_routes')
-            ->where('operator_id', (int) $request->operator_id)
-            ->where('operator_user_id', (int) $request->user_id)
-            ->where('bus_id', (int) $request->bus_id);
-
-        if (!$request->boolean('all')) {
-            $ids = $request->input('ticket_price_ids', []);
-
-            if (empty($ids)) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Select one or more routes, or set all to true.',
-                ], 422);
-            }
-
-            $query->whereIn('ticket_price_id', $ids);
-        }
-
-        $updated = $query->update([
-            'status' => (int) $request->status,
-            'updated_at' => now(),
-        ]);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Assigned route status updated successfully.',
-            'data' => ['updated' => $updated],
-        ]);
-    }
-
-
-
-    public function getUsers(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'operator_id' => 'required|integer|min:1',
-            'user_type' => 'required|in:3,7,8'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid request parameters',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        try {
-            $users = DB::table('user')
-                ->select('id', 'name', 'client_id')
-                ->where('bus_operator_id', (int) $request->operator_id)
-                ->where('role_id', (int) $request->user_type)
-                ->orderBy('name', 'asc')
-                ->get();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Users fetched successfully',
-                'data' => $users
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('ManageUserAccessController getUsers: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to fetch users'
-            ], 500);
-        }
-    }
-
-
-    public function getBuses(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'operator_id' => 'required|integer|min:1'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid operator ID',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        try {
-            $buses = DB::table('bus')
-                ->select('id', 'name', 'bus_number')
-                ->where('bus_operator_id', (int) $request->operator_id)
-                ->orderBy('name', 'asc')
-                ->get();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Buses fetched successfully',
-                'data' => $buses
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('BusUserAccessController getBuses: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to fetch buses'
-            ], 500);
-        }
-    }
-
-    public function getBusRoutes(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'bus_id' => 'required|integer|min:1'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid bus ID',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        try {
-            $routes = DB::table('ticket_price as tp')
-                ->join('location as src', 'src.id', '=', 'tp.source_id')
-                ->join('location as dest', 'dest.id', '=', 'tp.destination_id')
-                ->where('tp.bus_id', (int) $request->bus_id)
-                ->select(
-                    'tp.id',
-                    'tp.source_id',
-                    'src.name as source_name',
-                    'tp.destination_id',
-                    'dest.name as destination_name'
-                )
-                ->orderBy('src.name')
-                ->orderBy('dest.name')
-                ->get();
-
-            // Add a readable label for the dropdown.
-            $routes = $routes->map(function ($route) {
-                $route->name = $route->source_name . ' → ' . $route->destination_name;
-                return $route;
-            });
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Bus routes fetched successfully',
-                'data' => $routes
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('ManageUserAccessController getBusRoutes: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to fetch bus routes'
-            ], 500);
+            Log::error('ManageUserAccessController saveUserBusAccess failed', ['error' => $e->getMessage()]);
+            return response()->json(['status' => false, 'message' => 'Unable to save bus user access.'], 500);
         }
     }
 
@@ -435,42 +257,29 @@ class ManageUserAccessController extends Controller
                     'a.created_at',
                     'a.updated_at'
                 );
-
             if ($request->filled('search')) {
                 $search = trim($request->search);
-
                 $query->where(function ($q) use ($search) {
-                    $q->where('o.organisation_name', 'like', "%{$search}%")
-                        ->orWhere('u.name', 'like', "%{$search}%")
-                        ->orWhere('u.client_id', 'like', "%{$search}%")
-                        ->orWhere('b.name', 'like', "%{$search}%")
+                    $q->where('o.organisation_name', 'like', "%{$search}%")->orWhere('u.name', 'like', "%{$search}%")
+                        ->orWhere('u.client_id', 'like', "%{$search}%")->orWhere('b.name', 'like', "%{$search}%")
                         ->orWhere('b.bus_number', 'like', "%{$search}%");
                 });
             }
+            if ($request->filled('status')) $query->where('a.status', (int)$request->status);
+            if ($request->filled('user_id')) $query->where('a.user_id', (int)$request->user_id);
+            if ($request->filled('operator_id')) $query->where('a.bus_operator_id', (int)$request->operator_id);
+            if ($request->filled('user_type')) $query->where('a.role_type', (int)$request->user_type);
+            if ($request->filled('from_date')) $query->whereDate('a.valid_from', '>=', $request->from_date);
+            if ($request->filled('to_date')) $query->whereDate('a.valid_until', '<=', $request->to_date);
+            $assignments = $query->orderBy('b.name')->orderByDesc('a.id')->get();
 
-            if ($request->filled('status')) {
-                $query->where('a.status', (int) $request->status);
-            }
-
-            if ($request->filled('user_id')) {
-                $query->where('a.user_id', (int) $request->user_id);
-            }
-
-            $assignments = $query
-                ->orderByDesc('a.id')
-                ->get();
-
-            $assignmentIds = $assignments->pluck('id')->all();
-
-            $routeRows = empty($assignmentIds)
-                ? collect()
-                : DB::table('operator_user_assigned_routes as ar')
+            $routeRows = DB::table('operator_user_assigned_routes as ar')
                 ->join('ticket_price as tp', 'tp.id', '=', 'ar.ticket_price_id')
                 ->join('location as src', 'src.id', '=', 'tp.source_id')
                 ->join('location as dest', 'dest.id', '=', 'tp.destination_id')
-                ->whereIn('ar.operator_id', $assignments->pluck('bus_operator_id'))
-                ->whereIn('ar.operator_user_id', $assignments->pluck('user_id'))
-                ->whereIn('ar.bus_id', $assignments->pluck('bus_id'))
+                ->whereIn('ar.operator_id', $assignments->pluck('bus_operator_id')->unique()->values())
+                ->whereIn('ar.operator_user_id', $assignments->pluck('user_id')->unique()->values())
+                ->whereIn('ar.bus_id', $assignments->pluck('bus_id')->unique()->values())
                 ->select(
                     'ar.operator_id',
                     'ar.operator_user_id',
@@ -481,92 +290,49 @@ class ManageUserAccessController extends Controller
                     'src.name as source_name',
                     'tp.destination_id',
                     'dest.name as destination_name'
-                )
-                ->get();
+                )->get();
 
-            $data = $assignments->map(function ($assignment) use ($routeRows) {
-                $routes = $routeRows->filter(function ($route) use ($assignment) {
-                    return (int) $route->operator_id === (int) $assignment->bus_operator_id
-                        && (int) $route->operator_user_id === (int) $assignment->user_id
-                        && (int) $route->bus_id === (int) $assignment->bus_id;
+            $data = $assignments->map(function ($a) use ($routeRows) {
+                $routes = $routeRows->filter(function ($r) use ($a) {
+                    return (int)$r->operator_id === (int)$a->bus_operator_id &&
+                        (int)$r->operator_user_id === (int)$a->user_id && (int)$r->bus_id === (int)$a->bus_id;
                 })->values();
-
-                $assignment->role_name = [
-                    3 => 'Agent',
-                    7 => 'Conductor',
-                    8 => 'Manager',
-                ][$assignment->role_type] ?? 'Unknown';
-
-                $assignment->access_mode_label =
-                    (int) $assignment->route_access === 1
-                    ? 'All Routes'
-                    : 'Specific Routes';
-
-                $assignment->status_label =
-                    (int) $assignment->status === 1 ? 'Active' : 'Inactive';
-
-                $assignment->routes = $routes;
-                $assignment->route_count = $routes->count();
-
-                return $assignment;
+                $a->role_name = [3 => 'Agent', 7 => 'Conductor', 8 => 'Manager'][$a->role_type] ?? 'Unknown';
+                $a->access_mode_label = (int)$a->route_access === 1 ? 'All Routes' : 'Specific Routes';
+                $a->status_label = (int)$a->status === 1 ? 'Active' : 'Inactive';
+                $a->routes = $routes;
+                $a->route_count = $routes->count();
+                return $a;
             });
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Assignments fetched successfully.',
-                'data' => $data,
-            ]);
+            return response()->json(['status' => true, 'message' => 'Assignments fetched successfully.', 'data' => $data]);
         } catch (\Throwable $e) {
-            Log::error('getUserBusAccessList failed', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to fetch saved assignments.',
-            ], 500);
+            Log::error('getUserBusAccessList failed', ['error' => $e->getMessage()]);
+            return response()->json(['status' => false, 'message' => 'Unable to fetch saved assignments.'], 500);
         }
     }
 
     public function updateUserBusAssignmentStatus(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer|min:1',
-            'status' => 'required|in:0,1',
+        $v = Validator::make($request->all(), ['id' => 'required|integer|min:1', 'status' => 'required|in:0,1']);
+        if ($v->fails()) return response()->json(['status' => false, 'message' => 'Invalid assignment status request.', 'errors' => $v->errors()], 422);
+        $updated = DB::table('operator_bus_assignments')->where('id', (int)$request->id)
+            ->update(['status' => (int)$request->status, 'updated_at' => now(), 'updated_by' => auth()->id() ?? null]);
+        if (!$updated && !DB::table('operator_bus_assignments')->where('id', (int)$request->id)->exists())
+            return response()->json(['status' => false, 'message' => 'Assignment not found.'], 404);
+        return response()->json(['status' => true, 'message' => 'Assignment status updated successfully.']);
+    }
+
+    public function updateBusAssignmentsStatus(Request $request)
+    {
+        $v = Validator::make($request->all(), [
+            'bus_id' => 'required|integer|min:1',
+            'operator_id' => 'required|integer|min:1',
+            'status' => 'required|in:0,1'
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid assignment status request.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $updated = DB::table('operator_bus_assignments')
-            ->where('id', (int) $request->id)
-            ->update([
-                'status' => (int) $request->status,
-                'updated_at' => now(),
-                'updated_by' => auth()->id() ?? null,
-            ]);
-
-        if (!$updated) {
-            $exists = DB::table('operator_bus_assignments')
-                ->where('id', (int) $request->id)
-                ->exists();
-
-            if (!$exists) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Assignment not found.',
-                ], 404);
-            }
-        }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Assignment status updated successfully.',
-        ]);
+        if ($v->fails()) return response()->json(['status' => false, 'message' => 'Invalid bus status request.', 'errors' => $v->errors()], 422);
+        $updated = DB::table('operator_bus_assignments')->where('bus_id', (int)$request->bus_id)
+            ->where('bus_operator_id', (int)$request->operator_id)
+            ->update(['status' => (int)$request->status, 'updated_at' => now(), 'updated_by' => auth()->id() ?? null]);
+        return response()->json(['status' => true, 'message' => 'Bus assignments status updated.', 'data' => ['updated' => $updated]]);
     }
 }
