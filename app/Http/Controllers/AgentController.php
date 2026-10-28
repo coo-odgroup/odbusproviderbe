@@ -670,4 +670,26 @@ class AgentController extends Controller
       );
     }
   }
+
+  public function viewUser(Request $request)
+  {
+    try {
+      $user = DB::table('user')->where('status', 1)->where('id', $request->id)->first();
+      return $this->successResponse(
+        $user,
+        Config::get('constants.RECORD_FETCHED'),
+        Response::HTTP_OK
+      );
+    } catch (\Illuminate\Validation\ValidationException $e) {
+      return $this->errorResponse(
+        $e->getMessage(),
+        Response::HTTP_UNPROCESSABLE_ENTITY
+      );
+    } catch (\Exception $e) {
+      return $this->errorResponse(
+        $e->getMessage(),
+        Response::HTTP_PARTIAL_CONTENT
+      );
+    }
+  }
 }
