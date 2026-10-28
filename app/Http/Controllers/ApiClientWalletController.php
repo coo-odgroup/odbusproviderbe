@@ -16,18 +16,21 @@ use Illuminate\Support\Facades\Log;
 use DB;
 use App\Models\ApiClientWalletNew;
 use App\Models\ClientFeeSlab;
+use App\Services\ApiClientWalletService;
 
 class ApiClientWalletController extends Controller
 {
     use ApiResponser;
     protected $ApiClientWalletRepository;
     protected $ApiClientWalletValidator;
+    protected $ApiClientWalletService;
 
-    public function __construct(ApiClientWalletRepository $ApiClientWalletRepository, ApiClientWalletValidator $ApiClientWalletValidator)
+    public function __construct(ApiClientWalletRepository $ApiClientWalletRepository, ApiClientWalletValidator $ApiClientWalletValidator, ApiClientWalletService $ApiClientWalletService)
     {
 
         $this->ApiClientWalletRepository = $ApiClientWalletRepository;
         $this->ApiClientWalletValidator = $ApiClientWalletValidator;
+        $this->ApiClientWalletService = $ApiClientWalletService;
     }
 
    public function getAllData(Request $request)
@@ -61,16 +64,16 @@ class ApiClientWalletController extends Controller
             $data = $this->ApiClientWalletRepository->FilterDate($data, $start_date, $end_date);
         }
 
-      
+
         if ($reqs_status != null) {
             $data = $data->where('status', $reqs_status)
                          ->orderBy('created_at', 'DESC');
         }
 
-        
+
         $data = $this->ApiClientWalletRepository->Pagination($data, $paginate);
 
-        
+
         $response = [
             "count" => $data->count(),
             "total" => $data->total(),
@@ -106,7 +109,8 @@ class ApiClientWalletController extends Controller
     public function getData(Request $request)
     {
 
-        $wallet = $this->ApiClientWalletRepository->getData($request);
+        // $wallet = $this->ApiClientWalletRepository->getData($request);
+        $wallet = $this->ApiClientWalletService->getData($request);
         return $this->successResponse($wallet, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
@@ -171,14 +175,14 @@ class ApiClientWalletController extends Controller
     }
 
 
- 
+
 
     public function clientTransByAdmin(Request $request)
     {
         $data = $this->ApiClientWalletRepository->clientTransByAdmin($request);
         return $this->successResponse($data, "Wallet request Added", Response::HTTP_CREATED);
     }
- 
+
 
     public function clientTransUpdateByAdmin(Request $request)
     {
