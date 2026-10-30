@@ -19,6 +19,7 @@ use App\Models\AgentWallet;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use App\Services\AgentActivityService;
 
 class AgentWalletController extends Controller
 {
@@ -26,12 +27,14 @@ class AgentWalletController extends Controller
     protected $agentWalletService;
     protected $agentWalletValidator;
     protected $agentWalletRepository;
+    protected $agentActivityService;
 
-    public function __construct(AgentWalletService $agentWalletService, AgentWalletValidator $agentWalletValidator, AgentWalletRepository $agentWalletRepository)
+    public function __construct(AgentWalletService $agentWalletService, AgentWalletValidator $agentWalletValidator, AgentWalletRepository $agentWalletRepository, AgentActivityService $agentActivityService)
     {
         $this->agentWalletService = $agentWalletService;
         $this->agentWalletValidator = $agentWalletValidator;
         $this->agentWalletRepository = $agentWalletRepository;
+        $this->agentActivityService = $agentActivityService;
     }
 
     public function getAllData(Request $request)
@@ -195,11 +198,13 @@ class AgentWalletController extends Controller
                 ]);
             }
 
+            // return $user;
+
             DB::table('wallet_request')->insert([
 
                 'transaction_id' => $responseData['order_id'],
                 'amount' => $responseData['order_amount'],
-                'credited_amount' => null,
+                'credited_amount' => $responseData['order_amount'],
                 'payment_status' => 0,
                 'transaction_type' => 'c',
                 'remarks' => $request->remarks,
@@ -218,6 +223,73 @@ class AgentWalletController extends Controller
                     'updated_at' => now()
                 ]);
 
+                $orderAmount = (float) $responseData['order_amount'];
+
+                if (
+                    !empty($user['welcome_bonus_ends']) &&
+                    strtotime($user['welcome_bonus_ends']) > time() &&
+                    $orderAmount >= 2000
+                ) {
+                    $bonusAmount = $orderAmount * 0.10;
+
+                    $tranId = date('YmdHis') . sprintf('%06d', (int) ((microtime(true) * 1000000) % 1000000));
+
+                    $lastWallet = AgentWallet::where(
+                        'user_id',
+                        $user['id']
+                    )
+                        ->orderBy('id', 'DESC')
+                        ->first();
+
+                    $previousBalance = $lastWallet ? $lastWallet->balance : 0;
+                    $newBalance = $previousBalance + $bonusAmount;
+
+                    DB::table('wallet_request')->insert([
+
+                        'transaction_id' => $tranId,
+                        'amount' => $bonusAmount,
+                        'credited_amount' => null,
+                        'payment_status' => 1,
+                        'transaction_type' => 'c',
+                        'remarks' => '1st Recharge Bonus added',
+                        'user_id' => $user['id'],
+                        'created_by' => $responseData['customer_details']['customer_name'],
+                        'payment_via' => 'Cashfree',
+                        'status' => 1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+
+                    ]);
+
+                    AgentWallet::insert([
+
+                        'transaction_id' => $tranId,
+                        'reference_id' => null,
+                        'payment_via' => 'Cashfree',
+                        'amount' => $bonusAmount,
+                        'transaction_type' => 'c',
+                        'type' => '1stRechargeBonus',
+                        'balance' => $newBalance,
+                        'remarks' => '1st Recharge Bonus added',
+                        'user_id' => $user['id'],
+                        'created_by' => $responseData['customer_details']['customer_name'],
+                        'status' => 1,
+                        'payment_response' => json_encode($responseData),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+
+                    ]);
+
+                    $dueAt = now()->addMinute();
+
+                    $this->agentActivityService->logActivity(
+                        $user['id'],
+                        'AGENT_BONUS',
+                        'AGENT_BONUS',
+                        [],
+                        $dueAt
+                    );
+                }
             }
 
             DB::commit();

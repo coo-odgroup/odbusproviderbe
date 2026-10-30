@@ -1142,6 +1142,76 @@ class AgentRegdController extends Controller
                 $__dueAt_
             );
 
+            $dueAt15 = now()->addDays(15);
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'AGENT_INACTIVE_15',
+                'AGENT_INACTIVE_15',
+                [],
+                $dueAt15
+            );
+
+            $dueAt30 = now()->addDays(30);
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'AGENT_INACTIVE_30',
+                'AGENT_INACTIVE_30',
+                [],
+                $dueAt30
+            );
+
+            $dueAt45 = now()->addDays(45);
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'AGENT_INACTIVE_45',
+                'AGENT_INACTIVE_45',
+                [],
+                $dueAt45
+            );
+
+            $dueAt60 = now()->addDays(60);
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'AGENT_INACTIVE_60',
+                'AGENT_INACTIVE_60',
+                [],
+                $dueAt60
+            );
+
+            $dueAt75 = now()->addDays(75);
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'AGENT_INACTIVE_75',
+                'AGENT_INACTIVE_75',
+                [],
+                $dueAt75
+            );
+
+            $dueAt89 = now()->addDays(89);
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'AGENT_INACTIVE_89',
+                'AGENT_INACTIVE_89',
+                [],
+                $dueAt89
+            );
+
+            $dueAt90 = now()->addDays(90);
+
+            $this->agentActivityService->logActivity(
+                $agentId,
+                'AGENT_DEACTIVATED',
+                'AGENT_DEACTIVATED',
+                [],
+                $dueAt90
+            );
+
             DB::commit();
 
             return response()->json([
