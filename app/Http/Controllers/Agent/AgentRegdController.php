@@ -1090,8 +1090,7 @@ class AgentRegdController extends Controller
                 ->update([
                     'is_verified' => 1,
                     'verified_at' => now(),
-                    'updated_at' => now(),
-                    'welcome_bonus_ends' => now()->addDays(10),
+                    'updated_at' => now()
                 ]);
 
             // Update user email verification status
@@ -1099,6 +1098,7 @@ class AgentRegdController extends Controller
                 ->where('id', $agentId)
                 ->update([
                     'is_email_verified' => 1,
+                    'welcome_bonus_ends' => now()->addDays(10),
                     'updated_at' => now()
                 ]);
 
