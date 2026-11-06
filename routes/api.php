@@ -174,6 +174,7 @@ use App\Http\Controllers\VendorSeatBlockController;
 
 // Jagan
 use App\Http\Controllers\Agent\AgentRegdController;
+use App\Http\Controllers\Agent\AgentSettingsController;
 // Jagan
 
 
@@ -1515,6 +1516,9 @@ Route::post('/agentAlerts', [AgentController::class, 'agentAlerts']);
 Route::post('/agentdashboard', [AgentController::class, 'agentDashboard']);
 Route::post('/agentreports', [AgentController::class, 'agentReports']);
 Route::post('/viewuser', [AgentController::class, 'viewUser']);
+
+Route::get('/agent-settings', [AgentSettingsController::class, 'getSettings']);
+Route::post('/agent-settings', [AgentSettingsController::class, 'updateSettings']);
 // Jagan
 
 Route::post('/transaction-details', [CancelTicketReportController::class, 'transactionDetail']);
